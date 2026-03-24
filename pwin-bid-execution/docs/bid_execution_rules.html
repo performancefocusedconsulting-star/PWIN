@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Bid Execution Business Rules</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;
+  --bdr:#253551;--bdr-s:#1A2844;
+  --gold:#C49438;--gold-d:rgba(196,148,56,.12);--gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;
+  --grn:#34D399;--grn-d:rgba(52,211,153,.10);
+  --red:#F87171;--red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24;--amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA;--blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA;--pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.hdr{padding:16px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);}
+.hdr-l{display:flex;align-items:baseline;gap:12px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.nav{display:flex;gap:1px;padding:0 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;}
+.nav-b{padding:9px 12px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-b:hover{color:var(--t2);}.nav-b.on{color:var(--gold);border-bottom-color:var(--gold);}
+.ct{padding:22px 28px;max-width:1200px;margin:0 auto;animation:fi .2s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:780px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:20px 0 8px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:14px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+.ent{background:var(--bg2);border:1px solid var(--bdr);margin-bottom:7px;overflow:hidden;}
+.ent-h{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s;}
+.ent-h:hover{background:var(--bg3);}
+.ent-nm{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1);}
+.ent-bg{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border:1px solid;border-radius:2px;}
+.bg-f{color:var(--gold);border-color:var(--gold)}.bg-s{color:var(--grn);border-color:var(--grn)}.bg-t{color:var(--blu);border-color:var(--blu)}.bg-c{color:var(--pur);border-color:var(--pur)}
+.ent-bd{padding:0 12px 10px;border-top:1px solid var(--bdr-s);}
+.tog{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:transform .15s;}.tog.op{transform:rotate(90deg);}
+.tb{width:100%;border-collapse:collapse;margin:8px 0;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.tb td{padding:6px 8px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+.rule{background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;margin:6px 0;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--cyn);line-height:1.8;white-space:pre-wrap;overflow-x:auto;}
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:1px 5px;border-radius:2px;display:inline-block;margin:1px 1px;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}.fe-b{color:var(--blu);background:var(--blu-d)}.fe-p{color:var(--pur);background:var(--pur-d)}.fe-c{color:var(--cyn);background:var(--cyn-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}
+.sg{display:grid;grid-template-columns:180px 1fr;gap:0;margin:10px 0;border:1px solid var(--bdr);}
+.sg-k{padding:7px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);background:var(--bg4);border-bottom:1px solid var(--bdr-s);}
+.sg-v{padding:7px 10px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);line-height:1.5;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const TABS=[
+  {id:'scheduling',l:'Scheduling Engine'},
+  {id:'states',l:'State Transitions'},
+  {id:'readiness',l:'Readiness Scoring'},
+  {id:'nudging',l:'Smart Nudging'},
+  {id:'gates',l:'Governance Gates'},
+  {id:'compliance',l:'Compliance Engine'},
+  {id:'reviews',l:'Review Governance'},
+  {id:'portfolio',l:'Practice Portfolio'},
+  {id:'standup',l:'Standup Actions'},
+  {id:'feasibility',l:'Feasibility Check'},
+  {id:'thresholds',l:'All Thresholds'},
+];
+let tab='scheduling',exp={};
+function setTab(t){tab=t;render();}
+function tog(id){exp[id]=!exp[id];render();}
+function render(){
+  document.getElementById('app').innerHTML=`
+    <div class="hdr"><div class="hdr-l"><div class="hdr-brand">PWIN Architect</div><div class="hdr-sub">Business Rules · Companion to Architecture v5</div></div></div>
+    <div class="nav">${TABS.map(t=>`<button class="nav-b ${tab===t.id?'on':''}" onclick="setTab('${t.id}')">${t.l}</button>`).join('')}</div>
+    <div class="ct" key="${tab}">${R[tab]()}</div>`;
+}
+const R={};
+
+// ═══════════════════════════════════════
+// SCHEDULING ENGINE
+// ═══════════════════════════════════════
+R.scheduling=()=>`
+<div class="sl">Rule Set 1</div>
+<div class="st">Scheduling Engine</div>
+<div class="sd">Rules governing how activities are scheduled, how elapsed duration is calculated, and how the backward-planning algorithm works.</div>
+
+<div class="sh">1.1 Elapsed Duration Calculation</div>
+<div class="bt">Every activity has effortDays (person-days) and teamSize (concurrent workers). Elapsed duration accounts for coordination overhead.</div>
+<div class="rule">FUNCTION calculateElapsedDays(effortDays, teamSize):
+  IF teamSize <= 0: RETURN effortDays  // safety
+  IF teamSize == 1: RETURN effortDays  // no overhead
+  
+  coordinationFactor = 1 + ((teamSize - 1) * 0.20)
+  // 20% overhead per additional person
+  // teamSize 2 = 1.20x, teamSize 3 = 1.40x, teamSize 5 = 1.80x
+  
+  rawElapsed = effortDays / teamSize
+  adjustedElapsed = rawElapsed * coordinationFactor
+  RETURN CEIL(adjustedElapsed)  // always round up to whole days
+
+EXAMPLES:
+  effortDays=15, teamSize=1 → 15 days
+  effortDays=15, teamSize=2 → CEIL((15/2) * 1.20) = CEIL(9.0) = 9 days
+  effortDays=15, teamSize=3 → CEIL((15/3) * 1.40) = CEIL(7.0) = 7 days
+  effortDays=45, teamSize=5 → CEIL((45/5) * 1.80) = CEIL(16.2) = 17 days</div>
+
+<div class="sh">1.2 Working Day Calendar</div>
+<div class="rule">FUNCTION isWorkingDay(date, bidCalendar):
+  dayOfWeek = getDayOfWeek(date)  // 1=Mon ... 7=Sun
+  
+  // Check if in weekend working override
+  IF date IS IN bidCalendar.weekendWorking ranges:
+    RETURN true  // forced working day even if weekend
+  
+  // Check standard working days
+  IF dayOfWeek NOT IN bidCalendar.workingDays:
+    RETURN false  // weekend
+  
+  // Check public holidays
+  IF date IN bidCalendar.publicHolidays:
+    RETURN false
+  
+  // Check client blackouts (not non-working, but flagged)
+  // Blackouts don't prevent working — they prevent client interaction
+  
+  RETURN true</div>
+
+<div class="sh">1.3 Add Working Days</div>
+<div class="rule">FUNCTION addWorkingDays(startDate, numDays, bidCalendar):
+  // Returns the date that is numDays working days after startDate
+  currentDate = startDate
+  daysAdded = 0
+  WHILE daysAdded < numDays:
+    currentDate = currentDate + 1 calendar day
+    IF isWorkingDay(currentDate, bidCalendar):
+      daysAdded = daysAdded + 1
+  RETURN currentDate</div>
+
+<div class="sh">1.4 Count Working Days Between</div>
+<div class="rule">FUNCTION countWorkingDays(startDate, endDate, bidCalendar):
+  count = 0
+  currentDate = startDate
+  WHILE currentDate < endDate:
+    currentDate = currentDate + 1 calendar day
+    IF isWorkingDay(currentDate, bidCalendar):
+      count = count + 1
+  RETURN count</div>
+
+<div class="sh">1.5 Backward Scheduling Algorithm</div>
+<div class="bt">Activities are scheduled backward from the submission deadline. Activities with no dependents are scheduled to end at the deadline. Activities with dependents are scheduled to end before the earliest dependent's start date.</div>
+<div class="rule">FUNCTION backwardSchedule(activities, submissionDeadline, bidCalendar):
+  // Step 1: Build dependency graph (reverse)
+  // For each activity, find all activities that depend on it
+  dependents = MAP of activityCode → [list of dependent activity codes]
+  
+  // Step 2: Topological sort (reverse) — start from activities with no dependents
+  scheduled = empty MAP of activityCode → {plannedStart, plannedEnd}
+  queue = activities WHERE activity.code NOT IN any dependency list
+  // These are "leaf" activities — they finish at submission
+  
+  // Step 3: Schedule leaf activities first (they end at deadline)
+  FOR EACH leaf IN queue:
+    IF leaf.status == 'deactivated': SKIP
+    elapsed = calculateElapsedDays(leaf.effortDays, leaf.teamSize)
+    leaf.plannedEnd = submissionDeadline
+    leaf.plannedStart = subtractWorkingDays(submissionDeadline, elapsed, bidCalendar)
+    scheduled[leaf.code] = {plannedStart, plannedEnd}
+  
+  // Step 4: Work backward through dependency graph
+  // Process activities whose ALL dependents are already scheduled
+  WHILE unscheduled activities remain:
+    FOR EACH unscheduled activity A:
+      IF ALL dependents of A are scheduled:
+        // A must end before earliest dependent start
+        earliestDependentStart = MIN(scheduled[dep].plannedStart FOR dep IN dependents[A.code])
+        // Subtract 1 working day buffer (dependency gap)
+        A.plannedEnd = subtractWorkingDays(earliestDependentStart, 1, bidCalendar)
+        elapsed = calculateElapsedDays(A.effortDays, A.teamSize)
+        A.plannedStart = subtractWorkingDays(A.plannedEnd, elapsed, bidCalendar)
+        scheduled[A.code] = {plannedStart, plannedEnd}
+  
+  // Step 5: Apply team member unavailability
+  FOR EACH activity A IN scheduled:
+    IF A.owner has unavailability overlapping [A.plannedStart, A.plannedEnd]:
+      unavailDays = countOverlapWorkingDays(A, ownerUnavailability)
+      // Extend start earlier by unavailDays
+      A.plannedStart = subtractWorkingDays(A.plannedStart, unavailDays, bidCalendar)
+  
+  RETURN scheduled</div>
+
+<div class="sh">1.6 Dependency Threshold Rule</div>
+<div class="rule">DEFAULT: Activity B can start when Activity A reaches status 'draft_complete'
+
+IF dependency has overrideThreshold set:
+  USE overrideThreshold instead ('in_progress' | 'draft_complete' | 'final')
+
+NOTE: Methodology gates (SAL-06, BM-10) always require 'assured' on outputAssurance,
+regardless of activity status threshold. This is a hard gate, not a scheduling preference.</div>
+
+<div class="sh">1.7 Buffer Calculation</div>
+<div class="rule">FUNCTION calculateBuffer(activityA, dependentActivityB, bidCalendar):
+  // Buffer = working days between A's planned end and B's planned start
+  buffer = countWorkingDays(activityA.plannedEnd, dependentActivityB.plannedStart, bidCalendar)
+  RETURN buffer
+
+BUFFER STATUS:
+  buffer >= 5  → 'healthy'   (green)
+  buffer >= 1  → 'compressed' (amber)
+  buffer <= 0  → 'critical'   (red)</div>
+
+<div class="co co-g"><div class="co-l">Key Assumption</div><div class="co-t">The scheduler builds an idealised backward plan. Actual progress will diverge. The system's value is not in the plan being correct — it's in the real-time comparison of actual vs planned that reveals compression before it becomes a crisis.</div></div>
+`;
+
+// ═══════════════════════════════════════
+// STATE TRANSITIONS
+// ═══════════════════════════════════════
+R.states=()=>`
+<div class="sl">Rule Set 2</div>
+<div class="st">State Transitions</div>
+<div class="sd">Valid state transitions for all entities. The system must enforce these — invalid transitions should be rejected with an error message.</div>
+
+<div class="sh">2.1 Activity Status</div>
+<div class="rule">VALID TRANSITIONS:
+  not_started   → in_progress      // work begins
+  not_started   → deactivated      // not needed for this bid
+  in_progress   → draft_complete   // first complete version exists
+  in_progress   → not_started      // revert (work paused/restarted)
+  draft_complete → final           // output finalised
+  draft_complete → in_progress     // rework needed (e.g. after review)
+  final         → draft_complete   // revert (significant change required)
+  deactivated   → not_started      // reactivated
+
+INVALID (system must reject):
+  not_started → final              // cannot skip draft
+  not_started → draft_complete     // cannot skip in_progress
+  deactivated → in_progress        // must reactivate to not_started first
+  final → not_started              // cannot revert past draft_complete
+
+ON STATUS CHANGE:
+  ALWAYS SET activity.lastUpdated = NOW()
+  IF new status == 'in_progress' AND activity.actualStart IS NULL:
+    SET activity.actualStart = TODAY
+  IF new status == 'final':
+    SET activity.actualEnd = TODAY</div>
+
+<div class="sh">2.2 Output Assurance</div>
+<div class="rule">VALID TRANSITIONS:
+  unassured      → under_review     // review cycle initiated for this output
+  under_review   → assured          // review complete, all critical actions resolved
+  under_review   → unassured        // review failed, significant rework needed
+  assured        → accepted_at_gate // governance gate accepted this output
+  assured        → under_review     // re-review triggered (e.g. major change after initial assurance)
+  accepted_at_gate → assured        // gate decision reversed (rare)
+
+CONSTRAINTS:
+  outputAssurance can only reach 'under_review' IF a ReviewCycle exists
+    that includes this activity in its targetActivities list
+  outputAssurance can only reach 'assured' IF the linked ReviewCycle
+    has zero critical actions with status 'open' or 'in_progress'
+  outputAssurance can only reach 'accepted_at_gate' IF a GovernanceGate
+    exists that includes this activity in its entryCriteria
+    AND that gate's status == 'passed'
+
+RULE: activity.status == 'final' does NOT automatically set outputAssurance.
+  These are independent tracks. An activity can be 'final' but 'unassured'
+  (complete but not reviewed). This is the false readiness signal the system prevents.</div>
+
+<div class="sh">2.3 Governance Gate Status</div>
+<div class="rule">VALID TRANSITIONS:
+  upcoming    → ready        // all entry criteria met (auto-calculated)
+  ready       → in_progress  // bid manager opens the gate (manual action)
+  in_progress → passed       // decision = approved or approved_with_conditions
+  in_progress → failed       // decision = reject
+  in_progress → deferred     // decision = defer (reschedule)
+  upcoming    → deferred     // gate postponed before it was ready
+  deferred    → upcoming     // rescheduled with new date
+
+AUTO-TRANSITION RULE:
+  IF gate.status == 'upcoming':
+    FOR EACH criterion IN gate.entryCriteria:
+      criterion.met = (getActivity(criterion.activityCode).outputAssurance
+                       >= criterion.requiredAssurance)
+    IF ALL criteria.met == true:
+      gate.status = 'ready'  // auto-promote
+    // Note: does NOT auto-transition to 'in_progress' — bid manager must manually open
+
+ON gate.status → 'passed':
+  FOR EACH criterion IN gate.entryCriteria:
+    SET getActivity(criterion.activityCode).outputAssurance = 'accepted_at_gate'</div>
+
+<div class="sh">2.4 Bid Status</div>
+<div class="rule">VALID TRANSITIONS:
+  setup          → active           // bid confirmed after feasibility check
+  active         → submitted        // PRD-09 marked final
+  submitted      → post_submission  // post-submission activities activated
+  post_submission → won             // contract awarded
+  post_submission → lost            // contract not awarded
+  active         → withdrawn        // bid withdrawn before submission
+  submitted      → withdrawn        // bid withdrawn after submission
+
+ON STATUS CHANGE:
+  active → submitted:
+    SET all PRD activities status = 'final' (if not already)
+    GENERATE standup action: BM-11 (hot debrief) due = TODAY + 2 working days
+  submitted → post_submission:
+    ACTIVATE POST workstream activities based on bid flags
+    (hasPresentation → POST-01,02,03; hasBafo → POST-05,06; etc.)</div>
+
+<div class="sh">2.5 Requirement Coverage Status</div>
+<div class="rule">VALID TRANSITIONS:
+  unmapped          → mapped             // response section and owner assigned
+  mapped            → draft_in_progress  // linked activity status >= 'in_progress'
+  draft_in_progress → reviewed           // linked activity outputAssurance >= 'under_review'
+  reviewed          → approved           // linked activity outputAssurance >= 'assured'
+  ANY               → gap                // bid manager flags as a gap (manual)
+  gap               → mapped             // gap resolved, mapping established
+
+AUTO-TRANSITION RULE:
+  Coverage status auto-updates when the linked activity changes:
+    IF requirement.responseActivityId IS NOT NULL:
+      linkedActivity = getActivity(requirement.responseActivityId)
+      IF linkedActivity.status >= 'in_progress': coverageStatus = 'draft_in_progress'
+      IF linkedActivity.outputAssurance >= 'under_review': coverageStatus = 'reviewed'
+      IF linkedActivity.outputAssurance >= 'assured': coverageStatus = 'approved'</div>
+
+<div class="sh">2.6 Review Action Status</div>
+<div class="rule">VALID TRANSITIONS:
+  open        → in_progress  // owner has started working on resolution
+  in_progress → resolved     // owner has completed the fix
+  resolved    → accepted     // reviewer confirms resolution is adequate
+  resolved    → open         // reviewer rejects resolution, sends back
+  open        → disputed     // owner disagrees with the action
+  disputed    → open         // dispute resolved, action reinstated
+
+GATE LOGIC:
+  ReviewCycle can transition from 'actions_open' to 'closed' ONLY WHEN:
+    COUNT(actions WHERE severity == 'critical' AND status IN ('open', 'in_progress')) == 0
+  Major and minor actions do NOT block closure — only critical actions.</div>
+
+<div class="sh">2.7 Standup Action Status</div>
+<div class="rule">VALID TRANSITIONS:
+  open      → done       // action completed
+  open      → escalated  // converted to risk/blocker on parent activity
+  open      → cancelled  // no longer needed
+  
+  // No revert from done/escalated/cancelled — standup actions are fire-and-forget
+
+ON STATUS CHANGE:
+  open → done: SET completedDate = NOW()
+  open → escalated:
+    IF parentActivityCode IS NOT NULL:
+      SET getActivity(parentActivityCode).blockedBy = 'Escalated standup action: ' + description
+    CREATE entry in bid risk register (BM-13) linked to this action</div>
+`;
+
+// ═══════════════════════════════════════
+// READINESS SCORING
+// ═══════════════════════════════════════
+R.readiness=()=>`
+<div class="sl">Rule Set 3</div>
+<div class="st">Readiness Scoring</div>
+<div class="sd">How the dual-track readiness score is calculated. Development readiness is always weighted higher than production readiness — development drives everything.</div>
+
+<div class="sh">3.1 Overall Readiness Score</div>
+<div class="rule">overallReadiness = (developmentReadiness * 0.60) + (productionReadiness * 0.40)
+
+// Development is ALWAYS 60% weighted regardless of bid phase.
+// Rationale: a beautiful proposal built on an unstable solution is a losing bid.
+// The weighting does not shift with phase — development quality is always dominant.</div>
+
+<div class="sh">3.2 Development Readiness Signals</div>
+<div class="rule">developmentReadiness = WEIGHTED AVERAGE of:
+
+  Signal                          | Weight | Calculation
+  ─────────────────────────────────────────────────────────────
+  Win strategy locked & assured   |  15%   | SAL-06.outputAssurance >= 'assured' ? 100 : 
+                                  |        |   SAL-06.status == 'final' ? 60 : 
+                                  |        |   SAL-06.status == 'draft_complete' ? 30 : 0
+  Solution design locked & assured|  25%   | SOL-11.outputAssurance >= 'assured' ? 100 :
+                                  |        |   SOL-11.status == 'final' ? 60 :
+                                  |        |   avgProgress(SOL workstream) * 0.6
+  Pricing model locked & assured  |  20%   | COM-06.outputAssurance >= 'assured' ? 100 :
+                                  |        |   COM-06.status == 'final' ? 60 :
+                                  |        |   avgProgress(COM workstream) * 0.6
+  Risk register mitigated & assured| 15%   | DEL-06.outputAssurance >= 'assured' ? 100 :
+                                  |        |   DEL-01.status >= 'draft_complete' ? 50 : 
+                                  |        |   DEL-01.status == 'in_progress' ? 20 : 0
+  Partner agreements signed       |  10%   | IF SUP workstream deactivated: 100
+                                  |        | ELSE: SUP-03.status == 'final' ? 100 :
+                                  |        |   SUP-03.status == 'draft_complete' ? 50 : 0
+  Governance gates passed         |  15%   | (gates with status 'passed') / (total configured gates)
+                                  |        | * 100
+  ─────────────────────────────────────────────────────────────
+  TOTAL                           | 100%   |
+
+FUNCTION avgProgress(workstream):
+  activeActivities = workstream.activities WHERE status != 'deactivated'
+  progressValues = FOR EACH activity:
+    'not_started' = 0, 'in_progress' = 25, 'draft_complete' = 60, 'final' = 100
+  RETURN AVERAGE(progressValues)</div>
+
+<div class="sh">3.3 Production Readiness Signals</div>
+<div class="rule">productionReadiness = WEIGHTED AVERAGE of:
+
+  Signal                          | Weight | Calculation
+  ─────────────────────────────────────────────────────────────
+  Section/question completion %   |  25%   | (PRD activities at 'final' or 'draft_complete')
+                                  |        |   / (total active PRD activities) * 100
+  Compliance coverage (mandatory) |  25%   | (mandatory requirements at 'approved')
+                                  |        |   / (total mandatory requirements) * 100
+                                  |        | IF any mandatory at 'gap': MAX score = 50
+  Review actions resolved (crit)  |  20%   | (critical actions at 'resolved' or 'accepted')
+                                  |        |   / (total critical actions) * 100
+                                  |        | IF zero critical actions exist: 100
+  Approvals obtained              |  15%   | (approvals at 'approved') / (total required) * 100
+                                  |        | IF any approval at 'rejected': FORCE score = 0
+  Artefact checklist              |  10%   | (artefacts at 'final' or 'uploaded' or 'confirmed')
+                                  |        |   / (total artefacts) * 100
+  Workstream timing health        |   5%   | IF any critical compression: 0
+                                  |        | IF any amber compression: 50
+                                  |        | ELSE: 100
+  ─────────────────────────────────────────────────────────────
+
+HARD GATES (override the score):
+  IF any mandatory requirement has coverageStatus == 'gap':
+    overallReadiness CAPPED AT 50 (amber maximum)
+  IF any critical review action has status == 'open':
+    overallReadiness CAPPED AT 60 (amber maximum)
+  IF any methodology gate (SAL-06, BM-10) NOT at 'assured':
+    AND bid is in production phase:
+    DISPLAY WARNING: "Production proceeding without locked [strategy/storyboard]"</div>
+
+<div class="sh">3.4 Health Status Derivation</div>
+<div class="rule">FUNCTION deriveHealthStatus(overallReadiness):
+  IF overallReadiness >= 70:  RETURN 'green'
+  IF overallReadiness >= 40:  RETURN 'amber'
+  RETURN 'red'
+
+// Note: these thresholds are configurable in practice settings
+// Default: green >= 70, amber >= 40, red < 40
+
+HEALTH TREND:
+  Store readiness score on each calculation (timestamped)
+  trend = COMPARE last 3 readings:
+    IF latest > previous > earliest: 'improving'
+    IF latest < previous < earliest: 'deteriorating'
+    ELSE: 'stable'</div>
+
+<div class="sh">3.5 Post-Submission Readiness (when applicable)</div>
+<div class="rule">postSubmissionReadiness = SIMPLE AVERAGE of active signals:
+
+  Presentation prepared & rehearsed  | POST-02.status == 'final' ? 100 : progress
+  Clarifications responded           | POST-04.status == 'final' ? 100 : progress
+  BAFO prepared & approved           | POST-06.status == 'passed' ? 100 : progress
+  Negotiations progressing           | POST-07.status >= 'in_progress' ? 50 : 0
+
+  // Only include signals for activated post-submission activities
+  // If bid has no presentation stage, exclude that signal</div>
+`;
+
+// ═══════════════════════════════════════
+// SMART NUDGING
+// ═══════════════════════════════════════
+R.nudging=()=>`
+<div class="sl">Rule Set 4</div>
+<div class="st">Smart Nudging Engine</div>
+<div class="sd">Trigger conditions, logic, and response handling for all four nudge types. Nudges are generated on workspace/tracker load and stored in session until dismissed.</div>
+
+<div class="sh">4.1 Stale Activity Detection</div>
+<div class="rule">TRIGGER CONDITION:
+  activity.status IN ('in_progress', 'draft_complete')
+  AND activity.status != 'deactivated'
+  AND (TODAY - activity.lastUpdated) > staleThreshold
+
+THRESHOLDS:
+  Development activities (phase == 'development'):  3 working days
+  Production activities (phase == 'production'):    3 working days
+  Post-submission activities (phase == 'post_sub'): 2 working days
+  Continuous activities (phase == 'continuous'):     5 working days
+
+NUDGE OUTPUT:
+  type: 'stale'
+  severity: 'amber'
+  message: "{activity.code} ({activity.name}) not updated in {daysSinceUpdate} days — still {activity.status}?"
+  actions: ['Update status', 'Dismiss (resets timer)']
+
+ON DISMISS:
+  SET activity.lastUpdated = NOW()
+  // This resets the stale timer without changing the actual status
+  // The bid manager is confirming "yes, still in progress, nothing has changed"</div>
+
+<div class="sh">4.2 Unblocked Item Detection</div>
+<div class="rule">TRIGGER CONDITION:
+  activity.status == 'not_started'
+  AND activity.dependencies.length > 0
+  AND ALL dependencies have:
+    getActivity(depCode).status >= dependencyThreshold
+    // Default threshold: 'draft_complete'
+    // Or overrideThreshold if set on this specific dependency
+
+NUDGE OUTPUT:
+  type: 'unblocked'
+  severity: 'green'
+  message: "{activity.code} is now unblocked — {completedDeps} reached {threshold}. Ready to start?"
+  actions: ['Start now (sets status=in_progress, actualStart=TODAY)', 'Defer']
+
+ON 'Start now':
+  SET activity.status = 'in_progress'
+  SET activity.actualStart = TODAY
+  SET activity.lastUpdated = NOW()</div>
+
+<div class="sh">4.3 Approaching Deadline</div>
+<div class="rule">TRIGGER CONDITION:
+  activity.status NOT IN ('final', 'deactivated')
+  AND countWorkingDays(TODAY, activity.plannedEnd, bidCalendar) <= 5
+  AND activity.status < expectedStatusForTimeRemaining
+
+EXPECTED STATUS LOGIC:
+  daysRemaining = countWorkingDays(TODAY, activity.plannedEnd, bidCalendar)
+  elapsed = calculateElapsedDays(activity.effortDays, activity.teamSize)
+  percentComplete = 1 - (daysRemaining / elapsed)
+  
+  IF percentComplete >= 0.80 AND activity.status < 'draft_complete':
+    TRIGGER — should be at least draft_complete by now
+  IF percentComplete >= 0.95 AND activity.status < 'final':
+    TRIGGER — should be at final by now
+  IF daysRemaining <= 2 AND activity.status < 'draft_complete':
+    TRIGGER with severity 'red' instead of 'amber'
+
+NUDGE OUTPUT:
+  type: 'deadline'
+  severity: daysRemaining <= 2 ? 'red' : 'amber'
+  message: "{activity.code} due in {daysRemaining} days — currently {activity.status}. On track?"
+  actions: ['On track (dismiss)', 'Flag at risk', 'Adjust due date']
+
+ON 'Flag at risk':
+  SET activity.priority = 'critical'
+  CREATE standup action: "RISK: {activity.code} at risk of missing deadline"</div>
+
+<div class="sh">4.4 Gate Approaching</div>
+<div class="rule">TRIGGER CONDITION:
+  gate.status == 'upcoming'
+  AND countWorkingDays(TODAY, gate.plannedDate, bidCalendar) <= gate.prepLeadDays
+  AND NOT ALL gate.entryCriteria.met == true
+
+NUDGE OUTPUT:
+  type: 'gate'
+  severity: 'purple'
+  unmetCriteria = gate.entryCriteria WHERE met == false
+  message: "{gate.name} in {daysUntil} days — {unmetCriteria.length} of {total} entry criteria not met: {unmetCriteria.map(c => c.activityCode).join(', ')}"
+  actions: ['Acknowledge', 'Escalate', 'Request deferral']
+
+ON 'Escalate':
+  CREATE standup action for each unmet criterion:
+    "GATE RISK: {criterion.activityCode} must reach {criterion.requiredAssurance} before {gate.name}"
+    owner = getActivity(criterion.activityCode).owner
+    dueDate = gate.plannedDate - 2 working days
+
+ON 'Request deferral':
+  OPEN gate reschedule dialog
+  SET gate.status = 'deferred' if confirmed</div>
+
+<div class="sh">4.5 Nudge Generation & Lifecycle</div>
+<div class="rule">GENERATION:
+  Nudges are calculated fresh on each workspace/tracker page load
+  They are NOT persisted to storage — they are session-only
+  They are recalculated based on current state every time
+
+DISPLAY PRIORITY ORDER:
+  1. Gate approaching (purple) — highest priority
+  2. Approaching deadline with severity 'red'
+  3. Stale activities (amber)
+  4. Approaching deadline with severity 'amber'
+  5. Unblocked items (green) — lowest priority
+
+DEDUPLICATION:
+  One nudge per activity per type per session
+  If an activity triggers both 'stale' and 'deadline', show both
+  If same nudge was dismissed, do not re-show until next page load
+  
+MAXIMUM DISPLAY:
+  Show maximum 10 nudges at once
+  If more than 10, show top 10 by priority
+  Display count: "Showing 10 of 14 items requiring attention"</div>
+`;
+
+// ═══════════════════════════════════════
+// GOVERNANCE GATES
+// ═══════════════════════════════════════
+R.gates=()=>`
+<div class="sl">Rule Set 5</div>
+<div class="st">Governance Gates</div>
+<div class="sd">Rules for gate configuration, entry criteria evaluation, preparation automation, and risk premium tracking.</div>
+
+<div class="sh">5.1 Entry Criteria Evaluation</div>
+<div class="rule">FUNCTION evaluateGateCriteria(gate):
+  FOR EACH criterion IN gate.entryCriteria:
+    activity = getActivity(criterion.activityCode)
+    
+    // Compare assurance levels as ordinals:
+    // unassured=0, under_review=1, assured=2, accepted_at_gate=3
+    criterion.currentAssurance = activity.outputAssurance
+    criterion.met = (assuranceOrdinal(criterion.currentAssurance) 
+                     >= assuranceOrdinal(criterion.requiredAssurance))
+  
+  gate.criteriaMetCount = COUNT(criteria WHERE met == true)
+  gate.criteriaTotalCount = criteria.length
+  gate.allCriteriaMet = (gate.criteriaMetCount == gate.criteriaTotalCount)
+  
+  // Auto-promote gate status
+  IF gate.status == 'upcoming' AND gate.allCriteriaMet:
+    gate.status = 'ready'
+  IF gate.status == 'ready' AND NOT gate.allCriteriaMet:
+    gate.status = 'upcoming'  // revert if criteria regress</div>
+
+<div class="sh">5.2 Gate Preparation Auto-Generation</div>
+<div class="rule">TRIGGER: When gate is scheduled AND gate.prepActionsGenerated == false
+
+FUNCTION generateGatePrep(gate, bidCalendar):
+  prepTemplate = getDefaultPrepTemplate(gate.gateType)
+  
+  FOR EACH step IN prepTemplate:
+    actionDate = subtractWorkingDays(gate.plannedDate, step.offsetDays, bidCalendar)
+    
+    CREATE StandupAction:
+      bidId: gate.bidId
+      parentGateId: gate.id
+      description: step.description
+      owner: gate.prepOwner OR bid.bidManager  // default to bid manager
+      dueDate: actionDate
+      status: 'open'
+      source: 'gate_preparation'
+  
+  SET gate.prepActionsGenerated = true
+
+DEFAULT PREP TEMPLATES:
+  functional_review: prepLeadDays = 3
+    T-3: "Pre-check entry criteria for {gate.name} — flag gaps"
+    T-2: "Assemble review pack for {gate.name}"
+    T-1: "Circulate pack to {gate.approvingBody}"
+    T-0: "Conduct {gate.name} — record decision"
+    T+1: "Distribute decision and actions from {gate.name}"
+
+  executive_tier1: prepLeadDays = 5
+    T-5: "Pre-check entry criteria for {gate.name} — flag gaps"
+    T-3: "Assemble review pack for {gate.name}"
+    T-2: "Circulate pack to {gate.approvingBody}"
+    T-1: "Brief presenters for {gate.name}"
+    T-0: "Conduct {gate.name} — record decision"
+    T+1: "Distribute decision and actions from {gate.name}"
+
+  executive_tier2, executive_tier3: prepLeadDays = 7
+    T-7: "Pre-check entry criteria for {gate.name} — flag gaps"
+    T-5: "Assemble board pack for {gate.name}"
+    T-3: "Circulate pack to {gate.approvingBody}"
+    T-2: "Pre-meeting with {gate.approvingBody} chair"
+    T-1: "Final brief and rehearsal for {gate.name}"
+    T-0: "Conduct {gate.name} — record decision"
+    T+1: "Distribute decision and actions from {gate.name}"</div>
+
+<div class="sh">5.3 Risk Premium Tracking</div>
+<div class="rule">ON gate.decision == 'approved_with_conditions' OR gate.riskPremiumPct > 0:
+  
+  premiumImpact = bid.tcv * (gate.riskPremiumPct / 100)
+  
+  STORE: {
+    gateId: gate.id,
+    gateName: gate.name,
+    premiumPct: gate.riskPremiumPct,
+    premiumValue: premiumImpact,
+    cause: gate.entryCriteria WHERE met == false AT TIME OF DECISION,
+    // Snapshot the unmet criteria that caused the premium
+    approver: gate.approvingBody,
+    date: gate.actualDate
+  }
+
+AGGREGATION:
+  totalPremium = SUM(all gate premiums)
+  totalPremiumValue = SUM(all premiumValue)
+  displayMessage: "{totalPremium}% premium on £{bid.tcv} = £{totalPremiumValue} added to price"</div>
+`;
+
+// ═══════════════════════════════════════
+// COMPLIANCE ENGINE
+// ═══════════════════════════════════════
+R.compliance=()=>`
+<div class="sl">Rule Set 6</div>
+<div class="st">Compliance Engine</div>
+<div class="sd">Rules for coverage calculation, gap detection, classification handling, and the compliance hard gate.</div>
+
+<div class="sh">6.1 Coverage Calculations</div>
+<div class="rule">FUNCTION calculateCoverage(requirements):
+  mandatory = requirements WHERE classification == 'mandatory'
+  scored = requirements WHERE classification == 'scored'
+  all = requirements WHERE classification != null
+  
+  mandatoryCoverage = COUNT(mandatory WHERE coverageStatus == 'approved')
+                      / COUNT(mandatory) * 100
+  // NaN check: if zero mandatory requirements, mandatoryCoverage = 100
+  
+  scoredCoverage = COUNT(scored WHERE coverageStatus IN ('reviewed','approved'))
+                   / COUNT(scored) * 100
+  
+  overallCoverage = COUNT(all WHERE coverageStatus NOT IN ('unmapped','gap'))
+                    / COUNT(all) * 100
+  
+  mandatoryGaps = COUNT(mandatory WHERE coverageStatus IN ('unmapped','gap'))
+  totalGaps = COUNT(all WHERE coverageStatus IN ('unmapped','gap'))
+  
+  RETURN { mandatoryCoverage, scoredCoverage, overallCoverage, mandatoryGaps, totalGaps }</div>
+
+<div class="sh">6.2 Compliance Hard Gate</div>
+<div class="rule">RULE: IF mandatoryGaps > 0:
+  readiness score CAPPED AT 50 (amber maximum)
+  workspace displays: "⚠ {mandatoryGaps} mandatory requirement(s) have no approved response"
+  submission readiness verdict: CANNOT be 'ready' — forced to 'not ready'
+  
+  // This is a HARD gate — it cannot be overridden by the bid manager
+  // The only way to clear it is to address the gaps
+
+RULE: IF mandatoryCoverage < 100 AND bid is within 10 working days of submission:
+  ESCALATE to practice portfolio as red alert
+  CREATE standup action: "CRITICAL: {mandatoryGaps} mandatory gaps with {daysToSubmission} days remaining"</div>
+
+<div class="sh">6.3 Clarification Impact Handling</div>
+<div class="rule">WHEN SAL-09 (clarification impact analysis) is processed:
+  Bid manager flags affected requirements with impactedByClarification = true
+  
+  SYSTEM RESPONSE:
+    Flagged requirements appear with amber indicator in register
+    Requirements flagged but not reviewed by bid manager show as:
+      "Clarification impact flagged — review needed"
+    COUNT(impactedByClarification == true AND NOT reviewed) shown on workspace
+    
+  // "Not reviewed" means: the requirement was flagged but coverageStatus
+  // has not been updated since the flag was set
+  // Track via: requirement.lastModified < requirement.clarificationFlagDate</div>
+
+<div class="sh">6.4 CSV Import Rules</div>
+<div class="rule">IMPORT VALIDATION:
+  Required columns: reference, text
+  Optional columns: classification, category, responseSection, responseOwner
+  
+  ON IMPORT:
+    IF reference matches existing requirement: UPDATE (merge)
+    IF reference is new: CREATE
+    IF classification is empty: SET to 'scored' (default)
+    IF text is empty: REJECT row with error
+    SET coverageStatus = 'unmapped' for all new requirements
+    SET coverageStatus = KEEP for updated requirements (don't regress)
+  
+  POST-IMPORT:
+    Display: "{imported} requirements imported, {updated} updated, {rejected} rejected"
+    Show rejected rows with reasons</div>
+`;
+
+// ═══════════════════════════════════════
+// REVIEW GOVERNANCE
+// ═══════════════════════════════════════
+R.reviews=()=>`
+<div class="sl">Rule Set 7</div>
+<div class="st">Review Governance</div>
+<div class="sd">Rules for review cycle management, scorecard logic, action severity handling, and gate enforcement.</div>
+
+<div class="sh">7.1 Review Cycle Lifecycle</div>
+<div class="rule">FUNCTION manageReviewCycle(cycle):
+  // Auto-transition from 'scheduled' to 'in_progress'
+  IF cycle.status == 'scheduled' AND cycle.actualDate IS SET:
+    cycle.status = 'in_progress'
+  
+  // Auto-transition from 'in_progress' to 'actions_open'
+  IF cycle.status == 'in_progress' AND cycle.actions.length > 0:
+    cycle.status = 'actions_open'
+  
+  // Closure check
+  IF cycle.status == 'actions_open':
+    criticalOpen = COUNT(cycle.actions WHERE severity == 'critical' 
+                         AND status IN ('open', 'in_progress'))
+    IF criticalOpen == 0:
+      ENABLE "Close review" button
+    ELSE:
+      DISABLE "Close review" button
+      DISPLAY: "{criticalOpen} critical action(s) must be resolved before closing"
+  
+  // On closure
+  ON cycle.status → 'closed':
+    FOR EACH activity IN cycle.targetActivities:
+      IF getActivity(activity).outputAssurance == 'under_review':
+        SET getActivity(activity).outputAssurance = 'assured'</div>
+
+<div class="sh">7.2 Scorecard Criteria</div>
+<div class="rule">DEFAULT CRITERIA (per review type):
+
+  Development reviews (solution_review, pricing_review, risk_review):
+    compliance    — meets tender requirements
+    feasibility   — technically and operationally achievable
+    risk          — risks identified and mitigated
+    evidence      — claims supported by evidence
+    differentiation — competitive advantage demonstrated
+  
+  Production reviews (pink, red, gold):
+    compliance    — answers the question asked
+    responsiveness — addresses evaluation criteria
+    evidence      — supported by case studies, data, proof
+    differentiation — stands out from likely competitor responses
+    readability   — clear, concise, well-structured
+
+SCORING SCALE:
+  1 = Significant gaps / fails to meet standard
+  2 = Below standard / major improvement needed
+  3 = Meets standard / acceptable
+  4 = Above standard / strong
+  5 = Exceptional / compelling
+
+SECTION PASS THRESHOLD:
+  Pink review: average >= 2.0 (it's early, expect gaps)
+  Red review: average >= 3.0 (must meet standard)
+  Gold review: average >= 3.5 (must be strong to submit)
+  
+  Sections below threshold flagged as: "Below gate standard — requires improvement"</div>
+
+<div class="sh">7.3 Action Severity Rules</div>
+<div class="rule">CRITICAL:
+  Must be resolved before review cycle can close
+  Auto-generates standup action for the owner
+  Feeds readiness score (any open critical = readiness cap at 60)
+  Default resolution deadline: 2 working days
+
+MAJOR:
+  Should be resolved but does NOT block closure
+  Auto-generates standup action for the owner
+  Does not feed readiness score cap
+  Default resolution deadline: 3 working days
+
+MINOR:
+  Could be improved but does not affect outcome
+  Does NOT auto-generate standup action (bid manager can manually create)
+  Default resolution deadline: 5 working days</div>
+`;
+
+// ═══════════════════════════════════════
+// PRACTICE PORTFOLIO
+// ═══════════════════════════════════════
+R.portfolio=()=>`
+<div class="sl">Rule Set 8</div>
+<div class="st">Practice Portfolio</div>
+<div class="sd">Rules for fee-weighted risk calculation, health aggregation, trend detection, and intervention triggers.</div>
+
+<div class="sh">8.1 Fee-Weighted Risk</div>
+<div class="rule">FUNCTION calculateFeeWeightedRisk(engagement):
+  readiness = getOverallReadiness(engagement.bidId)
+  risk = engagement.winFeeValue * (1 - (readiness / 100))
+  RETURN risk
+
+  // Higher value = higher risk to practice commercial position
+  // £200k fee at 30% readiness = £140k at risk
+  // £50k fee at 80% readiness = £10k at risk
+  // Sort portfolio descending by this value — highest risk/value first
+
+PORTFOLIO SORT DEFAULT: feeWeightedRisk DESCENDING</div>
+
+<div class="sh">8.2 Portfolio Health Aggregation</div>
+<div class="rule">PORTFOLIO METRICS:
+  activeBids = COUNT(engagements WHERE bid.status IN ('active','submitted','post_submission'))
+  totalFeeExposure = SUM(engagement.winFeeValue) for active bids
+  bidsAtRisk = COUNT(engagements WHERE healthStatus IN ('amber', 'red'))
+  teamDeployed = COUNT(DISTINCT teamMembers across active bids)
+
+INTERVENTION PRIORITY:
+  Sort by: feeWeightedRisk DESC, then daysToSubmission ASC
+  // Highest risk first, then soonest deadline as tiebreaker</div>
+
+<div class="sh">8.3 Health Trend Calculation</div>
+<div class="rule">FUNCTION calculateTrend(engagement):
+  // Requires at least 3 readiness readings
+  readings = getReadinessHistory(engagement.bidId)
+    .filter(r => r.timestamp > TODAY - 14 days)  // last 2 weeks
+    .sortBy(timestamp DESC)
+    .take(3)
+  
+  IF readings.length < 3: RETURN 'stable'  // insufficient data
+  
+  [latest, middle, earliest] = readings
+  
+  IF latest.score > middle.score AND middle.score > earliest.score:
+    RETURN 'improving'
+  IF latest.score < middle.score AND middle.score < earliest.score:
+    RETURN 'deteriorating'
+  RETURN 'stable'
+
+TREND DISPLAY:
+  improving: ↑ green arrow
+  stable: → grey arrow
+  deteriorating: ↓ red arrow</div>
+
+<div class="sh">8.4 Practice-Level Alerts</div>
+<div class="rule">ALERT: Bid enters red status
+  WHEN engagement.healthStatus transitions TO 'red':
+    FLAG on portfolio dashboard with red indicator
+    ADD to intervention log: "Bid {name} entered red status — readiness at {score}%"
+
+ALERT: Submission within 5 days with amber/red status
+  WHEN bid.daysToSubmission <= 5 AND engagement.healthStatus != 'green':
+    ESCALATE with: "⚠ {bid.name} submitting in {days} days at {status} status"
+
+ALERT: Team member overload
+  WHEN teamMember is assigned to >= 3 concurrent active bids:
+    FLAG: "{name} assigned to {count} concurrent bids — risk of capacity constraint"
+
+ALERT: Cost-to-bid exceeding budget
+  WHEN engagement.actualCostToBid > engagement.budgetedCostToBid * 1.2:
+    FLAG: "{bid.name} bid cost at {pct}% of budget — review resource allocation"</div>
+`;
+
+// ═══════════════════════════════════════
+// STANDUP ACTIONS
+// ═══════════════════════════════════════
+R.standup=()=>`
+<div class="sl">Rule Set 9</div>
+<div class="st">Standup Actions</div>
+<div class="sd">Rules for action creation, lifecycle, auto-generation sources, and overdue handling.</div>
+
+<div class="sh">9.1 Action Sources</div>
+<div class="rule">SOURCE: 'manual'
+  Created by bid manager during standup via quick-add bar
+  parentActivityCode: optional (bid manager can link or leave unlinked)
+  parentGateId: null
+
+SOURCE: 'gate_preparation'
+  Auto-generated by gate preparation automation (Rule Set 5.2)
+  parentActivityCode: null
+  parentGateId: linked gate
+  Cannot be cancelled by bid manager (can only be done or escalated)
+
+SOURCE: 'smart_nudge'
+  Created when bid manager acts on a nudge that generates an action
+  (e.g. "Flag at risk" on approaching deadline nudge)
+  parentActivityCode: the nudged activity
+  parentGateId: null if from activity nudge, gate id if from gate nudge
+
+SOURCE: 'standup'
+  Carry-forward from previous standup (overdue action given new due date)
+  Inherits parentActivityCode and parentGateId from original action
+  Original action status set to 'cancelled' (superseded)</div>
+
+<div class="sh">9.2 Overdue Logic</div>
+<div class="rule">FUNCTION getOverdueActions(bidId):
+  RETURN standupActions WHERE:
+    bidId == bidId
+    AND status == 'open'
+    AND dueDate < TODAY
+  ORDER BY dueDate ASC  // oldest overdue first
+
+DISPLAY: Red section at top of standup view
+  Each overdue action shows: days overdue, description, owner
+
+CARRY-FORWARD:
+  When bid manager clicks "Carry forward" on an overdue action:
+    SET originalAction.status = 'cancelled'
+    CREATE new StandupAction:
+      COPY all fields from original
+      SET dueDate = new date (bid manager selects)
+      SET source = 'standup'
+      SET createdDate = NOW()
+    
+  // This preserves audit trail — you can see how many times an action was carried forward</div>
+
+<div class="sh">9.3 Escalation</div>
+<div class="rule">WHEN standup action is escalated:
+  SET action.status = 'escalated'
+  
+  IF action.parentActivityCode IS NOT NULL:
+    activity = getActivity(action.parentActivityCode)
+    SET activity.blockedBy = action.description
+    // This makes the blockage visible on the activity tracker
+  
+  CREATE RiskAssumption entry:
+    bidId: action.bidId
+    type: 'risk'
+    registerType: 'bid'  // bid process risk, NOT delivery risk
+    description: "Escalated from standup: " + action.description
+    sourceActivityCode: action.parentActivityCode
+    probability: 'high'
+    impact: 'medium'  // bid manager can adjust
+    status: 'open'
+    owner: action.owner</div>
+
+<div class="sh">9.4 Auto-Archiving</div>
+<div class="rule">COMPLETED ACTIONS:
+  Actions with status 'done' are visible in "Completed Yesterday" panel for 48 hours
+  After 48 hours: hidden from standup view but retained in storage
+  Available via: "Show completed actions" filter (date range selector)
+  
+CANCELLED ACTIONS:
+  Hidden immediately from standup view
+  Retained in storage for audit trail
+
+STORAGE MANAGEMENT:
+  Standup actions are high-volume (10-20 per day per bid)
+  On bid archive/export: include all actions in the export
+  On active bid: only load actions from last 14 days into active view
+  Older actions available via date filter but not pre-loaded</div>
+`;
+
+// ═══════════════════════════════════════
+// FEASIBILITY CHECK
+// ═══════════════════════════════════════
+R.feasibility=()=>`
+<div class="sl">Rule Set 10</div>
+<div class="st">Feasibility Check</div>
+<div class="sd">Rules for the schedule feasibility analysis run during bid setup. Includes recommendation generation logic.</div>
+
+<div class="sh">10.1 Feasibility Calculation</div>
+<div class="rule">FUNCTION runFeasibilityCheck(bid, activities, bidCalendar):
+  // Step 1: Calculate total available working days
+  availableDays = countWorkingDays(bid.ittIssueDate, bid.submissionDeadline, bidCalendar)
+  
+  // Step 2: Run backward scheduler
+  schedule = backwardSchedule(activities, bid.submissionDeadline, bidCalendar)
+  
+  // Step 3: Find critical path
+  criticalPath = findCriticalPath(schedule)
+  criticalPathDays = SUM(calculateElapsedDays(a.effortDays, a.teamSize) FOR a IN criticalPath)
+  
+  // Step 4: Calculate buffer
+  criticalPathBuffer = availableDays - criticalPathDays
+  
+  // Step 5: Check if earliest activity starts before ITT issue date
+  earliestStart = MIN(schedule[code].plannedStart FOR ALL codes)
+  startsBeforeITT = earliestStart < bid.ittIssueDate
+  
+  // Step 6: Per-workstream analysis
+  FOR EACH workstream:
+    ws.totalEffort = SUM(elapsed days for active activities in workstream)
+    ws.availableWindow = working days in the workstream's scheduled window
+    ws.surplus = ws.availableWindow - ws.totalEffort
+    // Negative surplus = deficit
+  
+  // Step 7: Resource conflicts
+  conflicts = findResourceConflicts(schedule, teamMembers)
+  // Where one person has overlapping scheduled activities
+  
+  // Step 8: Calendar conflicts
+  calendarConflicts = findCalendarConflicts(schedule, bidCalendar.teamUnavailability)
+  
+  // Step 9: Verdict
+  IF startsBeforeITT OR criticalPathBuffer < 0:
+    verdict = 'infeasible'
+    deficit = ABS(criticalPathBuffer) OR daysBefore ITT
+  ELSE IF criticalPathBuffer < 3:
+    verdict = 'tight'
+  ELSE:
+    verdict = 'feasible'
+  
+  RETURN { verdict, availableDays, criticalPathDays, criticalPathBuffer,
+           criticalPath, workstreamAnalysis, conflicts, calendarConflicts, deficit }</div>
+
+<div class="sh">10.2 Recommendation Generation</div>
+<div class="rule">FUNCTION generateRecommendations(feasibilityResult):
+  recommendations = []
+  
+  // Only generate for 'tight' or 'infeasible'
+  IF feasibilityResult.verdict == 'feasible': RETURN []
+  
+  deficit = feasibilityResult.deficit OR (3 - feasibilityResult.criticalPathBuffer)
+  
+  // Rec 1: Increase team size on critical path activities
+  FOR EACH activity ON criticalPath WHERE teamSize < maxTeamSize AND isParallelisable:
+    currentElapsed = calculateElapsedDays(activity.effortDays, activity.teamSize)
+    newElapsed = calculateElapsedDays(activity.effortDays, activity.teamSize + 1)
+    saving = currentElapsed - newElapsed
+    IF saving >= 1:
+      recommendations.push({
+        type: 'add_resource',
+        activity: activity.code,
+        description: "Add 1 person to {activity.name} ({activity.code})",
+        saving: saving + " days",
+        cost: "1 additional {activity.defaultRole} for {newElapsed} days",
+        risk: "Coordination overhead increases — 20% per additional person"
+      })
+  
+  // Rec 2: Early start dependencies
+  FOR EACH dependency ON criticalPath WHERE threshold == 'draft_complete':
+    recommendations.push({
+      type: 'early_start',
+      activity: dependent.code,
+      description: "Allow {dependent.code} to start when {predecessor.code} reaches 'in_progress'",
+      saving: "Up to {estimatedSaving} days",
+      cost: "None (process change only)",
+      risk: "Downstream work may need revision if upstream changes after early start"
+    })
+  
+  // Rec 3: Parallel activities currently marked sequential
+  FOR EACH activity NOT ON criticalPath with slack > 3 days:
+    // These aren't the problem — skip
+  FOR EACH activity ON criticalPath with hard dependency that could be softened:
+    recommendations.push({
+      type: 'parallelise',
+      description: "Run {activityA.code} and {activityB.code} in parallel",
+      saving: estimatedSaving + " days",
+      risk: "Integration risk — parallel outputs may need reconciliation"
+    })
+  
+  // Rec 4: If deficit > 10 days, escalation recommendations
+  IF deficit > 10:
+    recommendations.push({
+      type: 'negotiate_timeline',
+      description: "Request {deficit + 5} additional calendar days from client",
+      saving: deficit + " days deficit eliminated",
+      risk: "Client may decline. Raises question about capability."
+    })
+    recommendations.push({
+      type: 'reduce_scope',
+      description: "Deactivate non-critical activities to reduce workload",
+      candidates: activities ON criticalPath with lowest priority,
+      risk: "Reduces bid quality in deactivated areas"
+    })
+  
+  // Sort: highest saving first, then lowest risk
+  RETURN recommendations.sortBy(saving DESC)</div>
+
+<div class="sh">10.3 Infeasible Bid Handling</div>
+<div class="rule">RULE: An infeasible verdict does NOT block bid creation.
+
+ON verdict == 'infeasible':
+  DISPLAY warning: "This bid cannot be completed within the available timeline 
+    using the current configuration. Deficit: {deficit} working days."
+  DISPLAY recommendations
+  REQUIRE acknowledgment: bid manager must check a confirmation:
+    "I acknowledge the timeline risk and choose to proceed."
+  
+  ON confirmation:
+    CREATE bid as normal
+    AUTO-CREATE bid risk entry (BM-13):
+      type: 'risk'
+      description: "Bid created with infeasible timeline. Deficit: {deficit} days. 
+        Acknowledged by {bidManager} on {date}."
+      probability: 'high'
+      impact: 'high'
+      status: 'open'
+    SET bid initial healthStatus = 'red'
+    
+  // The system allows it but makes the risk explicit, auditable,
+  // and immediately visible on the practice portfolio</div>
+
+<div class="sh">10.4 Feasibility Assumptions (auto-populate BM-13)</div>
+<div class="rule">ON bid creation, auto-generate bid risk entries in BM-13 (registerType: 'bid') for key scheduling assumptions:
+
+  ASSUMPTION: "Sequential execution within workstreams — activities with team size 1 
+    cannot overlap within the same workstream"
+  ASSUMPTION: "Effort estimates are based on mid-complexity defaults — 
+    override where this bid differs from standard"
+  ASSUMPTION: "Team members available at stated allocation — 
+    no unplanned absences or reassignment to other bids"
+  ASSUMPTION: "Client clarification responses will be received within the stated timeline"
+  ASSUMPTION: "Partner inputs (SUP-02, SUP-04) will be delivered on schedule"
+  
+  // Each created as a RiskAssumption entry with:
+  //   registerType: 'bid'
+  //   type: 'assumption'
+  //   status: 'open'
+  //   owner: bid.bidManager</div>
+`;
+
+// ═══════════════════════════════════════
+// ALL THRESHOLDS
+// ═══════════════════════════════════════
+R.thresholds=()=>`
+<div class="sl">Reference</div>
+<div class="st">All Configurable Thresholds</div>
+<div class="sd">Single reference for every threshold, default value, and configuration scope. These are the values that can be adjusted in the practice settings.</div>
+
+<table class="tb">
+  <thead><tr><th>Threshold</th><th>Default</th><th>Scope</th><th>Rule Set Ref</th></tr></thead>
+  <tbody>
+    <tr><td>Coordination overhead per additional person</td><td>20%</td><td>Practice-wide</td><td>1.1</td></tr>
+    <tr><td>Default dependency threshold</td><td>draft_complete</td><td>Per dependency (overridable)</td><td>1.6</td></tr>
+    <tr><td>Buffer — healthy</td><td>≥ 5 working days</td><td>Practice-wide</td><td>1.7</td></tr>
+    <tr><td>Buffer — compressed</td><td>1–4 working days</td><td>Practice-wide</td><td>1.7</td></tr>
+    <tr><td>Buffer — critical</td><td>≤ 0 working days</td><td>Practice-wide</td><td>1.7</td></tr>
+    <tr><td>Stale threshold — development activities</td><td>3 working days</td><td>Practice-wide</td><td>4.1</td></tr>
+    <tr><td>Stale threshold — production activities</td><td>3 working days</td><td>Practice-wide</td><td>4.1</td></tr>
+    <tr><td>Stale threshold — post-submission activities</td><td>2 working days</td><td>Practice-wide</td><td>4.1</td></tr>
+    <tr><td>Stale threshold — continuous activities</td><td>5 working days</td><td>Practice-wide</td><td>4.1</td></tr>
+    <tr><td>Approaching deadline nudge window</td><td>5 working days</td><td>Practice-wide</td><td>4.3</td></tr>
+    <tr><td>Max nudges displayed</td><td>10</td><td>Practice-wide</td><td>4.5</td></tr>
+    <tr><td>Gate prep lead — functional review</td><td>3 working days</td><td>Per gate (overridable)</td><td>5.2</td></tr>
+    <tr><td>Gate prep lead — executive tier 1</td><td>5 working days</td><td>Per gate (overridable)</td><td>5.2</td></tr>
+    <tr><td>Gate prep lead — executive tier 2/3</td><td>7 working days</td><td>Per gate (overridable)</td><td>5.2</td></tr>
+    <tr><td>Readiness — dev vs prod weighting</td><td>60% dev / 40% prod</td><td>Practice-wide</td><td>3.1</td></tr>
+    <tr><td>Health status — green threshold</td><td>≥ 70%</td><td>Practice-wide</td><td>3.4</td></tr>
+    <tr><td>Health status — amber threshold</td><td>≥ 40%</td><td>Practice-wide</td><td>3.4</td></tr>
+    <tr><td>Health status — red threshold</td><td>< 40%</td><td>Practice-wide</td><td>3.4</td></tr>
+    <tr><td>Mandatory gap readiness cap</td><td>50 (amber max)</td><td>System (not configurable)</td><td>3.3</td></tr>
+    <tr><td>Critical review action readiness cap</td><td>60 (amber max)</td><td>System (not configurable)</td><td>3.3</td></tr>
+    <tr><td>Health trend — reading window</td><td>14 days</td><td>Practice-wide</td><td>8.3</td></tr>
+    <tr><td>Health trend — minimum readings</td><td>3</td><td>System (not configurable)</td><td>8.3</td></tr>
+    <tr><td>Team member overload threshold</td><td>≥ 3 concurrent bids</td><td>Practice-wide</td><td>8.4</td></tr>
+    <tr><td>Cost-to-bid alert threshold</td><td>120% of budget</td><td>Practice-wide</td><td>8.4</td></tr>
+    <tr><td>Feasibility — feasible buffer</td><td>≥ 3 days critical path</td><td>Practice-wide</td><td>10.1</td></tr>
+    <tr><td>Standup action archive — visible window</td><td>48 hours after completion</td><td>System</td><td>9.4</td></tr>
+    <tr><td>Standup action active load</td><td>Last 14 days</td><td>System</td><td>9.4</td></tr>
+    <tr><td>Pink review pass threshold</td><td>Average ≥ 2.0</td><td>Practice-wide</td><td>7.2</td></tr>
+    <tr><td>Red review pass threshold</td><td>Average ≥ 3.0</td><td>Practice-wide</td><td>7.2</td></tr>
+    <tr><td>Gold review pass threshold</td><td>Average ≥ 3.5</td><td>Practice-wide</td><td>7.2</td></tr>
+    <tr><td>Critical action resolution deadline</td><td>2 working days</td><td>Practice-wide</td><td>7.3</td></tr>
+    <tr><td>Major action resolution deadline</td><td>3 working days</td><td>Practice-wide</td><td>7.3</td></tr>
+    <tr><td>Minor action resolution deadline</td><td>5 working days</td><td>Practice-wide</td><td>7.3</td></tr>
+    <tr><td>Mandatory gap escalation window</td><td>10 working days to submission</td><td>Practice-wide</td><td>6.2</td></tr>
+  </tbody>
+</table>
+
+<div class="co co-g"><div class="co-l">Configuration Principle</div><div class="co-t">Practice-wide thresholds are set once and apply to all bids. Per-gate and per-dependency thresholds can be overridden during bid setup. System thresholds cannot be changed — they enforce the methodology's hard gates. All thresholds are stored in the pwin:settings localStorage key and loaded on application start.</div></div>
+`;
+
+render();
+</script>
+</body>
+</html>

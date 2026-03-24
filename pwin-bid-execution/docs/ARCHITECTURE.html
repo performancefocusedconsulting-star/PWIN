@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect – Bid Execution Architecture v6</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;
+  --bdr:#253551;--bdr-s:#1A2844;
+  --gold:#C49438;--gold-d:rgba(196,148,56,.12);--gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;
+  --grn:#34D399;--grn-d:rgba(52,211,153,.10);
+  --red:#F87171;--red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24;--amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA;--blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA;--pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);
+  --pink:#F472B6;--pink-d:rgba(244,114,182,.10);
+  --lime:#A3E635;--lime-d:rgba(163,230,53,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.hdr{padding:16px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);}
+.hdr-l{display:flex;align-items:baseline;gap:12px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.hdr-v{font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);background:var(--bg2);padding:3px 8px;border:1px solid var(--bdr);}
+.nav{display:flex;gap:1px;padding:0 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;}
+.nav-b{padding:9px 12px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-b:hover{color:var(--t2);}.nav-b.on{color:var(--gold);border-bottom-color:var(--gold);}
+.ct{padding:22px 28px;max-width:1440px;margin:0 auto;animation:fi .2s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:780px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:20px 0 8px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:14px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+.cg{display:grid;gap:10px;margin-bottom:18px;}
+.c2{grid-template-columns:repeat(2,1fr);}.c3{grid-template-columns:repeat(3,1fr);}.c4{grid-template-columns:repeat(4,1fr);}.c5{grid-template-columns:repeat(5,1fr);}
+@media(max-width:1100px){.c4,.c5{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.c2,.c3,.c4,.c5{grid-template-columns:1fr;}}
+.cd{background:var(--bg2);border:1px solid var(--bdr);padding:14px;position:relative;overflow:hidden;transition:all .15s;}
+.cd:hover{background:var(--bg3);border-color:var(--gold);}
+.cd::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.cd.a-gold::before{background:var(--gold)}.cd.a-grn::before{background:var(--grn)}.cd.a-blu::before{background:var(--blu)}.cd.a-pur::before{background:var(--pur)}.cd.a-red::before{background:var(--red)}.cd.a-amb::before{background:var(--amb)}.cd.a-cyn::before{background:var(--cyn)}.cd.a-pink::before{background:var(--pink)}.cd.a-lime::before{background:var(--lime)}
+.cd-n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);opacity:.3;position:absolute;top:8px;right:10px;}
+.cd-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.cd-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.cd-b{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+.sg{display:grid;grid-template-columns:160px 1fr;gap:0;margin:10px 0;border:1px solid var(--bdr);}
+.sg-k{padding:7px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);background:var(--bg4);border-bottom:1px solid var(--bdr-s);}
+.sg-v{padding:7px 10px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);line-height:1.5;}
+.ent{background:var(--bg2);border:1px solid var(--bdr);margin-bottom:7px;overflow:hidden;}
+.ent-h{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s;}
+.ent-h:hover{background:var(--bg3);}
+.ent-nm{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1);}
+.ent-bg{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border:1px solid;border-radius:2px;}
+.bg-p{color:var(--blu);border-color:var(--blu)}.bg-a{color:var(--grn);border-color:var(--grn)}.bg-pr{color:var(--pur);border-color:var(--pur)}.bg-g{color:var(--gold);border-color:var(--gold)}.bg-s{color:var(--amb);border-color:var(--amb)}.bg-bm{color:var(--lime);border-color:var(--lime)}.bg-ps{color:var(--pink);border-color:var(--pink)}
+.ent-bd{padding:0 12px 10px;border-top:1px solid var(--bdr-s);}
+.ent-desc{color:var(--t2);font-size:11.5px;padding-top:8px;margin-bottom:6px;line-height:1.6;}
+.tog{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:transform .15s;}.tog.op{transform:rotate(90deg);}
+.tb{width:100%;border-collapse:collapse;margin:6px 0;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:5px 7px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.tb td{padding:5px 7px;font-size:11.5px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.tb td:first-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);white-space:nowrap;}
+.ft{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);}
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:1px 5px;border-radius:2px;display:inline-block;margin:1px 1px;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}.fe-b{color:var(--blu);background:var(--blu-d)}.fe-p{color:var(--pur);background:var(--pur-d)}.fe-c{color:var(--cyn);background:var(--cyn-d)}.fe-pk{color:var(--pink);background:var(--pink-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}.fe-lm{color:var(--lime);background:var(--lime-d)}
+.ws-sales{color:var(--gold)}.ws-solution{color:var(--blu)}.ws-commercial{color:var(--grn)}.ws-legal{color:var(--pink)}.ws-delivery{color:var(--amb)}.ws-supply{color:var(--cyn)}.ws-governance{color:var(--pur)}.ws-production{color:var(--red)}.ws-bidmgmt{color:var(--lime)}.ws-postsub{color:var(--pink)}
+.ph{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;padding:2px 5px;border:1px solid;border-radius:2px;display:inline-block;}
+.ph-d{color:var(--blu);border-color:var(--blu)}.ph-p{color:var(--red);border-color:var(--red)}.ph-c{color:var(--pur);border-color:var(--pur)}.ph-ps{color:var(--pink);border-color:var(--pink)}
+.fl{display:flex;align-items:stretch;gap:0;margin:14px 0;overflow-x:auto;}
+.fl-n{flex:1;min-width:90px;background:var(--bg2);border:1px solid var(--bdr);padding:10px 8px;text-align:center;}
+.fl-n.fl-on{border-color:var(--gold);background:var(--gold-g);}
+.fl-n.fl-grn{border-color:var(--grn);background:var(--grn-d);}
+.fl-n.fl-amb{border-color:var(--amb);background:var(--amb-d);}
+.fl-n.fl-pk{border-color:var(--pink);background:var(--pink-d);}
+.fl-a{display:flex;align-items:center;color:var(--t4);font-size:13px;padding:0 2px;}
+.fl-nl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:1px;}
+.fl-nt{font-size:10px;font-weight:600;color:var(--t1);margin-bottom:1px;}
+.fl-nd{font-size:9px;color:var(--t2);line-height:1.2;}
+.wiz-step{display:flex;gap:12px;margin:12px 0;align-items:flex-start;}
+.wiz-num{min-width:38px;height:38px;background:var(--gold-d);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.wiz-body{flex:1;}
+.wiz-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:3px;}
+.wiz-desc{color:var(--t2);font-size:12px;line-height:1.6;}
+.wiz-fields{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;}
+.wiz-field{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border:1px solid var(--bdr);background:var(--bg3);color:var(--t2);}
+.wiz-field.req{border-color:var(--gold);color:var(--gold);}
+.wiz-field.opt{border-color:var(--t4);color:var(--t3);border-style:dashed;}
+.wiz-output{margin-top:6px;padding:7px 10px;background:var(--bg3);border-left:2px solid var(--grn);font-size:11.5px;color:var(--t2);line-height:1.5;}
+.wiz-output strong{color:var(--grn);}
+.dm{margin:10px 0;overflow-x:auto;}
+.dm table{border-collapse:collapse;width:100%;}
+.dm th,.dm td{padding:4px 6px;text-align:center;font-size:10px;border:1px solid var(--bdr-s);}
+.dm th{background:var(--bg4);font-family:'DM Mono',monospace;color:var(--t3);}
+.dm .dep-mark{color:var(--cyn);font-weight:700;font-size:12px;}
+.dm .gate-mark{color:var(--pur);font-weight:700;font-size:12px;}
+.ux-frame{background:var(--bg3);border:1px solid var(--bdr);padding:14px;margin:8px 0;}
+.ux-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.ux-col{flex:1;min-width:140px;}
+.ux-box{background:var(--bg2);border:1px dashed var(--bdr);padding:8px;margin-bottom:6px;min-height:40px;}
+.ux-box-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:4px;}
+.ux-box-content{font-size:11px;color:var(--t2);line-height:1.5;}
+.ux-metric{text-align:center;padding:8px;background:var(--bg2);border:1px solid var(--bdr);}
+.ux-metric-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;}
+.ux-metric-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;}
+.scroll-h{font-family:'DM Mono',monospace;font-size:9px;color:var(--t4);text-align:right;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const TABS=[
+  {id:'overview',l:'Overview'},
+  {id:'setup',l:'Bid Setup'},
+  {id:'lifecycle',l:'Lifecycle'},
+  {id:'archetype',l:'Archetype'},
+  {id:'deps',l:'Dependencies'},
+  {id:'modules',l:'Modules'},
+  {id:'data',l:'Data Model'},
+  {id:'ux',l:'UX Design'},
+  {id:'build',l:'Build'},
+];
+let tab='overview',exp={};
+function setTab(t){tab=t;render();}
+function tog(id){exp[id]=!exp[id];render();}
+function render(){
+  document.getElementById('app').innerHTML=`
+    <div class="hdr"><div class="hdr-l"><div class="hdr-brand">PWIN Architect</div><div class="hdr-sub">Bid Execution · Architecture v6</div></div><div class="hdr-v">v6.0 · March 2026</div></div>
+    <div class="nav">${TABS.map(t=>`<button class="nav-b ${tab===t.id?'on':''}" onclick="setTab('${t.id}')">${t.l}</button>`).join('')}</div>
+    <div class="ct" key="${tab}">${R[tab]()}</div>`;
+}
+const R={};
+
+const WS=[
+  {id:'SAL',name:'Sales & Capture',cls:'sales',ph:'DEV',acts:[
+    {id:'SAL-01',n:'Customer engagement & intelligence gathering',o:'Customer intelligence briefing',d:[],dur:10,ts:1,pt:'S'},
+    {id:'SAL-02',n:'Incumbent performance review (rebid)',o:'Incumbent performance assessment',d:[],dur:5,ts:1,pt:'S'},
+    {id:'SAL-03',n:'Competitor analysis & positioning',o:'Competitive landscape assessment',d:['SAL-01'],dur:5,ts:1,pt:'S'},
+    {id:'SAL-04',n:'Win theme development & refinement',o:'Win theme document',d:['SAL-01','SAL-03'],dur:5,ts:1,pt:'S'},
+    {id:'SAL-05',n:'Evaluation criteria mapping & scoring strategy',o:'Evaluation criteria matrix with scoring approach',d:['SAL-04'],dur:3,ts:1,pt:'S'},
+    {id:'SAL-06',n:'Capture plan finalisation & win strategy lock',o:'Capture plan (locked) – METHODOLOGY GATE',d:['SAL-04','SAL-05'],dur:3,ts:1,pt:'S'},
+    {id:'SAL-07',n:'Pre-submission clarification strategy & drafting',o:'Clarification question register (prioritised)',d:['SAL-04','SOL-01'],dur:3,ts:2,pt:'P'},
+    {id:'SAL-08',n:'Clarification submission & response management',o:'Clarification response log with impact assessment',d:['SAL-07'],dur:5,ts:1,pt:'C'},
+    {id:'SAL-09',n:'Clarification impact analysis & workstream updates',o:'Updated requirements/assumptions across workstreams',d:['SAL-08'],dur:3,ts:2,pt:'P'},
+  ]},
+  {id:'SOL',name:'Solution Design',cls:'solution',ph:'DEV',acts:[
+    {id:'SOL-01',n:'Requirements analysis & interpretation',o:'Requirements interpretation document',d:['SAL-06'],dur:5,ts:2,pt:'P'},
+    {id:'SOL-02',n:'Current service model review (rebid)',o:'As-is service model assessment',d:[],dur:5,ts:1,pt:'S'},
+    {id:'SOL-03',n:'Target operating model design',o:'Target operating model',d:['SOL-01','SOL-02'],dur:45,ts:3,pt:'P'},
+    {id:'SOL-04',n:'Service delivery model design',o:'Service delivery model',d:['SOL-03'],dur:30,ts:3,pt:'P'},
+    {id:'SOL-05',n:'Technology & digital approach',o:'Technology solution design',d:['SOL-03','SUP-02'],dur:20,ts:2,pt:'P'},
+    {id:'SOL-06',n:'Staffing model & TUPE analysis',o:'Staffing model with TUPE schedule',d:['SOL-04'],dur:8,ts:1,pt:'S'},
+    {id:'SOL-07',n:'Transition & mobilisation approach',o:'Transition plan',d:['SOL-04','SOL-05','SOL-06'],dur:16,ts:2,pt:'P'},
+    {id:'SOL-08',n:'Innovation & continuous improvement',o:'Innovation roadmap',d:['SOL-03'],dur:5,ts:1,pt:'S'},
+    {id:'SOL-09',n:'Social value proposition',o:'Social value plan',d:['SOL-04'],dur:5,ts:1,pt:'S'},
+    {id:'SOL-10',n:'Evidence strategy & case study identification',o:'Evidence requirements matrix',d:['SOL-04','SAL-05'],dur:3,ts:1,pt:'S'},
+    {id:'SOL-11',n:'Solution design lock',o:'Solution design pack (locked & assured)',d:['SOL-03','SOL-04','SOL-05','SOL-06','SOL-07','SOL-08','SOL-09','SOL-10'],dur:3,ts:1,pt:'C'},
+  ]},
+  {id:'COM',name:'Commercial & Pricing',cls:'commercial',ph:'DEV',acts:[
+    {id:'COM-01',n:'Should-cost model development',o:'Should-cost model',d:['SOL-04','SOL-06'],dur:8,ts:1,pt:'S'},
+    {id:'COM-02',n:'Price-to-win analysis',o:'Price-to-win assessment',d:['SAL-03','COM-01'],dur:3,ts:1,pt:'S'},
+    {id:'COM-03',n:'Subcontractor & supply chain pricing',o:'Partner pricing schedule',d:['SUP-04'],dur:5,ts:1,pt:'S'},
+    {id:'COM-04',n:'Commercial model & payment mechanisms',o:'Commercial model document',d:['SOL-04','LEG-02'],dur:5,ts:1,pt:'S'},
+    {id:'COM-05',n:'Margin structure & sensitivity analysis',o:'Margin model with sensitivities',d:['COM-01','COM-03'],dur:3,ts:1,pt:'S'},
+    {id:'COM-06',n:'Pricing model finalisation',o:'Pricing model (locked & assured)',d:['COM-01','COM-02','COM-03','COM-04','COM-05','DEL-01'],dur:5,ts:1,pt:'S'},
+  ]},
+  {id:'LEG',name:'Legal & Contractual',cls:'legal',ph:'DEV',acts:[
+    {id:'LEG-01',n:'Contract review & markup',o:'Contract markup with positions log',d:[],dur:8,ts:1,pt:'S'},
+    {id:'LEG-02',n:'Risk allocation analysis',o:'Risk allocation matrix',d:['LEG-01'],dur:3,ts:1,pt:'S'},
+    {id:'LEG-03',n:'Insurance & liability review',o:'Insurance requirements assessment',d:[],dur:3,ts:1,pt:'S'},
+    {id:'LEG-04',n:'TUPE obligations assessment',o:'TUPE compliance assessment',d:['SOL-06'],dur:5,ts:1,pt:'S'},
+    {id:'LEG-05',n:'Data protection & security review',o:'DPIA / security assessment',d:['SOL-05'],dur:5,ts:1,pt:'S'},
+    {id:'LEG-06',n:'Subcontractor terms review',o:'Subcontract terms summary',d:['SUP-03','LEG-01'],dur:5,ts:1,pt:'S'},
+  ]},
+  {id:'DEL',name:'Programme & Delivery',cls:'delivery',ph:'DEV',acts:[
+    {id:'DEL-01',n:'Delivery risk & assumptions register',o:'Delivery risk & assumptions register (living document)',d:['SOL-03','SOL-04'],dur:8,ts:1,pt:'S'},
+    {id:'DEL-02',n:'Mobilisation & implementation planning',o:'Mobilisation plan',d:['SOL-07'],dur:5,ts:1,pt:'S'},
+    {id:'DEL-03',n:'Performance framework & KPIs/SLAs',o:'KPI/SLA framework',d:[],dur:5,ts:1,pt:'S'},
+    {id:'DEL-04',n:'Resource & capacity plan',o:'Resource plan',d:['SOL-06'],dur:3,ts:1,pt:'S'},
+    {id:'DEL-05',n:'Business continuity & exit planning',o:'BC/exit plan',d:[],dur:3,ts:1,pt:'S'},
+    {id:'DEL-06',n:'Risk mitigation & residual acceptance',o:'Mitigated risk register (assured)',d:['DEL-01','COM-06'],dur:5,ts:1,pt:'S'},
+  ]},
+  {id:'SUP',name:'Supply Chain & Partners',cls:'supply',ph:'DEV',acts:[
+    {id:'SUP-01',n:'Partner identification & selection',o:'Partner shortlist with rationale',d:['SOL-01'],dur:5,ts:1,pt:'S'},
+    {id:'SUP-02',n:'Partner solution inputs & design contribution',o:'Partner solution inputs pack',d:['SUP-01','SOL-03'],dur:10,ts:2,pt:'P'},
+    {id:'SUP-03',n:'Teaming agreement negotiation',o:'Signed teaming agreements',d:['SUP-01'],dur:15,ts:1,pt:'S'},
+    {id:'SUP-04',n:'Partner pricing',o:'Partner pricing schedules',d:['SUP-02','SOL-04'],dur:8,ts:1,pt:'S'},
+    {id:'SUP-05',n:'Partner credentials & references',o:'Partner case studies & CVs',d:['SUP-01'],dur:5,ts:2,pt:'P'},
+    {id:'SUP-06',n:'Back-to-back commercial terms',o:'Back-to-back terms agreed',d:['SUP-03','LEG-06','COM-04'],dur:5,ts:1,pt:'S'},
+  ]},
+  {id:'BM',name:'Bid Management & Programme Control',cls:'bidmgmt',ph:'CONT',acts:[
+    {id:'BM-01',n:'Kickoff planning & execution',o:'Kickoff pack: strategy summary, RACI, timeline, comms plan',d:['SAL-06'],dur:3,ts:1,pt:'C'},
+    {id:'BM-02',n:'Bid management plan production',o:'Bid management plan (BMP)',d:['BM-01'],dur:2,ts:1,pt:'C'},
+    {id:'BM-03',n:'Document management & version control setup',o:'Repository structure, naming conventions, collaboration platform',d:['BM-01'],dur:1,ts:1,pt:'C'},
+    {id:'BM-04',n:'Resource management & tracking',o:'Resource tracker, security clearance log, availability register',d:['BM-01'],dur:0,ts:1,pt:'C'},
+    {id:'BM-05',n:'Bid cost management',o:'Cost-to-bid tracker',d:['BM-01'],dur:0,ts:1,pt:'C'},
+    {id:'BM-06',n:'Progress reporting',o:'Weekly progress reports, milestone achievement reports',d:['BM-01'],dur:0,ts:1,pt:'C'},
+    {id:'BM-07',n:'Quality management approach',o:'Quality plan: evaluation weighting analysis, page budgets, scoring strategy',d:['SAL-05','BM-01'],dur:3,ts:1,pt:'C'},
+    {id:'BM-08',n:'Stakeholder & communications management',o:'Stakeholder comms plan, decision log',d:['BM-01'],dur:2,ts:1,pt:'C'},
+    {id:'BM-09',n:'Competitive dialogue management (if applicable)',o:'Dialogue prep packs, session records, iteration tracker per round',d:['SAL-06','SOL-03'],dur:0,ts:2,pt:'P'},
+    {id:'BM-10',n:'Storyboard development & sign-off',o:'Approved storyboard – METHODOLOGY GATE',d:['SAL-06','SAL-05','SOL-11'],dur:5,ts:2,pt:'P'},
+    {id:'BM-11',n:'Hot debrief (post-submission)',o:'Hot debrief notes, immediate lessons log',d:['PRD-09'],dur:1,ts:1,pt:'C'},
+    {id:'BM-12',n:'Lessons learned & knowledge capture',o:'Lessons report, content library updates, process improvement actions',d:['BM-11'],dur:3,ts:1,pt:'C'},
+    {id:'BM-13',n:'Bid risk & assumptions register',o:'Bid risk register (process risks, scheduling assumptions, resource risks)',d:[],dur:0,ts:1,pt:'C'},
+  ]},
+  {id:'GOV',name:'Internal Governance',cls:'governance',ph:'CONT',acts:[
+    {id:'GOV-01',n:'Pursuit approval (configurable)',o:'Pursuit approval decision record',d:['SAL-06'],dur:2,ts:1,pt:'C'},
+    {id:'GOV-02',n:'Solution & strategy review (configurable)',o:'Solution review decision record',d:['SAL-06','SOL-03','DEL-01','SUP-01'],dur:2,ts:1,pt:'C'},
+    {id:'GOV-03',n:'Pricing & risk review (configurable)',o:'Pricing decision record + approved price',d:['COM-06','DEL-06','LEG-02','SUP-06'],dur:2,ts:1,pt:'C'},
+    {id:'GOV-04',n:'Executive approval (configurable – may be multi-tier)',o:'Executive approval decision record(s)',d:['GOV-03','PRD-06','PRD-07'],dur:2,ts:1,pt:'C'},
+    {id:'GOV-05',n:'Final submission authority (configurable)',o:'Submission authority confirmation',d:['GOV-04','PRD-08'],dur:1,ts:1,pt:'C'},
+  ]},
+  {id:'PRD',name:'Proposal Production',cls:'production',ph:'PRD',acts:[
+    {id:'PRD-01',n:'Compliance matrix & requirements mapping',o:'Compliance matrix (live)',d:['SOL-01'],dur:3,ts:1,pt:'S'},
+    {id:'PRD-02',n:'Section drafting & content assembly',o:'Draft response sections',d:['BM-10','SOL-11'],dur:60,ts:4,pt:'P'},
+    {id:'PRD-03',n:'Evidence, case studies & CV assembly',o:'Evidence pack',d:['SUP-05','SOL-10'],dur:16,ts:2,pt:'P'},
+    {id:'PRD-04',n:'Pricing schedules & commercial response',o:'Pricing response documents',d:['COM-06'],dur:5,ts:1,pt:'S'},
+    {id:'PRD-05',n:'Pink review (storyboard/outline)',o:'Pink review scorecard & actions',d:['BM-10'],dur:3,ts:1,pt:'C'},
+    {id:'PRD-06',n:'Red review (full draft)',o:'Red review scorecard & actions resolved',d:['PRD-02','PRD-03','PRD-04'],dur:5,ts:1,pt:'C'},
+    {id:'PRD-07',n:'Gold review (final/executive)',o:'Gold review scorecard & sign-off',d:['PRD-06','COM-06'],dur:3,ts:1,pt:'C'},
+    {id:'PRD-08',n:'Final QA & formatting',o:'QA checklist complete',d:['PRD-07'],dur:3,ts:1,pt:'S'},
+    {id:'PRD-09',n:'Submission packaging & upload',o:'Submission confirmation receipt',d:['PRD-08','GOV-05'],dur:2,ts:1,pt:'C'},
+  ]},
+  {id:'POST',name:'Post-Submission',cls:'postsub',ph:'POST',acts:[
+    {id:'POST-01',n:'Presentation design & development',o:'Presentation deck, speaker notes, narrative',d:['PRD-09'],dur:10,ts:2,pt:'P'},
+    {id:'POST-02',n:'Presentation rehearsals & coaching',o:'Rehearsal debrief notes, revised deck, Q&A prep',d:['POST-01'],dur:3,ts:1,pt:'C'},
+    {id:'POST-03',n:'Presentation delivery',o:'Presentation delivered, Q&A record',d:['POST-02'],dur:1,ts:1,pt:'C'},
+    {id:'POST-04',n:'Post-submission clarification management',o:'Clarification log, submitted responses, updated risk log',d:['PRD-09'],dur:5,ts:2,pt:'P'},
+    {id:'POST-05',n:'BAFO preparation & revised pricing',o:'Revised pricing model, updated solution elements',d:['POST-04'],dur:10,ts:2,pt:'P'},
+    {id:'POST-06',n:'BAFO governance approval',o:'Board-approved BAFO mandate',d:['POST-05'],dur:2,ts:1,pt:'C'},
+    {id:'POST-07',n:'Contract negotiation support',o:'Negotiated T&C schedule, agreed pricing',d:['PRD-09'],dur:5,ts:1,pt:'S'},
+    {id:'POST-08',n:'Award processing & mobilisation handover',o:'Handover pack, delivery team briefed, PID',d:['POST-07'],dur:3,ts:1,pt:'C'},
+  ]},
+];
+
+const totalActs=WS.reduce((s,w)=>s+w.acts.length,0);
+const totalDeps=WS.reduce((s,w)=>s+w.acts.reduce((s2,a)=>s2+a.d.length,0),0);
+const totalDays=WS.reduce((s,w)=>s+w.acts.reduce((s2,a)=>s2+a.dur,0),0);
+
+R.overview=()=>`
+  <div class="sl">Architecture v6 – Complete Build Specification</div>
+  <div class="st">Activity-Driven Bid Execution</div>
+  <div class="sd">Full lifecycle coverage from bid setup through to award. Ten workstreams, ${totalActs} activities, nine modules with complete UX specifications. Now includes standup action tracking, smart nudging, gate preparation automation, and embedded methodology guidance.</div>
+
+  <div class="co co-g"><div class="co-l">Changes from v5</div><div class="co-t">Eight structural changes. <strong>Dual risk registers</strong> – DEL-01 (delivery risks for pricing/governance) and new BM-13 (bid process risks for portfolio/workspace). <strong>Effort vs elapsed duration</strong> – every activity now has effortDays, teamSize, and parallelisation type. Elapsed = effort ÷ team + 20% overhead per additional person. <strong>Bid complexity selector</strong> – standard/complex/major in setup Stage 2, sets default team sizes across the template. <strong>Early-start dependency thresholds</strong> – dependencies are no longer binary; each has a configurable start threshold. <strong>Soft vs hard dependencies</strong> – archetype reviewed; LEG-03, DEL-03, DEL-05 can now begin with preparatory work before predecessors complete. <strong>Enhanced feasibility</strong> – recommendations now include specific resource cost, elapsed time saving, and risk trade-off. <strong>Gantt view</strong> – sixth view in Activity Tracker showing timeline with dependency lines and critical path. <strong>Activity count</strong> now 79 with BM-13 added.</div></div>
+
+  <div class="cg c5" style="margin-bottom:14px;">
+    <div class="cd a-gold" style="text-align:center;padding:10px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:24px;">10</div><div class="cd-b">Workstreams</div></div>
+    <div class="cd a-blu" style="text-align:center;padding:10px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:24px;">${totalActs}</div><div class="cd-b">Activities</div></div>
+    <div class="cd a-grn" style="text-align:center;padding:10px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:24px;">${totalDeps}</div><div class="cd-b">Dependencies</div></div>
+    <div class="cd a-amb" style="text-align:center;padding:10px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:24px;">${totalDays}</div><div class="cd-b">Total effort (days)</div></div>
+    <div class="cd a-pur" style="text-align:center;padding:10px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:24px;">9</div><div class="cd-b">Modules with UX</div></div>
+  </div>
+
+  <div class="sh">Four New Capabilities (v5)</div>
+  <div class="cg c2">
+    <div class="cd a-lime"><div class="cd-n">01</div><div class="cd-l">Daily Operations</div><div class="cd-t">Standup Action Tracker</div><div class="cd-b">Tactical layer below activities for daily standup commitments. Each action: description, owner, due date (typically today or next few days), parent activity link. Created during standups, reviewed next standup. Done or escalated. High volume, short lived. The feature that makes the system the bid manager's primary daily tool.</div></div>
+    <div class="cd a-gold"><div class="cd-n">02</div><div class="cd-l">Intelligent Prompting</div><div class="cd-t">Smart Nudging</div><div class="cd-b">Time-aware and dependency-aware system prompts. Flags: stale activities (not updated in X days), newly-unblocked items (predecessor completed), approaching deadlines (due within 5 days without expected status), overdue standup actions. Presented in a daily check-in view. Bid manager confirms or dismisses. Reduces update burden to 10–15 minutes.</div></div>
+    <div class="cd a-pur"><div class="cd-n">03</div><div class="cd-l">Governance</div><div class="cd-t">Gate Preparation Automation</div><div class="cd-b">Each governance gate has a preparation template with lead-time offsets. When a gate is scheduled, the system auto-generates standup actions at the right times: pre-check entry criteria (T-5), assemble review pack (T-3), circulate to panel (T-2), brief presenters (T-1), conduct review (T-0). Preparation never gets forgotten.</div></div>
+    <div class="cd a-blu"><div class="cd-n">04</div><div class="cd-l">In-App Methodology</div><div class="cd-t">Embedded Guidance Layer</div><div class="cd-b">Collapsible contextual methodology notes on every module. Shows what to do at this stage of the bid, what to look for, what good looks like. Replaces the need for a separate SOP document. Dismissable once the bid manager is experienced. The methodology whispering in the bid manager's ear.</div></div>
+  </div>
+
+  <div class="sh">Full Lifecycle</div>
+  <div class="fl">
+    <div class="fl-n fl-on"><div class="fl-nl">Entry</div><div class="fl-nt">Setup</div><div class="fl-nd">5-stage wizard</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n fl-amb"><div class="fl-nl">Check</div><div class="fl-nt">Feasibility</div><div class="fl-nd">Timeline analysis</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n"><div class="fl-nl">Phase 1</div><div class="fl-nt">Develop</div><div class="fl-nd">7 workstreams</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n"><div class="fl-nl">Gate</div><div class="fl-nt">Storyboard</div><div class="fl-nd">Methodology gate</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n"><div class="fl-nl">Phase 2</div><div class="fl-nt">Produce</div><div class="fl-nd">Write & review</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n"><div class="fl-nl">Gates</div><div class="fl-nt">Governance</div><div class="fl-nd">Configurable</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n fl-grn"><div class="fl-nl">Submit</div><div class="fl-nt">Submit</div><div class="fl-nd">Confirmed</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n fl-pk"><div class="fl-nl">Phase 3</div><div class="fl-nt">Post-Sub</div><div class="fl-nd">Present, BAFO, award</div></div>
+  </div>
+
+  <div class="sh">Ten Workstreams</div>
+  <div class="cg c5">
+    ${[
+      {t:'Sales & Capture',c:'sales',p:'DEV',n:9},{t:'Solution Design',c:'solution',p:'DEV',n:11},{t:'Commercial & Pricing',c:'commercial',p:'DEV',n:6},{t:'Legal & Contractual',c:'legal',p:'DEV',n:6},{t:'Programme & Delivery',c:'delivery',p:'DEV',n:6},
+      {t:'Supply Chain & Partners',c:'supply',p:'DEV',n:6},{t:'Bid Management',c:'bidmgmt',p:'CONT',n:12},{t:'Internal Governance',c:'governance',p:'CONT',n:5},{t:'Proposal Production',c:'production',p:'PRD',n:9},{t:'Post-Submission',c:'postsub',p:'POST',n:8},
+    ].map(w=>`<div class="cd a-${w.c==='sales'?'gold':w.c==='solution'?'blu':w.c==='commercial'?'grn':w.c==='legal'?'pink':w.c==='delivery'?'amb':w.c==='supply'?'cyn':w.c==='bidmgmt'?'lime':w.c==='governance'?'pur':w.c==='production'?'red':'pink'}"><div class="cd-l">${w.p}</div><div class="cd-t"><span class="ws-${w.c}">${w.t}</span></div><div class="cd-b">${w.n} activities</div></div>`).join('')}
+  </div>
+
+  <div class="sh">Nine Modules</div>
+  <div class="cg c3">
+    ${[
+      {t:'Bid Setup Wizard',l:'Setup',a:'amb'},{t:'Practice Portfolio',l:'Practice',a:'pur'},{t:'Bid Workspace',l:'Platform',a:'blu'},
+      {t:'Activity Tracker',l:'Core',a:'gold'},{t:'Compliance Engine',l:'Assurance',a:'grn'},{t:'Review Governance',l:'Assurance',a:'grn'},
+      {t:'Governance Manager',l:'Governance',a:'pur'},{t:'Readiness Dashboard',l:'Assurance',a:'grn'},{t:'Submission Manager',l:'Platform',a:'blu'},
+    ].map(m=>`<div class="cd a-${m.a}"><div class="cd-l">${m.l}</div><div class="cd-t">${m.t}</div></div>`).join('')}
+  </div>
+
+  <div class="sg">
+    <div class="sg-k">Application</div><div class="sg-v">Single self-contained HTML file. Vanilla JS. No framework dependencies. Midnight Executive palette.</div>
+    <div class="sg-k">Persistence</div><div class="sg-v">localStorage + JSON import/export. Single-operator. Calendar-aware scheduling.</div>
+    <div class="sg-k">AI Integration</div><div class="sg-v">Anthropic API for output scaffolding. AI drafts structure; humans provide strategy and differentiation.</div>
+    <div class="sg-k">Smart Nudging</div><div class="sg-v">Time-aware engine using scheduled dates, dependency chains, and last-updated timestamps to generate daily prompts. No external integration required – uses data already in the system.</div>
+    <div class="sg-k">Guidance Layer</div><div class="sg-v">Methodology notes stored as structured content per module per bid phase. Collapsible panel, contextual to current state. Rendered from template data, not hard-coded.</div>
+  </div>
+`;
+
+R.setup=()=>`
+  <div class="sl">Bid Setup Module</div>
+  <div class="st">Five-Stage Setup Wizard</div>
+  <div class="sd">Target: 30–45 minutes. The archetype does 80% of the work. Stage 2 now includes configurable governance gate selection. Stage 4 flags security clearance requirements.</div>
+
+  ${[
+    {n:1,t:'Bid Identity & Procurement Timeline',d:'Client details, opportunity metadata, and the full procurement timeline. Hard external constraints.',
+     fields:['client name','opportunity name','sector','procurement type','TCV','ACV','ITT issue date','submission deadline','clarification deadline','presentation date','expected award date','submission channel','incumbent','competitive dialogue (Y/N)'],
+     out:'Total available working days. If competitive dialogue flagged, system activates BM-09 dialogue management activity.'},
+    {n:2,t:'Archetype, Activities, Complexity & Governance',d:'Select archetype, set bid complexity (standard/complex/major), configure activities, and select governance gates.',
+     fields:['archetype selection','bid complexity (standard / complex / major)','activity review & deactivation','effort estimate overrides','team size overrides','bespoke activity additions','governance gate selection from library','gate sequencing & trigger conditions','executive review tiers (e.g. BU / ExCo / Board)'],
+     out:'Full activity set generated with team sizes set by complexity default. Governance gates configured. Elapsed durations calculated. Dependency chains built.'},
+    {n:3,t:'Calendar & Constraints',d:'Working patterns, holidays, team unavailability, client blackouts. Turns effort into a real schedule.',
+     fields:['working days pattern','public holiday calendar','planned weekend working','key team member unavailability','client blackout periods','security clearance requirements'],
+     out:'Net available working days per workstream. Scheduling constraints mapped.'},
+    {n:4,t:'Team & Role Assignment',d:'Assign named people to roles. Roles propagate to activities. Flags clearance gaps and scheduling conflicts.',
+     fields:['bid manager','solution lead','commercial lead','delivery lead','legal lead','supply chain lead','SMEs / authors','reviewers','approvers / governance panel'],
+     out:'Activities assigned. Unassigned critical path items flagged. Clearance gaps flagged. Scheduling conflicts flagged.'},
+    {n:5,t:'Requirements Import',d:'Populate the Compliance Engine. Manual entry, spreadsheet import, or AI extraction (Phase 2).',
+     fields:['manual entry','spreadsheet import (CSV/paste)','AI extraction (Phase 2)'],
+     out:'Compliance register initialised. Coverage dashboard shows gap between total requirements and mapped responses.'},
+  ].map(s=>`
+    <div class="wiz-step"><div class="wiz-num">${s.n}</div><div class="wiz-body"><div class="wiz-title">Stage ${s.n}: ${s.t}</div><div class="wiz-desc">${s.d}</div>
+    <div class="wiz-fields">${s.fields.map((f,i)=>`<span class="wiz-field ${i<3?'req':'opt'}">${f}</span>`).join('')}</div>
+    <div class="wiz-output"><strong>System output:</strong> ${s.out}</div></div></div>
+  `).join('')}
+
+  <div class="sh">Governance Gate Library</div>
+  <div class="bt">During Stage 2, the bid manager selects which gates apply to this bid from a configurable library. Each gate has a type (functional review or executive approval), trigger conditions (e.g. mandatory for TCV &gt;£50m), and configurable entry criteria.</div>
+  <table class="tb">
+    <thead><tr><th>Gate</th><th>Type</th><th>Default For</th><th>Configurable Elements</th></tr></thead>
+    <tbody>
+      <tr><td>Pursuit Approval</td><td>Executive</td><td>All bids</td><td>Approving body, PWIN threshold, entry criteria</td></tr>
+      <tr><td>Solution & Strategy Review</td><td>Functional</td><td>All bids</td><td>Review panel, criteria, timing</td></tr>
+      <tr><td>Commercial / Finance Review</td><td>Functional</td><td>All bids</td><td>Review panel, pricing sign-off authority</td></tr>
+      <tr><td>Legal & Contractual Review</td><td>Functional</td><td>TCV &gt;£20m</td><td>Legal sign-off authority</td></tr>
+      <tr><td>Business Unit Approval</td><td>Executive (Tier 1)</td><td>TCV &gt;£20m</td><td>BU head, entry criteria</td></tr>
+      <tr><td>Executive Committee</td><td>Executive (Tier 2)</td><td>TCV &gt;£100m</td><td>ExCo panel, entry criteria</td></tr>
+      <tr><td>Board Approval</td><td>Executive (Tier 3)</td><td>TCV &gt;£500m or strategic</td><td>Board panel, entry criteria</td></tr>
+      <tr><td>Storyboard Sign-off</td><td>Methodology</td><td>All bids</td><td>Sign-off authority (typically Bid Director)</td></tr>
+      <tr><td>Final Submission Authority</td><td>Executive</td><td>All bids</td><td>Final sign-off authority</td></tr>
+      <tr><td>BAFO Authority</td><td>Executive</td><td>Only if BAFO stage</td><td>Approval for material commercial changes</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh">Gate Preparation Templates</div>
+  <div class="bt">Each gate type has a default preparation sequence with lead-time offsets. When a gate is scheduled during setup, the system auto-generates standup actions at the correct lead times.</div>
+  <table class="tb">
+    <thead><tr><th>Offset</th><th>Action</th><th>Applies To</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td><span class="fe fe-a">T-5 days</span></td><td>Pre-check entry criteria – flag any that will not be met by gate date</td><td>All gates</td><td>Entry criteria status report with gaps identified</td></tr>
+      <tr><td><span class="fe fe-a">T-3 days</span></td><td>Assemble review pack – collate all required documents, prepare recommendation summary</td><td>All gates</td><td>Review pack assembled and version-locked</td></tr>
+      <tr><td><span class="fe fe-a">T-2 days</span></td><td>Circulate review pack to panel with agenda and evaluation framework</td><td>All gates</td><td>Pack distributed, calendar confirmed</td></tr>
+      <tr><td><span class="fe fe-b">T-1 day</span></td><td>Brief presenters – confirm speaking order, key messages, anticipated challenge areas</td><td>Executive gates</td><td>Presenters briefed, dry-run completed</td></tr>
+      <tr><td><span class="fe fe-g">T-0</span></td><td>Conduct review – capture decision, conditions, actions, risk premium (if any)</td><td>All gates</td><td>Decision record completed in Governance Manager</td></tr>
+      <tr><td><span class="fe fe-p">T+1 day</span></td><td>Distribute decision record and actions to affected workstream owners</td><td>All gates</td><td>Actions assigned and tracked</td></tr>
+    </tbody>
+  </table>
+  <div class="co co-b"><div class="co-l">Configuration</div><div class="co-t">Lead times are defaults – the bid manager can adjust per gate during setup. Executive Tier 2 and Tier 3 gates default to T-7 rather than T-5. Functional reviews default to T-3. The preparation template is part of the gate library configuration data – set once, deployed automatically on every bid.</div></div>
+
+  <div class="sh">Feasibility Check</div>
+  <div class="cg c3">
+    <div class="cd a-grn"><div class="cd-t"><span class="fe fe-g">Feasible</span></div><div class="cd-b">All activities schedule within timeline. Critical path buffer ≥3 days. Proceed with confidence.</div></div>
+    <div class="cd a-amb"><div class="cd-t"><span class="fe fe-a">Tight</span></div><div class="cd-b">All fit but critical path buffer &lt;3 days. No margin for error. Flag at kickoff. Consider acceleration.</div></div>
+    <div class="cd a-red"><div class="cd-t"><span class="fe fe-r">Infeasible</span></div><div class="cd-b">Activities cannot fit. Shows which workstreams are overloaded, by how many days, and which activities to shorten, parallelise, or remove.</div></div>
+  </div>
+`;
+
+R.lifecycle=()=>`
+  <div class="sl">Lifecycle Model</div>
+  <div class="st">Setup → Develop → Produce → Submit → Post-Submission → Award</div>
+  <div class="sd">Extended lifecycle covering the full fee exposure period – from bid setup through to contract award. Your fee risk doesn't end at submission; it ends at award.</div>
+
+  <div class="sh">Full Lifecycle with Methodology Gates</div>
+  <div class="fl">
+    <div class="fl-n fl-on"><div class="fl-nl">Stage 0</div><div class="fl-nt">Setup</div><div class="fl-nd">Wizard + feasibility</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n"><div class="fl-nl">Phase 1</div><div class="fl-nt">Develop</div><div class="fl-nd">Strategy, solution, commercial, risk, partners</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n" style="border-color:var(--gold);background:var(--gold-g);"><div class="fl-nl">M-Gate</div><div class="fl-nt">Win Strategy Lock</div><div class="fl-nd">SAL-06 assured</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n" style="border-color:var(--gold);background:var(--gold-g);"><div class="fl-nl">M-Gate</div><div class="fl-nt">Storyboard</div><div class="fl-nd">BM-10 assured</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n"><div class="fl-nl">Phase 2</div><div class="fl-nt">Produce</div><div class="fl-nd">Draft, review, finalise</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n fl-grn"><div class="fl-nl">Submit</div><div class="fl-nt">Submit</div><div class="fl-nd">Confirmed</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n fl-pk"><div class="fl-nl">Phase 3</div><div class="fl-nt">Post-Sub</div><div class="fl-nd">Present, clarify, BAFO, negotiate</div></div>
+    <div class="fl-a">→</div>
+    <div class="fl-n fl-grn"><div class="fl-nl">End</div><div class="fl-nt">Award</div><div class="fl-nd">Handover</div></div>
+  </div>
+
+  <div class="sh">Two Methodology Gates (Non-Configurable)</div>
+  <div class="bt">Unlike governance gates (which the bid manager configures), methodology gates are enforced by the system on every bid. They prevent the most common structural failure: production starting before the strategic and design foundations are locked.</div>
+  <table class="tb">
+    <thead><tr><th>Gate</th><th>Activity</th><th>What It Prevents</th></tr></thead>
+    <tbody>
+      <tr><td><span class="fe fe-gl">Win Strategy Lock</span></td><td>SAL-06 must reach "assured"</td><td>Solution design (SOL-03+) proceeding without a confirmed win strategy. Solution that drifts because there's no agreed strategic direction.</td></tr>
+      <tr><td><span class="fe fe-gl">Storyboard Sign-off</span></td><td>BM-10 must reach "assured"</td><td>Section drafting (PRD-02) starting before the response structure is approved. Writing that will need rewriting because the storyboard changed.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh">Activity Status vs Output Assurance</div>
+  <div class="cg c2">
+    <div class="cd a-blu"><div class="cd-t">Activity Status (is it done?)</div><div class="cd-b"><span class="fe fe-b">not started</span> <span class="fe fe-b">in progress</span> <span class="fe fe-a">draft complete</span> <span class="fe fe-g">final</span> <span class="fe fe-p">deactivated</span></div></div>
+    <div class="cd a-grn"><div class="cd-t">Output Assurance (is it any good?)</div><div class="cd-b"><span class="fe fe-r">unassured</span> <span class="fe fe-a">under review</span> <span class="fe fe-g">assured</span> <span class="fe fe-p">accepted at gate</span></div></div>
+  </div>
+
+  <div class="sh">Post-Submission Phase</div>
+  <div class="bt">The system tracks post-submission activities because your fee exposure continues until award. Not all post-submission activities apply to every bid – presentation, BAFO, and negotiation stages are activated during setup based on procurement type.</div>
+
+  <div class="sh">Risk & Assumptions Register</div>
+  <div class="bt">DEL-01 is the home for both risks and assumptions. It is a living activity maintained throughout the bid. Each entry has: description, type (risk or assumption), probability, impact, mitigation/validation status, owner, source activity, and impact if wrong. Unmitigated high risks or unvalidated assumptions at governance gates trigger contingency loading – the risk premium mechanism.</div>
+`;
+
+R.archetype=()=>`
+  <div class="sl">Services Bid Archetype</div>
+  <div class="st">Standard Operating Model – Services (New Business / Rebid)</div>
+  <div class="sd">Every activity carries effortDays (person-days), teamSize (standard default), and parallelisation type. Effort for parallelisable activities reflects total person-days. Elapsed = effort ÷ team + 20% overhead. BM-13 (bid risk register) added. LEG-03, DEL-03, DEL-05 dependencies relaxed to zero (can start day one).</div>
+
+  <div class="co co-g"><div class="co-l">Effort vs Elapsed</div><div class="co-t">The 'Effort' column shows person-days of work. 'Team' shows concurrent workers (standard complexity). 'Elapsed' is calculated: CEIL((effort/team) × (1 + (team-1) × 0.20)). Example: SOL-03 = 45 person-days ÷ 3 people × 1.40 overhead = 21 elapsed days.</div></div>
+
+  <div class="sh">Bid Complexity Defaults (Setup Stage 2)</div>
+  <table class="tb">
+    <thead><tr><th>Complexity</th><th>Total Team</th><th>P-Type Multiplier</th><th>SOL-03 Team</th><th>SOL-03 Elapsed</th><th>PRD-02 Team</th><th>PRD-02 Elapsed</th></tr></thead>
+    <tbody>
+      <tr><td>Standard</td><td>8–12</td><td>1× (template)</td><td>3</td><td>21 days</td><td>4</td><td>22 days</td></tr>
+      <tr><td>Complex</td><td>15–25</td><td>~2×</td><td>5</td><td>17 days</td><td>6</td><td>16 days</td></tr>
+      <tr><td>Major</td><td>25–40</td><td>~3×</td><td>7</td><td>14 days</td><td>8</td><td>14 days</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh">Zero-Dependency Activities (Start Day One)</div>
+  <div class="cg c4">
+    ${['SAL-01: Customer intel','SAL-02: Incumbent review','SOL-02: Current service model','LEG-01: Contract review','LEG-03: Insurance review','DEL-03: KPI/SLA framework','DEL-05: BC/exit planning','BM-13: Bid risk register'].map(a=>`<div class="cd a-grn" style="padding:8px;"><div class="cd-b" style="font-family:'DM Mono',monospace;font-size:10px;">${a}</div></div>`).join('')}
+  </div>
+
+  <div class="sh">Activity Parallelisation Types</div>
+  <div class="cg c3">
+    <div class="cd a-blu"><div class="cd-t"><span class="fe fe-b">P</span> Parallelisable</div><div class="cd-b">More people = shorter elapsed time. Solution design, evidence assembly, drafting, partner inputs. Team size scales with bid complexity.</div></div>
+    <div class="cd a-gold"><div class="cd-t"><span class="fe fe-gl">S</span> Specialist</div><div class="cd-b">Always team size 1. Legal review, pricing model, TUPE analysis, data protection. Adding people doesn't help – one expert does the work.</div></div>
+    <div class="cd a-pur"><div class="cd-t"><span class="fe fe-p">C</span> Coordination</div><div class="cd-b">Effort increases with bid complexity but doesn't parallelise. Kickoff, governance, reviews, progress reporting. Bid manager's operational overhead.</div></div>
+  </div>
+
+  <div class="cg c5" style="margin-bottom:10px;">
+    <div class="cd a-gold" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">10</div><div class="cd-b">Workstreams</div></div>
+    <div class="cd a-blu" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">${totalActs}</div><div class="cd-b">Activities</div></div>
+    <div class="cd a-grn" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">${totalDeps}</div><div class="cd-b">Dependencies</div></div>
+    <div class="cd a-amb" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">${totalDays}</div><div class="cd-b">Effort (person-days)</div></div>
+    <div class="cd a-cyn" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">~55</div><div class="cd-b">Critical path (elapsed)</div></div>
+  </div>
+
+  ${WS.map(w=>`
+    <div class="ent">
+      <div class="ent-h" onclick="tog('ws-${w.id}')">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="tog ${exp['ws-'+w.id]?'op':''}">▸</span>
+          <span class="ent-nm"><span class="ws-${w.cls}">${w.id}</span> – ${w.name}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);">${w.acts.length} acts · ${w.acts.reduce((s,a)=>s+a.dur,0)} person-days</span>
+        </div>
+        <span class="ph ${w.ph==='DEV'?'ph-d':w.ph==='PRD'?'ph-p':w.ph==='POST'?'ph-ps':'ph-c'}">${w.ph==='DEV'?'Development':w.ph==='PRD'?'Production':w.ph==='POST'?'Post-Submission':'Continuous'}</span>
+      </div>
+      ${exp['ws-'+w.id]?`
+        <div class="ent-bd"><div class="scroll-h">← scroll →</div><div style="overflow-x:auto;">
+        <table class="tb" style="min-width:850px;">
+          <thead><tr><th style="width:55px;">ID</th><th>Activity</th><th>Output</th><th style="width:45px;">Effort</th><th style="width:35px;">Team</th><th style="width:30px;">Type</th><th style="width:170px;">Dependencies</th></tr></thead>
+          <tbody>${w.acts.map(a=>{
+            const elapsed=a.ts<=1?a.dur:Math.ceil((a.dur/a.ts)*(1+(a.ts-1)*0.2));
+            return `<tr><td><span class="ws-${w.cls}">${a.id}</span></td><td style="color:var(--t1);">${a.n}</td><td style="font-style:italic;font-size:11px;">${a.o}</td><td style="text-align:center;">${a.dur||'—'}</td><td style="text-align:center;">${a.ts}</td><td style="text-align:center;"><span class="fe ${a.pt==='P'?'fe-b':a.pt==='S'?'fe-gl':'fe-p'}">${a.pt}</span></td><td>${a.d.length?a.d.map(d=>`<span class="fe fe-c">${d}</span>`).join(' '):'<span style="color:var(--grn);">DAY ONE</span>'}</td></tr>`;
+          }).join('')}</tbody>
+        </table></div></div>
+      `:''}
+    </div>
+  `).join('')}
+
+  <div class="co co-b"><div class="co-l">Dependency Notes</div><div class="co-t">LEG-03 (insurance review) – dependency on LEG-01 removed; can begin from tender requirements independently. DEL-03 (KPI/SLA framework) – dependency on SOL-04 removed; draft framework can be built from tender-specified KPIs, refined when solution locks. DEL-05 (BC/exit planning) – dependency on SOL-04 removed; standard structure can be drafted early. All dependency thresholds default to 'draft_complete' but can be overridden to 'in_progress' (early start) or 'final' (conservative) per dependency in setup.</div></div>
+`;
+
+R.deps=()=>`
+  <div class="sl">Dependency Architecture</div>
+  <div class="st">Cross-Workstream Dependencies & Critical Paths</div>
+  <div class="sd">The system monitors every dependency chain, calculates buffer time, and flags compression. Two new critical paths added for clarification cascade and post-submission readiness.</div>
+
+  <div class="sh">Critical Paths</div>
+  ${[
+    {l:'Solution → Price → Governance → Submit (primary)',ch:'SAL-06 → SOL-01 → SOL-03 → SOL-04 → COM-01 → COM-06 → GOV-03 → GOV-05 → PRD-09',r:'The longest chain. ~75 working days. Any delay in solution cascades through pricing and governance.'},
+    {l:'Win Strategy → Storyboard → Production',ch:'SAL-06 → BM-10 → PRD-02 → PRD-06 → PRD-07 → PRD-08 → PRD-09',r:'Win strategy lock must precede storyboard, which must precede drafting. Two methodology gates in sequence.'},
+    {l:'Partners → Solution → Production',ch:'SUP-01 → SUP-02 → SOL-05 → SOL-11 → PRD-02',r:'Partner delays in solution inputs block technology design, solution lock, and drafting.'},
+    {l:'Clarification cascade',ch:'SAL-07 → SAL-08 → SAL-09 → (impacts SOL/COM/LEG/DEL)',r:'Clarification responses can reshape requirements, invalidate assumptions, and force rework across workstreams.'},
+    {l:'Risk premium chain',ch:'SOL-04 → DEL-01 → DEL-06 → COM-06 → GOV-03',r:'Unmitigated risks or unvalidated assumptions force contingency loading at governance.'},
+    {l:'Post-submission to award',ch:'PRD-09 → POST-01 → POST-02 → POST-03 / POST-04 → POST-05 → POST-06 → POST-07 → POST-08',r:'Post-submission activities have client-imposed deadlines. BAFO requires fresh governance approval.'},
+  ].map((cp,i)=>`
+    <div class="ent"><div class="ent-h" onclick="tog('cp-${i}')"><div style="display:flex;align-items:center;gap:8px;"><span class="tog ${exp['cp-'+i]?'op':''}">▸</span><span class="ent-nm">Path ${i+1}: ${cp.l}</span></div><span class="fe fe-r">HIGH</span></div>
+    ${exp['cp-'+i]?`<div class="ent-bd"><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--cyn);margin:6px 0;word-break:break-all;">${cp.ch}</div><div class="ent-desc"><strong>Risk:</strong> ${cp.r}</div></div>`:''}
+    </div>
+  `).join('')}
+
+  <div class="sh">Compression Thresholds</div>
+  <table class="tb">
+    <thead><tr><th>Buffer</th><th>Threshold</th><th>Alert</th></tr></thead>
+    <tbody>
+      <tr><td><span class="fe fe-g">Healthy</span></td><td>≥5 working days</td><td>Green. No alert.</td></tr>
+      <tr><td><span class="fe fe-a">Compressed</span></td><td>1–4 days</td><td>Amber on workspace and portfolio.</td></tr>
+      <tr><td><span class="fe fe-r">Critical</span></td><td>≤0 days</td><td>Red. Mandatory risk entry. Portfolio escalation.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh">Workstream Interdependency Matrix</div>
+  <div class="dm"><table>
+    <thead><tr><th>Feeds →</th><th class="ws-sales">SAL</th><th class="ws-solution">SOL</th><th class="ws-commercial">COM</th><th class="ws-legal">LEG</th><th class="ws-delivery">DEL</th><th class="ws-supply">SUP</th><th class="ws-bidmgmt">BM</th><th class="ws-governance">GOV</th><th class="ws-production">PRD</th><th class="ws-postsub">POST</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left;" class="ws-sales">Sales</td><td></td><td class="dep-mark">●</td><td class="dep-mark">●</td><td></td><td></td><td></td><td class="dep-mark">●</td><td class="gate-mark">◆</td><td class="dep-mark">●</td><td></td></tr>
+      <tr><td style="text-align:left;" class="ws-solution">Solution</td><td></td><td></td><td class="dep-mark">●</td><td class="dep-mark">●</td><td class="dep-mark">●</td><td class="dep-mark">●</td><td class="dep-mark">●</td><td class="gate-mark">◆</td><td class="dep-mark">●</td><td></td></tr>
+      <tr><td style="text-align:left;" class="ws-commercial">Commercial</td><td></td><td></td><td></td><td></td><td class="dep-mark">●</td><td></td><td></td><td class="gate-mark">◆</td><td class="dep-mark">●</td><td class="dep-mark">●</td></tr>
+      <tr><td style="text-align:left;" class="ws-legal">Legal</td><td></td><td></td><td class="dep-mark">●</td><td></td><td></td><td class="dep-mark">●</td><td></td><td class="gate-mark">◆</td><td></td><td></td></tr>
+      <tr><td style="text-align:left;" class="ws-delivery">Delivery</td><td></td><td></td><td class="dep-mark">●</td><td></td><td></td><td></td><td></td><td class="gate-mark">◆</td><td class="dep-mark">●</td><td></td></tr>
+      <tr><td style="text-align:left;" class="ws-supply">Supply</td><td></td><td class="dep-mark">●</td><td class="dep-mark">●</td><td class="dep-mark">●</td><td></td><td></td><td></td><td class="gate-mark">◆</td><td class="dep-mark">●</td><td></td></tr>
+      <tr><td style="text-align:left;" class="ws-bidmgmt">Bid Mgmt</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="dep-mark">●</td><td class="dep-mark">●</td></tr>
+      <tr><td style="text-align:left;" class="ws-governance">Governance</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="gate-mark">◆</td><td class="gate-mark">◆</td></tr>
+      <tr><td style="text-align:left;" class="ws-production">Production</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="dep-mark">●</td><td class="gate-mark">◆</td><td></td><td class="dep-mark">●</td></tr>
+      <tr><td style="text-align:left;" class="ws-postsub">Post-Sub</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="dep-mark">●</td><td class="gate-mark">◆</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:4px;font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);"><span class="dep-mark">●</span> activity dependency &nbsp; <span class="gate-mark">◆</span> governance gate entry</div></div>
+`;
+
+R.modules=()=>`
+  <div class="sl">Module Architecture</div>
+  <div class="st">Nine Modules Across Four Layers</div>
+  <div class="sd">All modules operate on a shared data model. The Activity Framework is the spine; every other module is a specialised view.</div>
+  <div class="cg c3">
+    ${[
+      {t:'Bid Setup Wizard',l:'Setup',a:'amb',d:'5-stage configuration with configurable governance gate library and feasibility check. Generates full activity set from archetype template. 30–45 min target.'},
+      {t:'Practice Portfolio',l:'Practice',a:'pur',d:'All active bids ranked by fee-weighted risk. Health status, trends, intervention log, team utilisation. Post-submission bids tracked through to award. Never client-facing.'},
+      {t:'Bid Workspace',l:'Platform',a:'blu',d:'Single-bid command console. Dual-track readiness, 10 workstream health bars with timing analysis, today\'s actions, milestone tracker, methodology gate status, compression alerts. Smart nudge summary panel. Standup action count. Embedded methodology guidance.'},
+      {t:'Activity Tracker',l:'Core',a:'gold',d:'${totalActs} activities across 10 workstreams. Six views: workstream, kanban, list, dependency, standup, and Gantt. Status + output assurance tracking. Effort/teamSize/elapsed duration model with parallelisation types. Smart nudging engine. Standup action layer. Drag-and-drop. Bulk updates.'},
+      {t:'Compliance Engine',l:'Assurance',a:'grn',d:'Requirement register with classification, response mapping, coverage tracking, gap alerts. Compliance matrix generation. Hard gate: mandatory gaps block readiness. Responds to clarification impacts (SAL-09).'},
+      {t:'Review Governance',l:'Assurance',a:'grn',d:'Review cycles for development outputs (solution, pricing, risk) and production (pink/red/gold). Scorecards, severity-rated actions, resolution tracking, gate logic enforcement. Output assurance promotion.'},
+      {t:'Governance Manager',l:'Governance',a:'pur',d:'Configurable gates from library with auto-generated preparation sequences. Entry criteria linked to output assurance. Decision records. Risk premium tracking. Multi-tier executive approvals. Preparation actions auto-populate standup tracker at configurable lead times. BAFO authority.'},
+      {t:'Readiness Dashboard',l:'Assurance',a:'grn',d:'Dual-track score: development readiness + production readiness. Workstream timing analysis. Compression alerts. Methodology gate status. Executive A4 print. Post-submission readiness for presentation/BAFO.'},
+      {t:'Submission Manager',l:'Platform',a:'blu',d:'Artefact register, document checklist, formatting QA, portal upload tracker, sign-off record, submission log. Active in final 5–7 days. Triggers hot debrief (BM-11) on confirmation.'},
+    ].map(m=>`<div class="cd a-${m.a}"><div class="cd-l">${m.l}</div><div class="cd-t">${m.t}</div><div class="cd-b">${m.d}</div></div>`).join('')}
+  </div>
+`;
+
+R.data=()=>`
+  <div class="sl">Data Architecture</div>
+  <div class="st">Entity Model (v6)</div>
+  <div class="sd">14 entities, ~130 fields. Activity entity now carries teamSize, parallelisationType, and dependencyThreshold. RiskAssumption entity has registerType field (delivery vs bid). BM-13 added as bid risk register activity. GovernanceGate includes preparation template configuration.</div>
+
+  ${[
+    {id:'Bid',bg:'bg-p',d:'Top-level container.',f:[['id','UUID'],['name','string'],['client','string'],['sector','enum: defence|justice|citizen_services|health|transport|central_govt'],['procurementType','enum: rebid|new_business_itt|framework_calloff|bafo|competitive_dialogue'],['archetype','enum: services|technology|advisory'],['tcv','number'],['acv','number'],['submissionDeadline','datetime'],['ittIssueDate','date'],['hasCompetitiveDialogue','boolean'],['hasPresentation','boolean'],['hasBafo','boolean'],['status','enum: setup|active|submitted|post_submission|won|lost|withdrawn'],['bidManager','string'],['solutionLead','string'],['commercialLead','string']]},
+    {id:'BidCalendar',bg:'bg-s',d:'Scheduling constraints.',f:[['workingDays','number[]'],['publicHolidays','date[]'],['weekendWorking','DateRange[]'],['teamUnavailability','Unavailability[]'],['clientBlackouts','DateRange[]'],['securityClearanceReqs','ClearanceReq[]']]},
+    {id:'Workstream',bg:'bg-p',d:'Major track of activity.',f:[['id','UUID'],['bidId','FK→Bid'],['code','string'],['name','string'],['type','enum: sales|solution|commercial|legal|delivery|supply_chain|bid_management|governance|production|post_submission'],['phase','enum: development|production|post_submission|continuous'],['owner','string'],['status','computed'],['progressPct','computed'],['timingHealth','computed']]},
+    {id:'Activity',bg:'bg-g',d:'Atomic unit of work. The spine.',f:[['id','UUID'],['bidId','FK→Bid'],['workstreamId','FK→Workstream'],['code','string'],['name','string'],['owner','string'],['defaultRole','enum'],['status','enum: not_started|in_progress|draft_complete|final|deactivated'],['outputName','string'],['outputAssurance','enum: unassured|under_review|assured|accepted_at_gate'],['isMethodologyGate','boolean'],['effortDays','number – person-days of work'],['teamSize','number – concurrent workers'],['parallelisationType','enum: P|S|C'],['plannedStart','date'],['plannedEnd','date'],['actualStart','date|null'],['actualEnd','date|null'],['dependencies','string[]'],['dependencyThreshold','enum: in_progress|draft_complete|final'],['blockedBy','string|null'],['aiGenerated','boolean'],['lastUpdated','datetime']]},
+    {id:'Requirement',bg:'bg-a',d:'Tender requirement.',f:[['id','UUID'],['bidId','FK→Bid'],['reference','string'],['text','string'],['classification','enum: mandatory|scored|pass_fail|evidential|contractual'],['category','string'],['responseActivityId','FK→Activity|null'],['coverageStatus','enum: unmapped|mapped|draft_in_progress|reviewed|approved|gap'],['impactedByClarification','boolean']]},
+    {id:'ReviewCycle',bg:'bg-a',d:'Structured review event.',f:[['id','UUID'],['bidId','FK→Bid'],['type','enum: solution_review|pricing_review|risk_review|pink|red|gold|adhoc'],['targetActivities','string[]'],['status','enum: scheduled|in_progress|actions_open|closed'],['reviewers','string[]']]},
+    {id:'ReviewAction',bg:'bg-a',d:'Review feedback item.',f:[['id','UUID'],['reviewCycleId','FK→ReviewCycle'],['activityCode','string'],['comment','string'],['severity','enum: critical|major|minor'],['criterion','enum: compliance|responsiveness|evidence|differentiation|readability|feasibility|risk'],['owner','string'],['status','enum: open|in_progress|resolved|accepted|disputed']]},
+    {id:'GovernanceGate',bg:'bg-pr',d:'Configurable governance checkpoint with auto-generated preparation sequence.',f:[['id','UUID'],['bidId','FK→Bid'],['name','string'],['gateType','enum: functional_review|executive_tier1|executive_tier2|executive_tier3|methodology|submission_authority|bafo_authority'],['approvingBody','string'],['sequence','number'],['status','enum: upcoming|ready|in_progress|passed|failed|deferred'],['entryCriteria','EntryCriterion[]'],['decision','enum|null'],['riskPremiumPct','number|null'],['decisionRecord','string'],['prepLeadDays','number'],['prepTemplate','PrepAction[]'],['prepActionsGenerated','boolean']]},
+    {id:'StandupAction',bg:'bg-bm',d:'Tactical daily action item.',f:[['id','UUID'],['bidId','FK→Bid'],['parentActivityCode','string|null'],['parentGateId','FK→GovernanceGate|null'],['description','string'],['owner','string'],['dueDate','date'],['status','enum: open|done|escalated|cancelled'],['source','enum: manual|gate_preparation|smart_nudge|standup'],['createdDate','datetime'],['completedDate','datetime|null'],['notes','string|null']]},
+    {id:'RiskAssumption',bg:'bg-a',d:'Risk or assumption. Two registers: delivery (DEL-01) and bid (BM-13).',f:[['id','UUID'],['bidId','FK→Bid'],['registerType','enum: delivery|bid'],['type','enum: risk|assumption'],['description','string'],['sourceActivityCode','string'],['probability','enum: high|medium|low'],['impact','enum: high|medium|low'],['mitigationOrValidation','string'],['status','enum: open|mitigated|validated|accepted|escalated'],['owner','string'],['impactIfWrong','string']]},
+    {id:'TeamMember',bg:'bg-p',d:'Person involved in the bid.',f:[['id','UUID'],['bidId','FK→Bid'],['name','string'],['role','enum'],['organisation','string'],['securityClearance','enum: none|sc|dv|ctc|nato_secret'],['clearanceStatus','enum: held|in_progress|not_required']]},
+    {id:'Engagement',bg:'bg-pr',d:'Practice-level commercial wrapper.',f:[['id','UUID'],['bidId','FK→Bid'],['winFeeValue','number'],['monthlyFee','number'],['costToBid','number'],['feeModel','enum: fixed|at_risk|blended'],['healthStatus','computed'],['healthTrend','computed'],['keyRisk','string'],['interventions','InterventionLog[]']]},
+    {id:'Artefact',bg:'bg-p',d:'Submission document.',f:[['id','UUID'],['bidId','FK→Bid'],['name','string'],['type','enum: response_volume|annex|certificate|cv|case_study|pricing_schedule|presentation|other'],['status','enum: not_started|draft|final|uploaded|confirmed'],['owner','string']]},
+  ].map(e=>`
+    <div class="ent"><div class="ent-h" onclick="tog('e-${e.id}')"><div style="display:flex;align-items:center;gap:8px;"><span class="tog ${exp['e-'+e.id]?'op':''}">▸</span><span class="ent-nm">${e.id}</span></div><span class="ent-bg ${e.bg}">${e.bg.replace('bg-','')}</span></div>
+    ${exp['e-'+e.id]?`<div class="ent-bd"><div class="ent-desc">${e.d}</div><table class="tb"><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody>${e.f.map(([n,t])=>`<tr><td>${n}</td><td><span class="ft">${t}</span></td></tr>`).join('')}</tbody></table></div>`:''}
+    </div>
+  `).join('')}
+`;
+
+R.ux=()=>`
+  <div class="sl">UX Specifications</div>
+  <div class="st">Screen Design for All Nine Modules</div>
+  <div class="sd">Complete screen-by-screen specification for every module.</div>
+
+  ${[
+    {id:'ux-setup',t:'M1: Bid Setup Wizard',bg:'bg-s',content:`
+      <div class="sh2">Screen Flow</div>
+      <div class="bt">Linear wizard with 5 steps + feasibility check. Progress indicator at top. Cannot skip steps. Final step shows feasibility verdict before confirmation.</div>
+      <div class="ux-frame">
+        <div class="ux-box"><div class="ux-box-label">Progress Bar</div><div class="ux-box-content">Step 1 → → Step 2 → → Step 3 → → Step 4 → → Step 5 → → Feasibility →</div></div>
+        <div class="ux-box"><div class="ux-box-label">Step 2: Activity Configuration</div><div class="ux-box-content">Expandable workstream panels. Each activity: checkbox (active/deactivated), name, output, effort input. Governance gate checklist below activities.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Step 3: Calendar</div><div class="ux-box-content">Visual calendar showing bid period. Public holidays pre-marked. Click dates to toggle working/non-working. Sidebar shows net working days recalculation in real-time.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Feasibility Check Screen</div><div class="ux-box-content">Large verdict badge (green/amber/red). Timeline bar showing bid period with activities mapped. Critical path highlighted. Per-workstream feasibility with surplus/deficit. "Adjust & Recheck" returns to activity configuration.</div></div>
+      </div>
+    `},
+    {id:'ux-portfolio',t:'M2: Practice Portfolio',bg:'bg-pr',content:`
+      <div class="sh2">Primary View: Bid Table</div>
+      <div class="ux-frame">
+        <div class="ux-row">
+          ${['Active Bids','Total Fee Exposure','Bids at Risk','Team Deployed'].map(m=>`<div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--gold);">—</div><div class="ux-metric-lbl">${m}</div></div></div>`).join('')}
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Bid Table Columns</div><div class="ux-box-content">Health (●/●/●) | Client | Bid Name | Deadline | Days Left | Phase | Dev Readiness % | Prod Readiness % | Win Fee (£) | Monthly Fee (£) | Fee-Weighted Risk | Trend | Key Risk | Bid Manager</div></div>
+      </div>
+    `},
+    {id:'ux-workspace',t:'M3: Bid Workspace',bg:'bg-p',content:`
+      <div class="sh2">Layout: Single-Screen Dashboard</div>
+      <div class="ux-frame">
+        <div class="ux-row">
+          ${[{l:'Readiness Score',v:'67%',c:'var(--amb)'},{l:'Days to Submission',v:'34',c:'var(--t1)'},{l:'Phase',v:'DEVELOP',c:'var(--blu)'},{l:'Health',v:'AMBER',c:'var(--amb)'},{l:'Dev Complete',v:'45%',c:'var(--blu)'},{l:'Prod Complete',v:'12%',c:'var(--red)'}].map(m=>`<div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:${m.c};">${m.v}</div><div class="ux-metric-lbl">${m.l}</div></div></div>`).join('')}
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Workstream Health (10 rows)</div><div class="ux-box-content">Each workstream: name | progress bar | timing health indicator | compression alert icon | click-through to filtered activity view.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Smart Nudge Summary</div><div class="ux-box-content">Dismissable panel. Shows count and preview: "3 stale activities · 2 newly unblocked · 1 gate approaching with unmet criteria." Click → opens full nudge panel in Activity Tracker standup view.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Standup Actions Summary</div><div class="ux-box-content">Compact bar: X overdue (red) | Y due today (amber) | Z open total. Click → opens Standup View. Pulses amber if overdue > 0.</div></div>
+      </div>
+    `},
+    {id:'ux-tracker',t:'M4: Activity Tracker',bg:'bg-g',content:`
+      <div class="sh2">Six Views</div>
+      <div class="bt">Workstream | Kanban | List | Dependencies | Standup | Gantt</div>
+
+      <div class="sh2">Standup View</div>
+      <div class="ux-frame">
+        <div class="ux-row">
+          ${[{l:'Overdue Actions',v:'4',c:'var(--red)'},{l:'Due Today',v:'7',c:'var(--amb)'},{l:'Open Actions',v:'12',c:'var(--blu)'},{l:'Completed Yesterday',v:'5',c:'var(--grn)'}].map(m=>`<div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:${m.c};">${m.v}</div><div class="ux-metric-lbl">${m.l}</div></div></div>`).join('')}
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Panel 1: Overdue (Red)</div><div class="ux-box-content">Actions: ✓ Done | ↩ Carry forward | ⚡ Escalate | ✕ Cancel</div></div>
+        <div class="ux-box"><div class="ux-box-label">Panel 2: Today's Actions</div><div class="ux-box-content">Grouped by workstream. Gate preparation actions shown with gate badge and countdown.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Panel 3: Quick Add Bar</div><div class="ux-box-content">Description | Owner | Due date (default: today) | Parent activity | + Add</div></div>
+      </div>
+
+      <div class="sh2">Gantt View</div>
+      <div class="ux-frame">
+        <div class="ux-box"><div class="ux-box-label">Layout</div><div class="ux-box-content">Activities as bars grouped by workstream. Bar length = elapsed duration. Bar fill = progress %. Dependency arrows between bars. Critical path in gold.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Markers</div><div class="ux-box-content">Today: vertical dashed gold line. Governance gates: purple diamonds. Methodology gates: gold diamonds. Submission deadline: red vertical line.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Print</div><div class="ux-box-content">Export to A3 landscape PDF. Suitable for war room display or governance pack inclusion.</div></div>
+      </div>
+
+      <div class="sh2">Smart Nudging Engine</div>
+      <div class="ux-frame">
+        <table class="tb">
+          <thead><tr><th>Nudge Type</th><th>Trigger</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><span class="fe fe-a">Stale Activity</span></td><td>Not updated in 3 working days</td><td>Update status or dismiss</td></tr>
+            <tr><td><span class="fe fe-g">Unblocked</span></td><td>All predecessors at draft_complete+</td><td>Confirm start or defer</td></tr>
+            <tr><td><span class="fe fe-r">Approaching Deadline</span></td><td>Due within 5 days, not complete</td><td>Confirm on track or flag at risk</td></tr>
+            <tr><td><span class="fe fe-p">Gate Approaching</span></td><td>Gate within prep lead time, criteria unmet</td><td>Acknowledge or escalate</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `},
+    {id:'ux-compliance',t:'M5: Compliance Engine',bg:'bg-a',content:`
+      <div class="ux-frame">
+        <div class="ux-row">
+          ${[{l:'Total Requirements',v:'87'},{l:'Mapped',v:'54'},{l:'Gaps',v:'12'},{l:'Mandatory Coverage',v:'78%'}].map(m=>`<div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--grn);">${m.v}</div><div class="ux-metric-lbl">${m.l}</div></div></div>`).join('')}
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Register Table Columns</div><div class="ux-box-content">Ref | Requirement Text | Classification | Category | Response Section | Owner | Coverage Status | Impacted by Clarification</div></div>
+        <div class="ux-box"><div class="ux-box-label">Compliance Matrix (Export)</div><div class="ux-box-content">Formal matrix for gate reviews and submission. Columns: Ref | Requirement | Compliant (Y/N/Partial) | Response Location | Evidence. A4 landscape PDF.</div></div>
+      </div>
+    `},
+    {id:'ux-review',t:'M6: Review Governance',bg:'bg-a',content:`
+      <div class="ux-frame">
+        <div class="ux-row">
+          ${[{l:'Cycles Total',v:'6'},{l:'Actions Open',v:'14'},{l:'Critical Open',v:'3'},{l:'Resolution Rate',v:'72%'}].map(m=>`<div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--grn);">${m.v}</div><div class="ux-metric-lbl">${m.l}</div></div></div>`).join('')}
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Gate Logic</div><div class="ux-box-content">If any critical action is open: LOCKED (red). All critical resolved: UNLOCKED (green) with "Close review" button.</div></div>
+      </div>
+    `},
+    {id:'ux-gov',t:'M7: Governance Manager',bg:'bg-pr',content:`
+      <div class="ux-frame">
+        <div class="ux-box"><div class="ux-box-label">Gate Pipeline</div><div class="ux-box-content">Vertical list of gates in sequence. Each: name, type badge, approving body, date, status, entry criteria checklist with live assurance status, preparation progress indicator.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Gate Preparation Tracker</div><div class="ux-box-content">When gate within lead time: preparation panel expands showing T-5 through T+1 standup actions with status. Visual timeline with today marker and prep step nodes.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Risk Premium Tracker</div><div class="ux-box-content">Total premium across all gates. Each entry: gate, premium %, cause, approver. TCV impact calculation shown.</div></div>
+      </div>
+    `},
+    {id:'ux-readiness',t:'M8: Readiness Dashboard',bg:'bg-a',content:`
+      <div class="ux-frame">
+        <div class="ux-row">
+          <div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--amb);font-size:36px;">67%</div><div class="ux-metric-lbl">Overall Readiness</div></div></div>
+          <div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--blu);">78%</div><div class="ux-metric-lbl">Development Track</div></div></div>
+          <div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--red);">42%</div><div class="ux-metric-lbl">Production Track</div></div></div>
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Executive Print View</div><div class="ux-box-content">Single A4 page. Verdict (ready/conditional/not ready). Signal breakdown table. Key risks, milestone status, compression alerts. PDF export.</div></div>
+      </div>
+    `},
+    {id:'ux-submission',t:'M9: Submission Manager',bg:'bg-p',content:`
+      <div class="ux-frame">
+        <div class="ux-row">
+          ${[{l:'Artefacts Ready',v:'8/12'},{l:'Approvals Complete',v:'3/5'},{l:'QA Items Clear',v:'14/18'},{l:'Hours to Deadline',v:'47'}].map(m=>`<div class="ux-col"><div class="ux-metric"><div class="ux-metric-val" style="color:var(--amb);">${m.v}</div><div class="ux-metric-lbl">${m.l}</div></div></div>`).join('')}
+        </div>
+        <div class="ux-box"><div class="ux-box-label">Post-Submission Trigger</div><div class="ux-box-content">On confirmation: marks PRD activities submitted, triggers BM-11 hot debrief, transitions bid to post_submission phase, updates portfolio.</div></div>
+      </div>
+    `},
+  ].map(m=>`
+    <div class="ent"><div class="ent-h" onclick="tog('${m.id}')"><div style="display:flex;align-items:center;gap:8px;"><span class="tog ${exp[m.id]?'op':''}">▸</span><span class="ent-nm">${m.t}</span></div><span class="ent-bg ${m.bg}">${m.bg.replace('bg-','')}</span></div>
+    ${exp[m.id]?`<div class="ent-bd">${m.content}</div>`:''}
+    </div>
+  `).join('')}
+
+  <div class="co co-g"><div class="co-l">UX Principles</div><div class="co-t">Midnight Executive palette. Cormorant Garamond for display, DM Mono for labels, DM Sans for body. All key views A4 print-to-PDF. Single-operator. Keyboard shortcuts: Ctrl+N (new item), Ctrl+F (filter), Ctrl+P (print). Every table sortable and filterable. Status badges: green=good, amber=attention, red=action required.</div></div>
+`;
+
+R.build=()=>`
+  <div class="sl">Implementation</div>
+  <div class="st">Build Sequence (v6)</div>
+  <div class="sd">Eight sprints, 12–14 weeks. Smart nudging and standup tracker in Sprint 2. Gate preparation automation in Sprint 4. Guidance layer content developed across all sprints.</div>
+
+  <div class="cg c2">
+    ${[
+      {n:'01',w:'Weeks 1–2',t:'Setup Wizard + Activity Framework + Compliance Engine',b:'App shell, state management, localStorage, navigation · Setup wizard (5 stages) with bid complexity selector, governance gate library · Services archetype: ${totalActs} activities with effortDays, teamSize, parallelisation types · Elapsed duration calculation · Feasibility check · Activity Tracker (workstream + list views) · Compliance Engine v1 · Dual risk registers · JSON import/export'},
+      {n:'02',w:'Weeks 3–4',t:'Workspace + Dependencies + Standup + Smart Nudging + Gantt',b:'Workspace: dual-track readiness, workstream health, smart nudge summary · Dependency engine: buffer analysis, compression detection, critical path · Activity Tracker: kanban + dependency + standup + Gantt views · Standup action tracker: quick-add, overdue tracking, carry-forward, escalation · Smart nudging engine: stale detection, unblocked items, approaching deadlines, gate proximity · Methodology gate enforcement'},
+      {n:'03',w:'Weeks 5–6',t:'Review Governance (Development + Production)',b:'Review cycles for development outputs and proposal sections · Scorecards · Action capture, assignment, resolution · Gate logic enforcement · Output assurance promotion · Cross-review analytics'},
+      {n:'04',w:'Week 7',t:'Governance Manager + Gate Preparation + Readiness Dashboard',b:'Configurable gates with entry criteria · Multi-tier executive approvals · Decision records, risk premium tracking · Gate preparation automation: auto-generated standup actions at T-5 through T+1 · Dual-track readiness scorer · Executive A4 print'},
+      {n:'05',w:'Week 8',t:'Submission Manager + Practice Portfolio',b:'Artefact register, QA checklist, approval tracker, portal upload tracker · Submission log with hot debrief trigger · Practice portfolio: fee-weighted risk ranking, health trends · Engagement management · Intervention logging · Team utilisation'},
+      {n:'06',w:'Weeks 9–10',t:'AI Integration + Risk & Assumptions Register',b:'Anthropic API for output scaffolding: risk register, mobilisation plan, storyboard framework, compliance matrix · AI outputs marked draft with promotion workflow · Risk & Assumptions Register UI · Readiness trend charting'},
+      {n:'07',w:'Week 11',t:'Post-Submission Module',b:'Post-submission workstream: presentation, clarifications, BAFO, negotiation, award handover · Post-submission readiness signals · Portfolio tracks through to award · Lessons learned (BM-12)'},
+      {n:'08',w:'Weeks 12–14',t:'Refinement + Templates + Pilot + Guidance Content',b:'UX refinement · Competitive dialogue module (BM-09) · Technology bid archetype · Print/export optimisation · Bid Manager Playbook · Complete guidance layer content · Pilot bid setup · Advisory archetype if capacity'},
+    ].map(s=>`
+      <div class="cd a-gold"><div class="cd-n">${s.n}</div><div class="cd-l">Sprint ${s.n} · ${s.w}</div><div class="cd-t">${s.t}</div><div class="cd-b">${s.b}</div></div>
+    `).join('')}
+  </div>
+
+  <div class="sh">Estimated Complexity</div>
+  <div class="cg c4">
+    <div class="cd a-blu" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">~10,500</div><div class="cd-b">Lines JS</div></div>
+    <div class="cd a-blu" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">~2,000</div><div class="cd-b">Lines CSS</div></div>
+    <div class="cd a-blu" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">~1,500</div><div class="cd-b">Lines template + guidance data</div></div>
+    <div class="cd a-gold" style="text-align:center;padding:8px;"><div class="cd-t" style="font-family:'Cormorant Garamond',serif;font-size:22px;">1 file</div><div class="cd-b">Self-contained HTML</div></div>
+  </div>
+
+  <div class="co co-g"><div class="co-l">Ready to Build</div><div class="co-t">Architecture v6 is the complete build specification. ${totalActs} activities across 10 workstreams with ${totalDeps} dependencies. 14 data entities. Dual risk registers. 9 modules with full UX specs including Gantt view. Bid complexity selector. Standup action tracker. Smart nudging. Gate preparation automation. Embedded methodology guidance. Configurable governance with 10-gate library. Calendar-aware scheduling. Post-submission lifecycle through to award.</div></div>
+`;
+
+render();
+</script>
+</body>
+</html>
