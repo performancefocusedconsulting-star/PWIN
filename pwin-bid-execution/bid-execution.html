@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Bid Execution</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --bg0:#080E1A; --bg1:#0F1724; --bg2:#162032; --bg3:#1D2B40; --bg4:#25354E;
+  --bdr:#253551; --bdr-s:#1A2844;
+  --gold:#C49438; --gold-d:rgba(196,148,56,.12); --gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1; --t2:#94A3B8; --t3:#64748B; --t4:#475569;
+  --grn:#34D399; --grn-d:rgba(52,211,153,.10);
+  --red:#F87171; --red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24; --amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA; --blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA; --pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE; --cyn-d:rgba(34,211,238,.10);
+  --pink:#F472B6; --pink-d:rgba(244,114,182,.10);
+  --lime:#A3E635; --lime-d:rgba(163,230,53,.10);
+}
+
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.hdr{padding:14px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);position:sticky;top:0;z-index:100;}
+.hdr-l{display:flex;align-items:center;gap:10px;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.hdr-divider{width:1px;height:16px;background:var(--bdr);margin:0 2px;}
+.hdr-bid-name{font-family:'DM Mono',monospace;font-size:11px;color:var(--t2);background:var(--bg2);padding:3px 9px;border:1px solid var(--bdr);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.nav{display:flex;gap:1px;padding:0 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;}
+.nav-b{padding:9px 14px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-b:hover{color:var(--t2);}
+.nav-b.on{color:var(--gold);border-bottom-color:var(--gold);}
+
+.ct{padding:24px 28px;max-width:1400px;margin:0 auto;animation:fi .2s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════ */
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.pg-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.pg-desc{color:var(--t2);font-size:12.5px;max-width:780px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:22px 0 8px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:14px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+
+/* ═══════════════════════════════════════
+   GRID
+═══════════════════════════════════════ */
+.cg{display:grid;gap:10px;margin-bottom:18px;}
+.c2{grid-template-columns:repeat(2,1fr);}
+.c3{grid-template-columns:repeat(3,1fr);}
+.c4{grid-template-columns:repeat(4,1fr);}
+.c5{grid-template-columns:repeat(5,1fr);}
+.c6{grid-template-columns:repeat(6,1fr);}
+@media(max-width:1100px){.c4,.c5,.c6{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.c2,.c3,.c4,.c5,.c6{grid-template-columns:1fr;}}
+
+/* ═══════════════════════════════════════
+   CARDS
+═══════════════════════════════════════ */
+.cd{background:var(--bg2);border:1px solid var(--bdr);padding:14px;position:relative;overflow:hidden;transition:all .15s;}
+.cd:hover{background:var(--bg3);border-color:var(--gold);}
+.cd::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.cd.a-gold::before{background:var(--gold)}.cd.a-grn::before{background:var(--grn)}.cd.a-blu::before{background:var(--blu)}
+.cd.a-pur::before{background:var(--pur)}.cd.a-red::before{background:var(--red)}.cd.a-amb::before{background:var(--amb)}
+.cd.a-cyn::before{background:var(--cyn)}.cd.a-pink::before{background:var(--pink)}.cd.a-lime::before{background:var(--lime)}
+.cd-n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);opacity:.3;position:absolute;top:8px;right:10px;}
+.cd-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.cd-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.cd-b{color:var(--t2);font-size:11.5px;line-height:1.6;}
+
+/* Metric cards */
+.metric{background:var(--bg2);border:1px solid var(--bdr);padding:16px;text-align:center;}
+.metric-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1.1;margin-bottom:4px;}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);}
+
+/* ═══════════════════════════════════════
+   CALLOUTS
+═══════════════════════════════════════ */
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+
+/* ═══════════════════════════════════════
+   SPEC GRID
+═══════════════════════════════════════ */
+.sg{display:grid;grid-template-columns:180px 1fr;gap:0;margin:10px 0;border:1px solid var(--bdr);}
+.sg-k{padding:7px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);background:var(--bg4);border-bottom:1px solid var(--bdr-s);}
+.sg-v{padding:7px 10px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);line-height:1.5;}
+
+/* ═══════════════════════════════════════
+   EXPANDABLE PANELS
+═══════════════════════════════════════ */
+.ent{background:var(--bg2);border:1px solid var(--bdr);margin-bottom:6px;overflow:hidden;}
+.ent-h{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s;user-select:none;}
+.ent-h:hover{background:var(--bg3);}
+.ent-nm{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1);}
+.ent-bd{padding:0 12px 12px;border-top:1px solid var(--bdr-s);}
+.tog{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:transform .15s;margin-right:8px;}
+.tog.op{transform:rotate(90deg);}
+
+/* ═══════════════════════════════════════
+   TABLES
+═══════════════════════════════════════ */
+.tb{width:100%;border-collapse:collapse;margin:6px 0;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);white-space:nowrap;}
+.tb td{padding:7px 8px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:middle;line-height:1.4;}
+.tb tr:hover td{background:var(--bg3);}
+.tb tr.clickable{cursor:pointer;}
+.tb td.mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);}
+
+/* ═══════════════════════════════════════
+   BADGES
+═══════════════════════════════════════ */
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:1px 6px;border-radius:2px;display:inline-block;margin:1px;white-space:nowrap;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}
+.fe-b{color:var(--blu);background:var(--blu-d)}.fe-p{color:var(--pur);background:var(--pur-d)}.fe-c{color:var(--cyn);background:var(--cyn-d)}
+.fe-pk{color:var(--pink);background:var(--pink-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}.fe-lm{color:var(--lime);background:var(--lime-d)}
+.fe-mute{color:var(--t3);background:var(--bg3);}
+
+/* Workstream colours */
+.ws-sales{color:var(--gold)}.ws-solution{color:var(--blu)}.ws-commercial{color:var(--grn)}.ws-legal{color:var(--pink)}
+.ws-delivery{color:var(--amb)}.ws-supply{color:var(--cyn)}.ws-bidmgmt{color:var(--lime)}.ws-governance{color:var(--pur)}
+.ws-production{color:var(--red)}.ws-postsub{color:var(--pink)}
+
+/* Health dots */
+.hdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0;}
+.h-grn{background:var(--grn)}.h-amb{background:var(--amb)}.h-red{background:var(--red)}.h-unk{background:var(--t4);}
+
+/* Progress bar */
+.prog{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin:4px 0;}
+.prog-fill{height:100%;border-radius:2px;transition:width .3s ease;}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn{padding:7px 14px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--bdr);background:var(--bg3);color:var(--t2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn:hover{background:var(--bg4);color:var(--t1);border-color:var(--t3);}
+.btn-primary{background:var(--gold-d);border-color:var(--gold);color:var(--gold);}
+.btn-primary:hover{background:rgba(196,148,56,.22);color:var(--t1);}
+.btn-danger{background:var(--red-d);border-color:var(--red);color:var(--red);}
+.btn-danger:hover{background:rgba(248,113,113,.22);}
+.btn-sm{padding:4px 10px;font-size:9px;}
+.btn-icon{padding:5px 8px;font-size:13px;line-height:1;}
+
+/* ═══════════════════════════════════════
+   FORM CONTROLS
+═══════════════════════════════════════ */
+.inp,.sel,.textarea{background:var(--bg3);border:1px solid var(--bdr);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 10px;width:100%;transition:border-color .15s;outline:none;}
+.inp:focus,.sel:focus,.textarea:focus{border-color:var(--gold);}
+.inp::placeholder,.textarea::placeholder{color:var(--t4);}
+.inp.req:not(:valid){border-color:rgba(248,113,113,.4);}
+.sel{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748B'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.sel option{background:var(--bg3);}
+.textarea{resize:vertical;min-height:80px;}
+.form-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.form-col{flex:1;min-width:140px;}
+.form-label{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:5px;}
+.form-label.req::after{content:' ●';color:var(--gold);}
+.form-hint{font-family:'DM Mono',monospace;font-size:9px;color:var(--t4);margin-top:3px;}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(8,14,26,.85);z-index:200;display:flex;align-items:center;justify-content:center;animation:fi .15s ease both;}
+.modal{background:var(--bg1);border:1px solid var(--bdr);padding:28px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;position:relative;}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--t1);}
+.modal-close{background:none;border:none;color:var(--t3);cursor:pointer;font-size:20px;line-height:1;padding:2px 5px;}
+.modal-close:hover{color:var(--t1);}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--bdr-s);}
+
+/* ═══════════════════════════════════════
+   SLIDE-OUT PANEL
+═══════════════════════════════════════ */
+.slideout-overlay{position:fixed;inset:0;background:rgba(8,14,26,.5);z-index:150;}
+.slideout{position:fixed;right:0;top:0;bottom:0;width:480px;max-width:95vw;background:var(--bg1);border-left:1px solid var(--bdr);z-index:160;overflow-y:auto;animation:slideIn .2s ease both;}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.slideout-hdr{padding:16px 20px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg1);z-index:10;}
+.slideout-title{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--t1);}
+.slideout-body{padding:20px;}
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════ */
+.empty{text-align:center;padding:64px 20px;color:var(--t3);}
+.empty-icon{font-size:36px;margin-bottom:14px;opacity:.3;}
+.empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--t2);margin-bottom:6px;}
+.empty-desc{font-size:12.5px;max-width:360px;margin:0 auto 18px;line-height:1.7;}
+
+/* ═══════════════════════════════════════
+   MODULE PLACEHOLDER
+═══════════════════════════════════════ */
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;text-align:center;gap:6px;}
+.placeholder-badge{width:56px;height:56px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;border:1px solid;}
+.placeholder-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;}
+.placeholder-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.placeholder-desc{font-size:12.5px;color:var(--t3);max-width:420px;line-height:1.7;}
+
+/* ═══════════════════════════════════════
+   NAVIGATION — BACK LINK
+═══════════════════════════════════════ */
+.back-link{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 0;transition:color .15s;white-space:nowrap;}
+.back-link:hover{color:var(--gold);}
+
+/* ═══════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════ */
+.divider{border:none;border-top:1px solid var(--bdr-s);margin:16px 0;}
+
+/* ═══════════════════════════════════════
+   PRINT
+═══════════════════════════════════════ */
+@media print{
+  .hdr,.nav,.btn,.back-link,.hdr-r{display:none!important;}
+  body{background:white;color:black;}
+  .ct{padding:0;max-width:none;animation:none;}
+  .cd,.metric,.co,.ent{border-color:#ccc!important;background:white!important;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* ════════════════════════════════════════════════════════════
+   STORE — State, Mutations, Persistence, Utilities
+════════════════════════════════════════════════════════════ */
+const STORE = (() => {
+  const _s = {
+    practice: null,   // { bids: BidSummary[] }
+    bids: {},         // keyed by id, lazy-loaded
+    settings: {},
+    templates: {},
+  };
+
+  return {
+    // ── Init ──────────────────────────────────────────────
+    init() {
+      _s.practice = _load('pwin:practice') || { bids: [] };
+      _s.settings = _load('pwin:settings') || {};
+      _s.templates = _load('pwin:templates') || {};
+    },
+
+    // ── Practice ──────────────────────────────────────────
+    getPractice() { return _s.practice; },
+    savePractice() { _save('pwin:practice', _s.practice); },
+
+    addBidSummary(summary) {
+      _s.practice.bids.push(summary);
+      this.savePractice();
+    },
+    updateBidSummary(id, patch) {
+      const b = _s.practice.bids.find(b => b.id === id);
+      if (b) { Object.assign(b, patch); this.savePractice(); }
+    },
+    removeBidSummary(id) {
+      _s.practice.bids = _s.practice.bids.filter(b => b.id !== id);
+      this.savePractice();
+    },
+
+    // ── Bid ───────────────────────────────────────────────
+    loadBid(id) {
+      if (!_s.bids[id]) _s.bids[id] = _load(`pwin:bid:${id}`);
+      return _s.bids[id] || null;
+    },
+    saveBid(id) {
+      if (_s.bids[id]) _save(`pwin:bid:${id}`, _s.bids[id]);
+    },
+    setBid(bid) {
+      _s.bids[bid.id] = bid;
+      this.saveBid(bid.id);
+    },
+    mutateBid(id, fn) {
+      const bid = this.loadBid(id);
+      if (!bid) return;
+      fn(bid);
+      this.saveBid(id);
+    },
+    deleteBid(id) {
+      this.removeBidSummary(id);
+      localStorage.removeItem(`pwin:bid:${id}`);
+      delete _s.bids[id];
+    },
+
+    // ── Settings ──────────────────────────────────────────
+    getSettings() { return _s.settings; },
+    setSetting(k, v) { _s.settings[k] = v; _save('pwin:settings', _s.settings); },
+
+    // ── Templates ─────────────────────────────────────────
+    getTemplates() { return _s.templates; },
+    setTemplates(t) { _s.templates = t; _save('pwin:templates', t); },
+
+    // ── Utilities ─────────────────────────────────────────
+    uuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    },
+    now()      { return new Date().toISOString(); },
+    today()    { return new Date().toISOString().split('T')[0]; },
+    fmtDate(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
+    },
+    fmtCurrency(n) {
+      if (!n && n !== 0) return '—';
+      if (n >= 1000000) return '£' + (n/1000000).toFixed(1) + 'm';
+      if (n >= 1000) return '£' + (n/1000).toFixed(0) + 'k';
+      return '£' + Number(n).toLocaleString('en-GB');
+    },
+
+    // ── Import / Export ───────────────────────────────────
+    exportAll() {
+      const data = {
+        version: '1.0', exportDate: this.now(),
+        practice: _s.practice, settings: _s.settings, templates: _s.templates,
+        bids: {},
+      };
+      (_s.practice.bids || []).forEach(b => {
+        const bid = this.loadBid(b.id);
+        if (bid) data.bids[b.id] = bid;
+      });
+      return JSON.stringify(data, null, 2);
+    },
+    importAll(json) {
+      const d = JSON.parse(json);
+      _s.practice  = d.practice  || { bids: [] };
+      _s.settings  = d.settings  || {};
+      _s.templates = d.templates || {};
+      this.savePractice();
+      _save('pwin:settings',  _s.settings);
+      _save('pwin:templates', _s.templates);
+      if (d.bids) {
+        Object.entries(d.bids).forEach(([id, bid]) => {
+          _s.bids[id] = bid;
+          this.saveBid(id);
+        });
+      }
+    },
+    exportBid(id) {
+      const bid = this.loadBid(id);
+      if (!bid) return null;
+      return JSON.stringify({ version:'1.0', exportDate:this.now(), bid }, null, 2);
+    },
+  };
+
+  function _load(key) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+    catch(e) { console.error('STORE load error', key, e); return null; }
+  }
+  function _save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); }
+    catch(e) { console.error('STORE save error', key, e); }
+  }
+})();
+
+
+/* ════════════════════════════════════════════════════════════
+   ROUTER
+════════════════════════════════════════════════════════════ */
+const ROUTER = {
+  view:   'portfolio',  // 'portfolio' | 'bid'
+  bidId:  null,
+  bidTab: 'workspace',
+
+  goPortfolio() {
+    this.view = 'portfolio'; this.bidId = null; this.bidTab = 'workspace';
+    renderApp();
+  },
+  goBid(id, tab) {
+    this.view = 'bid'; this.bidId = id; this.bidTab = tab || 'workspace';
+    renderApp();
+  },
+  setBidTab(tab) { this.bidTab = tab; renderApp(); },
+};
+
+const BID_TABS = [
+  { id:'workspace',  l:'Workspace'  },
+  { id:'activities', l:'Activities' },
+  { id:'compliance', l:'Compliance' },
+  { id:'reviews',    l:'Reviews'    },
+  { id:'governance', l:'Governance' },
+  { id:'readiness',  l:'Readiness'  },
+  { id:'submission', l:'Submission' },
+];
+
+
+/* ════════════════════════════════════════════════════════════
+   RENDER — Root
+════════════════════════════════════════════════════════════ */
+function renderApp() {
+  const app = document.getElementById('app');
+  if (ROUTER.view === 'portfolio') {
+    app.innerHTML = renderPortfolioView();
+  } else {
+    const bid = STORE.loadBid(ROUTER.bidId);
+    if (!bid) { ROUTER.goPortfolio(); return; }
+    app.innerHTML = renderBidView(bid);
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   RENDER — Portfolio (Level 1)
+════════════════════════════════════════════════════════════ */
+function renderPortfolioView() {
+  const { bids } = STORE.getPractice();
+  const active     = bids.filter(b => !['won','lost','withdrawn'].includes(b.status));
+  const totalFee   = bids.reduce((s, b) => s + (b.winFeeValue || 0), 0);
+  const atRisk     = bids.filter(b => b.health === 'red').length;
+
+  return `
+    <div class="hdr">
+      <div class="hdr-l">
+        <span class="hdr-brand">PWIN Architect</span>
+        <span class="hdr-sub">Bid Execution</span>
+      </div>
+      <div class="hdr-r">
+        <button class="btn btn-sm" onclick="handleImport()">Import</button>
+        <button class="btn btn-sm" onclick="handleExportAll()" ${bids.length===0?'disabled':''}>Export All</button>
+        <button class="btn btn-primary" onclick="handleNewBid()">+ New Bid</button>
+      </div>
+    </div>
+
+    <div class="ct">
+      <div class="sl">Practice Portfolio</div>
+      <div class="pg-title">Active Bids</div>
+      <div class="pg-desc">Fee-weighted risk ranking. Highest value and highest risk bids shown first. Click any row to enter the bid workspace.</div>
+
+      <div class="cg c4" style="margin-bottom:22px;">
+        <div class="metric">
+          <div class="metric-val" style="color:var(--gold);">${active.length}</div>
+          <div class="metric-lbl">Active Bids</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--t1);font-size:22px;">${STORE.fmtCurrency(totalFee)}</div>
+          <div class="metric-lbl">Total Fee Exposure</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:${atRisk>0?'var(--red)':'var(--grn)'};">${atRisk}</div>
+          <div class="metric-lbl">Bids at Risk</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--blu);">—</div>
+          <div class="metric-lbl">Team Deployed</div>
+        </div>
+      </div>
+
+      ${bids.length === 0 ? renderEmptyPortfolio() : renderBidTable(bids)}
+    </div>`;
+}
+
+function renderEmptyPortfolio() {
+  return `
+    <div class="empty">
+      <div class="empty-icon">◈</div>
+      <div class="empty-title">No Bids Yet</div>
+      <div class="empty-desc">Create your first bid to begin tracking execution. The setup wizard configures activities, schedule, team, and requirements in five stages.</div>
+      <button class="btn btn-primary" onclick="handleNewBid()">+ New Bid</button>
+    </div>`;
+}
+
+function renderBidTable(bids) {
+  const rows = bids.map(b => {
+    const dot = { green:'<span class="hdot h-grn"></span>', amber:'<span class="hdot h-amb"></span>',
+                  red:'<span class="hdot h-red"></span>' }[b.health] || '<span class="hdot h-unk"></span>';
+    const status = { active:'<span class="fe fe-b">Active</span>', setup:'<span class="fe fe-mute">Setup</span>',
+      submitted:'<span class="fe fe-a">Submitted</span>', post_submission:'<span class="fe fe-p">Post-Sub</span>',
+      won:'<span class="fe fe-g">Won</span>', lost:'<span class="fe fe-r">Lost</span>',
+      withdrawn:'<span class="fe fe-mute">Withdrawn</span>' }[b.status] || `<span class="fe fe-mute">${h(b.status||'—')}</span>`;
+    const dl = daysUntil(b.submissionDeadline);
+    const daysCell = dl === null ? '—' :
+      dl < 0  ? `<span style="color:var(--red);">${Math.abs(dl)}d overdue</span>` :
+      dl <= 5 ? `<span style="color:var(--red);">${dl}d</span>` :
+      dl <= 14? `<span style="color:var(--amb);">${dl}d</span>` : `${dl}d`;
+    return `<tr class="clickable" onclick="ROUTER.goBid('${b.id}')">
+      <td>${dot}</td>
+      <td class="mono">${h(b.client||'—')}</td>
+      <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><strong style="color:var(--t1);">${h(b.name||'—')}</strong></td>
+      <td>${STORE.fmtDate(b.submissionDeadline)}</td>
+      <td>${daysCell}</td>
+      <td>${status}</td>
+      <td>${b.devReadiness!=null?b.devReadiness+'%':'—'}</td>
+      <td>${b.prodReadiness!=null?b.prodReadiness+'%':'—'}</td>
+      <td>${STORE.fmtCurrency(b.winFeeValue)}</td>
+      <td class="mono">${h(b.bidManager||'—')}</td>
+    </tr>`;
+  }).join('');
+
+  return `<table class="tb">
+    <thead><tr>
+      <th>Health</th><th>Client</th><th>Bid Name</th><th>Deadline</th>
+      <th>Days Left</th><th>Status</th><th>Dev %</th><th>Prod %</th>
+      <th>Win Fee</th><th>Bid Manager</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   RENDER — Bid Workspace (Level 2)
+════════════════════════════════════════════════════════════ */
+function renderBidView(bid) {
+  const tabs = BID_TABS.map(t =>
+    `<button class="nav-b ${ROUTER.bidTab===t.id?'on':''}" onclick="ROUTER.setBidTab('${t.id}')">${t.l}</button>`
+  ).join('');
+
+  return `
+    <div class="hdr">
+      <div class="hdr-l">
+        <button class="back-link" onclick="ROUTER.goPortfolio()">← Portfolio</button>
+        <div class="hdr-divider"></div>
+        <span class="hdr-brand">PWIN Architect</span>
+        <span class="hdr-sub">Bid Execution</span>
+        <div class="hdr-bid-name">${h(bid.name||'Untitled Bid')}</div>
+      </div>
+      <div class="hdr-r">
+        <span class="fe ${
+          bid.status==='active'?'fe-b':bid.status==='submitted'?'fe-a':
+          bid.status==='won'?'fe-g':bid.status==='lost'?'fe-r':'fe-mute'
+        }">${h(bid.status||'setup')}</span>
+        <button class="btn btn-sm" onclick="handleExportBid('${bid.id}')">Export</button>
+      </div>
+    </div>
+
+    <div class="nav">${tabs}</div>
+
+    <div class="ct" id="module-ct">
+      ${renderModule(bid)}
+    </div>`;
+}
+
+function renderModule(bid) {
+  switch(ROUTER.bidTab) {
+    case 'workspace':   return renderWorkspace(bid);
+    case 'activities':  return renderActivities(bid);
+    case 'compliance':  return renderCompliance(bid);
+    case 'reviews':     return renderReviews(bid);
+    case 'governance':  return renderGovernance(bid);
+    case 'readiness':   return renderReadiness(bid);
+    case 'submission':  return renderSubmission(bid);
+    default:            return renderWorkspace(bid);
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   MODULE PLACEHOLDERS
+   (Sprint 1a — replaced by full implementations in Sessions 2–5)
+════════════════════════════════════════════════════════════ */
+function _placeholder(code, title, desc, color, sprint) {
+  return `<div class="placeholder">
+    <div class="placeholder-badge" style="border-color:${color};background:${color}1a;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:${color};">${code}</span>
+    </div>
+    <div class="placeholder-code" style="color:${color};">${code}</div>
+    <div class="placeholder-title">${title}</div>
+    <div class="placeholder-desc">${desc}</div>
+    <div style="margin-top:16px;display:flex;gap:8px;align-items:center;justify-content:center;">
+      <span class="fe fe-mute">${sprint}</span>
+    </div>
+  </div>`;
+}
+
+function renderWorkspace(bid) {
+  return _placeholder('M3','Bid Workspace',
+    'Headline metrics, workstream health bars, methodology gates, governance gate pipeline, today\'s actions, smart nudge panel, standup actions summary, and milestone timeline.',
+    'var(--blu)','Sprint 2 · Session 1');
+}
+
+function renderActivities(bid) {
+  return _placeholder('M4','Activity Tracker',
+    'Six views: Workstream, Kanban, List, Dependencies, Standup, and Gantt. State transitions enforced per Rule Set 2.1. The primary operational screen for tracking bid execution.',
+    'var(--gold)','Sprint 1 · Session 5');
+}
+
+function renderCompliance(bid) {
+  return _placeholder('M5','Compliance Engine',
+    'Requirement register, coverage calculations (Rule Set 6.1), gap report, compliance matrix export. Hard gate: mandatory gaps > 0 flags on workspace.',
+    'var(--grn)','Sprint 1 · Session 5');
+}
+
+function renderReviews(bid) {
+  return _placeholder('M6','Review Governance',
+    'Review cycle timeline (Pink, Red, Gold), scorecard entry, action tracking, gate logic enforcement, cross-review analytics. Follows Rule Sets 2.2, 2.6, and 7.',
+    'var(--amb)','Sprint 3');
+}
+
+function renderGovernance(bid) {
+  return _placeholder('M7','Governance Manager',
+    'Configurable gate pipeline, entry criteria evaluation (Rule Set 5.1), gate preparation auto-generation (Rule Set 5.2), risk premium tracking (Rule Set 5.3), decision records.',
+    'var(--pur)','Sprint 4');
+}
+
+function renderReadiness(bid) {
+  return _placeholder('M8','Readiness Dashboard',
+    'Dual-track readiness scorer (Rule Set 3), compression alert integration, executive A4 print view. Shows development readiness and production readiness as separate tracks.',
+    'var(--cyn)','Sprint 4');
+}
+
+function renderSubmission(bid) {
+  return _placeholder('M9','Submission Manager',
+    'Artefact register, QA checklist, approval tracker, submission confirmation log. Final gate before PRD-09 (submission packaging and upload).',
+    'var(--red)','Sprint 5');
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   EVENT HANDLERS
+════════════════════════════════════════════════════════════ */
+function handleNewBid() {
+  // Temporary lightweight creation — full Setup Wizard built in Session 2
+  showModal('new-bid');
+}
+
+function handleExportAll() {
+  const json = STORE.exportAll();
+  _download(json, `pwin-export-${STORE.today()}.json`, 'application/json');
+}
+
+function handleExportBid(id) {
+  const json = STORE.exportBid(id);
+  if (!json) return;
+  _download(json, `pwin-bid-${id.slice(0,8)}-${STORE.today()}.json`, 'application/json');
+}
+
+function handleImport() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        STORE.importAll(ev.target.result);
+        renderApp();
+      } catch(err) { alert('Import failed: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function handleCreateBid(e) {
+  e.preventDefault();
+  const f = document.getElementById('new-bid-form');
+  const name     = f.querySelector('[name=name]').value.trim();
+  const client   = f.querySelector('[name=client]').value.trim();
+  const deadline = f.querySelector('[name=deadline]').value;
+  const manager  = f.querySelector('[name=manager]').value.trim();
+  const tcv      = parseFloat(f.querySelector('[name=tcv]').value) || 0;
+  if (!name) return;
+
+  const id = STORE.uuid();
+  const bid = {
+    id, name, client, bidManager: manager,
+    submissionDeadline: deadline || null,
+    status: 'setup',
+    archetype: 'services',
+    tcv, acv: 0,
+    sector: '', procurementType: '',
+    hasCompetitiveDialogue: false, hasPresentation: false, hasBafo: false,
+    solutionLead: '', commercialLead: '', deliveryLead: '', legalLead: '',
+    winFeeValue: 0, health: 'unk',
+    devReadiness: 0, prodReadiness: 0,
+    createdAt: STORE.now(), updatedAt: STORE.now(),
+    calendar: {
+      workingDays: [1,2,3,4,5],
+      publicHolidays: [],
+      weekendWorking: [],
+      teamUnavailability: [],
+      clientBlackouts: [],
+    },
+    workstreams: [], activities: [], requirements: [],
+    reviewCycles: [], governanceGates: [], standupActions: [],
+    riskAssumptions: [], teamMembers: [], artefacts: [],
+  };
+
+  STORE.setBid(bid);
+  STORE.addBidSummary({
+    id, name, client, bidManager: manager,
+    submissionDeadline: bid.submissionDeadline,
+    status: 'setup', health: 'unk',
+    winFeeValue: 0, devReadiness: 0, prodReadiness: 0,
+  });
+
+  closeModal();
+  ROUTER.goBid(id);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   MODAL SYSTEM
+════════════════════════════════════════════════════════════ */
+function showModal(type) {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = _modalContent(type);
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function closeModal() {
+  const el = document.getElementById('modal-overlay');
+  if (el) el.remove();
+}
+
+function _modalContent(type) {
+  if (type === 'new-bid') {
+    return `<div class="modal">
+      <div class="modal-hdr">
+        <div class="modal-title">New Bid</div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="co co-b" style="margin-bottom:16px;">
+        <div class="co-l">Note</div>
+        <div class="co-t">This is a quick-create form. The full five-stage setup wizard (Session 2) will configure activities, calendar, team, and requirements. You can update all fields once inside the bid workspace.</div>
+      </div>
+      <form id="new-bid-form" onsubmit="handleCreateBid(event)">
+        <div class="form-row">
+          <div class="form-col">
+            <label class="form-label req">Bid Name</label>
+            <input class="inp" name="name" placeholder="e.g. Managed Services Rebid — HMRC" required autocomplete="off">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-col">
+            <label class="form-label req">Client</label>
+            <input class="inp" name="client" placeholder="e.g. HMRC" required autocomplete="off">
+          </div>
+          <div class="form-col">
+            <label class="form-label">Bid Manager</label>
+            <input class="inp" name="manager" placeholder="Your name" autocomplete="off">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-col">
+            <label class="form-label req">Submission Deadline</label>
+            <input class="inp" name="deadline" type="date" required>
+          </div>
+          <div class="form-col">
+            <label class="form-label">Win Fee (£)</label>
+            <input class="inp" name="tcv" type="number" placeholder="0" min="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Bid →</button>
+        </div>
+      </form>
+    </div>`;
+  }
+  return `<div class="modal"><div class="modal-hdr"><div class="modal-title">—</div><button class="modal-close" onclick="closeModal()">×</button></div></div>`;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════════════ */
+function h(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const t = new Date(dateStr); const n = new Date();
+  t.setHours(0,0,0,0); n.setHours(0,0,0,0);
+  return Math.round((t - n) / 86400000);
+}
+
+function _download(content, filename, type) {
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════════ */
+STORE.init();
+renderApp();
+</script>
+</body>
+</html>
