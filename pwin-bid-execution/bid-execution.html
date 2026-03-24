@@ -227,6 +227,57 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .divider{border:none;border-top:1px solid var(--bdr-s);margin:16px 0;}
 
 /* ═══════════════════════════════════════
+   WIZARD
+═══════════════════════════════════════ */
+.wiz-progress{display:flex;align-items:center;padding:14px 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;gap:0;}
+.wiz-si{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:90px;}
+.wiz-si-num{width:26px;height:26px;border-radius:50%;border:1px solid var(--bdr);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:all .2s;flex-shrink:0;}
+.wiz-si-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:center;white-space:nowrap;}
+.wiz-si.active .wiz-si-num{border-color:var(--gold);background:var(--gold-d);color:var(--gold);}
+.wiz-si.active .wiz-si-lbl{color:var(--gold);}
+.wiz-si.done .wiz-si-num{border-color:var(--grn);background:var(--grn-d);color:var(--grn);font-size:11px;}
+.wiz-si.done .wiz-si-lbl{color:var(--grn);}
+.wiz-sl{flex:1;height:1px;background:var(--bdr);min-width:16px;}
+.wiz-nav{display:flex;align-items:center;margin-top:32px;padding-top:20px;border-top:1px solid var(--bdr-s);gap:8px;}
+
+/* Stage 2 — activity panels */
+.act-panel{background:var(--bg2);border:1px solid var(--bdr);margin-bottom:5px;overflow:hidden;}
+.act-panel-hdr{padding:9px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;user-select:none;}
+.act-panel-hdr:hover{background:var(--bg3);}
+.act-col-hdr{display:grid;grid-template-columns:24px 1fr 62px 52px 70px;gap:6px;padding:5px 14px;background:var(--bg4);border-top:1px solid var(--bdr-s);}
+.act-col-hdr span{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);}
+.act-row{display:grid;grid-template-columns:24px 1fr 62px 52px 70px;gap:6px;align-items:center;padding:6px 14px;border-top:1px solid var(--bdr-s);transition:background .1s;}
+.act-row:hover{background:var(--bg3);}
+.act-row.off{opacity:.45;}
+.act-row-name{font-size:11.5px;color:var(--t1);line-height:1.3;}
+.act-row-out{font-size:10px;color:var(--t3);font-style:italic;line-height:1.2;margin-top:1px;}
+.act-inp{background:var(--bg4);border:1px solid var(--bdr);color:var(--t1);font-family:'DM Mono',monospace;font-size:11px;padding:3px 5px;width:100%;text-align:center;outline:none;transition:border-color .15s;}
+.act-inp:focus{border-color:var(--gold);}
+.act-elapsed{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);text-align:center;}
+
+/* Complexity selector */
+.comp-sel{display:flex;gap:4px;margin:10px 0 16px;}
+.comp-btn{padding:7px 18px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:var(--bg2);border:1px solid var(--bdr);cursor:pointer;transition:all .15s;}
+.comp-btn:hover{background:var(--bg3);color:var(--t2);}
+.comp-btn.on{background:var(--gold-d);border-color:var(--gold);color:var(--gold);}
+
+/* Gate checklist */
+.gate-check-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--bdr-s);}
+.gate-check-row:last-child{border-bottom:none;}
+.gate-check-info{flex:1;}
+.gate-check-name{font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.gate-check-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);}
+
+/* Tag row (unavailability / requirements) */
+.tag-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--bdr);margin-bottom:4px;font-size:12px;color:var(--t2);}
+.tag-row span{flex:1;}
+
+/* Day-of-week checkboxes */
+.day-checks{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px;}
+.day-check{display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--bg2);border:1px solid var(--bdr);cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:all .15s;user-select:none;}
+.day-check.on{background:var(--gold-d);border-color:var(--gold);color:var(--gold);}
+
+/* ═══════════════════════════════════════
    PRINT
 ═══════════════════════════════════════ */
 @media print{
@@ -700,11 +751,105 @@ const GATE_LIB = [
   },
 ];
 
+// UK Bank Holidays 2026 (England & Wales)
+const UK_BANK_HOLIDAYS_2026 = [
+  '2026-01-01','2026-04-03','2026-04-06','2026-05-04',
+  '2026-05-25','2026-08-31','2026-12-25','2026-12-28',
+];
+
+/* ════════════════════════════════════════════════════════════
+   WIZARD — Draft state, persistence, and helpers
+════════════════════════════════════════════════════════════ */
+const WIZARD = (() => {
+  const _mk = () => ({
+    step:1,
+    // Stage 1
+    name:'', client:'', sector:'', procurementType:'open',
+    tcv:'', acv:'',
+    ittIssueDate:'', submissionDeadline:'', clarificationDeadline:'',
+    presentationDate:'', expectedAwardDate:'',
+    submissionChannel:'portal', hasIncumbent:false, incumbent:'',
+    hasCompetitiveDialogue:false, hasPresentation:false, hasBafo:false,
+    // Stage 2
+    archetype:'services', complexity:'standard',
+    activityConfig:{}, gateSelection:{},
+    // Stage 3
+    workingDays:[1,2,3,4,5],
+    publicHolidays:[...UK_BANK_HOLIDAYS_2026],
+    teamUnavailability:[],
+    // Stage 4
+    team:{ bidManager:'', solutionLead:'', commercialLead:'', deliveryLead:'', legalLead:'', supplyLead:'' },
+    // Stage 5
+    requirements:[],
+  });
+
+  let _d = null;
+  let _exp = {}; // panel expand state (not persisted)
+
+  function _persist() { localStorage.setItem('pwin:wizard:draft', JSON.stringify(_d)); }
+
+  function _autoGates() {
+    const tcvM = parseFloat(_d.tcv) || 0;
+    GATE_LIB.forEach(g => {
+      if (_d.gateSelection[g.id] !== undefined) return;
+      if (g.defaultFor === 'all') { _d.gateSelection[g.id] = true; return; }
+      if (g.defaultFor === 'tcv_threshold' && tcvM >= g.tcvThreshold) { _d.gateSelection[g.id] = true; return; }
+      _d.gateSelection[g.id] = false;
+    });
+  }
+
+  function _effTs(act, complexity, cfgTs) {
+    if (cfgTs != null) return cfgTs;
+    if (act.pt !== 'P' || complexity === 'standard') return act.ts;
+    return complexity === 'complex' ? act.ts * 2 : act.ts * 3;
+  }
+
+  function _elapsed(dur, ts) {
+    if (!dur) return 0;
+    return ts <= 1 ? dur : Math.ceil((dur / ts) * (1 + (ts - 1) * 0.2));
+  }
+
+  return {
+    get draft() { return _d; },
+    get step()  { return _d ? _d.step : 1; },
+    fresh() {
+      _d = _mk(); _exp = {};
+      _persist();
+    },
+    load() {
+      const s = localStorage.getItem('pwin:wizard:draft');
+      _d = s ? JSON.parse(s) : null;
+    },
+    hasDraft() { return !!_d && _d.step >= 1; },
+    persist: _persist,
+    setStep(n)     { _d.step = n; _persist(); },
+    set(k, v)      { _d[k] = v; _persist(); },
+    setTeam(k, v)  { _d.team[k] = v; _persist(); },
+    togglePanel(id){ _exp[id] = !_exp[id]; },
+    panelOpen(id)  { return !!_exp[id]; },
+    setActCfg(id, k, v) {
+      if (!_d.activityConfig[id]) _d.activityConfig[id] = {};
+      _d.activityConfig[id][k] = v; _persist();
+    },
+    setGate(id, v) { _d.gateSelection[id] = v; _persist(); },
+    autoGates:  _autoGates,
+    effTs:      _effTs,
+    elapsed:    _elapsed,
+    addUnavail(e) { _d.teamUnavailability.push(e); _persist(); },
+    removeUnavail(i){ _d.teamUnavailability.splice(i,1); _persist(); },
+    addReq(r)     { _d.requirements.push(r); _persist(); },
+    removeReq(i)  { _d.requirements.splice(i,1); _persist(); },
+    addHoliday(d) { if (!_d.publicHolidays.includes(d)) { _d.publicHolidays.push(d); _d.publicHolidays.sort(); _persist(); } },
+    removeHoliday(i){ _d.publicHolidays.splice(i,1); _persist(); },
+    abandon() { localStorage.removeItem('pwin:wizard:draft'); _d = null; },
+  };
+})();
+
 /* ════════════════════════════════════════════════════════════
    ROUTER
 ════════════════════════════════════════════════════════════ */
 const ROUTER = {
-  view:   'portfolio',  // 'portfolio' | 'bid'
+  view:   'portfolio',  // 'portfolio' | 'bid' | 'wizard'
   bidId:  null,
   bidTab: 'workspace',
 
@@ -714,6 +859,10 @@ const ROUTER = {
   },
   goBid(id, tab) {
     this.view = 'bid'; this.bidId = id; this.bidTab = tab || 'workspace';
+    renderApp();
+  },
+  goWizard() {
+    this.view = 'wizard';
     renderApp();
   },
   setBidTab(tab) { this.bidTab = tab; renderApp(); },
@@ -735,7 +884,9 @@ const BID_TABS = [
 ════════════════════════════════════════════════════════════ */
 function renderApp() {
   const app = document.getElementById('app');
-  if (ROUTER.view === 'portfolio') {
+  if (ROUTER.view === 'wizard') {
+    app.innerHTML = renderWizardView();
+  } else if (ROUTER.view === 'portfolio') {
     app.innerHTML = renderPortfolioView();
   } else {
     const bid = STORE.loadBid(ROUTER.bidId);
@@ -842,6 +993,414 @@ function renderBidTable(bids) {
   </table>`;
 }
 
+
+/* ════════════════════════════════════════════════════════════
+   RENDER — Setup Wizard
+════════════════════════════════════════════════════════════ */
+function renderWizardView() {
+  const d = WIZARD.draft;
+  const step = WIZARD.step;
+  const labels = ['Bid Identity','Activities & Gates','Calendar','Team','Requirements'];
+  const steps = labels.map((l,i) => {
+    const n = i+1;
+    const cls = n < step ? 'done' : n === step ? 'active' : '';
+    const num = n < step ? '✓' : n;
+    return (i > 0 ? '<div class="wiz-sl"></div>' : '') +
+      `<div class="wiz-si ${cls}"><div class="wiz-si-num">${num}</div><div class="wiz-si-lbl">${l}</div></div>`;
+  }).join('');
+
+  const stages = [renderWizS1, renderWizS2, renderWizS3, renderWizS4, renderWizS5];
+  const content = stages[step-1](d);
+  const isFirst = step === 1;
+  const isLast  = step === 5;
+
+  return `
+    <div class="hdr">
+      <div class="hdr-l">
+        <button class="back-link" onclick="handleWizAbandon()">← Cancel</button>
+        <div class="hdr-divider"></div>
+        <span class="hdr-brand">PWIN Architect</span>
+        <span class="hdr-sub">New Bid Setup</span>
+      </div>
+      <div class="hdr-r">
+        <span class="fe fe-mute">Stage ${step} of 5</span>
+        <button class="btn btn-sm" onclick="handleWizSaveDraft()">Save Draft</button>
+      </div>
+    </div>
+    <div class="wiz-progress">${steps}</div>
+    <div class="ct">
+      ${content}
+      <div class="wiz-nav">
+        ${isFirst
+          ? `<button class="btn" onclick="handleWizAbandon()">Cancel</button>`
+          : `<button class="btn" onclick="wizBack()">← Back</button>`}
+        <div style="flex:1;"></div>
+        ${isLast
+          ? `<button class="btn btn-primary" onclick="confirmWizard()">Confirm & Create Bid →</button>`
+          : `<button class="btn btn-primary" onclick="wizNext()">Next →</button>`}
+      </div>
+    </div>`;
+}
+
+/* ── Stage 1: Bid Identity ─────────────────────────────── */
+function renderWizS1(d) {
+  const wd = d.submissionDeadline && d.ittIssueDate
+    ? (() => {
+        const ms = new Date(d.submissionDeadline) - new Date(d.ittIssueDate);
+        const cal = Math.round(ms/86400000);
+        const wk  = Math.floor(cal/7);
+        const est = wk * 5 + Math.min(cal % 7, 5);
+        return `<div class="co co-v" style="margin-top:10px;"><div class="co-l">Timeline</div><div class="co-t"><strong style="color:var(--grn);">${cal} calendar days</strong> &nbsp;·&nbsp; ~${est} working days from ITT issue to submission</div></div>`;
+      })() : '';
+
+  return `
+    <div class="sl">Stage 1 of 5</div>
+    <div class="pg-title">Bid Identity & Procurement Timeline</div>
+    <div class="pg-desc">External facts. These fields define the bid's identity and the hard constraints the schedule must fit within.</div>
+
+    <div class="form-row">
+      <div class="form-col" style="flex:2;">
+        <label class="form-label req">Bid Name</label>
+        <input class="inp req" id="wiz-name" value="${h(d.name)}" placeholder="e.g. Managed Services Rebid — HMRC" oninput="WIZARD.set('name',this.value)">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label req">Client</label>
+        <input class="inp req" id="wiz-client" value="${h(d.client)}" placeholder="e.g. HMRC" oninput="WIZARD.set('client',this.value)">
+      </div>
+      <div class="form-col">
+        <label class="form-label">Sector</label>
+        <select class="sel" onchange="WIZARD.set('sector',this.value)">
+          ${['','Central Government','Local Government','Defence & Security','Health','Education','Transport','Justice','Other'].map(s=>`<option value="${s}" ${d.sector===s?'selected':''}>${s||'— Select —'}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-col">
+        <label class="form-label">Procurement Type</label>
+        <select class="sel" onchange="WIZARD.set('procurementType',this.value)">
+          ${[['open','Open / ITT'],['restricted','Restricted'],['competitive_dialogue','Competitive Dialogue'],['framework','Framework Call-off'],['dps','DPS'],['other','Other']].map(([v,l])=>`<option value="${v}" ${d.procurementType===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">TCV (£)</label>
+        <input class="inp" type="number" value="${d.tcv}" placeholder="Total contract value" min="0" oninput="WIZARD.set('tcv',this.value)">
+        <div class="form-hint">Total contract value — used for gate auto-selection</div>
+      </div>
+      <div class="form-col">
+        <label class="form-label">ACV (£)</label>
+        <input class="inp" type="number" value="${d.acv}" placeholder="Annual contract value" min="0" oninput="WIZARD.set('acv',this.value)">
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="sh2">Procurement Timeline</div>
+
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">ITT Issue Date</label>
+        <input class="inp" type="date" value="${d.ittIssueDate}" onchange="WIZARD.set('ittIssueDate',this.value);renderApp();">
+      </div>
+      <div class="form-col">
+        <label class="form-label req">Submission Deadline</label>
+        <input class="inp req" id="wiz-deadline" type="date" value="${d.submissionDeadline}" onchange="WIZARD.set('submissionDeadline',this.value);renderApp();">
+      </div>
+      <div class="form-col">
+        <label class="form-label">Clarification Deadline</label>
+        <input class="inp" type="date" value="${d.clarificationDeadline}" onchange="WIZARD.set('clarificationDeadline',this.value)">
+      </div>
+    </div>
+    ${wd}
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">Presentation Date</label>
+        <input class="inp" type="date" value="${d.presentationDate}" onchange="WIZARD.set('presentationDate',this.value);if(this.value)WIZARD.set('hasPresentation',true);">
+        <div class="form-hint">Leave blank if no presentation stage</div>
+      </div>
+      <div class="form-col">
+        <label class="form-label">Expected Award Date</label>
+        <input class="inp" type="date" value="${d.expectedAwardDate}" onchange="WIZARD.set('expectedAwardDate',this.value)">
+      </div>
+      <div class="form-col">
+        <label class="form-label">Submission Channel</label>
+        <select class="sel" onchange="WIZARD.set('submissionChannel',this.value)">
+          ${[['portal','Procurement Portal'],['email','Email'],['physical','Physical'],['other','Other']].map(([v,l])=>`<option value="${v}" ${d.submissionChannel===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="sh2">Bid Characteristics</div>
+    <div class="form-row" style="align-items:center;gap:24px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--t2);">
+        <input type="checkbox" ${d.hasIncumbent?'checked':''} onchange="WIZARD.set('hasIncumbent',this.checked);renderApp();"> Rebid (we are the incumbent)
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--t2);">
+        <input type="checkbox" ${d.hasCompetitiveDialogue?'checked':''} onchange="WIZARD.set('hasCompetitiveDialogue',this.checked);"> Competitive dialogue
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--t2);">
+        <input type="checkbox" ${d.hasBafo?'checked':''} onchange="WIZARD.set('hasBafo',this.checked);"> BAFO stage expected
+      </label>
+    </div>
+    ${d.hasIncumbent ? `
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">Incumbent Name (if not us)</label>
+        <input class="inp" value="${h(d.incumbent)}" placeholder="Or leave blank if we are the incumbent" oninput="WIZARD.set('incumbent',this.value)">
+      </div>
+    </div>` : ''}`;
+}
+
+/* ── Stage 2: Archetype, Activities, Complexity & Gates ── */
+function renderWizS2(d) {
+  const complexity = d.complexity;
+
+  function effTs(act) {
+    const cfg = d.activityConfig[act.id] || {};
+    return WIZARD.effTs(act, complexity, cfg.ts != null ? cfg.ts : null);
+  }
+  function elapsed(act) {
+    const cfg = d.activityConfig[act.id] || {};
+    const dur = cfg.dur != null ? cfg.dur : act.dur;
+    return WIZARD.elapsed(dur, effTs(act));
+  }
+
+  const panels = WS.map(ws => {
+    const open = WIZARD.panelOpen(ws.id);
+    const activeCount = ws.acts.filter(a => {
+      const cfg = d.activityConfig[a.id] || {};
+      return cfg.active !== false;
+    }).length;
+    const wsTotal = ws.acts.reduce((s,a) => {
+      const cfg = d.activityConfig[a.id] || {};
+      if (cfg.active === false) return s;
+      return s + elapsed(a);
+    }, 0);
+    const clsMap = {sales:'gold',solution:'blu',commercial:'grn',legal:'pink',delivery:'amb',supply:'cyn',bidmgmt:'lime',governance:'pur',production:'red',postsub:'pink'};
+    const col = `var(--${clsMap[ws.cls]||'t2'})`;
+
+    const rows = !open ? '' : ws.acts.map(act => {
+      const cfg = d.activityConfig[act.id] || {};
+      const active = cfg.active !== false;
+      const dur = cfg.dur != null ? cfg.dur : act.dur;
+      const ts  = effTs(act);
+      const el  = WIZARD.elapsed(dur, ts);
+      return `<div class="act-row ${active?'':'off'}">
+        <input type="checkbox" ${active?'checked':''} onchange="WIZARD.setActCfg('${act.id}','active',this.checked);renderApp();" title="Include activity">
+        <div><div class="act-row-name"><span style="font-family:'DM Mono',monospace;font-size:10px;color:${col};">${act.id}</span> ${h(act.n)}</div><div class="act-row-out">${h(act.o)}</div></div>
+        <input class="act-inp" type="number" value="${dur||''}" min="0" placeholder="${act.dur||'—'}" title="Effort (person-days)" onchange="WIZARD.setActCfg('${act.id}','dur',+this.value||act.dur);renderApp();">
+        <input class="act-inp" type="number" value="${ts}" min="1" title="Team size" onchange="WIZARD.setActCfg('${act.id}','ts',Math.max(1,+this.value||1));renderApp();">
+        <div class="act-elapsed">${el || '—'}d<br><span style="font-size:9px;color:var(--t4);">${act.pt==='P'?'parallel':act.pt==='S'?'specialist':'coord'}</span></div>
+      </div>`;
+    }).join('');
+
+    return `<div class="act-panel">
+      <div class="act-panel-hdr" onclick="WIZARD.togglePanel('${ws.id}');renderApp();">
+        <span class="tog ${open?'op':''}">▸</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:${col};">${ws.id}</span>
+        <span style="font-size:12.5px;color:var(--t1);flex:1;">${h(ws.name)}</span>
+        <span class="fe fe-mute">${activeCount}/${ws.acts.length} active</span>
+        <span class="fe fe-b" style="margin-left:4px;">${wsTotal}d elapsed</span>
+      </div>
+      ${open ? `<div class="act-col-hdr"><span></span><span>Activity</span><span style="text-align:center;">Effort</span><span style="text-align:center;">Team</span><span style="text-align:center;">Elapsed</span></div>${rows}` : ''}
+    </div>`;
+  }).join('');
+
+  const gates = GATE_LIB.map(g => {
+    const sel = d.gateSelection[g.id] !== false && (d.gateSelection[g.id] === true || g.defaultFor === 'all');
+    const tcvM = parseFloat(d.tcv) || 0;
+    const auto = g.defaultFor === 'all' ? 'All bids'
+      : g.defaultFor === 'tcv_threshold' ? `TCV ≥ £${g.tcvThreshold}m ${tcvM >= g.tcvThreshold ? '✓' : '(below threshold)'}`
+      : 'BAFO only';
+    return `<div class="gate-check-row">
+      <input type="checkbox" ${sel?'checked':''} onchange="WIZARD.setGate('${g.id}',this.checked);renderApp();">
+      <div class="gate-check-info">
+        <div class="gate-check-name">${h(g.name)}</div>
+        <div class="gate-check-meta">${g.type.charAt(0).toUpperCase()+g.type.slice(1)} gate &nbsp;·&nbsp; ${auto} &nbsp;·&nbsp; T-${g.defaultLeadDays} lead time</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="sl">Stage 2 of 5</div>
+    <div class="pg-title">Archetype, Activities & Governance Gates</div>
+    <div class="pg-desc">Review the ${WS_TOTALS.acts} activities and deactivate any that don't apply. Adjust effort or team size if needed. Select which governance gates apply to this bid.</div>
+
+    <div class="sh2">Bid Complexity</div>
+    <div class="bt">Sets default team sizes for parallelisable (P-type) activities. Standard = template defaults. Complex ≈ 2× team. Major ≈ 3× team.</div>
+    <div class="comp-sel">
+      ${[['standard','Standard (8–12 team)'],['complex','Complex (15–25 team)'],['major','Major (25–40 team)']].map(([v,l])=>`<button class="comp-btn ${complexity===v?'on':''}" onclick="WIZARD.set('complexity','${v}');renderApp();">${l}</button>`).join('')}
+    </div>
+
+    <div class="sh2">Activities <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);margin-left:8px;">click workstream to expand</span></div>
+    ${panels}
+
+    <div class="sh2" style="margin-top:24px;">Governance Gates</div>
+    <div class="bt">Select which gates apply. Gates marked for "All bids" are pre-selected. TCV-threshold gates are auto-selected based on the TCV entered in Stage 1.</div>
+    <div style="background:var(--bg2);border:1px solid var(--bdr);padding:4px 14px;">${gates}</div>`;
+}
+
+/* ── Stage 3: Calendar & Constraints ──────────────────── */
+function renderWizS3(d) {
+  const days = [['1','Mon'],['2','Tue'],['3','Wed'],['4','Thu'],['5','Fri'],['6','Sat'],['0','Sun']];
+  const dayChecks = days.map(([v,l]) =>
+    `<div class="day-check ${d.workingDays.includes(+v)?'on':''}" onclick="wizToggleDay(${v});">${l}</div>`
+  ).join('');
+
+  const holidays = d.publicHolidays.map((dt,i) =>
+    `<div class="tag-row"><span class="mono" style="font-size:11px;">${dt}</span><span style="font-size:11.5px;color:var(--t3);">${new Date(dt+'T12:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span><button class="btn btn-sm btn-danger" onclick="WIZARD.removeHoliday(${i});renderApp();">×</button></div>`
+  ).join('') || '<div style="color:var(--t3);font-size:12px;padding:8px 0;">No holidays configured</div>';
+
+  const unavail = d.teamUnavailability.map((u,i) =>
+    `<div class="tag-row"><span><strong style="color:var(--t1);">${h(u.name)}</strong> &nbsp; ${u.from} → ${u.to}${u.notes?` &nbsp; <em style="color:var(--t3);">${h(u.notes)}</em>`:''}</span><button class="btn btn-sm btn-danger" onclick="WIZARD.removeUnavail(${i});renderApp();">×</button></div>`
+  ).join('') || '<div style="color:var(--t3);font-size:12px;padding:8px 0;">No unavailability periods</div>';
+
+  return `
+    <div class="sl">Stage 3 of 5</div>
+    <div class="pg-title">Calendar & Constraints</div>
+    <div class="pg-desc">Configure working patterns and block out unavailability. This turns effort estimates into real scheduled dates in the next session.</div>
+
+    <div class="sh2">Working Days</div>
+    <div class="day-checks">${dayChecks}</div>
+
+    <div class="sh2">Public Holidays</div>
+    <div class="bt">2026 UK Bank Holidays (England & Wales) are pre-loaded. Add or remove dates as needed for your team's location.</div>
+    ${holidays}
+    <div class="form-row" style="margin-top:10px;">
+      <div class="form-col" style="max-width:200px;">
+        <label class="form-label">Add Holiday Date</label>
+        <input class="inp" type="date" id="wiz-add-holiday">
+      </div>
+      <div class="form-col" style="display:flex;align-items:flex-end;">
+        <button class="btn" onclick="wizAddHoliday()">+ Add</button>
+      </div>
+    </div>
+
+    <div class="sh2" style="margin-top:20px;">Team Unavailability</div>
+    <div class="bt">Block out periods when key team members are unavailable. The scheduling engine uses this to avoid assigning work during these windows.</div>
+    ${unavail}
+    <div class="co co-b" style="margin-top:14px;">
+      <div class="co-l">Add Unavailability</div>
+      <div class="form-row" style="margin-top:8px;margin-bottom:0;">
+        <div class="form-col">
+          <label class="form-label">Name</label>
+          <input class="inp" id="unavail-name" placeholder="Team member name">
+        </div>
+        <div class="form-col">
+          <label class="form-label">From</label>
+          <input class="inp" type="date" id="unavail-from">
+        </div>
+        <div class="form-col">
+          <label class="form-label">To</label>
+          <input class="inp" type="date" id="unavail-to">
+        </div>
+        <div class="form-col">
+          <label class="form-label">Notes</label>
+          <input class="inp" id="unavail-notes" placeholder="e.g. Annual leave">
+        </div>
+        <div class="form-col" style="display:flex;align-items:flex-end;">
+          <button class="btn" onclick="wizAddUnavail()">+ Add</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Stage 4: Team Assignment ──────────────────────────── */
+function renderWizS4(d) {
+  const roles = [
+    ['bidManager',   'Bid Manager',      'Primary operational lead for the bid'],
+    ['solutionLead', 'Solution Lead',     'Leads SOL workstream — target operating model'],
+    ['commercialLead','Commercial Lead',  'Leads COM workstream — pricing and modelling'],
+    ['deliveryLead', 'Delivery Lead',     'Leads DEL workstream — risk and mobilisation'],
+    ['legalLead',    'Legal Lead',        'Leads LEG workstream — contract and compliance'],
+    ['supplyLead',   'Supply Chain Lead', 'Leads SUP workstream — partners and teaming'],
+  ];
+
+  const rows = roles.map(([key, label, hint]) => `
+    <div class="form-row">
+      <div class="form-col" style="max-width:220px;">
+        <label class="form-label">${label}</label>
+        <input class="inp" value="${h(d.team[key])}" placeholder="Full name" oninput="WIZARD.setTeam('${key}',this.value)">
+        <div class="form-hint">${hint}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="sl">Stage 4 of 5</div>
+    <div class="pg-title">Team & Role Assignment</div>
+    <div class="pg-desc">Assign named people to key roles. Roles are propagated to activities as default owners. All fields optional — you can assign team members from within the bid workspace.</div>
+    ${rows}
+    <div class="co co-g" style="margin-top:16px;">
+      <div class="co-l">Additional team members</div>
+      <div class="co-t">SMEs, authors, and reviewers can be added from the Activity Tracker once the bid is created. The roles above cover workstream leads only.</div>
+    </div>`;
+}
+
+/* ── Stage 5: Requirements Import ─────────────────────── */
+function renderWizS5(d) {
+  const classOpts = ['Mandatory','Should','Could','Won\'t'];
+  const catOpts   = ['Technical','Commercial','Legal','Delivery','Social Value','Governance','Other'];
+
+  const reqRows = d.requirements.map((r,i) =>
+    `<div class="tag-row" style="flex-wrap:wrap;gap:6px;">
+      <span class="mono" style="font-size:10px;min-width:70px;">${h(r.ref)}</span>
+      <span style="flex:1;min-width:140px;">${h(r.text)}</span>
+      <span class="fe fe-mute">${h(r.classification)}</span>
+      <span class="fe fe-b">${h(r.category)}</span>
+      <button class="btn btn-sm btn-danger" onclick="WIZARD.removeReq(${i});renderApp();">×</button>
+    </div>`
+  ).join('') || '<div style="color:var(--t3);font-size:12px;padding:8px 0;">No requirements added yet — or skip and add from the Compliance module after setup.</div>';
+
+  return `
+    <div class="sl">Stage 5 of 5</div>
+    <div class="pg-title">Requirements Import</div>
+    <div class="pg-desc">Seed the compliance register. You can add requirements now or skip and populate from the Compliance module after the bid is created.</div>
+
+    <div class="sh2">Requirements Added (${d.requirements.length})</div>
+    ${reqRows}
+
+    <div class="co co-b" style="margin-top:16px;">
+      <div class="co-l">Add Requirement</div>
+      <div class="form-row" style="margin-top:8px;">
+        <div class="form-col" style="max-width:100px;">
+          <label class="form-label">Ref</label>
+          <input class="inp" id="req-ref" placeholder="e.g. 3.1.2">
+        </div>
+        <div class="form-col" style="flex:3;">
+          <label class="form-label">Requirement Text</label>
+          <input class="inp" id="req-text" placeholder="The supplier shall...">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col">
+          <label class="form-label">Classification</label>
+          <select class="sel" id="req-class">
+            ${classOpts.map(o=>`<option>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-col">
+          <label class="form-label">Category</label>
+          <select class="sel" id="req-cat">
+            ${catOpts.map(o=>`<option>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-col" style="display:flex;align-items:flex-end;">
+          <button class="btn" onclick="wizAddReq()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="co co-g" style="margin-top:16px;">
+      <div class="co-l">CSV Import</div>
+      <div class="co-t">Paste or upload a CSV with columns: ref, text, classification, category. Coming in a future session — for now, use manual entry above or skip entirely.</div>
+    </div>
+
+    <div class="co co-g" style="margin-top:8px;">
+      <div class="co-l">Ready to create</div>
+      <div class="co-t">Click <strong>Confirm & Create Bid →</strong> to generate the full bid with all configured activities, governance gates, calendar, and team. You will be taken directly into the bid workspace.</div>
+    </div>`;
+}
 
 /* ════════════════════════════════════════════════════════════
    RENDER — Bid Workspace (Level 2)
@@ -955,8 +1514,200 @@ function renderSubmission(bid) {
    EVENT HANDLERS
 ════════════════════════════════════════════════════════════ */
 function handleNewBid() {
-  // Temporary lightweight creation — full Setup Wizard built in Session 2
-  showModal('new-bid');
+  WIZARD.fresh();
+  ROUTER.goWizard();
+}
+
+/* ════════════════════════════════════════════════════════════
+   WIZARD EVENT HANDLERS
+════════════════════════════════════════════════════════════ */
+function wizNext() {
+  const d = WIZARD.draft;
+  const step = WIZARD.step;
+  if (step === 1) {
+    if (!d.name.trim())              { alert('Bid name is required.'); return; }
+    if (!d.submissionDeadline)       { alert('Submission deadline is required.'); return; }
+    // Auto-select gates based on TCV before entering Stage 2
+    WIZARD.autoGates();
+  }
+  WIZARD.setStep(step + 1);
+  renderApp();
+  window.scrollTo(0, 0);
+}
+
+function wizBack() {
+  WIZARD.setStep(WIZARD.step - 1);
+  renderApp();
+  window.scrollTo(0, 0);
+}
+
+function handleWizAbandon() {
+  if (confirm('Abandon setup? Your draft will be cleared.')) {
+    WIZARD.abandon();
+    ROUTER.goPortfolio();
+  }
+}
+
+function handleWizSaveDraft() {
+  WIZARD.persist();
+  // Show brief feedback
+  const btn = document.activeElement;
+  if (btn) { const orig = btn.textContent; btn.textContent = 'Saved ✓'; setTimeout(() => { btn.textContent = orig; }, 1200); }
+}
+
+function wizToggleDay(v) {
+  const d = WIZARD.draft;
+  const n = +v;
+  const idx = d.workingDays.indexOf(n);
+  if (idx >= 0) d.workingDays.splice(idx, 1);
+  else          d.workingDays.push(n);
+  d.workingDays.sort();
+  WIZARD.persist();
+  renderApp();
+}
+
+function wizAddHoliday() {
+  const dt = document.getElementById('wiz-add-holiday').value;
+  if (!dt) return;
+  WIZARD.addHoliday(dt);
+  renderApp();
+}
+
+function wizAddUnavail() {
+  const name  = (document.getElementById('unavail-name').value || '').trim();
+  const from  = document.getElementById('unavail-from').value;
+  const to    = document.getElementById('unavail-to').value;
+  const notes = (document.getElementById('unavail-notes').value || '').trim();
+  if (!name || !from || !to) { alert('Name, from date and to date are required.'); return; }
+  if (from > to)             { alert('From date must be on or before to date.'); return; }
+  WIZARD.addUnavail({ name, from, to, notes });
+  renderApp();
+}
+
+function wizAddReq() {
+  const ref   = (document.getElementById('req-ref').value   || '').trim();
+  const text  = (document.getElementById('req-text').value  || '').trim();
+  const cls   = document.getElementById('req-class').value;
+  const cat   = document.getElementById('req-cat').value;
+  if (!text) { alert('Requirement text is required.'); return; }
+  WIZARD.addReq({ id: STORE.uuid(), ref, text, classification: cls, category: cat,
+    status:'not_started', responseRef:'', responseStatus:'gap', notes:'' });
+  renderApp();
+}
+
+function confirmWizard() {
+  const d = WIZARD.draft;
+  if (!d.name.trim() || !d.submissionDeadline) {
+    alert('Bid name and submission deadline are required. Please go back to Stage 1.');
+    return;
+  }
+
+  const bid = _generateBidFromWizard(d);
+  STORE.setBid(bid);
+  STORE.addBidSummary({
+    id: bid.id, name: bid.name, client: bid.client,
+    bidManager: bid.bidManager,
+    submissionDeadline: bid.submissionDeadline,
+    status: 'setup', health: 'unk',
+    winFeeValue: 0, devReadiness: 0, prodReadiness: 0,
+  });
+
+  WIZARD.abandon();
+  ROUTER.goBid(bid.id);
+}
+
+function _generateBidFromWizard(d) {
+  const id   = STORE.uuid();
+  const tcvM = parseFloat(d.tcv) || 0;
+  const acvM = parseFloat(d.acv) || 0;
+
+  // Build activities from WS template with complexity + config overrides
+  const activities = [];
+  const workstreams = WS.map(ws => ({ id: ws.id, name: ws.name, cls: ws.cls, phase: ws.ph }));
+
+  WS.forEach(ws => {
+    ws.acts.forEach(tmpl => {
+      const cfg    = d.activityConfig[tmpl.id] || {};
+      const active = cfg.active !== false;
+      const dur    = cfg.dur != null ? cfg.dur : tmpl.dur;
+      const ts     = WIZARD.effTs(tmpl, d.complexity, cfg.ts != null ? cfg.ts : null);
+
+      activities.push({
+        id: tmpl.id,
+        workstreamId: ws.id,
+        name: tmpl.n,
+        output: tmpl.o,
+        parallelisationType: tmpl.pt,
+        dependencies: [...tmpl.d],
+        effortDays: dur,
+        teamSize: ts,
+        active,
+        status: 'not_started',
+        assurance: 'none',
+        owner: _activityOwner(tmpl.id, ws.id, d.team),
+        plannedStart: null, plannedEnd: null,
+        actualStart: null, actualEnd: null,
+        lastUpdated: null, notes: '',
+      });
+    });
+  });
+
+  // Build governance gates from selected gates
+  const governanceGates = GATE_LIB
+    .filter(g => d.gateSelection[g.id])
+    .map(g => ({
+      id: STORE.uuid(), templateId: g.id, name: g.name, type: g.type,
+      status: 'pending', plannedDate: null, actualDate: null,
+      decision: null, conditions: [], riskPremium: 0,
+      entryCriteria: g.entryCriteria.map(c => ({ text: c, met: false })),
+      prepActions: [], notes: '',
+    }));
+
+  // Activate BM-09 if competitive dialogue
+  if (d.hasCompetitiveDialogue) {
+    const bm09 = activities.find(a => a.id === 'BM-09');
+    if (bm09) bm09.active = true;
+  }
+
+  return {
+    id, name: d.name, client: d.client,
+    sector: d.sector, procurementType: d.procurementType,
+    bidManager: d.team.bidManager, solutionLead: d.team.solutionLead,
+    commercialLead: d.team.commercialLead, deliveryLead: d.team.deliveryLead,
+    legalLead: d.team.legalLead, supplyChainLead: d.team.supplyLead,
+    submissionDeadline: d.submissionDeadline || null,
+    ittIssueDate: d.ittIssueDate || null,
+    clarificationDeadline: d.clarificationDeadline || null,
+    presentationDate: d.presentationDate || null,
+    expectedAwardDate: d.expectedAwardDate || null,
+    submissionChannel: d.submissionChannel,
+    hasIncumbent: d.hasIncumbent, incumbent: d.incumbent,
+    hasCompetitiveDialogue: d.hasCompetitiveDialogue,
+    hasPresentation: !!d.presentationDate, hasBafo: d.hasBafo,
+    status: 'setup', archetype: 'services', complexity: d.complexity,
+    tcv: tcvM, acv: acvM, winFeeValue: 0,
+    health: 'unk', devReadiness: 0, prodReadiness: 0,
+    createdAt: STORE.now(), updatedAt: STORE.now(),
+    calendar: {
+      workingDays: d.workingDays,
+      publicHolidays: [...d.publicHolidays],
+      weekendWorking: [],
+      teamUnavailability: [...d.teamUnavailability],
+      clientBlackouts: [],
+    },
+    workstreams, activities, requirements: [...d.requirements],
+    reviewCycles: [], governanceGates, standupActions: [],
+    riskAssumptions: [], teamMembers: [], artefacts: [],
+  };
+}
+
+function _activityOwner(actId, wsId, team) {
+  if (wsId === 'SOL') return team.solutionLead  || '';
+  if (wsId === 'COM') return team.commercialLead || '';
+  if (wsId === 'DEL') return team.deliveryLead   || '';
+  if (wsId === 'LEG') return team.legalLead      || '';
+  if (wsId === 'SUP') return team.supplyLead     || '';
+  return team.bidManager || '';
 }
 
 function handleExportAll() {
@@ -1128,6 +1879,7 @@ function _download(content, filename, type) {
    INIT
 ════════════════════════════════════════════════════════════ */
 STORE.init();
+WIZARD.load();
 renderApp();
 </script>
 </body>
