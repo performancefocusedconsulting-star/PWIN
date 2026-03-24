@@ -376,6 +376,331 @@ const STORE = (() => {
 
 
 /* ════════════════════════════════════════════════════════════
+   TEMPLATES — Static Archetype & Gate Library Data
+   Session 1b: all 79 activities, governance gate library,
+   dependency threshold constants.
+════════════════════════════════════════════════════════════ */
+
+// Dependency threshold codes (used as dep-threshold overrides per activity)
+// Default is 'dc' (draft complete). Override to 'ip' for soft/early-start deps.
+const DT = {
+  ip: 'in_progress',    // soft/early start — begin while predecessor is in progress
+  dc: 'draft_complete', // default — begin when predecessor reaches draft complete
+  fn: 'final',          // conservative — begin only when predecessor is final/assured
+};
+
+// Workstream & Activity library — Services archetype (standard operating model)
+// Fields per activity:
+//   id  — unique code (e.g. SAL-01)
+//   n   — activity name
+//   o   — primary output/deliverable
+//   d   — dependency IDs (empty = start day one)
+//   dur — effort in person-days
+//   ts  — team size at standard complexity
+//   pt  — parallelisation type: P=Parallelisable, S=Specialist, C=Coordination
+//   dt  — optional dep-threshold map: { 'PRED-ID': DT.ip } for early-start overrides
+const WS = [
+  {id:'SAL', name:'Sales & Capture', cls:'sales', ph:'DEV', acts:[
+    {id:'SAL-01', n:'Customer engagement & intelligence gathering',      o:'Customer intelligence briefing',                              d:[],                                          dur:10, ts:1, pt:'S'},
+    {id:'SAL-02', n:'Incumbent performance review (rebid)',              o:'Incumbent performance assessment',                           d:[],                                          dur:5,  ts:1, pt:'S'},
+    {id:'SAL-03', n:'Competitor analysis & positioning',                o:'Competitive landscape assessment',                           d:['SAL-01'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'SAL-04', n:'Win theme development & refinement',               o:'Win theme document',                                         d:['SAL-01','SAL-03'],                         dur:5,  ts:1, pt:'S'},
+    {id:'SAL-05', n:'Evaluation criteria mapping & scoring strategy',   o:'Evaluation criteria matrix with scoring approach',           d:['SAL-04'],                                  dur:3,  ts:1, pt:'S'},
+    {id:'SAL-06', n:'Capture plan finalisation & win strategy lock',    o:'Capture plan (locked) — METHODOLOGY GATE',                  d:['SAL-04','SAL-05'],                         dur:3,  ts:1, pt:'S'},
+    {id:'SAL-07', n:'Pre-submission clarification strategy & drafting', o:'Clarification question register (prioritised)',              d:['SAL-04','SOL-01'],                         dur:3,  ts:2, pt:'P'},
+    {id:'SAL-08', n:'Clarification submission & response management',   o:'Clarification response log with impact assessment',          d:['SAL-07'],                                  dur:5,  ts:1, pt:'C'},
+    {id:'SAL-09', n:'Clarification impact analysis & workstream updates', o:'Updated requirements/assumptions across workstreams',      d:['SAL-08'],                                  dur:3,  ts:2, pt:'P'},
+  ]},
+  {id:'SOL', name:'Solution Design', cls:'solution', ph:'DEV', acts:[
+    {id:'SOL-01', n:'Requirements analysis & interpretation',           o:'Requirements interpretation document',                       d:['SAL-06'],                                  dur:5,  ts:2, pt:'P'},
+    {id:'SOL-02', n:'Current service model review (rebid)',             o:'As-is service model assessment',                             d:[],                                          dur:5,  ts:1, pt:'S'},
+    {id:'SOL-03', n:'Target operating model design',                    o:'Target operating model',                                     d:['SOL-01','SOL-02'],                         dur:45, ts:3, pt:'P'},
+    {id:'SOL-04', n:'Service delivery model design',                    o:'Service delivery model',                                     d:['SOL-03'],                                  dur:30, ts:3, pt:'P'},
+    {id:'SOL-05', n:'Technology & digital approach',                    o:'Technology solution design',                                 d:['SOL-03','SUP-02'],                         dur:20, ts:2, pt:'P'},
+    {id:'SOL-06', n:'Staffing model & TUPE analysis',                   o:'Staffing model with TUPE schedule',                          d:['SOL-04'],                                  dur:8,  ts:1, pt:'S'},
+    {id:'SOL-07', n:'Transition & mobilisation approach',               o:'Transition plan',                                            d:['SOL-04','SOL-05','SOL-06'],                dur:16, ts:2, pt:'P'},
+    {id:'SOL-08', n:'Innovation & continuous improvement',              o:'Innovation roadmap',                                         d:['SOL-03'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'SOL-09', n:'Social value proposition',                         o:'Social value plan',                                          d:['SOL-04'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'SOL-10', n:'Evidence strategy & case study identification',    o:'Evidence requirements matrix',                               d:['SOL-04','SAL-05'],                         dur:3,  ts:1, pt:'S'},
+    {id:'SOL-11', n:'Solution design lock',                             o:'Solution design pack (locked & assured)',                    d:['SOL-03','SOL-04','SOL-05','SOL-06','SOL-07','SOL-08','SOL-09','SOL-10'], dur:3, ts:1, pt:'C'},
+  ]},
+  {id:'COM', name:'Commercial & Pricing', cls:'commercial', ph:'DEV', acts:[
+    {id:'COM-01', n:'Should-cost model development',                    o:'Should-cost model',                                          d:['SOL-04','SOL-06'],                         dur:8,  ts:1, pt:'S'},
+    {id:'COM-02', n:'Price-to-win analysis',                            o:'Price-to-win assessment',                                    d:['SAL-03','COM-01'],                         dur:3,  ts:1, pt:'S'},
+    {id:'COM-03', n:'Subcontractor & supply chain pricing',             o:'Partner pricing schedule',                                   d:['SUP-04'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'COM-04', n:'Commercial model & payment mechanisms',            o:'Commercial model document',                                  d:['SOL-04','LEG-02'],                         dur:5,  ts:1, pt:'S'},
+    {id:'COM-05', n:'Margin structure & sensitivity analysis',          o:'Margin model with sensitivities',                            d:['COM-01','COM-03'],                         dur:3,  ts:1, pt:'S'},
+    {id:'COM-06', n:'Pricing model finalisation',                       o:'Pricing model (locked & assured)',                           d:['COM-01','COM-02','COM-03','COM-04','COM-05','DEL-01'], dur:5, ts:1, pt:'S'},
+  ]},
+  {id:'LEG', name:'Legal & Contractual', cls:'legal', ph:'DEV', acts:[
+    {id:'LEG-01', n:'Contract review & markup',                         o:'Contract markup with positions log',                         d:[],                                          dur:8,  ts:1, pt:'S'},
+    {id:'LEG-02', n:'Risk allocation analysis',                         o:'Risk allocation matrix',                                     d:['LEG-01'],                                  dur:3,  ts:1, pt:'S'},
+    {id:'LEG-03', n:'Insurance & liability review',                     o:'Insurance requirements assessment',                          d:[],                                          dur:3,  ts:1, pt:'S'},
+    {id:'LEG-04', n:'TUPE obligations assessment',                      o:'TUPE compliance assessment',                                 d:['SOL-06'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'LEG-05', n:'Data protection & security review',                o:'DPIA / security assessment',                                 d:['SOL-05'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'LEG-06', n:'Subcontractor terms review',                       o:'Subcontract terms summary',                                  d:['SUP-03','LEG-01'],                         dur:5,  ts:1, pt:'S'},
+  ]},
+  {id:'DEL', name:'Programme & Delivery', cls:'delivery', ph:'DEV', acts:[
+    {id:'DEL-01', n:'Delivery risk & assumptions register',             o:'Delivery risk & assumptions register (living document)',     d:['SOL-03','SOL-04'],                         dur:8,  ts:1, pt:'S'},
+    {id:'DEL-02', n:'Mobilisation & implementation planning',           o:'Mobilisation plan',                                          d:['SOL-07'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'DEL-03', n:'Performance framework & KPIs/SLAs',               o:'KPI/SLA framework',                                          d:[],                                          dur:5,  ts:1, pt:'S'},
+    {id:'DEL-04', n:'Resource & capacity plan',                         o:'Resource plan',                                              d:['SOL-06'],                                  dur:3,  ts:1, pt:'S'},
+    {id:'DEL-05', n:'Business continuity & exit planning',              o:'BC/exit plan',                                               d:[],                                          dur:3,  ts:1, pt:'S'},
+    {id:'DEL-06', n:'Risk mitigation & residual acceptance',            o:'Mitigated risk register (assured)',                          d:['DEL-01','COM-06'],                         dur:5,  ts:1, pt:'S'},
+  ]},
+  {id:'SUP', name:'Supply Chain & Partners', cls:'supply', ph:'DEV', acts:[
+    {id:'SUP-01', n:'Partner identification & selection',               o:'Partner shortlist with rationale',                           d:['SOL-01'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'SUP-02', n:'Partner solution inputs & design contribution',    o:'Partner solution inputs pack',                               d:['SUP-01','SOL-03'],                         dur:10, ts:2, pt:'P'},
+    {id:'SUP-03', n:'Teaming agreement negotiation',                    o:'Signed teaming agreements',                                  d:['SUP-01'],                                  dur:15, ts:1, pt:'S'},
+    {id:'SUP-04', n:'Partner pricing',                                  o:'Partner pricing schedules',                                  d:['SUP-02','SOL-04'],                         dur:8,  ts:1, pt:'S'},
+    {id:'SUP-05', n:'Partner credentials & references',                 o:'Partner case studies & CVs',                                 d:['SUP-01'],                                  dur:5,  ts:2, pt:'P'},
+    {id:'SUP-06', n:'Back-to-back commercial terms',                    o:'Back-to-back terms agreed',                                  d:['SUP-03','LEG-06','COM-04'],                dur:5,  ts:1, pt:'S'},
+  ]},
+  {id:'BM', name:'Bid Management & Programme Control', cls:'bidmgmt', ph:'CONT', acts:[
+    {id:'BM-01',  n:'Kickoff planning & execution',                     o:'Kickoff pack: strategy summary, RACI, timeline, comms plan', d:['SAL-06'],                                  dur:3,  ts:1, pt:'C'},
+    {id:'BM-02',  n:'Bid management plan production',                   o:'Bid management plan (BMP)',                                  d:['BM-01'],                                   dur:2,  ts:1, pt:'C'},
+    {id:'BM-03',  n:'Document management & version control setup',      o:'Repository structure, naming conventions, platform',         d:['BM-01'],                                   dur:1,  ts:1, pt:'C'},
+    {id:'BM-04',  n:'Resource management & tracking',                   o:'Resource tracker, security clearance log, availability register', d:['BM-01'],                             dur:0,  ts:1, pt:'C'},
+    {id:'BM-05',  n:'Bid cost management',                              o:'Cost-to-bid tracker',                                        d:['BM-01'],                                   dur:0,  ts:1, pt:'C'},
+    {id:'BM-06',  n:'Progress reporting',                               o:'Weekly progress reports, milestone achievement reports',     d:['BM-01'],                                   dur:0,  ts:1, pt:'C'},
+    {id:'BM-07',  n:'Quality management approach',                      o:'Quality plan: evaluation weighting analysis, page budgets',  d:['SAL-05','BM-01'],                          dur:3,  ts:1, pt:'C'},
+    {id:'BM-08',  n:'Stakeholder & communications management',          o:'Stakeholder comms plan, decision log',                       d:['BM-01'],                                   dur:2,  ts:1, pt:'C'},
+    {id:'BM-09',  n:'Competitive dialogue management (if applicable)',  o:'Dialogue prep packs, session records, iteration tracker',    d:['SAL-06','SOL-03'],                         dur:0,  ts:2, pt:'P'},
+    {id:'BM-10',  n:'Storyboard development & sign-off',                o:'Approved storyboard — METHODOLOGY GATE',                    d:['SAL-06','SAL-05','SOL-11'],                dur:5,  ts:2, pt:'P'},
+    {id:'BM-11',  n:'Hot debrief (post-submission)',                    o:'Hot debrief notes, immediate lessons log',                   d:['PRD-09'],                                  dur:1,  ts:1, pt:'C'},
+    {id:'BM-12',  n:'Lessons learned & knowledge capture',              o:'Lessons report, content library updates, process improvement actions', d:['BM-11'],                        dur:3,  ts:1, pt:'C'},
+    {id:'BM-13',  n:'Bid risk & assumptions register',                  o:'Bid risk register (process risks, scheduling assumptions, resource risks)', d:[],                          dur:0,  ts:1, pt:'C'},
+  ]},
+  {id:'GOV', name:'Internal Governance', cls:'governance', ph:'CONT', acts:[
+    {id:'GOV-01', n:'Pursuit approval (configurable)',                  o:'Pursuit approval decision record',                           d:['SAL-06'],                                  dur:2,  ts:1, pt:'C'},
+    {id:'GOV-02', n:'Solution & strategy review (configurable)',        o:'Solution review decision record',                            d:['SAL-06','SOL-03','DEL-01','SUP-01'],       dur:2,  ts:1, pt:'C'},
+    {id:'GOV-03', n:'Pricing & risk review (configurable)',             o:'Pricing decision record + approved price',                   d:['COM-06','DEL-06','LEG-02','SUP-06'],       dur:2,  ts:1, pt:'C'},
+    {id:'GOV-04', n:'Executive approval (configurable — may be multi-tier)', o:'Executive approval decision record(s)',                d:['GOV-03','PRD-06','PRD-07'],                dur:2,  ts:1, pt:'C'},
+    {id:'GOV-05', n:'Final submission authority (configurable)',        o:'Submission authority confirmation',                          d:['GOV-04','PRD-08'],                         dur:1,  ts:1, pt:'C'},
+  ]},
+  {id:'PRD', name:'Proposal Production', cls:'production', ph:'PRD', acts:[
+    {id:'PRD-01', n:'Compliance matrix & requirements mapping',         o:'Compliance matrix (live)',                                   d:['SOL-01'],                                  dur:3,  ts:1, pt:'S'},
+    {id:'PRD-02', n:'Section drafting & content assembly',              o:'Draft response sections',                                    d:['BM-10','SOL-11'],                          dur:60, ts:4, pt:'P'},
+    {id:'PRD-03', n:'Evidence, case studies & CV assembly',             o:'Evidence pack',                                              d:['SUP-05','SOL-10'],                         dur:16, ts:2, pt:'P'},
+    {id:'PRD-04', n:'Pricing schedules & commercial response',          o:'Pricing response documents',                                 d:['COM-06'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'PRD-05', n:'Pink review (storyboard/outline)',                 o:'Pink review scorecard & actions',                            d:['BM-10'],                                   dur:3,  ts:1, pt:'C'},
+    {id:'PRD-06', n:'Red review (full draft)',                          o:'Red review scorecard & actions resolved',                    d:['PRD-02','PRD-03','PRD-04'],                dur:5,  ts:1, pt:'C'},
+    {id:'PRD-07', n:'Gold review (final/executive)',                    o:'Gold review scorecard & sign-off',                           d:['PRD-06','COM-06'],                         dur:3,  ts:1, pt:'C'},
+    {id:'PRD-08', n:'Final QA & formatting',                            o:'QA checklist complete',                                      d:['PRD-07'],                                  dur:3,  ts:1, pt:'S'},
+    {id:'PRD-09', n:'Submission packaging & upload',                    o:'Submission confirmation receipt',                            d:['PRD-08','GOV-05'],                         dur:2,  ts:1, pt:'C'},
+  ]},
+  {id:'POST', name:'Post-Submission', cls:'postsub', ph:'POST', acts:[
+    {id:'POST-01', n:'Presentation design & development',               o:'Presentation deck, speaker notes, narrative',                d:['PRD-09'],                                  dur:10, ts:2, pt:'P'},
+    {id:'POST-02', n:'Presentation rehearsals & coaching',              o:'Rehearsal debrief notes, revised deck, Q&A prep',           d:['POST-01'],                                 dur:3,  ts:1, pt:'C'},
+    {id:'POST-03', n:'Presentation delivery',                           o:'Presentation delivered, Q&A record',                        d:['POST-02'],                                 dur:1,  ts:1, pt:'C'},
+    {id:'POST-04', n:'Post-submission clarification management',        o:'Clarification log, submitted responses, updated risk log',   d:['PRD-09'],                                  dur:5,  ts:2, pt:'P'},
+    {id:'POST-05', n:'BAFO preparation & revised pricing',              o:'Revised pricing model, updated solution elements',          d:['POST-04'],                                 dur:10, ts:2, pt:'P'},
+    {id:'POST-06', n:'BAFO governance approval',                        o:'Board-approved BAFO mandate',                                d:['POST-05'],                                 dur:2,  ts:1, pt:'C'},
+    {id:'POST-07', n:'Contract negotiation support',                    o:'Negotiated T&C schedule, agreed pricing',                    d:['PRD-09'],                                  dur:5,  ts:1, pt:'S'},
+    {id:'POST-08', n:'Award processing & mobilisation handover',        o:'Handover pack, delivery team briefed, PID',                  d:['POST-07'],                                 dur:3,  ts:1, pt:'C'},
+  ]},
+];
+
+// Derived totals (used in UI)
+const WS_TOTALS = (() => {
+  let acts=0, deps=0, effort=0;
+  WS.forEach(w => w.acts.forEach(a => { acts++; deps+=a.d.length; effort+=a.dur; }));
+  return { acts, deps, effort };
+})();
+
+// Governance gate library
+// Fields: id, name, type, tier(null|1|2|3), defaultFor, tcvThreshold(£m|null),
+//         defaultLeadDays, execBrief(bool), linked GOV activity id
+const GATE_LIB = [
+  {
+    id:'G1', name:'Pursuit Approval', type:'executive', tier:null,
+    defaultFor:'all', tcvThreshold:null, defaultLeadDays:5, execBrief:true,
+    govActivityId:'GOV-01',
+    entryCriteria:[
+      'SAL-06 (capture plan) status: final or assured',
+      'PWIN assessed and documented',
+      'BM-13 (bid risk register) initiated',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble review pack — capture plan, PWIN assessment, risk register', output:'Review pack assembled'},
+      {offset:-2, action:'Circulate review pack to approving body with agenda', output:'Pack distributed, calendar confirmed'},
+      {offset:-1, action:'Brief presenters — confirm key messages and anticipated challenges', output:'Presenters briefed'},
+      {offset:0,  action:'Conduct pursuit approval — capture decision and conditions', output:'Pursuit approval decision record'},
+      {offset:1,  action:'Distribute decision record and any conditions to bid team', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G2', name:'Solution & Strategy Review', type:'functional', tier:null,
+    defaultFor:'all', tcvThreshold:null, defaultLeadDays:3, execBrief:false,
+    govActivityId:'GOV-02',
+    entryCriteria:[
+      'SOL-03 (target operating model) status: draft complete or better',
+      'DEL-01 (delivery risk register) initiated',
+      'SUP-01 (partner selection) complete',
+      'SAL-06 (win strategy) status: assured',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble solution review pack — TOM, delivery model, partner summary', output:'Review pack assembled'},
+      {offset:-2, action:'Circulate review pack to review panel', output:'Pack distributed, calendar confirmed'},
+      {offset:0,  action:'Conduct solution & strategy review — capture decision, actions, conditions', output:'Solution review decision record'},
+      {offset:1,  action:'Distribute decision record and actions to workstream owners', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G3', name:'Commercial / Finance Review', type:'functional', tier:null,
+    defaultFor:'all', tcvThreshold:null, defaultLeadDays:3, execBrief:false,
+    govActivityId:'GOV-03',
+    entryCriteria:[
+      'COM-06 (pricing model) status: final or assured',
+      'DEL-06 (mitigated risk register) status: assured',
+      'LEG-02 (risk allocation matrix) complete',
+      'SUP-06 (back-to-back terms) agreed',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble pricing review pack — pricing model, margin analysis, risk register', output:'Review pack assembled'},
+      {offset:-2, action:'Circulate review pack to finance/commercial panel', output:'Pack distributed, calendar confirmed'},
+      {offset:0,  action:'Conduct pricing & risk review — approve price, note conditions', output:'Pricing decision record + approved price'},
+      {offset:1,  action:'Distribute decision record and actions to workstream owners', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G4', name:'Legal & Contractual Review', type:'functional', tier:null,
+    defaultFor:'tcv_threshold', tcvThreshold:20, defaultLeadDays:3, execBrief:false,
+    govActivityId:null,
+    entryCriteria:[
+      'LEG-01 (contract markup) status: final',
+      'LEG-02 (risk allocation matrix) complete',
+      'LEG-04 (TUPE obligations) complete if applicable',
+      'LEG-05 (data protection review) complete',
+      'LEG-06 (subcontractor terms) agreed',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble legal pack — contract markup, risk matrix, TUPE schedule', output:'Review pack assembled'},
+      {offset:-2, action:'Circulate legal pack to legal sign-off authority', output:'Pack distributed, calendar confirmed'},
+      {offset:0,  action:'Conduct legal review — confirm sign-off or conditions', output:'Legal sign-off record'},
+      {offset:1,  action:'Distribute decision record and any contract conditions', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G5', name:'Business Unit Approval', type:'executive', tier:1,
+    defaultFor:'tcv_threshold', tcvThreshold:20, defaultLeadDays:7, execBrief:true,
+    govActivityId:'GOV-04',
+    entryCriteria:[
+      'G2 (solution review) passed',
+      'G3 (pricing review) passed',
+      'DEL-06 (risk register) assured',
+      'PRD-06 (red review) passed or in progress',
+    ],
+    prepTemplate:[
+      {offset:-7, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-5, action:'Assemble executive pack — solution summary, pricing, risk summary', output:'Executive pack assembled'},
+      {offset:-3, action:'Circulate executive pack to BU head and any co-approvers', output:'Pack distributed, calendar confirmed'},
+      {offset:-1, action:'Brief presenters — confirm speaking order, key messages, challenge areas', output:'Presenters briefed, dry-run completed'},
+      {offset:0,  action:'Conduct BU approval — capture decision, risk premium (if any), conditions', output:'BU approval decision record'},
+      {offset:1,  action:'Distribute decision record and actions', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G6', name:'Executive Committee', type:'executive', tier:2,
+    defaultFor:'tcv_threshold', tcvThreshold:100, defaultLeadDays:7, execBrief:true,
+    govActivityId:'GOV-04',
+    entryCriteria:[
+      'G5 (BU approval) passed (or BU approval waived)',
+      'G3 (pricing review) passed',
+      'DEL-06 (risk register) assured',
+      'PRD-07 (gold review) passed',
+    ],
+    prepTemplate:[
+      {offset:-7, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-5, action:'Assemble ExCo pack — executive summary, solution, pricing, risk, commercial position', output:'ExCo pack assembled'},
+      {offset:-3, action:'Circulate ExCo pack with agenda and evaluation framework', output:'Pack distributed, calendar confirmed'},
+      {offset:-1, action:'Brief presenters — confirm speaking order, key messages, anticipated challenge', output:'Presenters briefed, dry-run completed'},
+      {offset:0,  action:'Conduct ExCo approval — capture decision, risk premium, conditions', output:'ExCo approval decision record'},
+      {offset:1,  action:'Distribute decision record and actions to affected owners', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G7', name:'Board Approval', type:'executive', tier:3,
+    defaultFor:'tcv_threshold', tcvThreshold:500, defaultLeadDays:7, execBrief:true,
+    govActivityId:'GOV-04',
+    entryCriteria:[
+      'G6 (ExCo) passed',
+      'Full risk register assured',
+      'Legal sign-off complete',
+      'Pricing approved at G3',
+    ],
+    prepTemplate:[
+      {offset:-7, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-5, action:'Assemble Board pack — strategic rationale, financials, risk, legal position', output:'Board pack assembled'},
+      {offset:-3, action:'Circulate Board pack per governance procedures', output:'Pack distributed, calendar confirmed'},
+      {offset:-1, action:'Brief presenters — confirm speaking order, key messages, Board-level risk areas', output:'Presenters briefed, dry-run completed'},
+      {offset:0,  action:'Conduct Board approval — capture resolution, risk premium, conditions', output:'Board approval resolution'},
+      {offset:1,  action:'Distribute resolution and conditions to bid director and team', output:'Actions assigned and tracked'},
+    ],
+  },
+  {
+    id:'G8', name:'Storyboard Sign-off', type:'methodology', tier:null,
+    defaultFor:'all', tcvThreshold:null, defaultLeadDays:3, execBrief:false,
+    govActivityId:'BM-10',
+    entryCriteria:[
+      'BM-10 (storyboard) status: final or better',
+      'SAL-06 (win strategy) status: assured',
+      'SOL-11 (solution design lock) complete',
+      'SAL-05 (evaluation criteria matrix) complete',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble storyboard review pack — draft storyboard, win themes, eval criteria', output:'Review pack assembled'},
+      {offset:-2, action:'Circulate storyboard to Bid Director for review', output:'Pack distributed, review scheduled'},
+      {offset:0,  action:'Conduct storyboard sign-off — capture decision and any structural changes required', output:'Approved storyboard (METHODOLOGY GATE)'},
+      {offset:1,  action:'Distribute approved storyboard to all section authors', output:'Storyboard issued, drafting may commence'},
+    ],
+  },
+  {
+    id:'G9', name:'Final Submission Authority', type:'executive', tier:null,
+    defaultFor:'all', tcvThreshold:null, defaultLeadDays:5, execBrief:true,
+    govActivityId:'GOV-05',
+    entryCriteria:[
+      'GOV-04 (executive approval) passed',
+      'PRD-08 (final QA) complete',
+      'All open review actions resolved',
+      'Pricing sign-off confirmed',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble final submission pack for sign-off authority review', output:'Final pack assembled'},
+      {offset:-2, action:'Circulate final pack to submission authority', output:'Pack distributed, calendar confirmed'},
+      {offset:-1, action:'Brief submission authority — final version walkthrough, confirm any last conditions', output:'Authority briefed'},
+      {offset:0,  action:'Obtain submission authority confirmation', output:'Submission authority confirmation'},
+      {offset:1,  action:'Proceed with submission packaging — PRD-09 can commence', output:'Submission authorised'},
+    ],
+  },
+  {
+    id:'G10', name:'BAFO Authority', type:'executive', tier:null,
+    defaultFor:'bafo_only', tcvThreshold:null, defaultLeadDays:5, execBrief:true,
+    govActivityId:'POST-06',
+    entryCriteria:[
+      'POST-05 (BAFO preparation) complete',
+      'Revised pricing model approved by finance',
+      'Material commercial changes identified and documented',
+      'Risk assessment updated for BAFO position',
+    ],
+    prepTemplate:[
+      {offset:-5, action:'Pre-check entry criteria — flag any that will not be met', output:'Entry criteria status report'},
+      {offset:-3, action:'Assemble BAFO pack — revised pricing, commercial changes, risk delta', output:'BAFO pack assembled'},
+      {offset:-2, action:'Circulate BAFO pack to approving authority', output:'Pack distributed, calendar confirmed'},
+      {offset:-1, action:'Brief presenters — confirm BAFO mandate, walk-away positions', output:'Presenters briefed'},
+      {offset:0,  action:'Obtain BAFO authority — capture approved BAFO mandate and walk-away limits', output:'Board-approved BAFO mandate'},
+      {offset:1,  action:'Distribute BAFO mandate to commercial and bid team', output:'BAFO mandate issued, POST-05 submission authorised'},
+    ],
+  },
+];
+
+/* ════════════════════════════════════════════════════════════
    ROUTER
 ════════════════════════════════════════════════════════════ */
 const ROUTER = {
