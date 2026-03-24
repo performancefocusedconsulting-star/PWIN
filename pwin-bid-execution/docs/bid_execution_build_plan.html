@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Claude Code Build Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;--bdr:#253551;--bdr-s:#1A2844;--gold:#C49438;--gold-d:rgba(196,148,56,.12);--t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;--grn:#34D399;--grn-d:rgba(52,211,153,.10);--red:#F87171;--red-d:rgba(248,113,113,.10);--amb:#FBBF24;--amb-d:rgba(251,191,36,.10);--blu:#60A5FA;--blu-d:rgba(96,165,250,.10);--pur:#A78BFA;--pur-d:rgba(167,139,250,.10);--cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);--lime:#A3E635;--lime-d:rgba(163,230,53,.10);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.hdr{padding:16px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);}
+.hdr-l{display:flex;align-items:baseline;gap:12px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.nav{display:flex;gap:1px;padding:0 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;}
+.nav-b{padding:9px 14px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-b:hover{color:var(--t2);}.nav-b.on{color:var(--gold);border-bottom-color:var(--gold);}
+.ct{padding:22px 28px;max-width:1100px;margin:0 auto;animation:fi .2s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:780px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:22px 0 8px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:16px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:10px;max-width:820px;}
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+.step{display:flex;gap:14px;margin:14px 0;align-items:flex-start;}
+.step-n{min-width:40px;height:40px;background:var(--gold-d);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.step-n.done{background:var(--grn-d);border-color:var(--grn);color:var(--grn);}
+.step-n.code{background:var(--blu-d);border-color:var(--blu);color:var(--blu);}
+.step-body{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:3px;}
+.step-desc{color:var(--t2);font-size:12px;line-height:1.6;}
+.cmd{background:var(--bg3);border:1px solid var(--bdr);padding:8px 12px;margin:6px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--cyn);line-height:1.6;white-space:pre-wrap;overflow-x:auto;}
+.prompt{background:var(--bg3);border:1px solid var(--gold);border-left:3px solid var(--gold);padding:10px 14px;margin:8px 0;font-size:12px;color:var(--t2);line-height:1.7;}
+.prompt strong{color:var(--gold);}
+.tb{width:100%;border-collapse:collapse;margin:8px 0;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.tb td{padding:6px 8px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.cg{display:grid;gap:10px;margin-bottom:16px;}
+.c2{grid-template-columns:repeat(2,1fr);}.c3{grid-template-columns:repeat(3,1fr);}
+@media(max-width:700px){.c2,.c3{grid-template-columns:1fr;}}
+.cd{background:var(--bg2);border:1px solid var(--bdr);padding:14px;position:relative;overflow:hidden;transition:all .15s;}
+.cd:hover{background:var(--bg3);border-color:var(--gold);}
+.cd::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.cd.a-gold::before{background:var(--gold)}.cd.a-grn::before{background:var(--grn)}.cd.a-blu::before{background:var(--blu)}.cd.a-pur::before{background:var(--pur)}.cd.a-red::before{background:var(--red)}.cd.a-amb::before{background:var(--amb)}.cd.a-lime::before{background:var(--lime)}
+.cd-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.cd-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.cd-b{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.sg{display:grid;grid-template-columns:170px 1fr;gap:0;margin:10px 0;border:1px solid var(--bdr);}
+.sg-k{padding:7px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);background:var(--bg4);border-bottom:1px solid var(--bdr-s);}
+.sg-v{padding:7px 10px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);line-height:1.5;}
+.ent{background:var(--bg2);border:1px solid var(--bdr);margin-bottom:7px;overflow:hidden;}
+.ent-h{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s;}
+.ent-h:hover{background:var(--bg3);}
+.ent-nm{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1);}
+.ent-bd{padding:0 12px 10px;border-top:1px solid var(--bdr-s);}
+.tog{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:transform .15s;}.tog.op{transform:rotate(90deg);}
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:1px 5px;border-radius:2px;display:inline-block;margin:1px;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}.fe-b{color:var(--blu);background:var(--blu-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}
+.done-banner{background:var(--grn-d);border:1px solid var(--grn);border-left:3px solid var(--grn);padding:10px 14px;margin-bottom:18px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.05em;color:var(--grn);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const TABS=[
+  {id:'prereqs',l:'Prerequisites'},
+  {id:'project',l:'Project Setup'},
+  {id:'workflow',l:'Working with Claude Code'},
+  {id:'sprint1',l:'Sprint 1'},
+  {id:'sprint2',l:'Sprint 2'},
+  {id:'sprint3to8',l:'Sprints 3–8'},
+  {id:'testing',l:'Testing & QA'},
+  {id:'saas',l:'SaaS Conversion'},
+];
+let tab='prereqs',exp={};
+function setTab(t){tab=t;render();}
+function tog(id){exp[id]=!exp[id];render();}
+function render(){
+  document.getElementById('app').innerHTML=`
+    <div class="hdr"><div class="hdr-l"><div class="hdr-brand">PWIN Architect</div><div class="hdr-sub">Claude Code Build Plan</div></div></div>
+    <div class="nav">${TABS.map(t=>`<button class="nav-b ${tab===t.id?'on':''}" onclick="setTab('${t.id}')">${t.l}</button>`).join('')}</div>
+    <div class="ct" key="${tab}">${R[tab]()}</div>`;
+}
+const R={};
+
+// ═══════════════════════════════════════
+R.prereqs=()=>`
+<div class="sl">Before You Start</div>
+<div class="st">Prerequisites & Environment</div>
+<div class="sd">Everything you need in place before opening Claude Code for the first time on this project.</div>
+
+<div class="sh">1. Claude Max Plan</div>
+<div class="bt">Claude Code requires the Max plan. This gives you Opus for complex integration sessions and Sonnet as the default for routine coding. The architecture and rules documents we've produced are designed for Opus-level reasoning — use Opus for Sprint 1 setup and any session involving the scheduling engine or readiness scoring logic. Switch to Sonnet for straightforward UI implementation and repetitive CRUD operations.</div>
+
+<div class="sh">2. Required Software</div>
+<div class="sg">
+  <div class="sg-k">Node.js</div><div class="sg-v">v18 or later. Claude Code runs as a Node.js CLI tool. Install from nodejs.org.</div>
+  <div class="sg-k">Claude Code</div><div class="sg-v">Install via: <code>npm install -g @anthropic-ai/claude-code</code>. Authenticate with your Anthropic credentials.</div>
+  <div class="sg-k">Git</div><div class="sg-v">Version control is essential. Every working state gets committed. If Claude Code produces something broken, you revert to the last good commit.</div>
+  <div class="sg-k">VS Code</div><div class="sg-v">Recommended editor. You'll review Claude Code's output here. Install the Live Server extension for previewing the HTML application in browser.</div>
+  <div class="sg-k">Browser</div><div class="sg-v">Chrome or Firefox with DevTools. You'll use the Console and Application tabs (for localStorage inspection) constantly during development.</div>
+</div>
+
+<div class="sh">3. Reference Documents</div>
+<div class="bt">You have two companion documents that Claude Code will read as context for every session. These are already in the project directory.</div>
+<div class="cg c2">
+  <div class="cd a-gold"><div class="cd-l">Architecture</div><div class="cd-t">bid_execution_architecture_v6.html</div><div class="cd-b">The WHAT. Modules, data model, workstreams, activities, UX specifications, navigation. Claude Code reads this to understand what to build.</div></div>
+  <div class="cd a-grn"><div class="cd-l">Rules</div><div class="cd-t">bid_execution_rules.html</div><div class="cd-b">The HOW. Algorithms, state transitions, formulae, trigger conditions, thresholds. Claude Code reads this to understand how to calculate, when to trigger, and what the edge cases are.</div></div>
+</div>
+
+<div class="co co-g"><div class="co-l">Critical</div><div class="co-t">These documents are your single source of truth. When Claude Code asks a design question, the answer is in one of these documents. When you want to change something, change the document first, then direct Claude Code to implement the change. This prevents drift between the specification and the code.</div></div>
+
+<div class="sh">4. Your Existing PWIN Architect Files</div>
+<div class="bt">If you want to maintain visual consistency with the Portfolio Dashboard and PWIN Coach, have those HTML files available as style references. Claude Code can match the Midnight Executive palette, typography, and component patterns from existing files.</div>
+
+<div class="sh">5. Time Commitment</div>
+<div class="bt">Each sprint involves 2–4 Claude Code sessions of 1–2 hours each, plus 1–2 hours of your review and testing between sessions. Realistic weekly commitment: 6–10 hours across a sprint. Sprint 1 is the heaviest because it establishes the foundation — expect 12–15 hours across two weeks.</div>
+`;
+
+// ═══════════════════════════════════════
+R.project=()=>`
+<div class="sl">Step 1</div>
+<div class="st">Project Setup</div>
+<div class="sd">Create the project structure, initialise Git, and prepare the reference documents before your first Claude Code session.</div>
+
+<div class="done-banner">✓ ALREADY COMPLETE — All steps below have been completed. The monorepo is set up, CLAUDE.md is in place, reference documents are committed, and the repo is pushed to GitHub. Proceed to Sprint 1.</div>
+
+<div class="step"><div class="step-n done">✓</div><div class="step-body"><div class="step-title">Create the project directory and Git repo</div>
+<div class="cmd">mkdir pwin-bid-execution
+cd pwin-bid-execution
+git init</div>
+</div></div>
+
+<div class="step"><div class="step-n done">✓</div><div class="step-body"><div class="step-title">Create the directory structure</div>
+<div class="cmd">mkdir -p docs src/templates src/styles src/modules src/data tests</div>
+<div class="step-desc">Organised as a monorepo under PWIN/pwin-bid-execution/. Empty folders preserved with .gitkeep files. The final output is a single HTML file — src/ subdirectories are available if modular development is needed.</div>
+</div></div>
+
+<div class="step"><div class="step-n done">✓</div><div class="step-body"><div class="step-title">Reference documents in place</div>
+<div class="step-desc">Both documents are committed to <code>pwin-bid-execution/docs/</code>:<br>
+— <strong>bid_execution_architecture_v6.html</strong> — the WHAT<br>
+— <strong>bid_execution_rules.html</strong> — the HOW</div>
+</div></div>
+
+<div class="step"><div class="step-n done">✓</div><div class="step-body"><div class="step-title">CLAUDE.md project instructions file</div>
+<div class="step-desc">CLAUDE.md is in the repo root at <code>PWIN/CLAUDE.md</code> with the full pwin-bid-execution section. Claude Code reads this automatically at the start of every session.</div>
+</div></div>
+
+<div class="step"><div class="step-n done">✓</div><div class="step-body"><div class="step-title">Initial commit pushed to GitHub</div>
+<div class="cmd">git remote: https://github.com/performancefocusedconsulting-star/PWIN
+branch: main</div>
+</div></div>
+
+<div class="co co-v"><div class="co-l">Ready</div><div class="co-t">Project setup is complete. Proceed directly to Sprint 1.</div></div>
+`;
+
+// ═══════════════════════════════════════
+R.workflow=()=>`
+<div class="sl">How To</div>
+<div class="st">Working with Claude Code Effectively</div>
+<div class="sd">The patterns, prompts, and practices that get the best results from Claude Code on this project. Read this before your first session.</div>
+
+<div class="sh">The Session Pattern</div>
+<div class="bt">Every Claude Code session follows the same rhythm. This is your working protocol for every sprint.</div>
+
+<div class="step"><div class="step-n code">1</div><div class="step-body"><div class="step-title">Start the session with context</div>
+<div class="step-desc">Open Claude Code in the project directory. It will read CLAUDE.md automatically. Then give it the specific task context.</div>
+<div class="prompt"><strong>Session opener prompt (use every time):</strong>
+
+Read docs/bid_execution_architecture_v6.html and docs/bid_execution_rules.html. Today we're working on [specific feature/module]. Focus on the [specific tab/section] in the architecture and Rule Set [X] in the rules document. The current state of the application is [describe what's already built].</div>
+</div></div>
+
+<div class="step"><div class="step-n code">2</div><div class="step-body"><div class="step-title">Give specific, bounded instructions</div>
+<div class="step-desc">Don't ask Claude Code to "build Sprint 1." Break it into concrete, testable units of work. Each instruction should produce something you can verify.</div>
+<div class="cg c2">
+  <div class="cd a-grn"><div class="cd-l">Good prompts</div><div class="cd-t">Specific & bounded</div><div class="cd-b">"Build the state management layer: the store object, mutation functions, and localStorage persistence. Follow the storage schema in the architecture (pwin:practice, pwin:bid:{id}, pwin:settings, pwin:templates). Include the UUID generation function."<br><br>"Implement the backward scheduling algorithm from Rule Set 1.5. It needs the calculateElapsedDays function from 1.1, the isWorkingDay function from 1.2, and the addWorkingDays function from 1.3. Write tests for each function."</div></div>
+  <div class="cd a-red"><div class="cd-l">Bad prompts</div><div class="cd-t">Vague & unbounded</div><div class="cd-b">"Build the activity tracker."<br><br>"Make the scheduling work."<br><br>"Create the whole application."<br><br>These are too broad. Claude Code will produce something, but it will make assumptions you haven't validated. Break it down.</div></div>
+</div>
+</div></div>
+
+<div class="step"><div class="step-n code">3</div><div class="step-body"><div class="step-title">Review, test, commit</div>
+<div class="step-desc">After each unit of work: open the HTML file in the browser, test the feature, check the console for errors. If it works, commit. If it doesn't, tell Claude Code what's wrong specifically.</div>
+<div class="cmd">// After each successful feature:
+git add .
+git commit -m "Sprint 1: state management and localStorage persistence"
+
+// If something breaks:
+git stash  // save current broken state
+git checkout .  // revert to last good commit
+// Then restart the Claude Code session with a corrected prompt</div>
+</div></div>
+
+<div class="step"><div class="step-n code">4</div><div class="step-body"><div class="step-title">End the session with a state summary</div>
+<div class="step-desc">Before closing Claude Code, ask it to summarise what was built, what works, and what's next. Save this as a session note for the next session.</div>
+<div class="prompt"><strong>Session closer prompt:</strong>
+
+Summarise what we built in this session, what's working, what's not yet implemented, and what the next session should focus on. Write this to a file called docs/session-notes/session-[date].md.</div>
+</div></div>
+
+<div class="sh">Prompt Templates for Common Tasks</div>
+
+<div class="ent"><div class="ent-h" onclick="tog('p1')"><span class="tog ${exp.p1?'op':''}">▸</span><span class="ent-nm">Building a new module</span></div>
+${exp.p1?`<div class="ent-bd"><div class="prompt"><strong>Template:</strong>
+
+Read the UX specification for [Module Name] in docs/bid_execution_architecture_v6.html (UX Design tab, section [M1-M9]). Read the relevant rule sets in docs/bid_execution_rules.html: [Rule Set numbers].
+
+Build the [Module Name] module with:
+1. The render function that produces the screen layout described in the UX spec
+2. All interaction handlers (click, inline edit, drag-and-drop as specified)
+3. The data operations: create, read, update for [entity names]
+4. The computed properties: [list specific calculations]
+5. Integration with the existing state management and navigation
+
+The module should follow the same component patterns as [previously built module] for consistency. Use the Midnight Executive palette CSS variables already defined.</div></div>`:''}
+</div>
+
+<div class="ent"><div class="ent-h" onclick="tog('p2')"><span class="tog ${exp.p2?'op':''}">▸</span><span class="ent-nm">Implementing a calculation/algorithm</span></div>
+${exp.p2?`<div class="ent-bd"><div class="prompt"><strong>Template:</strong>
+
+Implement the [algorithm name] from Rule Set [X.Y] in docs/bid_execution_rules.html. The pseudocode is provided — translate it to JavaScript.
+
+The function signature should be: [specify inputs and outputs]
+It should be a pure function with no side effects (reads from state, returns a result).
+Write unit tests covering: [list specific test cases including edge cases]
+
+After implementation, integrate it with the [module name] by calling it from [specific trigger point].</div></div>`:''}
+</div>
+
+<div class="ent"><div class="ent-h" onclick="tog('p3')"><span class="tog ${exp.p3?'op':''}">▸</span><span class="ent-nm">Fixing a bug or incorrect behaviour</span></div>
+${exp.p3?`<div class="ent-bd"><div class="prompt"><strong>Template:</strong>
+
+There's an issue with [module/feature].
+
+What I expected: [describe expected behaviour, reference architecture/rules]
+What actually happens: [describe actual behaviour]
+Steps to reproduce: [specific steps]
+Console errors (if any): [paste errors]
+
+The correct behaviour is defined in [architecture section or rule set reference]. Please fix the implementation to match the specification.</div></div>`:''}
+</div>
+
+<div class="ent"><div class="ent-h" onclick="tog('p4')"><span class="tog ${exp.p4?'op':''}">▸</span><span class="ent-nm">Adding template data</span></div>
+${exp.p4?`<div class="ent-bd"><div class="prompt"><strong>Template:</strong>
+
+Add the Services bid archetype template data to the application. The complete activity definitions are in docs/bid_execution_architecture_v6.html (Archetype tab). Each activity has: id, name, output, effortDays, teamSize, parallelisationType, and dependencies.
+
+Structure the template data as a JSON object stored in the TEMPLATES section of the code. The template should be loadable during the Setup Wizard Stage 2 when the user selects the "Services" archetype.
+
+Include the governance gate library and gate preparation templates from the Setup tab of the architecture document.</div></div>`:''}
+</div>
+
+<div class="sh">Managing File Size</div>
+<div class="bt">The final application will be approximately 10,000+ lines in a single HTML file. Claude Code can handle this, but there are practical limits to how much code it can modify in a single turn. Two strategies:</div>
+
+<div class="cg c2">
+  <div class="cd a-blu"><div class="cd-t">Strategy 1: Build in Sections, Merge Later</div><div class="cd-b">Build each module as a separate HTML file during development. Each file contains only its render function, event handlers, and module-specific logic. Merge into the final single file at the end of each sprint. This keeps individual Claude Code sessions focused on manageable chunks.</div></div>
+  <div class="cd a-gold"><div class="cd-t">Strategy 2: Build Incrementally in One File</div><div class="cd-b">Start with the shell and add to it. Claude Code can read the existing file and add new sections. Use clear code comments to delineate sections. This is simpler but means Claude Code is working with an increasingly large file. Works well up to ~5,000 lines; may need the merge approach beyond that.</div></div>
+</div>
+
+<div class="co co-b"><div class="co-l">Recommendation</div><div class="co-t">Start with Strategy 2 (one file) for Sprint 1. If the file becomes unwieldy during Sprints 2–3, switch to Strategy 1 (modular) with a merge step. Claude Code can write the merge script — it's a straightforward concatenation with some deduplication of shared CSS and utilities.</div></div>
+
+<div class="sh">When Claude Code Gets It Wrong</div>
+<div class="bt">It will. Expect it. The architecture and rules documents reduce errors significantly, but Claude Code will still make mistakes — particularly around edge cases in the scheduling algorithm, CSS layout issues, and state management bugs. The protocol is:</div>
+
+<div class="cg c3">
+  <div class="cd a-amb"><div class="cd-t">Don't Iterate Endlessly</div><div class="cd-b">If Claude Code hasn't fixed a bug in 3 attempts, revert to the last good commit and try a different approach. Describe the problem differently. Sometimes starting fresh on a feature produces better results than debugging a broken implementation.</div></div>
+  <div class="cd a-grn"><div class="cd-t">Be Specific About Errors</div><div class="cd-b">Paste the exact console error. Describe exactly what you clicked and what happened vs what should have happened. Reference the specific rule or UX spec that defines the correct behaviour. Vague bug reports produce vague fixes.</div></div>
+  <div class="cd a-blu"><div class="cd-t">Commit Frequently</div><div class="cd-b">Every working feature gets a commit. If you have the setup wizard working, commit before starting on the activity tracker. If the scheduling engine passes its tests, commit before integrating it with the UI. Small commits = easy reverts.</div></div>
+</div>
+`;
+
+// ═══════════════════════════════════════
+R.sprint1=()=>`
+<div class="sl">Sprint 1 — Weeks 1–2</div>
+<div class="st">Setup Wizard + Activity Framework + Compliance Engine</div>
+<div class="sd">The foundation sprint. Six Claude Code sessions, each building a specific layer. The output is a working application you can use on a live bid.</div>
+
+<div class="sh">Session 1a: Application Shell (2–3 hours)</div>
+<div class="bt">Goal: a working HTML file with navigation, state management, and the full visual framework. Nothing functional yet, but the skeleton is in place and styled correctly.</div>
+
+<div class="prompt"><strong>Prompt for Claude Code:</strong>
+
+Read docs/bid_execution_architecture_v6.html and docs/bid_execution_rules.html. We're starting the build from scratch.
+
+Build the application shell for PWIN Architect Bid Execution — Session 1a: Shell, CSS, Navigation, and State Management only (no template data yet).
+
+1. Single HTML file with embedded CSS and JS.
+2. CSS: implement the full Midnight Executive palette from the architecture document. All colour variables, typography (Google Fonts: Cormorant Garamond, DM Mono, DM Sans), base component styles (cards, tables, badges, callouts, expandable panels, buttons, form inputs).
+3. Navigation: two-level navigation as specified in the architecture. Level 1 = practice portfolio (entry point). Level 2 = bid workspace with 7 tabs (Workspace, Activities, Compliance, Reviews, Governance, Readiness, Submission). Back-to-portfolio link in header.
+4. State management: implement the store pattern from the architecture. In-memory state object, mutation functions, localStorage persistence under the namespaced keys (pwin:practice, pwin:bid:{id}, pwin:settings, pwin:templates). JSON import/export functions. UUID generation.
+5. Empty render functions for each module — just placeholders that show the module name.
+
+The file should open in a browser and show the navigation working — clicking between portfolio and bid workspace tabs. No data, no functionality yet. Commit as: "Sprint 1a: shell, CSS, navigation, state management"</div>
+
+<div class="bt">After this session: open in browser, verify navigation works, check console for errors, commit.</div>
+
+<div class="sh">Session 1b: Template Data (1–2 hours)</div>
+<div class="bt">Goal: embed all archetype data into the application shell from Session 1a. This is data entry work — Claude Code reads the architecture document and transcribes the structured data into JavaScript.</div>
+
+<div class="prompt"><strong>Prompt for Claude Code:</strong>
+
+Read the Archetype tab in docs/bid_execution_architecture_v6.html and the Setup tab for gate library data.
+
+Add the following data to the TEMPLATES section of the application (the file from Session 1a):
+
+1. The full Services bid archetype — all 79 activities with: id, name, output, effortDays, teamSize, parallelisationType (P/S/C), and dependencies array. Group by workstream as shown in the architecture.
+2. The governance gate library — all gate types with their entry criteria, preparation sequences, and lead-time offsets.
+3. The dependency threshold definitions — in-progress (ip), draft-complete (default), final (fn) — as constants.
+
+This is data only — no new functions or UI. Verify the activity count is 79. Commit as: "Sprint 1b: Services archetype template data and gate library"</div>
+
+<div class="bt">After this session: check the browser console for JSON parse errors, verify activity count in DevTools, commit.</div>
+
+<div class="sh">Session 2: Setup Wizard (2–3 hours)</div>
+<div class="bt">Goal: the five-stage wizard that creates a bid from the archetype template.</div>
+
+<div class="prompt"><strong>Prompt for Claude Code:</strong>
+
+Read the Bid Setup section in docs/bid_execution_architecture_v6.html and the thresholds reference in docs/bid_execution_rules.html.
+
+Build the five-stage setup wizard:
+
+Stage 1: Bid identity form — all fields from the architecture (client, name, sector, procurement type, TCV, ACV, ITT issue date, submission deadline, clarification deadline, presentation date, expected award date, submission channel, incumbent, competitive dialogue flag). Calculate and display total available working days on date entry.
+
+Stage 2: Archetype selection (services only for now). Display all 79 activities grouped by workstream in expandable panels. Each activity shows: checkbox (active/deactivate), name, output, effort input (editable, shows template default), team size input (editable). Bid complexity selector (standard/complex/major) that adjusts team sizes on P-type activities. Governance gate checklist from the gate library.
+
+Stage 3: Calendar configuration — working days pattern, UK bank holidays pre-loaded (2026 dates), team unavailability date ranges with name and notes.
+
+Stage 4: Team assignment — role list from architecture, name input for each, propagation of role to activity owners.
+
+Stage 5: Requirements import — manual entry form (reference, text, classification, category). CSV paste with column mapping (implement later, show placeholder).
+
+Linear flow with back/next navigation. Progress indicator. Cannot skip stages. Save draft capability. On final confirmation, create the bid in localStorage with all activities generated and scheduled.</div>
+
+<div class="bt">After this session: create a test bid through the full wizard, verify data is saved to localStorage (check in browser DevTools > Application > Local Storage), commit.</div>
+
+<div class="sh">Session 3: Scheduling Engine (2 hours)</div>
+<div class="bt">Goal: the backward scheduling algorithm that places activities on the timeline.</div>
+
+<div class="prompt"><strong>Prompt for Claude Code:</strong>
+
+Read Rule Sets 1.1 through 1.7 in docs/bid_execution_rules.html. Implement the complete scheduling engine:
+
+1. calculateElapsedDays(effortDays, teamSize) — with 20% coordination overhead per additional person
+2. isWorkingDay(date, bidCalendar) — checks working days, holidays, weekend overrides
+3. addWorkingDays / subtractWorkingDays — calendar-aware date arithmetic
+4. countWorkingDays(startDate, endDate, bidCalendar) — working days between two dates
+5. backwardSchedule(activities, submissionDeadline, bidCalendar) — the main algorithm from Rule Set 1.5
+6. calculateBuffer(activityA, dependentB, bidCalendar) — buffer calculation with health status
+
+Write tests for each function. Test cases:
+- Activity with teamSize 1: elapsed = effort
+- Activity with teamSize 3: elapsed = ceil((effort/3) * 1.4)
+- Working day calculation skipping weekends and holidays
+- Backward schedule with a simple 3-activity dependency chain
+- Buffer calculation returning healthy/compressed/critical
+
+Integrate with the setup wizard: when the bid is confirmed, run backwardSchedule and store plannedStart/plannedEnd on each activity. Display the feasibility verdict.</div>
+
+<div class="sh">Session 4: Feasibility Check (1–2 hours)</div>
+<div class="prompt"><strong>Prompt for Claude Code:</strong>
+
+Read Rule Set 10 in docs/bid_execution_rules.html. Build the feasibility check that runs before bid confirmation in the setup wizard.
+
+Implement runFeasibilityCheck from 10.1 and generateRecommendations from 10.2.
+
+Display the feasibility screen: verdict badge (green/amber/red), critical path with activities listed, per-workstream surplus/deficit table, resource conflicts, calendar conflicts, and recommendations with saving/cost/risk for each.
+
+If infeasible: show warning, require acknowledgment checkbox, auto-create bid risk entry in BM-13 on confirmation. If feasible or tight: allow confirmation directly.</div>
+
+<div class="sh">Session 5: Activity Tracker + Compliance Engine (2–3 hours)</div>
+<div class="prompt"><strong>Prompt for Claude Code:</strong>
+
+Read the Activity Tracker and Compliance Engine UX specifications in docs/bid_execution_architecture_v6.html (UX Design tab). Read Rule Sets 2.1, 2.5, and 6 in docs/bid_execution_rules.html.
+
+Build two modules:
+
+Activity Tracker — workstream view and list view only (kanban, dependency, standup, Gantt views come in Sprint 2):
+- Workstream view: 10 expandable panels, each showing activities with status badges, assurance badges, owner, effort, team size, planned dates
+- List view: sortable table with all activity fields, filter bar (workstream, phase, owner, status), inline editing for status and assurance
+- Activity detail slide-out panel on click
+- State transitions enforced per Rule Set 2.1 — reject invalid transitions with error message
+- lastUpdated timestamp set on every status change
+
+Compliance Engine:
+- Requirement register table with all fields from the data model
+- Manual entry form: reference, text, classification, category
+- Coverage calculations from Rule Set 6.1
+- Coverage summary metrics: total, mapped, gaps, mandatory coverage %
+- Gap report: filtered view showing unmapped and gap items
+- Hard gate from Rule Set 6.2: if mandatory gaps > 0, flag on workspace</div>
+
+<div class="bt">After Session 5: you have a working application. You can create a bid through the wizard, see the scheduled activities, track status, import requirements, and see compliance coverage. Commit and tag as v0.1.</div>
+<div class="cmd">git tag -a v0.1 -m "Sprint 1 complete: setup wizard, activity framework, scheduling, compliance engine"</div>
+
+<div class="co co-v"><div class="co-l">Sprint 1 Checkpoint</div><div class="co-t">At this point, test the application by setting up a real bid — use a past bid you've worked on. Enter the real procurement dates, real team, real requirements. Does the scheduling engine produce a realistic timeline? Does the feasibility check give the right verdict? If the schedule looks wrong, the effort estimates or dependencies need calibrating — adjust the template data and rerun. This calibration is more important than adding more features.</div></div>
+`;
+
+// ═══════════════════════════════════════
+R.sprint2=()=>`
+<div class="sl">Sprint 2 — Weeks 3–4</div>
+<div class="st">Workspace + Dependencies + Standup + Smart Nudging + Gantt</div>
+<div class="sd">The sprint that makes the system the bid manager's daily tool. Four sessions.</div>
+
+<div class="sh">Session 1: Bid Workspace Home Screen (2 hours)</div>
+<div class="prompt"><strong>Key prompt elements:</strong>
+
+Read docs/bid_execution_architecture_v6.html (UX Design tab, Workspace module). Build the workspace home screen: headline metrics row (readiness, days to submission, phase, health, dev %, prod %), workstream health bars (10 rows with timing indicators), methodology gate status panel, governance gate status panel, today's actions panel (overdue/this week/review actions), smart nudge summary bar, standup actions count bar, milestone timeline.</div>
+
+<div class="sh">Session 2: Dependency Engine + Kanban + Dependency View (2–3 hours)</div>
+<div class="prompt"><strong>Key prompt elements:</strong>
+
+Read Rule Sets 1.6 and 1.7 in docs/bid_execution_rules.html. Implement the dependency calculation engine: buffer analysis for every dependency link, compression detection (healthy/compressed/critical from Rule Set 1.7), critical path identification. Build the kanban view (drag-and-drop status changes) and dependency view (activities connected by arrows, critical path highlighted, compression alerts as red connections).</div>
+
+<div class="sh">Session 3: Standup Action Tracker (2 hours)</div>
+<div class="prompt"><strong>Key prompt elements:</strong>
+
+Read Rule Set 9 in docs/bid_execution_rules.html and the Standup UX spec in docs/bid_execution_architecture_v6.html. Build the standup view as the fifth Activity Tracker tab. Four panels: overdue actions (red), today's actions (grouped by workstream), quick-add bar, completed yesterday. StandupAction entity CRUD. Carry-forward, escalation (creates bid risk entry), and auto-archiving logic from Rule Set 9.</div>
+
+<div class="sh">Session 4: Smart Nudging + Gantt View (2–3 hours)</div>
+<div class="prompt"><strong>Key prompt elements:</strong>
+
+Read Rule Set 4 in docs/bid_execution_rules.html. Implement the four nudge types: stale activity (3-day threshold), unblocked items, approaching deadlines, gate approaching. Display priority ordering, deduplication, max 10 display. Then build the Gantt view: horizontal timeline, workstream-grouped bars, dependency arrows, critical path, milestones, today marker. Hover tooltips, click-through to detail.</div>
+
+<div class="co co-v"><div class="co-l">Sprint 2 Checkpoint</div><div class="co-t">Tag as v0.2. The application now has: setup wizard, scheduling, feasibility, activity tracking (5 views including standup and Gantt), compliance engine, workspace dashboard, dependency monitoring, compression detection, and smart nudging. Test it on your real bid data — the workspace should give you a genuine command-centre view of the bid's health.</div></div>
+`;
+
+// ═══════════════════════════════════════
+R.sprint3to8=()=>`
+<div class="sl">Sprints 3–8</div>
+<div class="st">Remaining Modules & Features</div>
+<div class="sd">Each subsequent sprint follows the same session pattern. Here are the key prompts and checkpoints for each.</div>
+
+<div class="sh">Sprint 3: Review Governance (Weeks 5–6)</div>
+<div class="bt">Two sessions. Session 1: review cycle creation, scorecard entry, action tracking. Session 2: gate logic enforcement, output assurance promotion, cross-review analytics. Reference: Rule Sets 2.2, 2.6, and 7 in docs/bid_execution_rules.html.</div>
+<div class="cmd">git tag -a v0.3 -m "Sprint 3: review governance with development and production review cycles"</div>
+
+<div class="sh">Sprint 4: Governance Manager + Readiness Dashboard (Week 7)</div>
+<div class="bt">Two sessions. Session 1: configurable gates, entry criteria evaluation (Rule Set 5.1), gate preparation auto-generation (Rule Set 5.2), risk premium tracking (Rule Set 5.3). Session 2: dual-track readiness scorer (Rule Set 3), compression alerts feeding readiness, executive A4 print view. Reference docs: docs/bid_execution_rules.html Rule Sets 3 and 5.</div>
+<div class="cmd">git tag -a v0.4 -m "Sprint 4: governance gates with preparation automation, readiness dashboard"</div>
+
+<div class="sh">Sprint 5: Submission Manager + Practice Portfolio (Week 8)</div>
+<div class="bt">Two sessions. Session 1: artefact register, QA checklist, approval tracker, submission log. Session 2: practice portfolio — multi-bid view, fee-weighted risk ranking (Rule Set 8), health trends, intervention logging, team utilisation. Reference: docs/bid_execution_rules.html Rule Set 8.</div>
+<div class="cmd">git tag -a v0.5 -m "Sprint 5: submission manager, practice portfolio — full pre-submission system operational"</div>
+
+<div class="co co-g"><div class="co-l">Major Milestone</div><div class="co-t">At v0.5, the complete pre-submission system is operational. You can create bids, track activities across all workstreams, monitor compliance, run reviews, manage governance gates, score readiness, prepare submissions, and manage your practice portfolio. This is a deployable product. Everything from Sprint 6 onwards is enhancement.</div></div>
+
+<div class="sh">Sprint 6: AI Integration + Risk Registers (Weeks 9–10)</div>
+<div class="bt">Two sessions. Session 1: Anthropic API integration (model: claude-sonnet-4-6) for output scaffolding — risk register template, mobilisation plan, storyboard framework, compliance matrix. AI outputs marked as draft with promotion workflow. Session 2: Dual risk register UI (delivery DEL-01 + bid BM-13) with governance linkage, readiness trend charting.</div>
+<div class="cmd">git tag -a v0.6 -m "Sprint 6: AI integration, dual risk registers, readiness trends"</div>
+
+<div class="sh">Sprint 7: Post-Submission Module (Week 11)</div>
+<div class="bt">One to two sessions. Presentation prep/rehearsals, post-submission clarifications, BAFO preparation and governance, negotiation support, award handover. Post-submission readiness signals on the practice portfolio. Lessons learned (BM-12).</div>
+<div class="cmd">git tag -a v0.7 -m "Sprint 7: post-submission lifecycle through to award"</div>
+
+<div class="sh">Sprint 8: Refinement + Pilot (Weeks 12–14)</div>
+<div class="bt">Multiple short sessions. Embedded methodology guidance content for all modules. Competitive dialogue module. Print/export optimisation. UX refinement from your testing. Technology bid archetype template. Pilot bid setup for anchor client.</div>
+<div class="cmd">git tag -a v1.0 -m "Sprint 8: v1.0 — production ready with methodology guidance"</div>
+`;
+
+// ═══════════════════════════════════════
+R.testing=()=>`
+<div class="sl">Quality Assurance</div>
+<div class="st">Testing & Validation Protocol</div>
+<div class="sd">How to validate what Claude Code produces at each stage. The architecture and rules documents are your test oracle — the correct behaviour is defined in those documents.</div>
+
+<div class="sh">Three Levels of Testing</div>
+
+<div class="cg c3">
+  <div class="cd a-grn"><div class="cd-t">Level 1: Function Tests</div><div class="cd-b">Ask Claude Code to write tests alongside every algorithm. The scheduling engine, readiness scorer, and feasibility calculator should all have automated tests you can run. These catch calculation errors before they reach the UI.</div></div>
+  <div class="cd a-amb"><div class="cd-t">Level 2: Interaction Tests</div><div class="cd-b">You manually test every screen, button, and interaction after each session. Create a bid through the wizard. Update activity statuses. Add requirements. Create review cycles. Resolve actions. Check that state transitions follow the rules. Check localStorage after each operation.</div></div>
+  <div class="cd a-red"><div class="cd-t">Level 3: Real Bid Validation</div><div class="cd-b">After Sprint 1 and Sprint 5, set up a real historical bid. Use actual dates, actual team, actual requirements. Does the schedule match reality? Does the readiness score reflect what you know about how that bid went? This is the ultimate test — if the system doesn't reflect your domain experience, the model needs calibration.</div></div>
+</div>
+
+<div class="sh">Checklist Per Sprint</div>
+<table class="tb">
+  <thead><tr><th>Check</th><th>How</th><th>When</th></tr></thead>
+  <tbody>
+    <tr><td>Console errors</td><td>Open browser DevTools Console. Zero errors = pass.</td><td>After every session</td></tr>
+    <tr><td>localStorage integrity</td><td>DevTools > Application > Local Storage. Check bid data structure matches the data model.</td><td>After every session</td></tr>
+    <tr><td>State transitions</td><td>Try to make invalid transitions (e.g. not_started → final). System should reject with error.</td><td>After Session 5 (Sprint 1) and Sprint 3</td></tr>
+    <tr><td>Scheduling accuracy</td><td>Create a bid with known dates. Verify activity planned dates make sense. Check critical path is correct.</td><td>After Session 3 (Sprint 1)</td></tr>
+    <tr><td>Readiness calculation</td><td>Manually calculate readiness for a test bid. Compare with system output. They should match.</td><td>After Sprint 4</td></tr>
+    <tr><td>Print output</td><td>Print readiness dashboard and compliance matrix to PDF. Check A4 formatting.</td><td>After Sprint 4</td></tr>
+    <tr><td>Import/export</td><td>Export a bid to JSON. Delete it. Import it. Verify all data is intact.</td><td>After Sprint 1 and Sprint 5</td></tr>
+    <tr><td>Multi-bid portfolio</td><td>Create 3+ bids. Check portfolio ranking, health status, fee-weighted risk calculations.</td><td>After Sprint 5</td></tr>
+  </tbody>
+</table>
+`;
+
+// ═══════════════════════════════════════
+R.saas=()=>`
+<div class="sl">Future Path</div>
+<div class="st">SaaS Conversion Roadmap</div>
+<div class="sd">When you're ready to move from single-file HTML to multi-user SaaS. This is not Sprint 1–8 work — it comes after you've proven the product with consulting engagements.</div>
+
+<div class="sh">What Claude Code Can Build for SaaS</div>
+<table class="tb">
+  <thead><tr><th>Component</th><th>Claude Code Capability</th><th>Human Needed For</th></tr></thead>
+  <tbody>
+    <tr><td>Backend API (Node.js/Express or Python/FastAPI)</td><td>Full implementation: routes, controllers, middleware, database queries. Write from the architecture and rules docs.</td><td>Architectural review, deployment configuration</td></tr>
+    <tr><td>Database (PostgreSQL)</td><td>Schema creation, migrations, indexes, tenant isolation. Directly from data model.</td><td>Performance tuning, backup strategy</td></tr>
+    <tr><td>Authentication & SSO</td><td>JWT auth, role-based access control, Azure AD/Okta integration patterns.</td><td>Security review, client-specific SSO configuration</td></tr>
+    <tr><td>Frontend (React or similar)</td><td>Component library, all nine modules, responsive design. From UX specs.</td><td>Design polish, cross-browser testing</td></tr>
+    <tr><td>Real-time updates</td><td>WebSocket implementation, conflict resolution logic.</td><td>Load testing, edge case handling</td></tr>
+    <tr><td>Infrastructure as Code</td><td>Docker, Terraform/Pulumi, CI/CD pipelines, cloud configuration.</td><td>Account management, cost monitoring, incident response</td></tr>
+    <tr><td>Email notifications</td><td>Notification service, email templates, scheduling logic.</td><td>Deliverability, spam compliance</td></tr>
+    <tr><td>Tests</td><td>Unit tests, integration tests, API tests, E2E test scripts.</td><td>Test strategy, edge case identification</td></tr>
+  </tbody>
+</table>
+
+<div class="sh">Recommended SaaS Build Sequence</div>
+<div class="step"><div class="step-n">1</div><div class="step-body"><div class="step-title">Backend API + Database (4–6 weeks)</div><div class="step-desc">Claude Code writes the entire API layer from the architecture and rules documents. Each module becomes an API endpoint group. The scheduling engine, readiness scorer, and all business logic move server-side. PostgreSQL schema directly from the data model. One senior developer reviews and handles deployment.</div></div></div>
+<div class="step"><div class="step-n">2</div><div class="step-body"><div class="step-title">Authentication + Multi-tenancy (2–3 weeks)</div><div class="step-desc">JWT-based auth with role-based access control. Tenant isolation at the database level (schema-per-tenant or row-level security). SSO integration with Azure AD (covers most UK government and defence clients).</div></div></div>
+<div class="step"><div class="step-n">3</div><div class="step-body"><div class="step-title">Frontend Conversion (4–6 weeks)</div><div class="step-desc">Convert the single-file HTML into a React application. Claude Code can do this module-by-module — the render functions, state management, and interaction patterns translate directly. The UX specs are already detailed enough.</div></div></div>
+<div class="step"><div class="step-n">4</div><div class="step-body"><div class="step-title">Infrastructure + Deployment (2 weeks)</div><div class="step-desc">Docker containers, CI/CD pipeline, staging and production environments. UK-hosted cloud (AWS London or Azure UK South for data residency). Monitoring and alerting setup.</div></div></div>
+<div class="step"><div class="step-n">5</div><div class="step-body"><div class="step-title">Security Certification (4–6 weeks)</div><div class="step-desc">Cyber Essentials Plus as the minimum for UK government clients. This requires human assessors but Claude Code can implement all the technical controls. Penetration testing by a third-party firm.</div></div></div>
+<div class="step"><div class="step-n">6</div><div class="step-body"><div class="step-title">Pilot + Iterate (ongoing)</div><div class="step-desc">Deploy to first client. Monitor. Iterate. The advantage of having proven the product as a consulting tool first is that you already know it works — the SaaS conversion is a deployment change, not a product change.</div></div></div>
+
+<div class="co co-g"><div class="co-l">The Key Advantage</div><div class="co-t">Because we've built detailed architecture and rules documents, the SaaS conversion is not a redesign — it's a reimplementation in a different deployment model. The data model, business rules, calculation formulae, state transitions, and UX specifications are identical. Claude Code translates them from single-file vanilla JS to a server/client architecture. The specification work you've done is the foundation for both versions.</div></div>
+
+<div class="sh">Total SaaS Timeline (with Claude Code + 1 Developer)</div>
+<div class="sg">
+  <div class="sg-k">Months 1–3</div><div class="sg-v">Backend API, database, authentication, multi-tenancy. Developer handles infrastructure and deployment.</div>
+  <div class="sg-k">Months 3–5</div><div class="sg-v">Frontend conversion, real-time features, notifications. Developer handles cross-browser testing and performance.</div>
+  <div class="sg-k">Months 5–7</div><div class="sg-v">Security certification, pilot deployment, iteration. Developer handles operations and incident response.</div>
+  <div class="sg-k">Month 8+</div><div class="sg-v">Commercial launch. Ongoing feature development, additional archetypes, integrations.</div>
+</div>
+
+<div class="bt">Estimated cost: £80–130k (developer salary/contract + infrastructure + certification). Not £300–500k. The detailed specification work and Claude Code as the primary builder fundamentally change the economics.</div>
+`;
+
+render();
+</script>
+</body>
+</html>
