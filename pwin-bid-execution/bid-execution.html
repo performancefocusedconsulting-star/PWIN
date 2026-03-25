@@ -2705,7 +2705,7 @@ const ROUTER = {
 const BID_TABS = [
   { id:'workspace',  l:'Workspace'  },
   { id:'activities', l:'Activities' },
-  { id:'compliance', l:'Compliance' },
+  { id:'compliance', l:'Submissions' },
   { id:'reviews',    l:'Reviews'    },
   { id:'governance', l:'Governance' },
   { id:'readiness',  l:'Readiness'  },
@@ -5619,6 +5619,45 @@ function wizAddCompReq() {
 }
 
 function wizResponseCsvImport() {
+  // Reuse the same structure guidance modal as the main import
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:680px;">
+    <div class="modal-hdr">
+      <div class="modal-title">Import Response Items CSV</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div style="padding:0 20px 16px;">
+      <div class="sh2">Required CSV Structure</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px;">
+        Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Title</strong> is the only mandatory field \u2014 all others are optional.
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;overflow-x:auto;margin-bottom:12px;">
+        <div style="color:var(--gold);margin-bottom:4px;">Column Order:</div>
+        <div><span style="color:var(--t1);">1. reference</span> \u2014 e.g. Q1.1, 4.2.1</div>
+        <div><span style="color:var(--t1);">2. title</span> <span style="color:var(--red);">*required</span> \u2014 question or deliverable title</div>
+        <div><span style="color:var(--t1);">3. responseType</span> \u2014 written_question | document_upload | certificate | cv | pricing_schedule | case_study | other</div>
+        <div><span style="color:var(--t1);">4. wordLimit</span> \u2014 number (e.g. 3000)</div>
+        <div><span style="color:var(--t1);">5. pageLimit</span> \u2014 number (e.g. 6)</div>
+        <div><span style="color:var(--t1);">6. evaluationWeightPct</span> \u2014 number (e.g. 15)</div>
+        <div><span style="color:var(--t1);">7. evaluationMaxScore</span> \u2014 number (e.g. 100)</div>
+        <div><span style="color:var(--t1);">8. complexity</span> \u2014 low | medium | high | very_high (default: high)</div>
+        <div><span style="color:var(--t1);">9. owner</span> \u2014 e.g. Solution Lead</div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">
+        <strong>Example row:</strong> Q1.1, "Describe your approach to service delivery", written_question, 3000, 6, 15, 100, high, Solution Lead
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal();_doWizResponseCsvImport();">Select CSV File</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _doWizResponseCsvImport() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = '.csv';
   input.onchange = e => {
@@ -6012,6 +6051,45 @@ function handleAddResponseItemConfirm() {
 }
 
 function handleResponseCsvImport() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:680px;">
+    <div class="modal-hdr">
+      <div class="modal-title">Import Response Items CSV</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div style="padding:0 20px 16px;">
+      <div class="sh2">Required CSV Structure</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px;">
+        Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Title</strong> is the only mandatory field \u2014 all others are optional.
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;overflow-x:auto;margin-bottom:12px;">
+        <div style="color:var(--gold);margin-bottom:4px;">Column Order:</div>
+        <div><span style="color:var(--t1);">1. reference</span> \u2014 e.g. Q1.1, 4.2.1</div>
+        <div><span style="color:var(--t1);">2. title</span> <span style="color:var(--red);">*required</span> \u2014 question or deliverable title</div>
+        <div><span style="color:var(--t1);">3. responseType</span> \u2014 written_question | document_upload | certificate | cv | pricing_schedule | case_study | other</div>
+        <div><span style="color:var(--t1);">4. wordLimit</span> \u2014 number (e.g. 3000)</div>
+        <div><span style="color:var(--t1);">5. pageLimit</span> \u2014 number (e.g. 6)</div>
+        <div><span style="color:var(--t1);">6. evaluationWeightPct</span> \u2014 number (e.g. 15)</div>
+        <div><span style="color:var(--t1);">7. evaluationMaxScore</span> \u2014 number (e.g. 100)</div>
+        <div><span style="color:var(--t1);">8. complexity</span> \u2014 low | medium | high | very_high (default: high)</div>
+        <div><span style="color:var(--t1);">9. owner</span> \u2014 e.g. Solution Lead</div>
+        <div><span style="color:var(--t1);">10. questionText</span> \u2014 full question text (optional)</div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">
+        <strong>Example row:</strong> Q1.1, "Describe your approach to service delivery", written_question, 3000, 6, 15, 100, high, Solution Lead, "Full question text here"
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal();_doResponseCsvImport();">Select CSV File</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _doResponseCsvImport() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = '.csv';
   input.onchange = e => {
@@ -6023,9 +6101,8 @@ function handleResponseCsvImport() {
       STORE.mutateBid(ROUTER.bidId, bid => {
         if (!bid.responseItems) bid.responseItems = [];
         rows.forEach((row, i) => {
-          // Expected: reference, title, responseType, wordLimit, pageLimit, evaluationWeightPct, evaluationMaxScore, complexity, owner, questionText
           const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
-          if (i === 0 && /^ref/i.test(cols[0])) return; // header
+          if (i === 0 && /^ref/i.test(cols[0])) return;
           const [ref='', title='', type='written_question', wl='', pl='', wt='', ms='', cx='high', owner='', qtext=''] = cols;
           if (!title) { rejected++; return; }
           bid.responseItems.push({
@@ -6131,6 +6208,38 @@ function handleAddCompReqConfirm() {
 }
 
 function handleCompReqCsvImport() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:580px;">
+    <div class="modal-hdr">
+      <div class="modal-title">Import Compliance Requirements CSV</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div style="padding:0 20px 16px;">
+      <div class="sh2">Required CSV Structure</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px;">
+        Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Text</strong> is the only mandatory field.
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;overflow-x:auto;margin-bottom:12px;">
+        <div style="color:var(--gold);margin-bottom:4px;">Column Order:</div>
+        <div><span style="color:var(--t1);">1. reference</span> \u2014 e.g. 3.1.2, REQ-007</div>
+        <div><span style="color:var(--t1);">2. text</span> <span style="color:var(--red);">*required</span> \u2014 the prescriptive requirement</div>
+        <div><span style="color:var(--t1);">3. category</span> \u2014 Technical | Commercial | Legal | Delivery | Governance | Other</div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">
+        <strong>Example row:</strong> 3.1.2, "The supplier shall provide 24/7 service desk coverage", Technical
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal();_doCompReqCsvImport();">Select CSV File</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _doCompReqCsvImport() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = '.csv';
   input.onchange = e => {
