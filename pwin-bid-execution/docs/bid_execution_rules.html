@@ -73,6 +73,7 @@ const TABS=[
   {id:'portfolio',l:'Practice Portfolio'},
   {id:'standup',l:'Standup Actions'},
   {id:'feasibility',l:'Feasibility Check'},
+  {id:'team',l:'Team & Spend'},
   {id:'thresholds',l:'All Thresholds'},
 ];
 let tab='scheduling',exp={};
@@ -1376,6 +1377,185 @@ ON verdict == 'infeasible':
 // ═══════════════════════════════════════
 // ALL THRESHOLDS
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// TEAM & SPEND FORECAST
+// ═══════════════════════════════════════
+R.team=()=>`
+<div class="sl">Rule Set 11</div>
+<div class="st">Team & Spend Forecast</div>
+<div class="sd">Rules governing team directory management, rate card resolution, spend forecasting, and unavailability impact analysis.</div>
+
+<div class="sh">11.1 Team Member Lifecycle</div>
+<div class="bt">Team members are seeded from wizard Stage 4 and can be added, edited, or soft-deleted at any time. Removing a team member sets isActive=false but preserves historical data (effort attribution, spend records).</div>
+<div class="rule">FUNCTION addTeamMember(member):
+  member.id = generateUUID()
+  member.bidId = currentBid.id
+  member.isActive = true
+  IF member.coreRole IS NOT NULL:
+    // Ensure only one person holds each core role
+    existing = findTeamMember(bidId, coreRole=member.coreRole, isActive=true)
+    IF existing: existing.coreRole = null  // demote previous holder
+  SAVE member
+  // Propagate to activity ownership
+  IF member.coreRole IS NOT NULL:
+    updateActivityOwnership(member.coreRole, member.name)
+
+FUNCTION removeTeamMember(memberId):
+  member = findById(memberId)
+  member.isActive = false
+  // Do NOT delete — preserve for historical spend attribution
+  // Flag any activities still owned by this person
+  affectedActivities = findActivities(owner=member.name, status != 'final' AND status != 'deactivated')
+  IF affectedActivities.length > 0:
+    GENERATE nudge: "{member.name} removed from team — {count} active activities need reassignment"</div>
+
+<div class="sh">11.2 Org Structure Hierarchy</div>
+<div class="bt">Simple tree derived from the reportsTo field. Bid Manager is always the root node.</div>
+<div class="rule">FUNCTION buildOrgTree(bidId):
+  members = findTeamMembers(bidId, isActive=true)
+  bidManager = members.find(m => m.coreRole == 'bid_manager')
+  root = { member: bidManager, children: [] }
+
+  // Core leads report to Bid Manager
+  coreLeads = members.filter(m => m.coreRole != null AND m.coreRole != 'bid_manager')
+  FOR EACH lead IN coreLeads:
+    leadNode = { member: lead, children: [] }
+    // Extended team members under this lead
+    reports = members.filter(m => m.reportsTo == lead.id)
+    leadNode.children = reports.map(r => { member: r, children: [] })
+    root.children.push(leadNode)
+
+  // Extended team members with reportsTo=null report to Bid Manager
+  unassigned = members.filter(m => m.coreRole == null AND (m.reportsTo == null OR m.reportsTo == bidManager.id))
+  root.children.push(...unassigned.map(u => { member: u, children: [] }))
+
+  RETURN root</div>
+
+<div class="sh">11.3 Rate Resolution</div>
+<div class="bt">Each team member's effective day rate is resolved by checking their individual rate first, then falling back to the standard rate card for their role.</div>
+<div class="rule">FUNCTION resolveRate(member, rateCard):
+  // Priority 1: individual rate (always takes precedence)
+  IF member.individualDayRate IS NOT NULL AND member.individualDayRate > 0:
+    RETURN member.individualDayRate
+
+  // Priority 2: standard rate card match on role name
+  standardEntry = rateCard.find(r => normalise(r.roleName) == normalise(member.role))
+  IF standardEntry:
+    RETURN standardEntry.standardDayRate
+
+  // Priority 3: no rate available
+  RETURN null  // flagged as "rate not set" in the UI</div>
+
+<div class="sh">11.4 Spend Forecast Calculation</div>
+<div class="bt">Forecast spend is calculated from activity effort days and the owning team member's resolved rate. Activities with no assigned owner or no rate are flagged but included in effort totals.</div>
+<div class="rule">FUNCTION calculateSpendForecast(bidId):
+  activities = findActivities(bidId, status != 'deactivated')
+  members = findTeamMembers(bidId, isActive=true)
+  rateCard = findRateCard(bidId)
+  forecast = { byPerson: {}, byWorkstream: {}, total: 0, totalAtStandard: 0, uncosted: [] }
+
+  FOR EACH activity IN activities:
+    member = members.find(m => m.name == activity.owner)
+    IF member IS NULL:
+      forecast.uncosted.push({ activity, reason: 'no_owner' })
+      CONTINUE
+
+    rate = resolveRate(member, rateCard)
+    IF rate IS NULL:
+      forecast.uncosted.push({ activity, reason: 'no_rate', member })
+      CONTINUE
+
+    cost = activity.effortDays * rate
+    standardRate = findStandardRate(member.role, rateCard)
+    costAtStandard = activity.effortDays * (standardRate OR rate)
+
+    // Accumulate by person
+    IF forecast.byPerson[member.id] IS NULL:
+      forecast.byPerson[member.id] = { member, effort: 0, cost: 0, costAtStandard: 0 }
+    forecast.byPerson[member.id].effort += activity.effortDays
+    forecast.byPerson[member.id].cost += cost
+    forecast.byPerson[member.id].costAtStandard += costAtStandard
+
+    // Accumulate by workstream
+    ws = activity.workstreamId
+    IF forecast.byWorkstream[ws] IS NULL:
+      forecast.byWorkstream[ws] = { effort: 0, cost: 0 }
+    forecast.byWorkstream[ws].effort += activity.effortDays
+    forecast.byWorkstream[ws].cost += cost
+
+    forecast.total += cost
+    forecast.totalAtStandard += costAtStandard
+
+  forecast.contractorPremium = forecast.total - forecast.totalAtStandard
+  RETURN forecast</div>
+
+<div class="sh">11.5 Spend Over Time (Cumulative)</div>
+<div class="bt">Projects spend over the bid timeline using activity planned dates to distribute cost across weeks.</div>
+<div class="rule">FUNCTION calculateSpendOverTime(bidId):
+  forecast = calculateSpendForecast(bidId)
+  activities = findActivities(bidId, status != 'deactivated')
+  weeks = getWeeksBetween(bidStart, submissionDeadline)
+  cumulative = { actual: [], standard: [] }
+  runningActual = 0
+  runningStandard = 0
+
+  FOR EACH week IN weeks:
+    weekCostActual = 0
+    weekCostStandard = 0
+    FOR EACH activity IN activities:
+      IF activity overlaps with week:
+        // Distribute effort evenly across elapsed duration
+        overlapDays = workingDaysOverlap(activity.plannedStart, activity.plannedEnd, week)
+        totalElapsed = workingDaysBetween(activity.plannedStart, activity.plannedEnd)
+        IF totalElapsed > 0:
+          proportion = overlapDays / totalElapsed
+          member = findMemberByName(activity.owner)
+          rate = resolveRate(member, rateCard)
+          standardRate = findStandardRate(member.role, rateCard)
+          weekCostActual += activity.effortDays * proportion * (rate OR 0)
+          weekCostStandard += activity.effortDays * proportion * (standardRate OR rate OR 0)
+
+    runningActual += weekCostActual
+    runningStandard += weekCostStandard
+    cumulative.actual.push({ week, value: runningActual })
+    cumulative.standard.push({ week, value: runningStandard })
+
+  RETURN cumulative</div>
+
+<div class="sh">11.6 Unavailability Impact Analysis</div>
+<div class="bt">When unavailability entries change, the system checks for overlap with activities owned by that person and generates warnings.</div>
+<div class="rule">FUNCTION checkUnavailabilityImpact(unavailabilityEntry):
+  member = findTeamMemberByName(unavailabilityEntry.name)
+  IF member IS NULL: RETURN []
+
+  activities = findActivities(bidId, owner=member.name, status IN ['not_started','in_progress','draft_complete'])
+  impacts = []
+
+  FOR EACH activity IN activities:
+    overlap = dateRangeOverlap(unavailabilityEntry.from, unavailabilityEntry.to, activity.plannedStart, activity.plannedEnd)
+    IF overlap > 0:
+      impacts.push({
+        activity: activity,
+        member: member,
+        overlapDays: overlap,
+        isCriticalPath: isOnCriticalPath(activity),
+        severity: overlap >= 3 ? 'high' : overlap >= 1 ? 'medium' : 'low'
+      })
+
+  RETURN impacts  // displayed as warnings in Unavailability tab</div>
+
+<div class="sh">11.7 Rate Variance Thresholds</div>
+<div class="bt">Visual indicators flag when individual rates deviate significantly from standard rates.</div>
+<div class="rule">FUNCTION rateVarianceLevel(individualRate, standardRate):
+  IF standardRate IS NULL OR standardRate == 0: RETURN 'no_benchmark'
+  variance = (individualRate - standardRate) / standardRate
+  IF variance > 0.50: RETURN 'red'     // > 50% above standard
+  IF variance > 0.20: RETURN 'amber'   // 20–50% above standard
+  RETURN 'green'                        // within 20% of standard</div>
+
+<div class="co co-g"><div class="co-l">Design Principle</div><div class="co-t">The spend forecast is a planning tool, not an accounting system. It uses planned effort from activities and resolved rates to project cost. Actual spend tracking (timesheets, invoices) is outside the scope of bid execution — the forecast answers: "What will this bid cost us to produce?" based on the team we have and the work we have planned. The rate variance analysis specifically highlights the cost impact of using contractors vs permanent staff at standard company rates.</div></div>
+`;
+
 R.thresholds=()=>`
 <div class="sl">Reference</div>
 <div class="st">All Configurable Thresholds</div>
@@ -1418,6 +1598,9 @@ R.thresholds=()=>`
     <tr><td>Major action resolution deadline</td><td>3 working days</td><td>Practice-wide</td><td>7.3</td></tr>
     <tr><td>Minor action resolution deadline</td><td>5 working days</td><td>Practice-wide</td><td>7.3</td></tr>
     <tr><td>Mandatory gap escalation window</td><td>10 working days to submission</td><td>Practice-wide</td><td>6.2</td></tr>
+    <tr><td>Rate variance — amber threshold</td><td>> 20% above standard</td><td>Practice-wide</td><td>11.7</td></tr>
+    <tr><td>Rate variance — red threshold</td><td>> 50% above standard</td><td>Practice-wide</td><td>11.7</td></tr>
+    <tr><td>Unavailability impact — high severity</td><td>≥ 3 working days overlap</td><td>System (not configurable)</td><td>11.6</td></tr>
   </tbody>
 </table>
 
