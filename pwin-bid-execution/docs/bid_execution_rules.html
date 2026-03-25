@@ -316,24 +316,73 @@ ON STATUS CHANGE:
     ACTIVATE POST workstream activities based on bid flags
     (hasPresentation → POST-01,02,03; hasBafo → POST-05,06; etc.)</div>
 
-<div class="sh">2.5 Requirement Coverage Status</div>
+<div class="sh">2.5 ResponseItem Status Transitions</div>
 <div class="rule">VALID TRANSITIONS:
-  unmapped          → mapped             // response section and owner assigned
-  mapped            → draft_in_progress  // linked activity status >= 'in_progress'
-  draft_in_progress → reviewed           // linked activity outputAssurance >= 'under_review'
-  reviewed          → approved           // linked activity outputAssurance >= 'assured'
-  ANY               → gap                // bid manager flags as a gap (manual)
-  gap               → mapped             // gap resolved, mapping established
+  not_started   → in_progress      // author has begun work
+  in_progress   → draft_complete   // first draft finished
+  draft_complete→ under_review     // submitted for review
+  under_review  → final            // approved after review
+  // Revert paths (rework):
+  draft_complete→ in_progress      // rework required
+  under_review  → in_progress      // review rejected, back to drafting
+  final         → under_review     // post-final revision required (rare)
+
+ON STATUS CHANGE:
+  SET responseItem.lastUpdated = NOW()
+  UPDATE linked ComplianceRequirements coverage status (see 2.7)
+  IF responseItem.responseType IN ('certificate','cv','case_study','pricing_schedule','presentation'):
+    UPDATE linked Artefact status to match (not_started→not_started, in_progress→draft,
+    draft_complete→draft, under_review→draft, final→final)</div>
+
+<div class="sh">2.6 ComplianceStatus Transitions</div>
+<div class="rule">VALID TRANSITIONS:
+  not_assessed        → compliant            // requirement fully met
+  not_assessed        → partially_compliant  // requirement partially met — explanation required
+  not_assessed        → non_compliant        // requirement not met — explanation required
+  not_assessed        → not_applicable       // requirement does not apply to this bid
+  // Reset path:
+  ANY assessed status → not_assessed         // reset for re-evaluation
+  // Re-assessment:
+  compliant           → partially_compliant  // downgrade after review
+  partially_compliant → compliant            // upgrade after mitigation
+  non_compliant       → partially_compliant  // partial mitigation found
+  partially_compliant → non_compliant        // downgrade after analysis
+
+CONSTRAINTS:
+  IF complianceStatus IN ('partially_compliant', 'non_compliant'):
+    complianceExplanation MUST NOT be empty
+    // The bid manager must explain why and what mitigation is proposed
+
+ON STATUS CHANGE:
+  SET complianceRequirement.lastUpdated = NOW()</div>
+
+<div class="sh">2.7 Compliance Requirement Coverage Status (Derived)</div>
+<div class="rule">VALID TRANSITIONS:
+  unmapped          → mapped             // at least one ResponseItem linked
+  mapped            → draft_in_progress  // any linked ResponseItem status >= 'in_progress'
+  draft_in_progress → reviewed           // ALL linked ResponseItems status >= 'under_review'
+  reviewed          → approved           // ALL linked ResponseItems status == 'final'
+                                         //   AND complianceStatus has been assessed (!= 'not_assessed')
+  ANY               → gap                // bid manager flags as a gap (manual override)
+  gap               → mapped             // gap resolved, ResponseItem linked
 
 AUTO-TRANSITION RULE:
-  Coverage status auto-updates when the linked activity changes:
-    IF requirement.responseActivityId IS NOT NULL:
-      linkedActivity = getActivity(requirement.responseActivityId)
-      IF linkedActivity.status >= 'in_progress': coverageStatus = 'draft_in_progress'
-      IF linkedActivity.outputAssurance >= 'under_review': coverageStatus = 'reviewed'
-      IF linkedActivity.outputAssurance >= 'assured': coverageStatus = 'approved'</div>
+  Coverage status auto-derives from linked ResponseItems aggregate:
+    IF complianceRequirement.linkedResponseItemIds.length == 0:
+      coverageStatus = 'unmapped'
+    ELSE:
+      linkedItems = getResponseItems(complianceRequirement.linkedResponseItemIds)
+      IF ANY linkedItem.status >= 'in_progress': coverageStatus = 'draft_in_progress'
+      IF ALL linkedItems.status >= 'under_review': coverageStatus = 'reviewed'
+      IF ALL linkedItems.status == 'final' AND complianceStatus != 'not_assessed':
+        coverageStatus = 'approved'
+      ELSE IF linkedItems.length > 0 AND ALL at 'not_started':
+        coverageStatus = 'mapped'
 
-<div class="sh">2.6 Review Action Status</div>
+  // Coverage status is computed, not directly editable (except manual gap override)
+  // The bid manager advances coverage by progressing ResponseItems and setting complianceStatus</div>
+
+<div class="sh">2.8 Review Action Status</div>
 <div class="rule">VALID TRANSITIONS:
   open        → in_progress  // owner has started working on resolution
   in_progress → resolved     // owner has completed the fix
@@ -347,7 +396,7 @@ GATE LOGIC:
     COUNT(actions WHERE severity == 'critical' AND status IN ('open', 'in_progress')) == 0
   Major and minor actions do NOT block closure — only critical actions.</div>
 
-<div class="sh">2.7 Standup Action Status</div>
+<div class="sh">2.9 Standup Action Status</div>
 <div class="rule">VALID TRANSITIONS:
   open      → done       // action completed
   open      → escalated  // converted to risk/blocker on parent activity
@@ -412,30 +461,52 @@ FUNCTION avgProgress(workstream):
 <div class="sh">3.3 Production Readiness Signals</div>
 <div class="rule">productionReadiness = WEIGHTED AVERAGE of:
 
-  Signal                          | Weight | Calculation
+  Signal                            | Weight | Calculation
   ─────────────────────────────────────────────────────────────
-  Section/question completion %   |  25%   | (PRD activities at 'final' or 'draft_complete')
-                                  |        |   / (total active PRD activities) * 100
-  Compliance coverage (mandatory) |  25%   | (mandatory requirements at 'approved')
-                                  |        |   / (total mandatory requirements) * 100
-                                  |        | IF any mandatory at 'gap': MAX score = 50
-  Review actions resolved (crit)  |  20%   | (critical actions at 'resolved' or 'accepted')
-                                  |        |   / (total critical actions) * 100
-                                  |        | IF zero critical actions exist: 100
-  Approvals obtained              |  15%   | (approvals at 'approved') / (total required) * 100
-                                  |        | IF any approval at 'rejected': FORCE score = 0
-  Artefact checklist              |  10%   | (artefacts at 'final' or 'uploaded' or 'confirmed')
-                                  |        |   / (total artefacts) * 100
-  Workstream timing health        |   5%   | IF any critical compression: 0
-                                  |        | IF any amber compression: 50
-                                  |        | ELSE: 100
+  Response item completion %        |  25%   | (ResponseItems at 'final' or 'draft_complete')
+                                    |        |   / (total ResponseItems) * 100
+                                    |        | IF zero ResponseItems exist: score = 0 (NOT 100)
+  Compliance declarations complete %|  25%   | (ComplianceRequirements WHERE complianceStatus
+                                    |        |   != 'not_assessed') / (total ComplianceRequirements)
+                                    |        |   * 100
+                                    |        | IF zero ComplianceRequirements exist: score = 0
+                                    |        | IF any mandatory at complianceStatus ==
+                                    |        |   'non_compliant': MAX score = 30
+                                    |        | IF any mandatory at coverageStatus == 'gap':
+                                    |        |   MAX score = 50
+  Review actions resolved (crit)    |  20%   | (critical actions at 'resolved' or 'accepted')
+                                    |        |   / (total critical actions) * 100
+                                    |        | IF zero critical actions exist: 100
+  Approvals obtained                |  15%   | (approvals at 'approved') / (total required) * 100
+                                    |        | IF any approval at 'rejected': FORCE score = 0
+  Artefact checklist                |  10%   | (Artefacts at 'final' or 'uploaded' or 'confirmed')
+                                    |        |   / (total Artefacts) * 100
+                                    |        | IF zero Artefacts exist: score = 0 (NOT 100)
+                                    |        | Artefacts auto-seeded from document-type
+                                    |        |   ResponseItems during setup
+  Workstream timing health          |   5%   | IF any critical compression: 0
+                                    |        | IF any amber compression: 50
+                                    |        | ELSE: 100
   ─────────────────────────────────────────────────────────────
 
+HOLLOW-SCORE GUARD:
+  // Critical design principle: zero items = 0% score, NOT 100%.
+  // A bid with no ResponseItems imported is NOT "100% complete" — it has
+  // 0% production data. The NaN guard must return 0, not 100.
+  // Exception: Review actions (20%) — zero critical actions genuinely means
+  // no outstanding issues, so 100% is correct.
+
 HARD GATES (override the score):
-  IF any mandatory requirement has coverageStatus == 'gap':
+  IF any mandatory ComplianceRequirement has coverageStatus == 'gap':
     overallReadiness CAPPED AT 50 (amber maximum)
+  IF any mandatory ComplianceRequirement has complianceStatus == 'non_compliant':
+    overallReadiness CAPPED AT 30 (red) — non-compliance on mandatory is a showstopper
   IF any critical review action has status == 'open':
     overallReadiness CAPPED AT 60 (amber maximum)
+  IF zero ResponseItems exist AND bid phase == 'active' AND
+    bid elapsed > 50% of timeline:
+    overallReadiness CAPPED AT 40 (red) — no production content tracked
+    DISPLAY WARNING: "No ITT response items imported — production readiness cannot be assessed"
   IF any methodology gate (SAL-06, BM-10) NOT at 'assured':
     AND bid is in production phase:
     DISPLAY WARNING: "Production proceeding without locked [strategy/storyboard]"</div>
@@ -696,72 +767,202 @@ AGGREGATION:
 R.compliance=()=>`
 <div class="sl">Rule Set 6</div>
 <div class="st">Compliance Engine</div>
-<div class="sd">Rules for coverage calculation, gap detection, classification handling, and the compliance hard gate.</div>
+<div class="sd">Rules for the Submission Requirements Register and optional Compliance Matrix. Word count limits drive effort estimation. Evaluation weightings drive team prioritisation. Response completion tracking, compliance declarations (when used), coverage calculation, gap detection, and hard gates. The submission register is always present; the compliance matrix is optional (common in BPO/ITO, not typical in consulting).</div>
 
-<div class="sh">6.1 Coverage Calculations</div>
-<div class="rule">FUNCTION calculateCoverage(requirements):
-  mandatory = requirements WHERE classification == 'mandatory'
-  scored = requirements WHERE classification == 'scored'
-  all = requirements WHERE classification != null
-  
-  mandatoryCoverage = COUNT(mandatory WHERE coverageStatus == 'approved')
-                      / COUNT(mandatory) * 100
-  // NaN check: if zero mandatory requirements, mandatoryCoverage = 100
-  
-  scoredCoverage = COUNT(scored WHERE coverageStatus IN ('reviewed','approved'))
-                   / COUNT(scored) * 100
-  
+<div class="sh">6.1 Response Item Completion Calculations</div>
+<div class="rule">FUNCTION calculateResponseCompletion(responseItems):
+  IF responseItems.length == 0: RETURN { completionPct: 0, isEmpty: true, ... }
+  // CRITICAL: zero items = 0%, NOT 100%. No data means no progress.
+
+  total = responseItems.length
+  byStatus = GROUP responseItems BY status
+  finalCount = COUNT(status == 'final')
+  draftCompleteCount = COUNT(status == 'draft_complete')
+  underReviewCount = COUNT(status == 'under_review')
+  inProgressCount = COUNT(status == 'in_progress')
+  notStartedCount = COUNT(status == 'not_started')
+
+  completionPct = (finalCount + draftCompleteCount) / total * 100
+  progressPct = (finalCount * 100 + draftCompleteCount * 75 + underReviewCount * 60
+                 + inProgressCount * 25) / (total * 100) * 100
+
+  // By response type
+  byType = GROUP responseItems BY responseType
+  FOR EACH type:
+    typeCompletion = COUNT(type WHERE status IN ('final','draft_complete')) / COUNT(type) * 100
+
+  // Evaluation weight coverage
+  totalWeight = SUM(responseItems.evaluationWeightPct WHERE evaluationWeightPct != null)
+  coveredWeight = SUM(responseItems.evaluationWeightPct WHERE status IN ('final','draft_complete')
+                      AND evaluationWeightPct != null)
+  evalCoveragePct = totalWeight > 0 ? (coveredWeight / totalWeight * 100) : null
+
+  // Word count tracking
+  totalWordLimit = SUM(responseItems.wordLimit WHERE wordLimit != null)
+  totalWordsWritten = SUM(responseItems.currentWordCount WHERE currentWordCount != null)
+
+  RETURN { completionPct, progressPct, byStatus, byType, evalCoveragePct,
+           totalWordLimit, totalWordsWritten, isEmpty: false }
+
+EFFORT DERIVATION FROM WORD COUNT:
+  // Industry baseline: 2 person-days per page of text for a qualitative question,
+  // covering storyboard through to red-review-ready draft, excluding images.
+  // At ~500 words per page, this gives a base rate of 1 page (500 words) = 2 days.
+  // AI-assisted drafting reduces this — complexity selector adjusts the multiplier.
+
+  WORDS_PER_PAGE = 500  // standard A4 body text
+  FUNCTION suggestEffort(responseItem):
+    IF responseItem.responseType != 'written_question': RETURN null  // manual estimate
+    IF responseItem.wordLimit == null: RETURN null  // no word limit, manual estimate
+
+    pages = CEIL(responseItem.wordLimit / WORDS_PER_PAGE)
+
+    daysPerPage = {
+      low: 0.5,        // factual, template-driven, reuse from library, AI-assisted
+      medium: 1.0,     // requires tailoring, some original drafting, AI-assisted
+      high: 2.0,       // industry baseline — technical depth, original analysis,
+                        //   storyboard + drafting + review rework
+      very_high: 3.0   // novel solution design, complex narrative, multi-stakeholder
+                        //   input, multiple review cycles expected
+    }
+    RETURN CEIL(pages * daysPerPage[responseItem.complexityEstimate])
+
+    // This is a SUGGESTION — the bid manager overrides as needed.
+    // The baseline (high = 2 days/page) reflects experienced practitioners.
+    // Low/medium reflect AI-assisted drafting reducing the cycle.
+    // Effort feeds into workload planning: total effort across all items
+    // shows whether the team has enough capacity for the timeline.
+    // Example: a 3,000-word question at 'high' complexity =
+    //   CEIL(6 pages * 2.0) = 12 person-days
+
+EVALUATION WEIGHT PRIORITISATION:
+  // The team focuses effort where the marks are.
+  // Sort response items by evaluationWeightPct descending to surface the
+  // highest-value questions. Items with no weight assigned appear last.
+  // Workspace dashboard shows: "Top 5 highest-weighted items not yet started"
+  // as a smart nudge when the bid enters production phase.</div>
+
+<div class="sh">6.2 Compliance Coverage Calculations</div>
+<div class="rule">FUNCTION calculateComplianceCoverage(complianceRequirements):
+  IF complianceRequirements.length == 0: RETURN { mandatoryCoverage: 0, isEmpty: true, ... }
+  // CRITICAL: zero items = 0%, NOT 100%. No data means no compliance assessment.
+
+  mandatory = complianceRequirements WHERE classification == 'mandatory'
+  scored = complianceRequirements WHERE classification == 'scored'
+  all = complianceRequirements
+
+  // Declaration completeness (has the bid manager assessed each requirement?)
+  declarationsPct = COUNT(all WHERE complianceStatus != 'not_assessed')
+                    / COUNT(all) * 100
+
+  // Mandatory compliance (are mandatory requirements actually met?)
+  mandatoryAssessed = COUNT(mandatory WHERE complianceStatus != 'not_assessed')
+  mandatoryCompliant = COUNT(mandatory WHERE complianceStatus == 'compliant')
+  mandatoryPartial = COUNT(mandatory WHERE complianceStatus == 'partially_compliant')
+  mandatoryNonCompliant = COUNT(mandatory WHERE complianceStatus == 'non_compliant')
+  mandatoryCoverage = COUNT(mandatory) > 0
+    ? (mandatoryCompliant / COUNT(mandatory) * 100) : 0
+
+  // Coverage status (is the response work progressing?)
   overallCoverage = COUNT(all WHERE coverageStatus NOT IN ('unmapped','gap'))
                     / COUNT(all) * 100
-  
+
   mandatoryGaps = COUNT(mandatory WHERE coverageStatus IN ('unmapped','gap'))
   totalGaps = COUNT(all WHERE coverageStatus IN ('unmapped','gap'))
-  
-  RETURN { mandatoryCoverage, scoredCoverage, overallCoverage, mandatoryGaps, totalGaps }</div>
 
-<div class="sh">6.2 Compliance Hard Gate</div>
+  RETURN { declarationsPct, mandatoryCoverage, mandatoryAssessed, mandatoryCompliant,
+           mandatoryPartial, mandatoryNonCompliant, overallCoverage, mandatoryGaps,
+           totalGaps, isEmpty: false }</div>
+
+<div class="sh">6.3 Compliance Hard Gates</div>
 <div class="rule">RULE: IF mandatoryGaps > 0:
   readiness score CAPPED AT 50 (amber maximum)
   workspace displays: "⚠ {mandatoryGaps} mandatory requirement(s) have no approved response"
   submission readiness verdict: CANNOT be 'ready' — forced to 'not ready'
-  
+
   // This is a HARD gate — it cannot be overridden by the bid manager
   // The only way to clear it is to address the gaps
 
+RULE: IF mandatoryNonCompliant > 0:
+  readiness score CAPPED AT 30 (red)
+  workspace displays: "⛔ {mandatoryNonCompliant} mandatory requirement(s) assessed as non-compliant"
+  // Non-compliance on a mandatory requirement is a showstopper.
+  // The bid manager must either resolve compliance or escalate a no-bid decision.
+
 RULE: IF mandatoryCoverage < 100 AND bid is within 10 working days of submission:
   ESCALATE to practice portfolio as red alert
-  CREATE standup action: "CRITICAL: {mandatoryGaps} mandatory gaps with {daysToSubmission} days remaining"</div>
+  CREATE standup action: "CRITICAL: {mandatoryGaps} mandatory gaps with {daysToSubmission} days remaining"
 
-<div class="sh">6.3 Clarification Impact Handling</div>
+RULE: IF responseItems.length == 0 AND bid phase == 'active' AND bid elapsed > 50% of timeline:
+  readiness score CAPPED AT 40 (red)
+  workspace displays: "⚠ No ITT response items imported — production readiness cannot be assessed"
+  // The system cannot measure production progress without knowing what needs to be produced</div>
+
+<div class="sh">6.4 Clarification Impact Handling</div>
 <div class="rule">WHEN SAL-09 (clarification impact analysis) is processed:
-  Bid manager flags affected requirements with impactedByClarification = true
-  
+  Bid manager flags affected ComplianceRequirements AND ResponseItems
+  with impactedByClarification = true
+
   SYSTEM RESPONSE:
-    Flagged requirements appear with amber indicator in register
-    Requirements flagged but not reviewed by bid manager show as:
+    Flagged items appear with amber indicator in both registers
+    Items flagged but not reviewed by bid manager show as:
       "Clarification impact flagged — review needed"
     COUNT(impactedByClarification == true AND NOT reviewed) shown on workspace
-    
-  // "Not reviewed" means: the requirement was flagged but coverageStatus
-  // has not been updated since the flag was set
-  // Track via: requirement.lastModified < requirement.clarificationFlagDate</div>
 
-<div class="sh">6.4 CSV Import Rules</div>
-<div class="rule">IMPORT VALIDATION:
-  Required columns: reference, text
-  Optional columns: classification, category, responseSection, responseOwner
-  
+  // "Not reviewed" means: the item was flagged but its status/content
+  // has not been updated since the flag was set
+  // Track via: item.lastUpdated < item.clarificationFlagDate</div>
+
+<div class="sh">6.5 Submission Requirements CSV Import Rules</div>
+<div class="rule">IMPORT VALIDATION (ResponseItems):
+  Required columns: reference, title, questionText
+  Optional columns: responseType, sectionNumber, evaluationWeightPct, evaluationMaxScore,
+                    evaluationCriteria, wordLimit, pageLimit, complexityEstimate, owner
+
   ON IMPORT:
-    IF reference matches existing requirement: UPDATE (merge)
+    IF reference matches existing ResponseItem: UPDATE (merge)
+    IF reference is new: CREATE
+    IF responseType is empty: SET to 'written_question' (default)
+    IF questionText is empty: REJECT row with error
+    SET status = 'not_started' for all new items
+    SET status = KEEP for updated items (don't regress)
+
+  POST-IMPORT:
+    Display: "{imported} response items imported, {updated} updated, {rejected} rejected"
+    Show rejected rows with reasons
+    AUTO-GENERATE Artefact entities for document-type ResponseItems:
+      IF responseType IN ('certificate','cv','case_study','pricing_schedule','presentation'):
+        CREATE Artefact with name = ResponseItem.title, type = matching artefact type,
+        status = 'not_started', owner = ResponseItem.owner,
+        linkedResponseItemIds = [ResponseItem.id]</div>
+
+<div class="sh">6.6 Compliance Requirement CSV Import Rules (Optional)</div>
+<div class="rule">// This import is optional. BPO/ITO bids with prescriptive specification
+// requirements use this. Consulting bids may skip it entirely.
+// Can be done at setup (wizard Stage 5) or at any later point.
+
+IMPORT VALIDATION (ComplianceRequirements):
+  Required columns: reference, text
+  Optional columns: classification, category, owner
+
+  ON IMPORT:
+    IF reference matches existing ComplianceRequirement: UPDATE (merge)
     IF reference is new: CREATE
     IF classification is empty: SET to 'scored' (default)
     IF text is empty: REJECT row with error
-    SET coverageStatus = 'unmapped' for all new requirements
-    SET coverageStatus = KEEP for updated requirements (don't regress)
-  
+    SET complianceStatus = 'not_assessed' for all new items
+    SET coverageStatus = 'unmapped' for all new items
+    SET complianceStatus = KEEP for updated items (don't regress)
+    SET coverageStatus = KEEP for updated items (don't regress)
+
   POST-IMPORT:
     Display: "{imported} requirements imported, {updated} updated, {rejected} rejected"
-    Show rejected rows with reasons</div>
+    Show rejected rows with reasons
+
+AUTO-LINKING SUGGESTION:
+  After import, the system suggests links between ComplianceRequirements and ResponseItems
+  based on text similarity and reference number proximity. The bid manager confirms or
+  dismisses each suggestion. This is a prompt, not an automatic action.</div>
 `;
 
 // ═══════════════════════════════════════

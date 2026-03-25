@@ -339,7 +339,7 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .req-row:hover{background:var(--bg3);}
 .req-hdr{display:grid;grid-template-columns:70px 1fr 90px 90px 100px 80px;gap:4px;padding:5px 10px;background:var(--bg4);}
 .req-hdr span{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);}
-.req-text{font-size:11.5px;color:var(--t2);line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.req-text{font-size:11.5px;color:var(--t2);line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;line-clamp:2;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
 .req-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--t1);}
 
 .clar-flag{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amb);margin-left:4px;vertical-align:middle;}
@@ -391,7 +391,7 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .ra-row.sev-critical{border-left:3px solid var(--red);}
 .ra-row.sev-major{border-left:3px solid var(--amb);}
 .ra-row.sev-minor{border-left:3px solid var(--t3);}
-.ra-comment{font-size:11.5px;color:var(--t2);line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.ra-comment{font-size:11.5px;color:var(--t2);line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;line-clamp:2;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
 
 /* Gate logic panel */
 .gate-panel{padding:14px;background:var(--bg2);border:1px solid var(--bdr);margin-top:12px;display:flex;align-items:center;gap:14px;}
@@ -494,7 +494,7 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .ws-timing.g{background:var(--grn);}.ws-timing.a{background:var(--amb);}.ws-timing.r{background:var(--red);}.ws-timing.u{background:var(--bg4);}
 .ws-gates{display:flex;gap:12px;flex-wrap:wrap;}
 .ws-gate-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--bg3);border:1px solid var(--bdr-s);border-radius:8px;}
-.ws-gate-dot{width:10px;height:10px;border-radius:50;}
+.ws-gate-dot{width:10px;height:10px;border-radius:50%;}
 .ws-gate-name{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--t1);}
 .ws-gate-status{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.04em;}
 .ws-actions-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
@@ -636,6 +636,26 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .sm-log{background:var(--bg4);border-radius:8px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--t2);}
 .sm-blocker{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(200,60,60,.1);border:1px solid var(--red);border-radius:6px;margin-bottom:6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--red);}
 .sm-ready{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(0,200,120,.1);border:1px solid var(--grn);border-radius:6px;margin-bottom:6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--grn);}
+
+/* Response items register */
+.ri-hdr{display:grid;grid-template-columns:70px 1fr 80px 70px 80px 70px 90px 90px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
+.ri-row{display:grid;grid-template-columns:70px 1fr 80px 70px 80px 70px 90px 90px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;cursor:pointer;transition:background .15s;}
+.ri-row:hover{background:var(--bg3);}
+.ri-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);}
+.ri-title{font-size:12px;color:var(--t1);line-height:1.4;}
+.ri-title-sub{font-size:10px;color:var(--t3);margin-top:1px;}
+.ri-words{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);}
+.ri-weight{font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);text-align:center;}
+.ri-effort{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);text-align:center;}
+.ri-owner{font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ri-word-bar{height:4px;background:var(--bg4);border-radius:2px;margin-top:3px;overflow:hidden;}
+.ri-word-fill{height:100%;border-radius:2px;transition:width .3s;}
+
+/* Compliance matrix */
+.cm-hdr{display:grid;grid-template-columns:70px 1fr 130px 130px 80px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
+.cm-row{display:grid;grid-template-columns:70px 1fr 130px 130px 80px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;}
+.cm-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);}
+.cm-text{font-size:12px;color:var(--t1);line-height:1.4;}
 
 /* ═══════════════════════════════════════
    PRINT
@@ -1159,7 +1179,9 @@ const WIZARD = (() => {
     team:{ bidManager:'', solutionLead:'', commercialLead:'', deliveryLead:'', legalLead:'', supplyLead:'' },
     extendedTeam:[],
     // Stage 5
-    requirements:[],
+    requirements:[],        // legacy
+    responseItems:[],       // new: submission deliverables
+    complianceRequirements:[], // new: prescriptive requirements (optional)
   });
 
   let _d = null;
@@ -1220,6 +1242,10 @@ const WIZARD = (() => {
     removeExtendedTeam(i)   { _d.extendedTeam.splice(i,1); _persist(); },
     addReq(r)     { _d.requirements.push(r); _persist(); },
     removeReq(i)  { _d.requirements.splice(i,1); _persist(); },
+    addResponseItem(r)     { _d.responseItems.push(r); _persist(); },
+    removeResponseItem(i)  { _d.responseItems.splice(i,1); _persist(); },
+    addCompReq(r)          { _d.complianceRequirements.push(r); _persist(); },
+    removeCompReq(i)       { _d.complianceRequirements.splice(i,1); _persist(); },
     addHoliday(d) { if (!_d.publicHolidays.includes(d)) { _d.publicHolidays.push(d); _d.publicHolidays.sort(); _persist(); } },
     removeHoliday(i){ _d.publicHolidays.splice(i,1); _persist(); },
     setMilestoneDate(i, date) { _d.milestones[i].date = date; _persist(); },
@@ -1664,7 +1690,25 @@ const TRANSITIONS = (() => {
     accepted_at_gate: ['assured'],
   };
 
-  // Rule 2.5: Valid requirement coverage transitions
+  // Rule 2.5: Valid ResponseItem status transitions
+  const _respValid = {
+    not_started:   ['in_progress'],
+    in_progress:   ['draft_complete', 'not_started'],
+    draft_complete:['under_review', 'in_progress'],
+    under_review:  ['final', 'draft_complete'],
+    final:         ['under_review'],
+  };
+
+  // Rule 2.6: Valid ComplianceRequirement status transitions
+  const _compValid = {
+    not_assessed:         ['compliant', 'partially_compliant', 'non_compliant', 'not_applicable'],
+    compliant:            ['partially_compliant', 'non_compliant', 'not_assessed'],
+    partially_compliant:  ['compliant', 'non_compliant', 'not_assessed'],
+    non_compliant:        ['partially_compliant', 'compliant', 'not_assessed'],
+    not_applicable:       ['not_assessed'],
+  };
+
+  // Legacy coverage transitions (kept for backward compat during migration)
   const _covValid = {
     unmapped:          ['mapped', 'gap'],
     mapped:            ['draft_in_progress', 'gap'],
@@ -1716,17 +1760,43 @@ const TRANSITIONS = (() => {
     return { ok: true };
   }
 
-  // Rule 2.5: Auto-update requirement coverage based on linked activity
+  // Rule 2.5: ResponseItem status change
+  function changeResponseItemStatus(item, newStatus) {
+    const from = item.status || 'not_started';
+    if (from === newStatus) return { ok: true };
+    if (!canTransition(from, newStatus, _respValid)) {
+      return { ok: false, error: `Cannot move response item from "${from}" to "${newStatus}"` };
+    }
+    item.status = newStatus;
+    item.lastUpdated = new Date().toISOString();
+    return { ok: true };
+  }
+
+  // Rule 2.6: ComplianceRequirement status change
+  function changeComplianceStatus(req, newStatus) {
+    const from = req.complianceStatus || 'not_assessed';
+    if (from === newStatus) return { ok: true };
+    if (!canTransition(from, newStatus, _compValid)) {
+      return { ok: false, error: `Cannot move compliance from "${from}" to "${newStatus}"` };
+    }
+    // Rule 2.6: explanation required for partial/non-compliant
+    if ((newStatus === 'partially_compliant' || newStatus === 'non_compliant') && !req.complianceExplanation) {
+      return { ok: false, error: `Explanation required when setting status to "${newStatus.replace(/_/g,' ')}"` };
+    }
+    req.complianceStatus = newStatus;
+    req.lastUpdated = new Date().toISOString();
+    return { ok: true };
+  }
+
+  // Legacy: Auto-update requirement coverage based on linked activity
   function autoUpdateCoverage(requirement, activity) {
     if (!activity) return;
     const s = activity.status;
     const a = activity.assurance || 'none';
     let target = requirement.coverageStatus || 'unmapped';
-    // Only promote, never regress
     if (a === 'assured' || a === 'accepted_at_gate') target = 'approved';
     else if (a === 'under_review')                    target = 'reviewed';
     else if (s === 'in_progress' || s === 'draft_complete' || s === 'final') target = 'draft_in_progress';
-    // Apply only if it's a valid forward move
     if (target !== requirement.coverageStatus && canTransition(requirement.coverageStatus, target, _covValid)) {
       requirement.coverageStatus = target;
     }
@@ -1737,11 +1807,15 @@ const TRANSITIONS = (() => {
     const norm = (!current || current === 'none') ? 'unassured' : current;
     return _assValid[norm] || [];
   }
+  function validNextResponseStatuses(current) { return _respValid[current || 'not_started'] || []; }
+  function validNextComplianceStatuses(current) { return _compValid[current || 'not_assessed'] || []; }
 
   return {
     canTransition, changeActivityStatus, changeAssurance,
+    changeResponseItemStatus, changeComplianceStatus,
     autoUpdateCoverage, validNextStatuses, validNextAssurances,
-    _actValid, _assValid, _covValid,
+    validNextResponseStatuses, validNextComplianceStatuses,
+    _actValid, _assValid, _covValid, _respValid, _compValid,
   };
 })();
 
@@ -1822,32 +1896,76 @@ const NUDGE = (() => {
 
 
 /* ════════════════════════════════════════════════════════════
-   COMPLIANCE — Coverage Calculations (Rule Set 6)
+   COMPLIANCE — Dual-Register Engine (Rule Set 6)
+   Register 1: Submission Requirements (ResponseItems)
+   Register 2: Compliance Matrix (ComplianceRequirements) — optional
 ════════════════════════════════════════════════════════════ */
 const COMPLIANCE = (() => {
 
-  // Rule 6.1: Coverage calculations
+  // ── Effort derivation (Rule 6.1) ────────────────────────
+  // Days per page by complexity tier (page = ~500 words)
+  const _daysPerPage = { low: 0.5, medium: 1.0, high: 2.0, very_high: 3.0 };
+
+  function deriveEffort(item) {
+    if (item.effortDays != null && item.effortDays > 0) return item.effortDays; // manual override
+    if (!item.wordLimit || item.wordLimit <= 0) return 0;
+    const pages = item.wordLimit / 500;
+    const complexity = item.complexityEstimate || 'high';
+    return Math.round(pages * (_daysPerPage[complexity] || 2.0) * 10) / 10;
+  }
+
+  // ── Rule 6.1: Response completion calculations ──────────
+  function calculateResponseCompletion(responseItems) {
+    if (!responseItems || responseItems.length === 0) {
+      return { total: 0, completion: 0, byStatus: {}, totalMarks: 0, totalEffortDays: 0 };
+    }
+    const byStatus = { not_started: 0, in_progress: 0, draft_complete: 0, under_review: 0, final: 0 };
+    let totalMarks = 0, totalEffortDays = 0;
+    responseItems.forEach(r => {
+      byStatus[r.status || 'not_started'] = (byStatus[r.status || 'not_started'] || 0) + 1;
+      totalMarks += r.evaluationMaxScore || 0;
+      totalEffortDays += deriveEffort(r);
+    });
+    const done = (byStatus.final || 0) + (byStatus.under_review || 0);
+    const completion = Math.round((done / responseItems.length) * 1000) / 10;
+    return { total: responseItems.length, completion, byStatus, totalMarks, totalEffortDays };
+  }
+
+  // ── Rule 6.2: Compliance coverage calculations ──────────
+  function calculateComplianceCoverage(complianceReqs) {
+    if (!complianceReqs || complianceReqs.length === 0) {
+      return { total: 0, assessed: 0, compliant: 0, partial: 0, nonCompliant: 0, notApplicable: 0, completion: 0, hasNonCompliant: false };
+    }
+    let assessed = 0, compliant = 0, partial = 0, nonCompliant = 0, notApplicable = 0;
+    complianceReqs.forEach(r => {
+      const s = r.complianceStatus || 'not_assessed';
+      if (s !== 'not_assessed') assessed++;
+      if (s === 'compliant') compliant++;
+      else if (s === 'partially_compliant') partial++;
+      else if (s === 'non_compliant') nonCompliant++;
+      else if (s === 'not_applicable') notApplicable++;
+    });
+    const denominator = complianceReqs.length - notApplicable;
+    const completion = denominator > 0 ? Math.round((assessed / complianceReqs.length) * 1000) / 10 : 0;
+    return { total: complianceReqs.length, assessed, compliant, partial, nonCompliant, notApplicable, completion, hasNonCompliant: nonCompliant > 0 };
+  }
+
+  // ── Legacy: old coverage calculation (for backward compat) ──
   function calculateCoverage(requirements) {
     if (!requirements || requirements.length === 0) {
-      return { mandatoryCoverage: 100, scoredCoverage: 100, overallCoverage: 100, mandatoryGaps: 0, totalGaps: 0 };
+      return { mandatoryCoverage: 0, scoredCoverage: 0, overallCoverage: 0, mandatoryGaps: 0, totalGaps: 0 };
     }
-
     const mandatory = requirements.filter(r => r.classification === 'mandatory');
     const scored = requirements.filter(r => r.classification === 'scored');
-
-    const mandatoryCoverage = mandatory.length === 0 ? 100
+    const mandatoryCoverage = mandatory.length === 0 ? 0
       : (mandatory.filter(r => r.coverageStatus === 'approved').length / mandatory.length) * 100;
-
-    const scoredCoverage = scored.length === 0 ? 100
+    const scoredCoverage = scored.length === 0 ? 0
       : (scored.filter(r => ['reviewed','approved'].includes(r.coverageStatus)).length / scored.length) * 100;
-
     const all = requirements.filter(r => r.classification);
-    const overallCoverage = all.length === 0 ? 100
+    const overallCoverage = all.length === 0 ? 0
       : (all.filter(r => !['unmapped','gap'].includes(r.coverageStatus)).length / all.length) * 100;
-
     const mandatoryGaps = mandatory.filter(r => ['unmapped','gap'].includes(r.coverageStatus)).length;
     const totalGaps = all.filter(r => ['unmapped','gap'].includes(r.coverageStatus)).length;
-
     return {
       mandatoryCoverage: Math.round(mandatoryCoverage * 10) / 10,
       scoredCoverage: Math.round(scoredCoverage * 10) / 10,
@@ -1856,7 +1974,7 @@ const COMPLIANCE = (() => {
     };
   }
 
-  return { calculateCoverage };
+  return { deriveEffort, calculateResponseCompletion, calculateComplianceCoverage, calculateCoverage };
 })();
 
 
@@ -2303,47 +2421,46 @@ const READINESS = (() => {
   // ── Rule 3.3: Production readiness signals ───────────────
   function productionReadiness(bid) {
     const acts = bid.activities || [];
-    const reqs = bid.requirements || [];
+    const responseItems = bid.responseItems || [];
+    const compReqs = bid.complianceRequirements || [];
     const cycles = bid.reviewCycles || [];
     const artefacts = bid.artefacts || [];
     const gates = bid.governanceGates || [];
     const signals = [];
 
-    // 1. Section/question completion (25%) — PRD activities
-    const prdActs = acts.filter(a => a.workstreamId === 'PRD' && a.active !== false && a.status !== 'deactivated');
-    const prdDone = prdActs.filter(a => a.status === 'final' || a.status === 'draft_complete').length;
-    const prdScore = prdActs.length > 0 ? (prdDone / prdActs.length) * 100 : 100;
-    signals.push({ name: 'Section/question completion', weight: 25, score: Math.round(prdScore * 10) / 10, source: `${prdDone}/${prdActs.length}`, target: 'all complete' });
+    // 1. Response item completion (25%) — hollow-score guard: 0% when empty
+    const respComp = COMPLIANCE.calculateResponseCompletion(responseItems);
+    const respScore = responseItems.length > 0 ? respComp.completion : 0;
+    signals.push({ name: 'Response item completion', weight: 25, score: Math.round(respScore * 10) / 10, source: responseItems.length > 0 ? `${(respComp.byStatus.final||0)+(respComp.byStatus.under_review||0)}/${responseItems.length}` : 'none', target: 'all complete' });
 
-    // 2. Compliance coverage mandatory (25%)
-    const mandatory = reqs.filter(r => r.classification === 'mandatory');
-    const mandatoryApproved = mandatory.filter(r => r.coverageStatus === 'approved').length;
-    let compScore = mandatory.length > 0 ? (mandatoryApproved / mandatory.length) * 100 : 100;
-    const hasMandatoryGap = mandatory.some(r => r.coverageStatus === 'gap');
-    if (hasMandatoryGap && compScore > 50) compScore = 50;
-    signals.push({ name: 'Compliance coverage (mandatory)', weight: 25, score: Math.round(compScore * 10) / 10, source: `${mandatoryApproved}/${mandatory.length}`, target: 'all approved', hardGate: hasMandatoryGap });
+    // 2. Compliance declarations complete (25%) — hollow-score guard: 0% when empty
+    const compCov = COMPLIANCE.calculateComplianceCoverage(compReqs);
+    let compScore = compReqs.length > 0 ? compCov.completion : 0;
+    // Hard gate: mandatory non-compliance caps at 30%
+    if (compCov.hasNonCompliant && compScore > 30) compScore = 30;
+    signals.push({ name: 'Compliance declarations complete', weight: 25, score: Math.round(compScore * 10) / 10, source: compReqs.length > 0 ? `${compCov.assessed}/${compReqs.length}` : 'none', target: 'all assessed', hardGate: compCov.hasNonCompliant });
 
     // 3. Review actions resolved critical (20%)
     const allActions = [];
     cycles.forEach(c => (c.actions || []).forEach(a => allActions.push(a)));
     const critActions = allActions.filter(a => a.severity === 'critical');
     const critResolved = critActions.filter(a => a.status === 'resolved' || a.status === 'accepted').length;
-    const critScore = critActions.length > 0 ? (critResolved / critActions.length) * 100 : 100;
+    const critScore = critActions.length > 0 ? (critResolved / critActions.length) * 100 : 0;
     const hasCritOpen = critActions.some(a => a.status === 'open');
     signals.push({ name: 'Review actions resolved (critical)', weight: 20, score: Math.round(critScore * 10) / 10, source: `${critResolved}/${critActions.length}`, target: 'all resolved', hardGate: hasCritOpen });
 
-    // 4. Approvals obtained (15%) — governance gates as proxy
+    // 4. Approvals obtained (15%) — governance gates
     const approvalGates = gates.filter(g => g.type === 'executive' || g.type === 'submission_authority' || g.type === 'bafo_authority');
     const approvedCount = approvalGates.filter(g => g.status === 'passed').length;
     const anyRejected = approvalGates.some(g => g.status === 'failed');
-    let approvalScore = approvalGates.length > 0 ? (approvedCount / approvalGates.length) * 100 : 100;
+    let approvalScore = approvalGates.length > 0 ? (approvedCount / approvalGates.length) * 100 : 0;
     if (anyRejected) approvalScore = 0;
     signals.push({ name: 'Approvals obtained', weight: 15, score: Math.round(approvalScore * 10) / 10, source: `${approvedCount}/${approvalGates.length}`, target: 'all approved', hardGate: anyRejected });
 
-    // 5. Artefact checklist (10%)
+    // 5. Artefact checklist (10%) — hollow-score guard: 0% when empty
     const artTotal = artefacts.length;
     const artDone = artefacts.filter(a => ['final','uploaded','confirmed'].includes(a.status)).length;
-    const artScore = artTotal > 0 ? (artDone / artTotal) * 100 : 100;
+    const artScore = artTotal > 0 ? (artDone / artTotal) * 100 : 0;
     signals.push({ name: 'Artefact checklist', weight: 10, score: Math.round(artScore * 10) / 10, source: `${artDone}/${artTotal}`, target: 'all complete' });
 
     // 6. Workstream timing health (5%)
@@ -2354,7 +2471,17 @@ const READINESS = (() => {
     signals.push({ name: 'Workstream timing health', weight: 5, score: timingScore, source: compression.length > 0 ? `${compression.length} alerts` : 'healthy', target: 'no compression' });
 
     const total = signals.reduce((s, sig) => s + sig.score * (sig.weight / 100), 0);
-    return { score: Math.round(total * 10) / 10, signals };
+
+    // Hard gate: zero ResponseItems past 50% timeline caps at 40%
+    let capped = Math.round(total * 10) / 10;
+    if (responseItems.length === 0 && bid.submissionDeadline) {
+      const now = new Date(); const sd = new Date(bid.submissionDeadline);
+      const itt = bid.ittIssueDate ? new Date(bid.ittIssueDate) : new Date(bid.createdAt);
+      const totalDur = sd - itt; const elapsed = now - itt;
+      if (totalDur > 0 && elapsed / totalDur > 0.5 && capped > 40) capped = 40;
+    }
+
+    return { score: capped, signals };
   }
 
   // ── Rule 3.1: Overall readiness ──────────────────────────
@@ -2366,10 +2493,21 @@ const READINESS = (() => {
 
     // Hard gates (Rule 3.3)
     const hardGates = [];
-    const mandatory = (bid.requirements || []).filter(r => r.classification === 'mandatory');
-    if (mandatory.some(r => r.coverageStatus === 'gap')) {
-      hardGates.push({ type: 'mandatory_gap', cap: 50, message: 'Mandatory requirement has coverage gap' });
-      if (overall > 50) overall = 50;
+    const compReqs = bid.complianceRequirements || [];
+    if (compReqs.some(r => r.complianceStatus === 'non_compliant')) {
+      hardGates.push({ type: 'non_compliant', cap: 30, message: 'Non-compliant declaration exists — readiness capped' });
+      if (overall > 30) overall = 30;
+    }
+
+    const responseItems = bid.responseItems || [];
+    if (responseItems.length === 0 && bid.submissionDeadline) {
+      const now = new Date(); const sd = new Date(bid.submissionDeadline);
+      const itt = bid.ittIssueDate ? new Date(bid.ittIssueDate) : new Date(bid.createdAt);
+      const totalDur = sd - itt; const elapsed = now - itt;
+      if (totalDur > 0 && elapsed / totalDur > 0.5) {
+        hardGates.push({ type: 'no_response_items', cap: 40, message: 'No response items defined past 50% of timeline' });
+        if (overall > 40) overall = 40;
+      }
     }
 
     const allActions = [];
@@ -2511,7 +2649,7 @@ const ROUTER = {
   actView: 'workstream', // 'workstream' | 'list' | 'gantt'
   ganttScale: 'fortnight', // 'day' | 'week' | 'fortnight' | 'month'
   setGanttScale(s) { this.ganttScale = s; renderApp(); },
-  compView: 'register',  // 'register' | 'gaps'
+  compView: 'responses',  // 'responses' | 'compliance' | 'coverage' | 'gaps'
   revView: 'timeline',   // 'timeline' | 'cross'
   revCycleId: null,       // selected cycle id for detail view
   revActionSort: { col: 'severity', dir: 'asc' },
@@ -3095,68 +3233,106 @@ function renderWizS4(d) {
     </div>`;
 }
 
-/* ── Stage 5: Requirements Import ─────────────────────── */
+/* ── Stage 5: Submission Requirements ─────────────────── */
 function renderWizS5(d) {
-  const classOpts = ['Mandatory','Should','Could','Won\'t'];
-  const catOpts   = ['Technical','Commercial','Legal','Delivery','Social Value','Governance','Other'];
+  const responseItems = d.responseItems || [];
+  const compReqs = d.complianceRequirements || [];
 
-  const reqRows = d.requirements.map((r,i) =>
+  // Response items table
+  const riRows = responseItems.map((r,i) => {
+    const effort = COMPLIANCE.deriveEffort(r);
+    return `<div class="tag-row" style="flex-wrap:wrap;gap:6px;align-items:center;">
+      <span class="mono" style="font-size:10px;min-width:50px;color:var(--gold);">${h(r.reference||'')}</span>
+      <span style="flex:1;min-width:140px;">${h(r.title)}</span>
+      <span class="fe fe-mute">${h(r.responseType||'')}</span>
+      <span class="fe fe-b">${r.wordLimit ? r.wordLimit + 'w' : '\u2014'}</span>
+      <span class="fe fe-a">${r.evaluationWeightPct ? r.evaluationWeightPct + '%' : '\u2014'}</span>
+      <span class="fe fe-mute">${effort ? effort + 'd' : '\u2014'}</span>
+      <button class="btn btn-sm btn-danger" onclick="WIZARD.removeResponseItem(${i});renderApp();">\u00D7</button>
+    </div>`;
+  }).join('') || '<div style="color:var(--t3);font-size:12px;padding:8px 0;">No response items added yet \u2014 add deliverables now or import after setup.</div>';
+
+  // Compliance reqs (collapsed section)
+  const crRows = compReqs.map((r,i) =>
     `<div class="tag-row" style="flex-wrap:wrap;gap:6px;">
-      <span class="mono" style="font-size:10px;min-width:70px;">${h(r.ref)}</span>
+      <span class="mono" style="font-size:10px;min-width:50px;">${h(r.reference||'')}</span>
       <span style="flex:1;min-width:140px;">${h(r.text)}</span>
-      <span class="fe fe-mute">${h(r.classification)}</span>
-      <span class="fe fe-b">${h(r.category)}</span>
-      <button class="btn btn-sm btn-danger" onclick="WIZARD.removeReq(${i});renderApp();">×</button>
+      <span class="fe fe-mute">${h(r.category||'')}</span>
+      <button class="btn btn-sm btn-danger" onclick="WIZARD.removeCompReq(${i});renderApp();">\u00D7</button>
     </div>`
-  ).join('') || '<div style="color:var(--t3);font-size:12px;padding:8px 0;">No requirements added yet — or skip and add from the Compliance module after setup.</div>';
+  ).join('');
 
   return `
     <div class="sl">Stage 5 of 6</div>
-    <div class="pg-title">Requirements Import</div>
-    <div class="pg-desc">Seed the compliance register. You can add requirements now or skip and populate from the Compliance module after the bid is created.</div>
+    <div class="pg-title">Submission Requirements</div>
+    <div class="pg-desc">Define the deliverables your team must produce. Word counts drive effort estimation, evaluation weights focus prioritisation. Compliance requirements are optional \u2014 common in BPO/ITO with prescriptive specifications.</div>
 
-    <div class="sh2">Requirements Added (${d.requirements.length})</div>
-    ${reqRows}
+    <div class="sh2">Response Items (${responseItems.length})</div>
+    ${riRows}
 
     <div class="co co-b" style="margin-top:16px;">
-      <div class="co-l">Add Requirement</div>
+      <div class="co-l">Add Response Item</div>
       <div class="form-row" style="margin-top:8px;">
-        <div class="form-col" style="max-width:100px;">
-          <label class="form-label">Ref</label>
-          <input class="inp" id="req-ref" placeholder="e.g. 3.1.2">
-        </div>
-        <div class="form-col" style="flex:3;">
-          <label class="form-label">Requirement Text</label>
-          <input class="inp" id="req-text" placeholder="The supplier shall...">
+        <div class="form-col" style="max-width:80px;"><label class="form-label">Ref</label><input class="inp" id="wri-ref" placeholder="Q1.1"></div>
+        <div class="form-col" style="flex:2;"><label class="form-label req">Title</label><input class="inp" id="wri-title" placeholder="Question or deliverable title"></div>
+        <div class="form-col"><label class="form-label">Type</label>
+          <select class="sel" id="wri-type">
+            <option value="written_question">Written Question</option>
+            <option value="document_upload">Document Upload</option>
+            <option value="certificate">Certificate</option>
+            <option value="cv">CV</option>
+            <option value="pricing_schedule">Pricing Schedule</option>
+            <option value="case_study">Case Study</option>
+            <option value="other">Other</option>
+          </select>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-col">
-          <label class="form-label">Classification</label>
-          <select class="sel" id="req-class">
-            ${classOpts.map(o=>`<option>${o}</option>`).join('')}
-          </select>
+        <div class="form-col"><label class="form-label">Word Limit</label><input class="inp" id="wri-words" type="number" placeholder="3000"></div>
+        <div class="form-col"><label class="form-label">Page Limit</label><input class="inp" id="wri-pages" type="number" placeholder="6"></div>
+        <div class="form-col"><label class="form-label">Eval Weight %</label><input class="inp" id="wri-weight" type="number" step="0.1" placeholder="15"></div>
+        <div class="form-col"><label class="form-label">Max Score</label><input class="inp" id="wri-maxscore" type="number" placeholder="100"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Complexity</label>
+          <select class="sel" id="wri-complex"><option value="low">Low</option><option value="medium">Medium</option><option value="high" selected>High</option><option value="very_high">Very High</option></select>
         </div>
-        <div class="form-col">
-          <label class="form-label">Category</label>
-          <select class="sel" id="req-cat">
-            ${catOpts.map(o=>`<option>${o}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-col" style="display:flex;align-items:flex-end;">
-          <button class="btn" onclick="wizAddReq()">+ Add</button>
-        </div>
+        <div class="form-col"><label class="form-label">Owner</label><input class="inp" id="wri-owner" placeholder="e.g. Solution Lead"></div>
+        <div class="form-col" style="display:flex;align-items:flex-end;"><button class="btn" onclick="wizAddResponseItem()">+ Add</button></div>
       </div>
     </div>
 
     <div class="co co-g" style="margin-top:16px;">
       <div class="co-l">CSV Import</div>
-      <div class="co-t">Paste or upload a CSV with columns: ref, text, classification, category. Coming in a future session — for now, use manual entry above or skip entirely.</div>
+      <div class="co-t">Upload a CSV: ref, title, type, wordLimit, pageLimit, weightPct, maxScore, complexity, owner. Or skip and import from the Compliance module later.</div>
+      <button class="btn btn-sm" style="margin-top:6px;" onclick="wizResponseCsvImport()">Import CSV</button>
     </div>
 
-    <div class="co co-g" style="margin-top:8px;">
+    <div style="margin-top:20px;border-top:1px solid var(--bdr);padding-top:16px;">
+      <div class="sh2" style="cursor:pointer;" onclick="WIZARD.togglePanel('compReqs');renderApp();">
+        <span class="tog ${WIZARD.panelOpen('compReqs')?'op':''}">▸</span>
+        Compliance Requirements (Optional) ${compReqs.length ? `<span class="fe fe-mute">${compReqs.length}</span>` : ''}
+      </div>
+      ${WIZARD.panelOpen('compReqs') ? `
+        <div class="pg-desc" style="margin-top:4px;">Prescriptive specification requirements \u2014 typical in BPO/ITO bids. Skip for consulting.</div>
+        ${crRows || '<div style="color:var(--t3);font-size:12px;padding:8px 0;">No compliance requirements added.</div>'}
+        <div class="co co-b" style="margin-top:10px;">
+          <div class="co-l">Add Compliance Requirement</div>
+          <div class="form-row" style="margin-top:6px;">
+            <div class="form-col" style="max-width:80px;"><label class="form-label">Ref</label><input class="inp" id="wcr-ref" placeholder="3.1.2"></div>
+            <div class="form-col" style="flex:2;"><label class="form-label req">Requirement Text</label><input class="inp" id="wcr-text" placeholder="The supplier shall\u2026"></div>
+            <div class="form-col"><label class="form-label">Category</label>
+              <select class="sel" id="wcr-cat"><option>Technical</option><option>Commercial</option><option>Legal</option><option>Delivery</option><option>Governance</option><option>Other</option></select>
+            </div>
+            <div class="form-col" style="display:flex;align-items:flex-end;"><button class="btn" onclick="wizAddCompReq()">+ Add</button></div>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    <div class="co co-g" style="margin-top:16px;">
       <div class="co-l">Next step</div>
-      <div class="co-t">Stage 6 runs a <strong>feasibility check</strong> — backward-scheduling all activities against your deadline and calendar to verify the bid is achievable.</div>
+      <div class="co-t">Stage 6 runs a <strong>feasibility check</strong> \u2014 backward-scheduling all activities against your deadline and calendar to verify the bid is achievable.</div>
     </div>`;
 }
 
@@ -4141,131 +4317,222 @@ function _renderActivitySlideout(bid, actId) {
 }
 
 function renderCompliance(bid) {
-  const reqs = bid.requirements || [];
-  const cov = COMPLIANCE.calculateCoverage(reqs);
+  const responseItems = bid.responseItems || [];
+  const compReqs = bid.complianceRequirements || [];
+  const respComp = COMPLIANCE.calculateResponseCompletion(responseItems);
+  const compCov = COMPLIANCE.calculateComplianceCoverage(compReqs);
 
-  // Auto-update coverage based on linked activities (Rule 2.5)
-  reqs.forEach(r => {
-    if (r.responseActivityId || r.responseRef) {
-      const actId = r.responseActivityId || r.responseRef;
-      const act = (bid.activities || []).find(a => a.id === actId);
-      if (act) TRANSITIONS.autoUpdateCoverage(r, act);
-    }
-  });
-
-  // View tabs
-  const views = [['register','Register'],['gaps','Gap Report']];
+  // View tabs — 4 views per architecture
+  const views = [['responses','Submission Requirements'],['compliance','Compliance Matrix'],['coverage','Coverage'],['gaps','Gap Report']];
   const tabHtml = `<div class="view-tabs">${views.map(([id,l]) =>
     `<button class="view-tab ${ROUTER.compView===id?'on':''}" onclick="ROUTER.setCompView('${id}')">${l}</button>`
   ).join('')}</div>`;
 
-  // Coverage bar
-  const covClasses = [
-    { label: 'Approved', pct: reqs.length ? reqs.filter(r=>r.coverageStatus==='approved').length/reqs.length*100 : 0, color: 'var(--grn)' },
-    { label: 'Reviewed', pct: reqs.length ? reqs.filter(r=>r.coverageStatus==='reviewed').length/reqs.length*100 : 0, color: 'var(--blu)' },
-    { label: 'Draft', pct: reqs.length ? reqs.filter(r=>r.coverageStatus==='draft_in_progress').length/reqs.length*100 : 0, color: 'var(--amb)' },
-    { label: 'Mapped', pct: reqs.length ? reqs.filter(r=>r.coverageStatus==='mapped').length/reqs.length*100 : 0, color: 'var(--cyn)' },
-    { label: 'Unmapped/Gap', pct: reqs.length ? reqs.filter(r=>['unmapped','gap'].includes(r.coverageStatus)).length/reqs.length*100 : 0, color: 'var(--red)' },
-  ];
+  // Metrics — response-item focused
+  const metricsHtml = `<div class="cg c5" style="margin-bottom:16px;">
+    <div class="metric"><div class="metric-val" style="color:var(--t1);">${responseItems.length}</div><div class="metric-lbl">Response Items</div></div>
+    <div class="metric"><div class="metric-val" style="color:${respComp.completion>=80?'var(--grn)':respComp.completion>=40?'var(--amb)':'var(--red)'};">${respComp.completion}%</div><div class="metric-lbl">Completion</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--gold);">${respComp.totalMarks}</div><div class="metric-lbl">Total Marks</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--blu);">${respComp.totalEffortDays}</div><div class="metric-lbl">Effort (days)</div></div>
+    <div class="metric"><div class="metric-val" style="color:${compCov.hasNonCompliant?'var(--red)':'var(--grn)'};">${compReqs.length ? compCov.completion + '%' : 'N/A'}</div><div class="metric-lbl">Compliance</div></div>
+  </div>`;
 
-  const barHtml = reqs.length ? `<div class="cov-bar">${covClasses.filter(c=>c.pct>0).map(c =>
-    `<div class="cov-seg" style="width:${c.pct}%;background:${c.color};" title="${c.label}: ${Math.round(c.pct)}%"></div>`
+  // Status bar for response items
+  const barSegments = [
+    { label:'Final', count: respComp.byStatus.final||0, color:'var(--grn)' },
+    { label:'Under Review', count: respComp.byStatus.under_review||0, color:'var(--blu)' },
+    { label:'Draft Complete', count: respComp.byStatus.draft_complete||0, color:'var(--amb)' },
+    { label:'In Progress', count: respComp.byStatus.in_progress||0, color:'var(--cyn)' },
+    { label:'Not Started', count: respComp.byStatus.not_started||0, color:'var(--t4)' },
+  ];
+  const barHtml = responseItems.length ? `<div class="cov-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
+    `<div class="cov-seg" style="width:${(s.count/responseItems.length*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
   ).join('')}</div>` : '';
 
-  // Hard gate warning (Rule 6.2)
-  const hardGateHtml = cov.mandatoryGaps > 0 ? `<div class="co co-r" style="margin-bottom:14px;">
-    <div class="co-l">Hard Gate</div>
-    <div class="co-t">${cov.mandatoryGaps} mandatory requirement${cov.mandatoryGaps!==1?'s have':' has'} no approved response. Readiness capped at 50.</div>
-  </div>` : '';
+  // Hard gate warnings
+  let gateHtml = '';
+  if (compCov.hasNonCompliant) gateHtml += `<div class="co co-r" style="margin-bottom:10px;"><div class="co-l">Hard Gate</div><div class="co-t">${compCov.nonCompliant} non-compliant declaration${compCov.nonCompliant!==1?'s':''}. Readiness capped at 30%.</div></div>`;
 
-  const bodyHtml = ROUTER.compView === 'gaps' ? _renderGapReport(bid, cov) : _renderReqRegister(bid);
+  let bodyHtml = '';
+  if (ROUTER.compView === 'compliance') bodyHtml = _renderComplianceMatrix(bid);
+  else if (ROUTER.compView === 'coverage') bodyHtml = _renderCoverageDashboard(bid, respComp, compCov);
+  else if (ROUTER.compView === 'gaps') bodyHtml = _renderGapReport(bid);
+  else bodyHtml = _renderResponseRegister(bid);
 
   return `<div class="sl">Module M5</div>
     <div class="pg-title">Compliance Engine</div>
-    <div class="pg-desc">Map requirements to activities, track coverage, and identify gaps. Mandatory coverage must reach 100% before submission.</div>
-    <div class="cg c4" style="margin-bottom:16px;">
-      <div class="metric"><div class="metric-val" style="color:var(--t1);">${reqs.length}</div><div class="metric-lbl">Total Requirements</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--grn);">${Math.round(cov.mandatoryCoverage)}%</div><div class="metric-lbl">Mandatory Coverage</div></div>
-      <div class="metric"><div class="metric-val" style="color:${cov.totalGaps>0?'var(--red)':'var(--grn)'};">${cov.totalGaps}</div><div class="metric-lbl">Gaps</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--blu);">${Math.round(cov.overallCoverage)}%</div><div class="metric-lbl">Overall Coverage</div></div>
-    </div>
+    <div class="pg-desc">Track submission deliverables, manage compliance declarations, and monitor production progress. Items sorted by evaluation weight.</div>
+    ${metricsHtml}
     ${barHtml}
-    ${hardGateHtml}
+    ${gateHtml}
     ${tabHtml}
     ${bodyHtml}
-    <div style="margin-top:16px;display:flex;gap:8px;">
-      <button class="btn" onclick="handleAddReqModal()">+ Add Requirement</button>
-      <button class="btn" onclick="handleReqCsvImport()">Import CSV</button>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn" onclick="handleAddResponseItemModal()">+ Response Item</button>
+      <button class="btn" onclick="handleResponseCsvImport()">Import Responses CSV</button>
+      <button class="btn" onclick="handleAddCompReqModal()">+ Compliance Req</button>
+      <button class="btn" onclick="handleCompReqCsvImport()">Import Compliance CSV</button>
     </div>`;
 }
 
-function _renderReqRegister(bid) {
-  const reqs = bid.requirements || [];
-  if (reqs.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No requirements added yet. Use the wizard or add them manually.</div>';
+function _renderResponseRegister(bid) {
+  const items = bid.responseItems || [];
+  if (items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response items yet. Add submission deliverables to track production progress.</div>';
 
-  const _covBadge = s => {
-    const m = { unmapped:'fe-mute', mapped:'fe-c', draft_in_progress:'fe-a', reviewed:'fe-b', approved:'fe-g', gap:'fe-r' };
-    return `<span class="fe ${m[s]||'fe-mute'}">${(s||'unmapped').replace(/_/g,' ')}</span>`;
-  };
-  const _clsBadge = c => {
-    const m = { mandatory:'fe-r', scored:'fe-b', pass_fail:'fe-a', evidential:'fe-p', contractual:'fe-pk' };
-    return `<span class="fe ${m[c]||'fe-mute'}">${h(c||'unclassified')}</span>`;
+  // Sort by evaluation weight descending (Rule 6.1: prioritise where the marks are)
+  const sorted = [...items].sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
+
+  const _statusBadge = s => {
+    const m = { not_started:'fe-mute', in_progress:'fe-b', draft_complete:'fe-a', under_review:'fe-p', final:'fe-g' };
+    return `<span class="fe ${m[s]||'fe-mute'}">${(s||'not_started').replace(/_/g,' ')}</span>`;
   };
 
-  const rows = reqs.map((r, i) => `<div class="req-row">
-    <div class="req-ref">${h(r.ref || r.reference || (i+1))}</div>
-    <div class="req-text">${h(r.text)}${r.impactedByClarification ? '<span class="clar-flag" title="Clarification impact"></span>' : ''}</div>
-    <div>${_clsBadge(r.classification)}</div>
-    <div>${_covBadge(r.coverageStatus || r.responseStatus || 'unmapped')}</div>
-    <div>
-      <select class="sel" style="font-size:10px;padding:3px 20px 3px 6px;" onchange="handleReqLink(${i},this.value)">
-        <option value="">\u2014</option>
-        ${(bid.activities||[]).filter(a=>a.active).map(a => `<option value="${a.id}" ${(r.responseActivityId||r.responseRef)===a.id?'selected':''}>${a.id}</option>`).join('')}
-      </select>
-    </div>
-    <div>
-      <select class="sel" style="font-size:10px;padding:3px 20px 3px 6px;" onchange="handleReqCovStatus(${i},this.value)">
-        ${['unmapped','mapped','draft_in_progress','reviewed','approved','gap'].map(s =>
-          `<option value="${s}" ${(r.coverageStatus||r.responseStatus||'unmapped')===s?'selected':''}>${s.replace(/_/g,' ')}</option>`
-        ).join('')}
-      </select>
-    </div>
-  </div>`).join('');
+  const rows = sorted.map((r, i) => {
+    const idx = items.indexOf(r);
+    const wordPct = r.wordLimit > 0 ? Math.min(100, Math.round((r.currentWordCount||0) / r.wordLimit * 100)) : 0;
+    const wordBarColor = wordPct >= 100 ? 'var(--grn)' : wordPct >= 70 ? 'var(--amb)' : 'var(--blu)';
+    const effort = COMPLIANCE.deriveEffort(r);
+    return `<div class="ri-row">
+      <div class="ri-ref">${h(r.reference || (idx+1))}</div>
+      <div><div class="ri-title">${h(r.title || r.questionText || '')}</div>
+        ${r.wordLimit ? `<div class="ri-word-bar"><div class="ri-word-fill" style="width:${wordPct}%;background:${wordBarColor};"></div></div>` : ''}
+        ${r.responseType ? `<div class="ri-title-sub">${h(r.responseType)}</div>` : ''}
+      </div>
+      <div class="ri-words">${r.wordLimit ? `${r.currentWordCount||0}/${r.wordLimit}` : '\u2014'}</div>
+      <div class="ri-weight">${r.evaluationWeightPct ? r.evaluationWeightPct + '%' : '\u2014'}</div>
+      <div>${_statusBadge(r.status)}</div>
+      <div class="ri-effort">${effort ? effort + 'd' : '\u2014'}</div>
+      <div class="ri-owner">${h(r.owner || '\u2014')}</div>
+      <div>
+        <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onclick="event.stopPropagation()" onchange="handleResponseStatus(${idx},this.value)">
+          <option value="${r.status||'not_started'}" selected>${(r.status||'not_started').replace(/_/g,' ')}</option>
+          ${TRANSITIONS.validNextResponseStatuses(r.status||'not_started').map(s =>
+            `<option value="${s}">${s.replace(/_/g,' ')}</option>`
+          ).join('')}
+        </select>
+      </div>
+    </div>`;
+  }).join('');
 
   return `<div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
-    <div class="req-hdr"><span>Ref</span><span>Requirement</span><span>Classification</span><span>Coverage</span><span>Linked Activity</span><span>Status</span></div>
+    <div class="ri-hdr"><span>Ref</span><span>Deliverable</span><span>Words</span><span>Weight</span><span>Status</span><span>Effort</span><span>Owner</span><span>Action</span></div>
     ${rows}
   </div>`;
 }
 
-function _renderGapReport(bid, cov) {
-  const reqs = bid.requirements || [];
-  const gaps = reqs.filter(r => ['unmapped','gap'].includes(r.coverageStatus || r.responseStatus || 'unmapped'));
+function _renderComplianceMatrix(bid) {
+  const reqs = bid.complianceRequirements || [];
+  if (reqs.length === 0) return `<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">
+    No compliance requirements imported. This register is optional — common in BPO/ITO bids with prescriptive specifications.
+    <br><br><button class="btn" onclick="handleAddCompReqModal()">+ Add Compliance Requirement</button>
+  </div>`;
 
-  if (gaps.length === 0) return '<div class="co co-v"><div class="co-l">No gaps</div><div class="co-t">All requirements are mapped. Well done.</div></div>';
-
-  // Sort: mandatory first
-  const clsRank = { mandatory:0, scored:1, pass_fail:2, evidential:3, contractual:4 };
-  gaps.sort((a,b) => (clsRank[a.classification]||5) - (clsRank[b.classification]||5));
-
-  const _clsBadge = c => {
-    const m = { mandatory:'fe-r', scored:'fe-b', pass_fail:'fe-a', evidential:'fe-p', contractual:'fe-pk' };
-    return `<span class="fe ${m[c]||'fe-mute'}">${h(c||'unclassified')}</span>`;
+  const _compBadge = s => {
+    const m = { not_assessed:'fe-mute', compliant:'fe-g', partially_compliant:'fe-a', non_compliant:'fe-r', not_applicable:'fe-mute' };
+    return `<span class="fe ${m[s]||'fe-mute'}">${(s||'not_assessed').replace(/_/g,' ')}</span>`;
   };
 
-  const mandGaps = gaps.filter(g => g.classification === 'mandatory');
+  const rows = reqs.map((r, i) => `<div class="cm-row">
+    <div class="cm-ref">${h(r.reference || (i+1))}</div>
+    <div class="cm-text">${h(r.text || '')}${r.complianceExplanation ? `<div style="font-size:10px;color:var(--t3);margin-top:2px;font-style:italic;">${h(r.complianceExplanation)}</div>` : ''}</div>
+    <div>${_compBadge(r.complianceStatus)}</div>
+    <div>
+      <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onchange="handleCompStatus(${i},this.value)">
+        <option value="${r.complianceStatus||'not_assessed'}" selected>${(r.complianceStatus||'not_assessed').replace(/_/g,' ')}</option>
+        ${TRANSITIONS.validNextComplianceStatuses(r.complianceStatus||'not_assessed').map(s =>
+          `<option value="${s}">${s.replace(/_/g,' ')}</option>`
+        ).join('')}
+      </select>
+    </div>
+    <div><button class="btn btn-sm" onclick="handleCompExplanation(${i})">Note</button></div>
+  </div>`).join('');
 
-  return `${mandGaps.length ? `<div class="co co-r" style="margin-bottom:10px;">
-    <div class="co-l">Critical</div>
-    <div class="co-t">${mandGaps.length} mandatory gap${mandGaps.length!==1?'s':''} must be resolved before submission.</div>
-  </div>` : ''}
-  <div style="background:var(--bg2);border:1px solid var(--bdr);">
-    ${gaps.map((g, i) => `<div style="padding:10px 14px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:flex-start;gap:10px;">
-      <div style="min-width:60px;"><span class="fe fe-mute">${h(g.ref || g.reference || '')}</span></div>
-      <div style="flex:1;font-size:12px;color:var(--t2);line-height:1.5;">${h(g.text)}</div>
-      <div>${_clsBadge(g.classification)}</div>
-    </div>`).join('')}
+  return `<div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
+    <div class="cm-hdr"><span>Ref</span><span>Requirement</span><span>Status</span><span>Action</span><span>Note</span></div>
+    ${rows}
   </div>`;
+}
+
+function _renderCoverageDashboard(bid, respComp, compCov) {
+  const responseItems = bid.responseItems || [];
+  const compReqs = bid.complianceRequirements || [];
+
+  // Response completion by type
+  const byType = {};
+  responseItems.forEach(r => {
+    const t = r.responseType || 'Other';
+    if (!byType[t]) byType[t] = { total: 0, done: 0 };
+    byType[t].total++;
+    if (r.status === 'final' || r.status === 'under_review') byType[t].done++;
+  });
+  const typeSummary = Object.entries(byType).map(([t, d]) => {
+    const pct = d.total > 0 ? Math.round((d.done / d.total) * 100) : 0;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg4);">
+      <span style="flex:1;font-size:12px;color:var(--t1);">${h(t)}</span>
+      <span class="fe fe-mute">${d.done}/${d.total}</span>
+      <div class="prog" style="width:80px;"><div class="prog-fill" style="width:${pct}%;background:${pct>=80?'var(--grn)':pct>=40?'var(--amb)':'var(--red)'}"></div></div>
+    </div>`;
+  }).join('');
+
+  // Compliance summary
+  const compSummaryHtml = compReqs.length ? `<div style="margin-top:14px;">
+    <div class="sh2">Compliance Summary</div>
+    <div class="cg c4">
+      <div class="metric"><div class="metric-val" style="color:var(--grn);">${compCov.compliant}</div><div class="metric-lbl">Compliant</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--amb);">${compCov.partial}</div><div class="metric-lbl">Partial</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--red);">${compCov.nonCompliant}</div><div class="metric-lbl">Non-Compliant</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--t3);">${compCov.notApplicable}</div><div class="metric-lbl">N/A</div></div>
+    </div>
+  </div>` : '';
+
+  return `<div class="sh2">Response Completion by Type</div>
+    <div style="background:var(--bg2);border:1px solid var(--bdr);padding:10px 14px;margin-bottom:14px;">
+      ${typeSummary || '<span style="color:var(--t3);font-size:12px;">No response items to summarise.</span>'}
+    </div>
+    ${compSummaryHtml}`;
+}
+
+function _renderGapReport(bid) {
+  const responseItems = bid.responseItems || [];
+  const compReqs = bid.complianceRequirements || [];
+
+  // Response gaps: not_started items sorted by weight
+  const respGaps = responseItems.filter(r => r.status === 'not_started' || !r.status)
+    .sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
+
+  // Compliance gaps: non_compliant or partially_compliant
+  const compGaps = compReqs.filter(r => r.complianceStatus === 'non_compliant' || r.complianceStatus === 'partially_compliant');
+
+  if (respGaps.length === 0 && compGaps.length === 0) {
+    return '<div class="co co-v"><div class="co-l">No gaps</div><div class="co-t">All response items are in progress and no compliance issues found.</div></div>';
+  }
+
+  let html = '';
+  if (compGaps.length > 0) {
+    html += `<div class="co co-r" style="margin-bottom:10px;"><div class="co-l">Compliance Gaps</div>
+      <div class="co-t">${compGaps.length} requirement${compGaps.length!==1?'s':''} with compliance issues.</div></div>
+      <div style="background:var(--bg2);border:1px solid var(--bdr);margin-bottom:14px;">
+        ${compGaps.map(g => `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
+          <span class="fe fe-mute">${h(g.reference||'')}</span>
+          <span style="flex:1;font-size:12px;color:var(--t2);">${h(g.text||'')}</span>
+          <span class="fe ${g.complianceStatus==='non_compliant'?'fe-r':'fe-a'}">${g.complianceStatus.replace(/_/g,' ')}</span>
+        </div>`).join('')}
+      </div>`;
+  }
+
+  if (respGaps.length > 0) {
+    html += `<div class="sh2">Response Items Not Started (${respGaps.length})</div>
+      <div style="background:var(--bg2);border:1px solid var(--bdr);">
+        ${respGaps.map(g => `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
+          <span class="fe fe-mute">${h(g.reference||'')}</span>
+          <span style="flex:1;font-size:12px;color:var(--t2);">${h(g.title || g.questionText || '')}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${g.evaluationWeightPct ? g.evaluationWeightPct + '%' : ''}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${COMPLIANCE.deriveEffort(g) ? COMPLIANCE.deriveEffort(g) + 'd' : ''}</span>
+        </div>`).join('')}
+      </div>`;
+  }
+
+  return html;
 }
 
 function renderReviews(bid) {
@@ -5297,14 +5564,92 @@ function wizAddMilestone() {
 }
 
 function wizAddReq() {
-  const ref   = (document.getElementById('req-ref').value   || '').trim();
-  const text  = (document.getElementById('req-text').value  || '').trim();
-  const cls   = document.getElementById('req-class').value;
-  const cat   = document.getElementById('req-cat').value;
+  // Legacy — kept for backward compat
+  const ref   = (document.getElementById('req-ref')  && document.getElementById('req-ref').value   || '').trim();
+  const text  = (document.getElementById('req-text') && document.getElementById('req-text').value  || '').trim();
+  const cls   = document.getElementById('req-class') ? document.getElementById('req-class').value : 'Mandatory';
+  const cat   = document.getElementById('req-cat')   ? document.getElementById('req-cat').value   : 'Other';
   if (!text) { alert('Requirement text is required.'); return; }
   WIZARD.addReq({ id: STORE.uuid(), ref, text, classification: cls, category: cat,
     status:'not_started', responseRef:'', responseStatus:'gap', notes:'' });
   renderApp();
+}
+
+function wizAddResponseItem() {
+  const title = (document.getElementById('wri-title').value || '').trim();
+  if (!title) { alert('Title is required.'); return; }
+  WIZARD.addResponseItem({
+    id: STORE.uuid(),
+    reference: (document.getElementById('wri-ref').value || '').trim(),
+    title,
+    questionText: '',
+    responseType: document.getElementById('wri-type').value,
+    sectionNumber: '',
+    evaluationWeightPct: parseFloat(document.getElementById('wri-weight').value) || 0,
+    evaluationMaxScore: parseFloat(document.getElementById('wri-maxscore').value) || 0,
+    wordLimit: parseInt(document.getElementById('wri-words').value) || 0,
+    pageLimit: parseInt(document.getElementById('wri-pages').value) || 0,
+    currentWordCount: 0,
+    complexityEstimate: document.getElementById('wri-complex').value,
+    effortDays: 0,
+    owner: (document.getElementById('wri-owner').value || '').trim(),
+    status: 'not_started',
+    linkedActivityCode: '',
+    linkedComplianceIds: [],
+    dueDate: '', notes: '', lastUpdated: STORE.now(),
+  });
+  renderApp();
+}
+
+function wizAddCompReq() {
+  const text = (document.getElementById('wcr-text').value || '').trim();
+  if (!text) { alert('Requirement text is required.'); return; }
+  WIZARD.addCompReq({
+    id: STORE.uuid(),
+    reference: (document.getElementById('wcr-ref').value || '').trim(),
+    text,
+    category: document.getElementById('wcr-cat').value,
+    complianceStatus: 'not_assessed',
+    complianceExplanation: '',
+    evidenceReference: '',
+    linkedResponseItemIds: [],
+    lastUpdated: STORE.now(),
+  });
+  renderApp();
+}
+
+function wizResponseCsvImport() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.csv';
+  input.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const rows = ev.target.result.trim().split(/\r?\n/);
+      let imported = 0, rejected = 0;
+      rows.forEach((row, i) => {
+        const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        if (i === 0 && /^ref/i.test(cols[0])) return;
+        const [ref='', title='', type='written_question', wl='', pl='', wt='', ms='', cx='high', owner=''] = cols;
+        if (!title) { rejected++; return; }
+        WIZARD.addResponseItem({
+          id: STORE.uuid(), reference: ref, title, questionText: '',
+          responseType: type, sectionNumber: '',
+          evaluationWeightPct: parseFloat(wt) || 0, evaluationMaxScore: parseFloat(ms) || 0,
+          wordLimit: parseInt(wl) || 0, pageLimit: parseInt(pl) || 0,
+          currentWordCount: 0, complexityEstimate: cx || 'high',
+          effortDays: 0, owner, status: 'not_started',
+          linkedActivityCode: '', linkedComplianceIds: [],
+          dueDate: '', notes: '', lastUpdated: STORE.now(),
+        });
+        imported++;
+      });
+      alert(`${imported} imported, ${rejected} rejected`);
+      renderApp();
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 function confirmWizard() {
@@ -5480,7 +5825,10 @@ function _generateBidFromWizard(d) {
       teamUnavailability: [...d.teamUnavailability],
       clientBlackouts: [],
     },
-    workstreams, activities, requirements: [...d.requirements],
+    workstreams, activities,
+    requirements: [...d.requirements],  // legacy — kept for backward compat
+    responseItems: [...(d.responseItems || [])],
+    complianceRequirements: [...(d.complianceRequirements || [])],
     reviewCycles: [], governanceGates, standupActions: [],
     riskAssumptions: [],
     teamMembers: (d.extendedTeam||[]).map(m=>({...m, id:STORE.uuid()})),
@@ -5562,85 +5910,108 @@ function actSortBy(col) {
 
 
 /* ════════════════════════════════════════════════════════════
-   COMPLIANCE EVENT HANDLERS
+   COMPLIANCE EVENT HANDLERS — Response Items + Compliance Reqs
 ════════════════════════════════════════════════════════════ */
-function handleReqLink(idx, actId) {
+
+// ── Response Item handlers ────────────────────────────────
+function handleResponseStatus(idx, newStatus) {
   STORE.mutateBid(ROUTER.bidId, bid => {
-    const req = bid.requirements[idx];
-    if (!req) return;
-    req.responseActivityId = actId || null;
-    req.responseRef = actId || '';
-    if (actId) {
-      const act = bid.activities.find(a => a.id === actId);
-      if (req.coverageStatus === 'unmapped' || req.responseStatus === 'unmapped') {
-        req.coverageStatus = 'mapped';
-        req.responseStatus = 'mapped';
-      }
-      if (act) TRANSITIONS.autoUpdateCoverage(req, act);
-    } else {
-      req.coverageStatus = 'unmapped';
-      req.responseStatus = 'unmapped';
-    }
+    const item = (bid.responseItems || [])[idx];
+    if (!item) return;
+    const result = TRANSITIONS.changeResponseItemStatus(item, newStatus);
+    if (!result.ok) { alert(result.error); return; }
   });
   renderApp();
 }
 
-function handleReqCovStatus(idx, status) {
-  STORE.mutateBid(ROUTER.bidId, bid => {
-    const req = bid.requirements[idx];
-    if (!req) return;
-    req.coverageStatus = status;
-    req.responseStatus = status;
-  });
-  renderApp();
-}
-
-function handleAddReqModal() {
+function handleAddResponseItemModal() {
   const el = document.createElement('div');
   el.id = 'modal-overlay'; el.className = 'overlay';
-  el.innerHTML = `<div class="modal">
+  el.innerHTML = `<div class="modal" style="max-width:600px;">
     <div class="modal-hdr">
-      <div class="modal-title">Add Requirement</div>
+      <div class="modal-title">Add Response Item</div>
       <button class="modal-close" onclick="closeModal()">\u00D7</button>
     </div>
     <div class="form-row">
-      <div class="form-col"><label class="form-label">Reference</label><input class="inp" id="new-req-ref" placeholder="e.g. 3.1.2"></div>
-      <div class="form-col"><label class="form-label">Classification</label>
-        <select class="sel" id="new-req-cls">
-          <option value="mandatory">Mandatory</option><option value="scored" selected>Scored</option>
-          <option value="pass_fail">Pass/Fail</option><option value="evidential">Evidential</option><option value="contractual">Contractual</option>
+      <div class="form-col" style="max-width:100px;"><label class="form-label">Reference</label><input class="inp" id="ri-ref" placeholder="e.g. Q1.1"></div>
+      <div class="form-col" style="flex:2;"><label class="form-label req">Title</label><input class="inp" id="ri-title" placeholder="Question or deliverable title"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Response Type</label>
+        <select class="sel" id="ri-type">
+          <option value="written_question">Written Question</option>
+          <option value="document_upload">Document Upload</option>
+          <option value="certificate">Certificate</option>
+          <option value="cv">CV</option>
+          <option value="pricing_schedule">Pricing Schedule</option>
+          <option value="case_study">Case Study</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-col"><label class="form-label">Word Limit</label><input class="inp" id="ri-words" type="number" placeholder="e.g. 3000"></div>
+      <div class="form-col"><label class="form-label">Page Limit</label><input class="inp" id="ri-pages" type="number" placeholder="e.g. 6"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Eval Weight %</label><input class="inp" id="ri-weight" type="number" step="0.1" placeholder="e.g. 15"></div>
+      <div class="form-col"><label class="form-label">Eval Max Score</label><input class="inp" id="ri-maxscore" type="number" placeholder="e.g. 100"></div>
+      <div class="form-col"><label class="form-label">Complexity</label>
+        <select class="sel" id="ri-complex">
+          <option value="low">Low</option><option value="medium">Medium</option>
+          <option value="high" selected>High</option><option value="very_high">Very High</option>
         </select>
       </div>
     </div>
     <div class="form-row">
-      <div class="form-col"><label class="form-label req">Requirement Text</label><textarea class="textarea" id="new-req-text" placeholder="Enter the requirement\u2026"></textarea></div>
+      <div class="form-col"><label class="form-label">Owner</label><input class="inp" id="ri-owner" placeholder="e.g. Solution Lead"></div>
+      <div class="form-col"><label class="form-label">Section Number</label><input class="inp" id="ri-section" placeholder="e.g. 4.2"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Question Text / Description</label><textarea class="textarea" id="ri-qtext" placeholder="Full question text or deliverable description\u2026"></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="handleAddReqConfirm()">Add</button>
+      <button class="btn btn-primary" onclick="handleAddResponseItemConfirm()">Add</button>
     </div>
   </div>`;
   el.addEventListener('click', e => { if (e.target === el) closeModal(); });
   document.body.appendChild(el);
 }
 
-function handleAddReqConfirm() {
-  const ref  = (document.getElementById('new-req-ref').value || '').trim();
-  const text = (document.getElementById('new-req-text').value || '').trim();
-  const cls  = document.getElementById('new-req-cls').value;
-  if (!text) { alert('Requirement text is required.'); return; }
+function handleAddResponseItemConfirm() {
+  const title = (document.getElementById('ri-title').value || '').trim();
+  if (!title) { alert('Title is required.'); return; }
+  const item = {
+    id: STORE.uuid(),
+    reference: (document.getElementById('ri-ref').value || '').trim(),
+    title,
+    questionText: (document.getElementById('ri-qtext').value || '').trim(),
+    responseType: document.getElementById('ri-type').value,
+    sectionNumber: (document.getElementById('ri-section').value || '').trim(),
+    evaluationWeightPct: parseFloat(document.getElementById('ri-weight').value) || 0,
+    evaluationMaxScore: parseFloat(document.getElementById('ri-maxscore').value) || 0,
+    evaluationCriteria: '',
+    wordLimit: parseInt(document.getElementById('ri-words').value) || 0,
+    pageLimit: parseInt(document.getElementById('ri-pages').value) || 0,
+    currentWordCount: 0,
+    complexityEstimate: document.getElementById('ri-complex').value,
+    effortDays: 0, // derived from word count + complexity
+    owner: (document.getElementById('ri-owner').value || '').trim(),
+    status: 'not_started',
+    linkedActivityCode: '',
+    linkedComplianceIds: [],
+    dueDate: '',
+    notes: '',
+    lastUpdated: STORE.now(),
+  };
   STORE.mutateBid(ROUTER.bidId, bid => {
-    bid.requirements.push({
-      id: STORE.uuid(), ref, reference: ref, text, classification: cls,
-      category: '', coverageStatus: 'unmapped', responseStatus: 'unmapped',
-      responseActivityId: null, responseRef: '', impactedByClarification: false,
-    });
+    if (!bid.responseItems) bid.responseItems = [];
+    bid.responseItems.push(item);
   });
   closeModal();
   renderApp();
 }
 
-function handleReqCsvImport() {
+function handleResponseCsvImport() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = '.csv';
   input.onchange = e => {
@@ -5648,32 +6019,31 @@ function handleReqCsvImport() {
     const reader = new FileReader();
     reader.onload = ev => {
       const rows = ev.target.result.trim().split(/\r?\n/);
-      let imported = 0, updated = 0, rejected = 0;
+      let imported = 0, rejected = 0;
       STORE.mutateBid(ROUTER.bidId, bid => {
+        if (!bid.responseItems) bid.responseItems = [];
         rows.forEach((row, i) => {
+          // Expected: reference, title, responseType, wordLimit, pageLimit, evaluationWeightPct, evaluationMaxScore, complexity, owner, questionText
           const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
           if (i === 0 && /^ref/i.test(cols[0])) return; // header
-          const [ref='', text='', classification='', category=''] = cols;
-          if (!text) { rejected++; return; }
-          // Rule 6.4: match by reference
-          const existing = bid.requirements.find(r => r.ref === ref || r.reference === ref);
-          if (existing) {
-            existing.text = text;
-            if (classification) existing.classification = classification;
-            if (category) existing.category = category;
-            updated++;
-          } else {
-            bid.requirements.push({
-              id: STORE.uuid(), ref, reference: ref, text,
-              classification: classification || 'scored', category,
-              coverageStatus: 'unmapped', responseStatus: 'unmapped',
-              responseActivityId: null, responseRef: '', impactedByClarification: false,
-            });
-            imported++;
-          }
+          const [ref='', title='', type='written_question', wl='', pl='', wt='', ms='', cx='high', owner='', qtext=''] = cols;
+          if (!title) { rejected++; return; }
+          bid.responseItems.push({
+            id: STORE.uuid(), reference: ref, title, questionText: qtext,
+            responseType: type, sectionNumber: '',
+            evaluationWeightPct: parseFloat(wt) || 0,
+            evaluationMaxScore: parseFloat(ms) || 0,
+            evaluationCriteria: '',
+            wordLimit: parseInt(wl) || 0, pageLimit: parseInt(pl) || 0,
+            currentWordCount: 0, complexityEstimate: cx || 'high',
+            effortDays: 0, owner, status: 'not_started',
+            linkedActivityCode: '', linkedComplianceIds: [],
+            dueDate: '', notes: '', lastUpdated: STORE.now(),
+          });
+          imported++;
         });
       });
-      alert(`${imported} imported, ${updated} updated, ${rejected} rejected`);
+      alert(`${imported} response items imported, ${rejected} rejected`);
       renderApp();
     };
     reader.readAsText(file);
@@ -5681,12 +6051,146 @@ function handleReqCsvImport() {
   input.click();
 }
 
+// ── Compliance Requirement handlers ───────────────────────
+function handleCompStatus(idx, newStatus) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const req = (bid.complianceRequirements || [])[idx];
+    if (!req) return;
+    // If changing to partial/non-compliant, prompt for explanation
+    if ((newStatus === 'partially_compliant' || newStatus === 'non_compliant') && !req.complianceExplanation) {
+      const expl = prompt(`Explanation required for "${newStatus.replace(/_/g,' ')}":`);
+      if (!expl) return; // cancelled
+      req.complianceExplanation = expl;
+    }
+    const result = TRANSITIONS.changeComplianceStatus(req, newStatus);
+    if (!result.ok) { alert(result.error); return; }
+  });
+  renderApp();
+}
+
+function handleCompExplanation(idx) {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  const req = (bid && bid.complianceRequirements || [])[idx];
+  if (!req) return;
+  const expl = prompt('Compliance explanation / evidence:', req.complianceExplanation || '');
+  if (expl === null) return;
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const r = bid.complianceRequirements[idx];
+    if (r) { r.complianceExplanation = expl; r.lastUpdated = STORE.now(); }
+  });
+  renderApp();
+}
+
+function handleAddCompReqModal() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">Add Compliance Requirement</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div class="form-row">
+      <div class="form-col" style="max-width:100px;"><label class="form-label">Reference</label><input class="inp" id="cr-ref" placeholder="e.g. 3.1.2"></div>
+      <div class="form-col" style="flex:2;"><label class="form-label req">Requirement Text</label><textarea class="textarea" id="cr-text" placeholder="The supplier shall\u2026"></textarea></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Category</label>
+        <select class="sel" id="cr-cat">
+          <option>Technical</option><option>Commercial</option><option>Legal</option><option>Delivery</option><option>Governance</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="handleAddCompReqConfirm()">Add</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function handleAddCompReqConfirm() {
+  const text = (document.getElementById('cr-text').value || '').trim();
+  if (!text) { alert('Requirement text is required.'); return; }
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.complianceRequirements) bid.complianceRequirements = [];
+    bid.complianceRequirements.push({
+      id: STORE.uuid(),
+      reference: (document.getElementById('cr-ref').value || '').trim(),
+      text,
+      category: document.getElementById('cr-cat').value,
+      complianceStatus: 'not_assessed',
+      complianceExplanation: '',
+      evidenceReference: '',
+      linkedResponseItemIds: [],
+      lastUpdated: STORE.now(),
+    });
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleCompReqCsvImport() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.csv';
+  input.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const rows = ev.target.result.trim().split(/\r?\n/);
+      let imported = 0, rejected = 0;
+      STORE.mutateBid(ROUTER.bidId, bid => {
+        if (!bid.complianceRequirements) bid.complianceRequirements = [];
+        rows.forEach((row, i) => {
+          const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+          if (i === 0 && /^ref/i.test(cols[0])) return;
+          const [ref='', text='', category=''] = cols;
+          if (!text) { rejected++; return; }
+          bid.complianceRequirements.push({
+            id: STORE.uuid(), reference: ref, text, category: category || 'Other',
+            complianceStatus: 'not_assessed', complianceExplanation: '',
+            evidenceReference: '', linkedResponseItemIds: [], lastUpdated: STORE.now(),
+          });
+          imported++;
+        });
+      });
+      alert(`${imported} compliance requirements imported, ${rejected} rejected`);
+      renderApp();
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── Legacy handlers (kept for backward compat with old requirement data) ──
+function handleReqLink(idx, actId) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const req = (bid.requirements || [])[idx];
+    if (!req) return;
+    req.responseActivityId = actId || null;
+    if (actId) {
+      const act = bid.activities.find(a => a.id === actId);
+      if (req.coverageStatus === 'unmapped') req.coverageStatus = 'mapped';
+      if (act) TRANSITIONS.autoUpdateCoverage(req, act);
+    } else {
+      req.coverageStatus = 'unmapped';
+    }
+  });
+  renderApp();
+}
+function handleReqCovStatus(idx, status) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const req = (bid.requirements || [])[idx]; if (req) req.coverageStatus = status;
+  });
+  renderApp();
+}
+
 
 /* ════════════════════════════════════════════════════════════
    REVIEW GOVERNANCE EVENT HANDLERS
 ════════════════════════════════════════════════════════════ */
 function handleAddCycleModal() {
-  const bid = STORE.getBid(ROUTER.bidId);
+  const bid = STORE.loadBid(ROUTER.bidId);
   const acts = (bid && bid.activities || []).filter(a => a.active !== false);
   const el = document.createElement('div');
   el.id = 'modal-overlay'; el.className = 'overlay';
@@ -5803,7 +6307,7 @@ function handleActionStatusChange(cycleId, actionId, newStatus) {
 }
 
 function handleAddActionModal(cycleId) {
-  const bid = STORE.getBid(ROUTER.bidId);
+  const bid = STORE.loadBid(ROUTER.bidId);
   const cycle = (bid.reviewCycles || []).find(c => c.id === cycleId);
   if (!cycle) return;
   const acts = bid.activities || [];
@@ -5918,7 +6422,7 @@ function handleScoreEntry(cycleId, actId, criterion, value) {
    GOVERNANCE EVENT HANDLERS
 ════════════════════════════════════════════════════════════ */
 function handleAddGateModal() {
-  const bid = STORE.getBid(ROUTER.bidId);
+  const bid = STORE.loadBid(ROUTER.bidId);
   const existingIds = (bid.governanceGates || []).map(g => g.templateId);
   const available = GATE_LIB.filter(g => !existingIds.includes(g.id));
   if (available.length === 0) { alert('All gates from the library are already configured.'); return; }
@@ -6123,7 +6627,7 @@ function handleApprovalField(idx, field, value) {
 }
 
 function handleConfirmSubmission() {
-  const bid = STORE.getBid(ROUTER.bidId);
+  const bid = STORE.loadBid(ROUTER.bidId);
   if (!bid) return;
   if (!bid.qaChecklist) bid.qaChecklist = _defaultQAChecklist();
   if (!bid.approvals) bid.approvals = _defaultApprovals();
