@@ -56,6 +56,17 @@ A single self-contained HTML application for bid production control and assuranc
 
 ---
 
+## Session Protocol
+
+- After every significant decision, update the relevant reference document (architecture or rules) before continuing.
+- Never proceed to the next task without confirming the current decision is captured in writing.
+- At the end of every session, add a **## Next Session** section to the architecture document summarising:
+  - What was just decided
+  - What was about to happen next
+  - Any open questions or unresolved options
+
+---
+
 ## Adding New Products
 
 When a new product folder is added, create a new section in this file following the same structure as above.

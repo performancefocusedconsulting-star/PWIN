@@ -658,6 +658,64 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .cm-text{font-size:12px;color:var(--t1);line-height:1.4;}
 
 /* ═══════════════════════════════════════
+   TEAM MANAGER (M10)
+═══════════════════════════════════════ */
+.tm-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.tm-metric{background:var(--bg3);border:1px solid var(--bdr-s);border-radius:10px;padding:14px;text-align:center;}
+.tm-metric .tm-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;line-height:1;color:var(--t1);}
+.tm-metric .tm-val.ok{color:var(--grn);}.tm-metric .tm-val.warn{color:var(--amb);}.tm-metric .tm-val.crit{color:var(--red);}.tm-metric .tm-val.info{color:var(--cyn);}
+.tm-metric .tm-val.gold{color:var(--gold);}
+.tm-metric .tm-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-top:4px;}
+.tm-section{background:var(--bg3);border:1px solid var(--bdr-s);border-radius:10px;padding:14px;margin-bottom:14px;}
+.tm-section-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.tm-org{padding:8px 0;}
+.tm-org-node{padding:6px 12px;background:var(--bg2);border:1px solid var(--bdr);margin:3px 0;display:inline-flex;flex-direction:column;min-width:160px;cursor:pointer;transition:all .15s;}
+.tm-org-node:hover{border-color:var(--gold);background:var(--bg3);}
+.tm-org-node.contractor{border-style:dashed;}
+.tm-org-name{font-size:12px;font-weight:600;color:var(--t1);}
+.tm-org-role{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);margin-top:1px;}
+.tm-org-badges{display:flex;gap:3px;margin-top:3px;}
+.tm-org-level{margin-left:28px;border-left:1px solid var(--bdr-s);padding-left:12px;}
+.tm-org-level2{margin-left:28px;border-left:1px solid var(--bdr-s);padding-left:12px;}
+.tm-row{display:grid;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--bg4);}
+.tm-row:last-child{border-bottom:none;}
+.tm-row-dir{grid-template-columns:1fr 120px 100px 80px 60px 60px 80px;}
+.tm-row-unavail{grid-template-columns:120px 100px 100px 60px 1fr 40px;}
+.tm-row-rate{grid-template-columns:1fr 100px 80px 60px 80px 80px 80px 60px;}
+.tm-row-stake{grid-template-columns:1fr 120px 100px 90px 80px 1fr 40px;}
+.tm-row-spend{grid-template-columns:1fr 100px 80px 80px 80px 70px;}
+.tm-hdr{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);}
+.tm-cell{font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tm-cell.name{color:var(--t1);font-weight:500;}
+.tm-cell.mono{font-family:'DM Mono',monospace;font-size:11px;}
+.tm-cell.right{text-align:right;}
+.tm-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;min-width:40px;}
+.tm-bar-fill{height:100%;border-radius:3px;transition:width .3s;}
+.tm-impact{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(251,191,36,.08);border:1px solid var(--amb);border-radius:6px;margin-bottom:6px;font-size:11px;color:var(--amb);}
+.tm-chart{background:var(--bg2);border:1px solid var(--bdr);padding:14px;margin:10px 0;min-height:120px;}
+.tm-chart-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+.tm-chart-bar{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.tm-chart-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);min-width:100px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tm-chart-fill{height:14px;border-radius:2px;transition:width .3s;min-width:2px;}
+.tm-chart-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:60px;}
+.tm-gantt{overflow-x:auto;margin:8px 0;}
+.tm-gantt-row{display:flex;align-items:center;margin:2px 0;min-height:22px;}
+.tm-gantt-name{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);min-width:120px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tm-gantt-track{flex:1;position:relative;height:18px;background:var(--bg4);border-radius:2px;}
+.tm-gantt-block{position:absolute;height:14px;top:2px;border-radius:2px;background:var(--amb);opacity:.8;cursor:pointer;}
+.tm-gantt-block:hover{opacity:1;}
+.tm-gantt-today{position:absolute;top:0;bottom:0;width:1px;background:var(--gold);z-index:2;}
+.tm-matrix{overflow-x:auto;margin:8px 0;}
+.tm-matrix table{border-collapse:collapse;}
+.tm-matrix th,.tm-matrix td{padding:5px 8px;border:1px solid var(--bdr-s);text-align:center;font-size:11px;}
+.tm-matrix th{background:var(--bg4);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);white-space:nowrap;}
+.tm-matrix td{color:var(--t2);cursor:pointer;transition:background .15s;}
+.tm-matrix td:hover{background:var(--bg3);}
+.tm-matrix td.active{color:var(--grn);background:var(--grn-d);}
+.tm-matrix td.name-cell{text-align:left;font-weight:500;color:var(--t1);cursor:default;white-space:nowrap;}
+.tm-empty{text-align:center;padding:32px 16px;color:var(--t3);font-size:12px;}
+
+/* ═══════════════════════════════════════
    PRINT
 ═══════════════════════════════════════ */
 @media print{
@@ -2658,6 +2716,7 @@ const ROUTER = {
   govGateId: null,         // selected gate id for detail view
   rdView: 'dashboard',     // 'dashboard' | 'print'
   smView: 'checklist',     // 'checklist' | 'upload'
+  teamView: 'directory',   // 'directory' | 'unavailability' | 'ratecard' | 'stakeholders' | 'spend'
   actSort: { col: 'code', dir: 'asc' },
   actFilter: '',          // search text
   _expandedWs: {},        // workstream panels state
@@ -2692,6 +2751,7 @@ const ROUTER = {
   selectGate(id) { this.govGateId = id; this.govView = 'pipeline'; renderApp(); },
   setRdView(v) { this.rdView = v; renderApp(); },
   setSmView(v) { this.smView = v; renderApp(); },
+  setTeamView(v) { this.teamView = v; renderApp(); },
   revSortBy(col) {
     if (this.revActionSort.col === col) {
       this.revActionSort.dir = this.revActionSort.dir === 'asc' ? 'desc' : 'asc';
@@ -2710,6 +2770,7 @@ const BID_TABS = [
   { id:'governance', l:'Governance' },
   { id:'readiness',  l:'Readiness'  },
   { id:'submission', l:'Submission' },
+  { id:'team',       l:'Team'       },
 ];
 
 
@@ -3565,6 +3626,7 @@ function renderModule(bid) {
     case 'governance':  return renderGovernance(bid);
     case 'readiness':   return renderReadiness(bid);
     case 'submission':  return renderSubmission(bid);
+    case 'team':        return renderTeam(bid);
     default:            return renderWorkspace(bid);
   }
 }
@@ -8139,6 +8201,1273 @@ function S9_TEST() {
 
   console.log(`S9_TEST: ${pass} passed, ${fail} failed`);
   return { pass, fail };
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   TEAM MANAGER (M10) — Data Initialisation
+════════════════════════════════════════════════════════════ */
+function _ensureTeamData(bid) {
+  if (!bid.teamMembers) bid.teamMembers = [];
+  if (!bid.rateCard) bid.rateCard = _defaultRateCard();
+  if (!bid.stakeholders) bid.stakeholders = [];
+  if (!bid.unavailability) {
+    // Migrate from calendar.teamUnavailability if present
+    bid.unavailability = ((bid.calendar && bid.calendar.teamUnavailability) || []).map(u => ({
+      id: STORE.uuid(), name: u.name || '', from: u.from || '', to: u.to || '', notes: u.notes || ''
+    }));
+  }
+  // Seed core roles into teamMembers if not already present
+  const coreMap = [
+    ['bid_manager', bid.bidManager, 'Bid Manager'],
+    ['solution_lead', bid.solutionLead, 'Solution Lead'],
+    ['commercial_lead', bid.commercialLead, 'Commercial Lead'],
+    ['delivery_lead', bid.deliveryLead, 'Delivery Lead'],
+    ['legal_lead', bid.legalLead, 'Legal Lead'],
+    ['supply_chain_lead', bid.supplyChainLead, 'Supply Chain Lead'],
+  ];
+  coreMap.forEach(([coreRole, name, roleLabel]) => {
+    if (!name) return;
+    const exists = bid.teamMembers.some(m => m.coreRole === coreRole && m.isActive !== false);
+    if (!exists) {
+      const byName = bid.teamMembers.find(m => m.name === name && m.isActive !== false);
+      if (byName) { byName.coreRole = coreRole; if (!byName.role) byName.role = roleLabel; }
+      else bid.teamMembers.push({ id: STORE.uuid(), name, role: roleLabel, coreRole, organisation: '', email: '', phone: '', clearance: '', clearanceStatus: '', isContractor: false, individualDayRate: null, reportsTo: null, workstreams: '', startDate: '', endDate: '', isActive: true });
+    }
+  });
+  // Ensure existing members have required fields
+  bid.teamMembers.forEach(m => {
+    if (m.isActive === undefined) m.isActive = true;
+    if (!m.id) m.id = STORE.uuid();
+    if (m.coreRole === undefined) m.coreRole = null;
+    if (m.reportsTo === undefined) m.reportsTo = null;
+    if (m.isContractor === undefined) m.isContractor = false;
+    if (m.individualDayRate === undefined) m.individualDayRate = null;
+    if (m.organisation === undefined) m.organisation = '';
+    if (m.email === undefined) m.email = '';
+    if (m.phone === undefined) m.phone = '';
+    if (m.clearanceStatus === undefined) m.clearanceStatus = '';
+    if (m.startDate === undefined) m.startDate = '';
+    if (m.endDate === undefined) m.endDate = '';
+  });
+}
+
+function _defaultRateCard() {
+  return [
+    { id: STORE.uuid(), roleName: 'Bid Manager', standardDayRate: 850 },
+    { id: STORE.uuid(), roleName: 'Solution Architect', standardDayRate: 950 },
+    { id: STORE.uuid(), roleName: 'Commercial Manager', standardDayRate: 800 },
+    { id: STORE.uuid(), roleName: 'Delivery Manager', standardDayRate: 800 },
+    { id: STORE.uuid(), roleName: 'Legal Counsel', standardDayRate: 900 },
+    { id: STORE.uuid(), roleName: 'Supply Chain Manager', standardDayRate: 750 },
+    { id: STORE.uuid(), roleName: 'SME', standardDayRate: 700 },
+    { id: STORE.uuid(), roleName: 'Author', standardDayRate: 600 },
+    { id: STORE.uuid(), roleName: 'Reviewer', standardDayRate: 750 },
+  ];
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   TEAM MANAGER (M10) — Business Logic (Rule Set 11)
+════════════════════════════════════════════════════════════ */
+const TEAM = {
+  // 11.2 Build org tree
+  buildOrgTree(bid) {
+    const members = bid.teamMembers.filter(m => m.isActive !== false);
+    const bm = members.find(m => m.coreRole === 'bid_manager') || members[0];
+    if (!bm) return null;
+    const root = { member: bm, children: [] };
+    const coreLeads = members.filter(m => m.coreRole && m.coreRole !== 'bid_manager' && m.id !== bm.id);
+    coreLeads.forEach(lead => {
+      const reports = members.filter(m => m.reportsTo === lead.id);
+      root.children.push({ member: lead, children: reports.map(r => ({ member: r, children: [] })) });
+    });
+    const assigned = new Set([bm.id, ...coreLeads.map(l => l.id), ...members.filter(m => m.reportsTo).map(m => m.id)]);
+    const unassigned = members.filter(m => !assigned.has(m.id));
+    unassigned.forEach(u => root.children.push({ member: u, children: [] }));
+    return root;
+  },
+
+  // 11.3 Rate resolution
+  resolveRate(member, rateCard) {
+    if (member.individualDayRate !== null && member.individualDayRate > 0) return member.individualDayRate;
+    const std = (rateCard || []).find(r => r.roleName && member.role && r.roleName.toLowerCase().trim() === member.role.toLowerCase().trim());
+    if (std) return std.standardDayRate;
+    return null;
+  },
+
+  findStandardRate(role, rateCard) {
+    if (!role) return null;
+    const std = (rateCard || []).find(r => r.roleName && r.roleName.toLowerCase().trim() === role.toLowerCase().trim());
+    return std ? std.standardDayRate : null;
+  },
+
+  // 11.4 Spend forecast
+  calculateSpendForecast(bid) {
+    const activities = (bid.activities || []).filter(a => a.status !== 'deactivated' && a.active !== false);
+    const members = bid.teamMembers.filter(m => m.isActive !== false);
+    const rateCard = bid.rateCard || [];
+    const forecast = { byPerson: {}, byWorkstream: {}, total: 0, totalAtStandard: 0, totalEffort: 0, uncosted: [] };
+
+    activities.forEach(act => {
+      const member = members.find(m => m.name === act.owner);
+      if (!member) { forecast.uncosted.push({ activity: act, reason: 'no_owner' }); forecast.totalEffort += (act.effortDays || 0); return; }
+      const rate = this.resolveRate(member, rateCard);
+      if (rate === null) { forecast.uncosted.push({ activity: act, reason: 'no_rate', member }); forecast.totalEffort += (act.effortDays || 0); return; }
+      const effort = act.effortDays || 0;
+      const cost = effort * rate;
+      const stdRate = this.findStandardRate(member.role, rateCard) || rate;
+      const costAtStd = effort * stdRate;
+
+      if (!forecast.byPerson[member.id]) forecast.byPerson[member.id] = { member, effort: 0, cost: 0, costAtStandard: 0 };
+      forecast.byPerson[member.id].effort += effort;
+      forecast.byPerson[member.id].cost += cost;
+      forecast.byPerson[member.id].costAtStandard += costAtStd;
+
+      const ws = act.workstreamId || 'unknown';
+      if (!forecast.byWorkstream[ws]) forecast.byWorkstream[ws] = { effort: 0, cost: 0 };
+      forecast.byWorkstream[ws].effort += effort;
+      forecast.byWorkstream[ws].cost += cost;
+
+      forecast.total += cost;
+      forecast.totalAtStandard += costAtStd;
+      forecast.totalEffort += effort;
+    });
+
+    forecast.contractorPremium = forecast.total - forecast.totalAtStandard;
+    return forecast;
+  },
+
+  // 11.6 Unavailability impact
+  checkUnavailabilityImpact(entry, bid) {
+    const member = bid.teamMembers.find(m => m.name === entry.name && m.isActive !== false);
+    if (!member) return [];
+    const activities = (bid.activities || []).filter(a =>
+      a.owner === member.name && a.active !== false && !['final','deactivated'].includes(a.status)
+    );
+    const impacts = [];
+    activities.forEach(act => {
+      const overlap = _dateOverlapDays(entry.from, entry.to, act.plannedStart, act.plannedEnd);
+      if (overlap > 0) {
+        impacts.push({ activity: act, member, overlapDays: overlap, severity: overlap >= 3 ? 'high' : overlap >= 1 ? 'medium' : 'low' });
+      }
+    });
+    return impacts;
+  },
+
+  // 11.7 Rate variance
+  rateVarianceLevel(individualRate, standardRate) {
+    if (!standardRate || standardRate === 0) return 'no_benchmark';
+    const variance = (individualRate - standardRate) / standardRate;
+    if (variance > 0.50) return 'red';
+    if (variance > 0.20) return 'amber';
+    return 'green';
+  }
+};
+
+function _dateOverlapDays(fromA, toA, fromB, toB) {
+  if (!fromA || !toA || !fromB || !toB) return 0;
+  const a0 = new Date(fromA), a1 = new Date(toA), b0 = new Date(fromB), b1 = new Date(toB);
+  const start = a0 > b0 ? a0 : b0;
+  const end = a1 < b1 ? a1 : b1;
+  if (start > end) return 0;
+  return Math.max(0, Math.round((end - start) / 86400000) + 1);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   TEAM MANAGER (M10) — Render
+════════════════════════════════════════════════════════════ */
+function renderTeam(bid) {
+  _ensureTeamData(bid);
+  STORE.saveBid(bid.id);
+
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+  const allMembers = bid.teamMembers;
+  const coreFilled = members.filter(m => m.coreRole).length;
+  const clearHeld = members.filter(m => m.clearance && m.clearanceStatus !== 'not_required' && m.clearanceStatus !== '').length;
+  const contractors = members.filter(m => m.isContractor).length;
+
+  const metricsHtml = `<div class="tm-metrics">
+    <div class="tm-metric"><div class="tm-val">${members.length}</div><div class="tm-lbl">Team Size</div></div>
+    <div class="tm-metric"><div class="tm-val ${coreFilled >= 6 ? 'ok' : 'warn'}">${coreFilled}/6</div><div class="tm-lbl">Core Roles Filled</div></div>
+    <div class="tm-metric"><div class="tm-val ${clearHeld === members.length ? 'ok' : 'warn'}">${clearHeld}/${members.length}</div><div class="tm-lbl">Clearance Held</div></div>
+    <div class="tm-metric"><div class="tm-val info">${contractors}</div><div class="tm-lbl">Contractors</div></div>
+  </div>`;
+
+  const views = [
+    ['directory','Directory'],['unavailability','Unavailability'],['ratecard','Rate Card'],
+    ['stakeholders','Stakeholders'],['spend','Spend Forecast']
+  ];
+  const tabHtml = `<div class="view-tabs">${views.map(([id,l]) =>
+    `<button class="view-tab ${ROUTER.teamView===id?'on':''}" onclick="ROUTER.setTeamView('${id}')">${l}</button>`
+  ).join('')}</div>`;
+
+  let content = '';
+  switch(ROUTER.teamView) {
+    case 'unavailability': content = _renderTeamUnavailability(bid); break;
+    case 'ratecard':       content = _renderTeamRateCard(bid); break;
+    case 'stakeholders':   content = _renderTeamStakeholders(bid); break;
+    case 'spend':          content = _renderTeamSpend(bid); break;
+    default:               content = _renderTeamDirectory(bid); break;
+  }
+
+  return `<div class="sl">M10</div>
+    <div class="pg-title">Team Manager</div>
+    <div class="pg-desc">Single source of truth for who is on the team, what they cost, when they are available, and who the key stakeholders are.</div>
+    ${metricsHtml}
+    ${tabHtml}
+    ${content}`;
+}
+
+
+/* ── Tab 1: Team Directory ─────────────────────────────── */
+function _renderTeamDirectory(bid) {
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+  const inactive = bid.teamMembers.filter(m => m.isActive === false);
+
+  // Org chart
+  const tree = TEAM.buildOrgTree(bid);
+  let orgHtml = '<div class="tm-empty">No team members yet. Add your first team member below.</div>';
+  if (tree) {
+    orgHtml = `<div class="tm-org">${_renderOrgNode(tree, 0)}</div>`;
+  }
+
+  // List view
+  const listRows = members.map(m => {
+    const clrCls = m.clearance ? (m.clearanceStatus === 'held' ? 'fe-g' : m.clearanceStatus === 'in_progress' ? 'fe-a' : 'fe-mute') : '';
+    return `<div class="tm-row tm-row-dir">
+      <div class="tm-cell name">${h(m.name)} ${m.coreRole ? `<span class="fe fe-gl">${h(m.coreRole.replace(/_/g,' '))}</span>` : ''}</div>
+      <div class="tm-cell">${h(m.role)}</div>
+      <div class="tm-cell">${h(m.organisation)}</div>
+      <div class="tm-cell">${m.clearance ? `<span class="fe ${clrCls}">${h(m.clearance)}</span>` : '<span style="color:var(--t4);">—</span>'}</div>
+      <div class="tm-cell">${m.isContractor ? '<span class="fe fe-c">Y</span>' : 'N'}</div>
+      <div class="tm-cell mono right">${m.individualDayRate ? fmtGBP(m.individualDayRate) : '—'}</div>
+      <div class="tm-cell"><button class="btn btn-sm" onclick="handleEditTeamMember('${m.id}')">Edit</button> <button class="btn btn-sm btn-danger" onclick="handleRemoveTeamMember('${m.id}')">×</button></div>
+    </div>`;
+  }).join('');
+
+  const inactiveHtml = inactive.length ? `
+    <div class="sh2" style="margin-top:16px;">Inactive Members (${inactive.length})</div>
+    ${inactive.map(m => `<div class="tm-row tm-row-dir" style="opacity:.45;text-decoration:line-through;">
+      <div class="tm-cell name">${h(m.name)}</div>
+      <div class="tm-cell">${h(m.role)}</div>
+      <div class="tm-cell">${h(m.organisation)}</div>
+      <div class="tm-cell">${m.clearance || '—'}</div>
+      <div class="tm-cell">${m.isContractor ? 'Y' : 'N'}</div>
+      <div class="tm-cell mono right">${m.individualDayRate ? fmtGBP(m.individualDayRate) : '—'}</div>
+      <div class="tm-cell"><button class="btn btn-sm" onclick="handleReactivateTeamMember('${m.id}')">Restore</button></div>
+    </div>`).join('')}` : '';
+
+  return `
+    <div class="tm-section">
+      <div class="tm-section-title">Org Chart</div>
+      ${orgHtml}
+    </div>
+    <div class="tm-section">
+      <div class="tm-section-title">Team List
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm" onclick="handleAddTeamMember()">+ Add Member</button>
+          <button class="btn btn-sm" onclick="handleTeamCsvImport()">CSV Import</button>
+          <button class="btn btn-sm" onclick="handleTeamCsvExport()">CSV Export</button>
+        </div>
+      </div>
+      <div class="tm-row tm-row-dir tm-hdr">
+        <div>Name</div><div>Role</div><div>Organisation</div><div>Clearance</div><div>Contr.</div><div>Day Rate</div><div></div>
+      </div>
+      ${listRows || '<div class="tm-empty">No active team members.</div>'}
+      ${inactiveHtml}
+    </div>`;
+}
+
+function _renderOrgNode(node, depth) {
+  const m = node.member;
+  const clrCls = m.clearance ? (m.clearanceStatus === 'held' ? 'fe-g' : m.clearanceStatus === 'in_progress' ? 'fe-a' : 'fe-mute') : '';
+  const contractorCls = m.isContractor ? ' contractor' : '';
+  let html = `<div class="tm-org-node${contractorCls}" onclick="handleEditTeamMember('${m.id}')">
+    <div class="tm-org-name">${h(m.name)}</div>
+    <div class="tm-org-role">${h(m.role || m.coreRole || '')}</div>
+    <div class="tm-org-badges">
+      ${m.coreRole ? `<span class="fe fe-gl">${h(m.coreRole.replace(/_/g,' '))}</span>` : ''}
+      ${m.clearance ? `<span class="fe ${clrCls}">${h(m.clearance)}</span>` : ''}
+      ${m.isContractor ? '<span class="fe fe-c">contractor</span>' : ''}
+    </div>
+  </div>`;
+  if (node.children.length > 0) {
+    const levelCls = depth === 0 ? 'tm-org-level' : 'tm-org-level2';
+    html += `<div class="${levelCls}">${node.children.map(c => _renderOrgNode(c, depth + 1)).join('')}</div>`;
+  }
+  return html;
+}
+
+
+/* ── Tab 2: Unavailability ─────────────────────────────── */
+function _renderTeamUnavailability(bid) {
+  const entries = bid.unavailability || [];
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+
+  // Impact warnings
+  let impactHtml = '';
+  entries.forEach(entry => {
+    const impacts = TEAM.checkUnavailabilityImpact(entry, bid);
+    impacts.forEach(imp => {
+      impactHtml += `<div class="tm-impact">⚠ ${h(imp.member.name)} unavailable ${h(entry.from)} – ${h(entry.to)} — ${imp.overlapDays} day${imp.overlapDays>1?'s':''} overlap with ${h(imp.activity.code || imp.activity.id)} (${imp.severity})</div>`;
+    });
+  });
+
+  // Gantt view
+  let ganttHtml = '';
+  if (entries.length > 0 && bid.submissionDeadline) {
+    const bidStart = bid.ittIssueDate || bid.createdAt.slice(0,10);
+    const bidEnd = bid.submissionDeadline;
+    const totalDays = Math.max(1, Math.round((new Date(bidEnd) - new Date(bidStart)) / 86400000));
+    const today = new Date().toISOString().slice(0,10);
+    const todayPct = Math.max(0, Math.min(100, ((new Date(today) - new Date(bidStart)) / (new Date(bidEnd) - new Date(bidStart))) * 100));
+
+    const uniqueNames = [...new Set(entries.map(e => e.name))].sort();
+    ganttHtml = `<div class="tm-section">
+      <div class="tm-section-title">Timeline</div>
+      <div class="tm-gantt">${uniqueNames.map(name => {
+        const personEntries = entries.filter(e => e.name === name);
+        const blocks = personEntries.map(e => {
+          const startPct = Math.max(0, ((new Date(e.from) - new Date(bidStart)) / (new Date(bidEnd) - new Date(bidStart))) * 100);
+          const endPct = Math.min(100, ((new Date(e.to) - new Date(bidStart)) / (new Date(bidEnd) - new Date(bidStart))) * 100);
+          const width = Math.max(1, endPct - startPct);
+          return `<div class="tm-gantt-block" style="left:${startPct}%;width:${width}%;" title="${h(name)}: ${h(e.from)} – ${h(e.to)}${e.notes ? ' — ' + h(e.notes) : ''}"></div>`;
+        }).join('');
+        return `<div class="tm-gantt-row">
+          <div class="tm-gantt-name">${h(name)}</div>
+          <div class="tm-gantt-track">${blocks}<div class="tm-gantt-today" style="left:${todayPct}%;" title="Today"></div></div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
+  // List view
+  const listRows = entries.map((e, i) => {
+    const dur = e.from && e.to ? Math.max(1, Math.round((new Date(e.to) - new Date(e.from)) / 86400000) + 1) : '—';
+    return `<div class="tm-row tm-row-unavail">
+      <div class="tm-cell name">${h(e.name)}</div>
+      <div class="tm-cell mono">${h(e.from)}</div>
+      <div class="tm-cell mono">${h(e.to)}</div>
+      <div class="tm-cell mono">${dur}</div>
+      <div class="tm-cell">${h(e.notes)}</div>
+      <div class="tm-cell"><button class="btn btn-sm btn-danger" onclick="handleRemoveUnavailability(${i})">×</button></div>
+    </div>`;
+  }).join('');
+
+  return `
+    ${impactHtml}
+    ${ganttHtml}
+    <div class="tm-section">
+      <div class="tm-section-title">Unavailability Register
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm" onclick="handleAddUnavailability()">+ Add</button>
+          <button class="btn btn-sm" onclick="handleBulkUnavailability()">+ Bulk Add</button>
+          <button class="btn btn-sm" onclick="handleUnavailCsvImport()">CSV Import</button>
+          <button class="btn btn-sm" onclick="handleUnavailCsvExport()">CSV Export</button>
+        </div>
+      </div>
+      <div class="tm-row tm-row-unavail tm-hdr">
+        <div>Name</div><div>From</div><div>To</div><div>Days</div><div>Notes</div><div></div>
+      </div>
+      ${listRows || '<div class="tm-empty">No unavailability entries.</div>'}
+    </div>`;
+}
+
+
+/* ── Tab 3: Rate Card ──────────────────────────────────── */
+function _renderTeamRateCard(bid) {
+  const rateCard = bid.rateCard || [];
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+
+  // Standard rate card table
+  const stdRows = rateCard.map((r, i) => `<div class="tm-row" style="grid-template-columns:1fr 100px 40px;">
+    <div class="tm-cell name">${h(r.roleName)}</div>
+    <div class="tm-cell mono right">${fmtGBP(r.standardDayRate)}</div>
+    <div class="tm-cell"><button class="btn btn-sm btn-danger" onclick="handleRemoveRateCardEntry(${i})">×</button></div>
+  </div>`).join('');
+
+  // Individual rate comparison
+  const compRows = members.map(m => {
+    const rate = TEAM.resolveRate(m, rateCard);
+    const stdRate = TEAM.findStandardRate(m.role, rateCard);
+    const variance = (rate !== null && stdRate !== null && stdRate > 0) ? Math.round(((rate - stdRate) / stdRate) * 100) : null;
+    const varLevel = (rate !== null && stdRate !== null) ? TEAM.rateVarianceLevel(rate, stdRate) : 'no_benchmark';
+    const varCls = varLevel === 'red' ? 'fe-r' : varLevel === 'amber' ? 'fe-a' : varLevel === 'green' ? 'fe-g' : 'fe-mute';
+    return `<div class="tm-row tm-row-rate">
+      <div class="tm-cell name">${h(m.name)}</div>
+      <div class="tm-cell">${h(m.role)}</div>
+      <div class="tm-cell">${h(m.organisation)}</div>
+      <div class="tm-cell">${m.isContractor ? '<span class="fe fe-c">Y</span>' : 'N'}</div>
+      <div class="tm-cell mono right">${m.individualDayRate ? fmtGBP(m.individualDayRate) : '<span style="color:var(--t4);">—</span>'}</div>
+      <div class="tm-cell mono right">${stdRate !== null ? fmtGBP(stdRate) : '—'}</div>
+      <div class="tm-cell mono right">${variance !== null ? `<span class="fe ${varCls}">${variance > 0 ? '+' : ''}${variance}%</span>` : '—'}</div>
+      <div class="tm-cell mono right">${rate !== null ? fmtGBP(rate) : '<span class="fe fe-r">not set</span>'}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="tm-section">
+      <div class="tm-section-title">Standard Rate Card
+        <button class="btn btn-sm" onclick="handleAddRateCardEntry()">+ Add Role</button>
+      </div>
+      <div class="tm-row tm-hdr" style="grid-template-columns:1fr 100px 40px;">
+        <div>Role</div><div>Day Rate</div><div></div>
+      </div>
+      ${stdRows || '<div class="tm-empty">No rate card entries.</div>'}
+    </div>
+    <div class="tm-section">
+      <div class="tm-section-title">Individual Rate Comparison</div>
+      <div class="tm-row tm-row-rate tm-hdr">
+        <div>Name</div><div>Role</div><div>Org</div><div>Contr.</div><div>Individual</div><div>Standard</div><div>Variance</div><div>Effective</div>
+      </div>
+      ${compRows || '<div class="tm-empty">No team members to compare.</div>'}
+    </div>`;
+}
+
+
+/* ── Tab 4: Stakeholders ───────────────────────────────── */
+function _renderTeamStakeholders(bid) {
+  const stakeholders = (bid.stakeholders || []).filter(s => s.isActive !== false);
+  const gates = bid.governanceGates || [];
+  const types = ['sponsor','approver','reviewer','influencer','sme'];
+  const typeCounts = {};
+  types.forEach(t => typeCounts[t] = stakeholders.filter(s => s.stakeholderType === t).length);
+
+  const stkMetrics = `<div class="tm-metrics">
+    <div class="tm-metric"><div class="tm-val" style="color:var(--pur);">${stakeholders.length}</div><div class="tm-lbl">Total Stakeholders</div></div>
+    <div class="tm-metric"><div class="tm-val" style="color:var(--pur);">${typeCounts.sponsor || 0}</div><div class="tm-lbl">Sponsors</div></div>
+    <div class="tm-metric"><div class="tm-val" style="color:var(--pur);">${typeCounts.approver || 0}</div><div class="tm-lbl">Approvers</div></div>
+    <div class="tm-metric"><div class="tm-val" style="color:var(--pur);">${typeCounts.reviewer || 0}</div><div class="tm-lbl">Reviewers</div></div>
+  </div>`;
+
+  const typeBadge = t => {
+    const cls = t === 'sponsor' ? 'fe-gl' : t === 'approver' ? 'fe-g' : t === 'reviewer' ? 'fe-b' : t === 'influencer' ? 'fe-p' : 'fe-c';
+    return `<span class="fe ${cls}">${h(t)}</span>`;
+  };
+
+  const stkRows = stakeholders.map((s, i) => {
+    const linkedGateBadges = (s.linkedGates || []).map(gId => {
+      const g = gates.find(g => g.id === gId);
+      return g ? `<span class="fe fe-mute">${h(g.name || g.templateId)}</span>` : '';
+    }).join(' ');
+    return `<div class="tm-row tm-row-stake">
+      <div class="tm-cell name">${h(s.name)}</div>
+      <div class="tm-cell">${h(s.role)}</div>
+      <div class="tm-cell">${h(s.organisation)}</div>
+      <div class="tm-cell">${typeBadge(s.stakeholderType)}</div>
+      <div class="tm-cell">${h(s.email)}</div>
+      <div class="tm-cell">${linkedGateBadges || '—'}</div>
+      <div class="tm-cell">
+        <button class="btn btn-sm" onclick="handleEditStakeholder(${i})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="handleRemoveStakeholder(${i})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Gate Participation Matrix
+  let matrixHtml = '';
+  if (stakeholders.length > 0 && gates.length > 0) {
+    const gateHeaders = gates.map(g => `<th>${h(g.name || g.templateId || 'Gate')}</th>`).join('');
+    const matrixRows = stakeholders.map(s => {
+      const cells = gates.map(g => {
+        const linked = (s.linkedGates || []).includes(g.id);
+        return `<td class="${linked ? 'active' : ''}" onclick="handleToggleGateParticipation(${stakeholders.indexOf(s)}, '${g.id}')">${linked ? '●' : '○'}</td>`;
+      }).join('');
+      return `<tr><td class="name-cell">${h(s.name)} ${typeBadge(s.stakeholderType)}</td>${cells}</tr>`;
+    }).join('');
+
+    // Check for gates with no approver
+    const gateWarnings = gates.map(g => {
+      const hasApprover = stakeholders.some(s => s.stakeholderType === 'approver' && (s.linkedGates || []).includes(g.id));
+      return hasApprover ? '' : `<div class="tm-impact">⚠ ${h(g.name || g.templateId)} has no linked approver</div>`;
+    }).join('');
+
+    matrixHtml = `
+      <div class="tm-section">
+        <div class="tm-section-title">Gate Participation Matrix</div>
+        ${gateWarnings}
+        <div class="tm-matrix"><table>
+          <thead><tr><th></th>${gateHeaders}</tr></thead>
+          <tbody>${matrixRows}</tbody>
+        </table></div>
+      </div>`;
+  }
+
+  return `
+    ${stkMetrics}
+    <div class="tm-section">
+      <div class="tm-section-title">Stakeholder Register
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm" onclick="handleAddStakeholder()">+ Add Stakeholder</button>
+          <button class="btn btn-sm" onclick="handleStakeholderCsvImport()">CSV Import</button>
+          <button class="btn btn-sm" onclick="handleStakeholderCsvExport()">CSV Export</button>
+        </div>
+      </div>
+      <div class="tm-row tm-row-stake tm-hdr">
+        <div>Name</div><div>Role</div><div>Organisation</div><div>Type</div><div>Email</div><div>Gates</div><div></div>
+      </div>
+      ${stkRows || '<div class="tm-empty">No stakeholders added yet.</div>'}
+    </div>
+    ${matrixHtml}`;
+}
+
+
+/* ── Tab 5: Spend Forecast ─────────────────────────────── */
+function _renderTeamSpend(bid) {
+  const forecast = TEAM.calculateSpendForecast(bid);
+  const byPerson = Object.values(forecast.byPerson).sort((a, b) => b.cost - a.cost);
+  const byWorkstream = Object.entries(forecast.byWorkstream).sort((a, b) => b[1].cost - a[1].cost);
+  const maxPersonCost = byPerson.length ? byPerson[0].cost : 1;
+  const maxWsCost = byWorkstream.length ? byWorkstream[0][1].cost : 1;
+
+  const spendMetrics = `<div class="tm-metrics">
+    <div class="tm-metric"><div class="tm-val gold">${fmtGBP(forecast.total)}</div><div class="tm-lbl">Forecast Spend</div></div>
+    <div class="tm-metric"><div class="tm-val ok">${fmtGBP(forecast.totalAtStandard)}</div><div class="tm-lbl">At Standard Rates</div></div>
+    <div class="tm-metric"><div class="tm-val ${forecast.contractorPremium > 0 ? 'warn' : ''}">${fmtGBP(Math.abs(forecast.contractorPremium))}</div><div class="tm-lbl">Contractor Premium</div></div>
+    <div class="tm-metric"><div class="tm-val">${forecast.totalEffort}</div><div class="tm-lbl">Total Effort (days)</div></div>
+  </div>`;
+
+  // Uncosted warnings
+  const uncostHtml = forecast.uncosted.length ? `<div class="tm-section">
+    <div class="tm-section-title" style="color:var(--amb);">⚠ Uncosted Activities (${forecast.uncosted.length})</div>
+    ${forecast.uncosted.slice(0, 10).map(u => `<div style="font-size:11px;color:var(--amb);padding:2px 0;">${h(u.activity.code || u.activity.id)} — ${u.reason === 'no_owner' ? 'no owner assigned' : 'no rate set for ' + h(u.member ? u.member.name : '?')}</div>`).join('')}
+    ${forecast.uncosted.length > 10 ? `<div style="font-size:11px;color:var(--t3);">…and ${forecast.uncosted.length - 10} more</div>` : ''}
+  </div>` : '';
+
+  // Spend by person
+  const personRows = byPerson.map(p => {
+    const pct = forecast.total > 0 ? Math.round((p.cost / forecast.total) * 100) : 0;
+    return `<div class="tm-row tm-row-spend">
+      <div class="tm-cell name">${h(p.member.name)} ${p.member.isContractor ? '<span class="fe fe-c">contr.</span>' : ''}</div>
+      <div class="tm-cell">${h(p.member.role)}</div>
+      <div class="tm-cell mono right">${fmtGBP(TEAM.resolveRate(p.member, bid.rateCard))}</div>
+      <div class="tm-cell mono right">${p.effort}</div>
+      <div class="tm-cell mono right">${fmtGBP(p.cost)}</div>
+      <div class="tm-cell mono right">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  // Spend by person bar chart
+  const personChart = byPerson.length ? `<div class="tm-chart">
+    <div class="tm-chart-title">Spend by Person</div>
+    ${byPerson.map(p => {
+      const widthPct = maxPersonCost > 0 ? Math.round((p.cost / maxPersonCost) * 100) : 0;
+      const color = p.member.isContractor ? 'var(--cyn)' : 'var(--gold)';
+      return `<div class="tm-chart-bar">
+        <div class="tm-chart-label">${h(p.member.name)}</div>
+        <div class="tm-bar" style="flex:1;"><div class="tm-bar-fill" style="width:${widthPct}%;background:${color};"></div></div>
+        <div class="tm-chart-val">${fmtGBP(p.cost)}</div>
+      </div>`;
+    }).join('')}
+  </div>` : '';
+
+  // Spend by workstream
+  const wsNames = {};
+  (bid.workstreams || []).forEach(ws => wsNames[ws.id] = ws.name || ws.id);
+  const wsChart = byWorkstream.length ? `<div class="tm-chart">
+    <div class="tm-chart-title">Spend by Workstream</div>
+    ${byWorkstream.map(([wsId, data]) => {
+      const widthPct = maxWsCost > 0 ? Math.round((data.cost / maxWsCost) * 100) : 0;
+      return `<div class="tm-chart-bar">
+        <div class="tm-chart-label">${h(wsNames[wsId] || wsId)}</div>
+        <div class="tm-bar" style="flex:1;"><div class="tm-bar-fill" style="width:${widthPct}%;background:var(--blu);"></div></div>
+        <div class="tm-chart-val">${fmtGBP(data.cost)}</div>
+      </div>`;
+    }).join('')}
+  </div>` : '';
+
+  // Rate variance analysis
+  const rateCard = bid.rateCard || [];
+  const varianceRows = byPerson.map(p => {
+    const rate = TEAM.resolveRate(p.member, rateCard);
+    const stdRate = TEAM.findStandardRate(p.member.role, rateCard) || rate;
+    const costAtStd = p.effort * (stdRate || 0);
+    const variance = p.cost - costAtStd;
+    const varLevel = rate && stdRate ? TEAM.rateVarianceLevel(rate, stdRate) : 'no_benchmark';
+    const varCls = varLevel === 'red' ? 'fe-r' : varLevel === 'amber' ? 'fe-a' : varLevel === 'green' ? 'fe-g' : 'fe-mute';
+    return `<div class="tm-row" style="grid-template-columns:1fr 80px 80px 60px 80px 80px 80px;">
+      <div class="tm-cell name">${h(p.member.name)}</div>
+      <div class="tm-cell mono right">${rate ? fmtGBP(rate) : '—'}</div>
+      <div class="tm-cell mono right">${stdRate ? fmtGBP(stdRate) : '—'}</div>
+      <div class="tm-cell mono right">${p.effort}</div>
+      <div class="tm-cell mono right">${fmtGBP(p.cost)}</div>
+      <div class="tm-cell mono right">${fmtGBP(costAtStd)}</div>
+      <div class="tm-cell mono right"><span class="fe ${varCls}">${variance > 0 ? '+' : ''}${fmtGBP(Math.abs(variance))}</span></div>
+    </div>`;
+  }).join('');
+
+  return `
+    ${spendMetrics}
+    ${uncostHtml}
+    <div class="tm-section">
+      <div class="tm-section-title">Spend by Person</div>
+      <div class="tm-row tm-row-spend tm-hdr">
+        <div>Name</div><div>Role</div><div>Day Rate</div><div>Effort</div><div>Cost</div><div>% Total</div>
+      </div>
+      ${personRows || '<div class="tm-empty">No costed activities yet.</div>'}
+    </div>
+    ${personChart}
+    ${wsChart}
+    <div class="tm-section">
+      <div class="tm-section-title">Rate Variance Analysis</div>
+      <div class="tm-row tm-hdr" style="grid-template-columns:1fr 80px 80px 60px 80px 80px 80px;">
+        <div>Name</div><div>Actual Rate</div><div>Std Rate</div><div>Effort</div><div>Actual Cost</div><div>Std Cost</div><div>Variance</div>
+      </div>
+      ${varianceRows || '<div class="tm-empty">No data to show.</div>'}
+    </div>`;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   TEAM MANAGER (M10) — Event Handlers
+════════════════════════════════════════════════════════════ */
+function handleAddTeamMember() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  _ensureTeamData(bid);
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+  const nameOpts = members.map(m => `<option value="${m.id}">${h(m.name)}</option>`).join('');
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:600px;">
+    <div class="modal-hdr"><div class="modal-title">Add Team Member</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <form id="tm-add-form" onsubmit="event.preventDefault();_submitAddTeamMember()">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">Name</label><input class="inp" name="name" required autocomplete="off"></div>
+        <div class="form-col"><label class="form-label req">Role</label><input class="inp" name="role" required autocomplete="off" placeholder="e.g. Solution Architect"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Organisation</label><input class="inp" name="organisation" autocomplete="off"></div>
+        <div class="form-col"><label class="form-label">Workstreams</label><input class="inp" name="workstreams" placeholder="e.g. SOL, COM"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Email</label><input class="inp" name="email" type="email" autocomplete="off"></div>
+        <div class="form-col"><label class="form-label">Phone</label><input class="inp" name="phone" autocomplete="off"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Clearance</label><input class="inp" name="clearance" placeholder="e.g. SC, DV"></div>
+        <div class="form-col"><label class="form-label">Clearance Status</label>
+          <select class="sel" name="clearanceStatus"><option value="">—</option><option value="held">Held</option><option value="in_progress">In Progress</option><option value="not_required">Not Required</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Contractor?</label>
+          <select class="sel" name="isContractor"><option value="false">No</option><option value="true">Yes</option></select>
+        </div>
+        <div class="form-col"><label class="form-label">Individual Day Rate (£)</label><input class="inp" name="individualDayRate" type="number" min="0" step="1"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Reports To</label>
+          <select class="sel" name="reportsTo"><option value="">— (Bid Manager)</option>${nameOpts}</select>
+        </div>
+        <div class="form-col"><label class="form-label">Core Role</label>
+          <select class="sel" name="coreRole"><option value="">None</option><option value="bid_manager">Bid Manager</option><option value="solution_lead">Solution Lead</option><option value="commercial_lead">Commercial Lead</option><option value="delivery_lead">Delivery Lead</option><option value="legal_lead">Legal Lead</option><option value="supply_chain_lead">Supply Chain Lead</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Start Date</label><input class="inp" name="startDate" type="date"></div>
+        <div class="form-col"><label class="form-label">End Date</label><input class="inp" name="endDate" type="date"></div>
+      </div>
+      <div class="modal-footer"><button class="btn" type="button" onclick="closeModal()">Cancel</button><button class="btn btn-primary" type="submit">Add Member</button></div>
+    </form>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _submitAddTeamMember() {
+  const f = document.getElementById('tm-add-form');
+  const name = f.querySelector('[name=name]').value.trim();
+  const role = f.querySelector('[name=role]').value.trim();
+  if (!name || !role) { alert('Name and role are required.'); return; }
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    _ensureTeamData(bid);
+    const coreRole = f.querySelector('[name=coreRole]').value || null;
+    // If assigning a core role, demote existing holder (Rule 11.1)
+    if (coreRole) {
+      const existing = bid.teamMembers.find(m => m.coreRole === coreRole && m.isActive !== false);
+      if (existing) existing.coreRole = null;
+    }
+    bid.teamMembers.push({
+      id: STORE.uuid(), name, role, coreRole,
+      organisation: f.querySelector('[name=organisation]').value.trim(),
+      workstreams: f.querySelector('[name=workstreams]').value.trim(),
+      email: f.querySelector('[name=email]').value.trim(),
+      phone: f.querySelector('[name=phone]').value.trim(),
+      clearance: f.querySelector('[name=clearance]').value.trim(),
+      clearanceStatus: f.querySelector('[name=clearanceStatus]').value,
+      isContractor: f.querySelector('[name=isContractor]').value === 'true',
+      individualDayRate: parseFloat(f.querySelector('[name=individualDayRate]').value) || null,
+      reportsTo: f.querySelector('[name=reportsTo]').value || null,
+      startDate: f.querySelector('[name=startDate]').value || '',
+      endDate: f.querySelector('[name=endDate]').value || '',
+      isActive: true,
+    });
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleEditTeamMember(memberId) {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  _ensureTeamData(bid);
+  const m = bid.teamMembers.find(x => x.id === memberId);
+  if (!m) return;
+  const others = bid.teamMembers.filter(x => x.id !== memberId && x.isActive !== false);
+  const nameOpts = others.map(x => `<option value="${x.id}" ${m.reportsTo===x.id?'selected':''}>${h(x.name)}</option>`).join('');
+  const coreOpts = ['','bid_manager','solution_lead','commercial_lead','delivery_lead','legal_lead','supply_chain_lead'];
+  const coreLabels = ['None','Bid Manager','Solution Lead','Commercial Lead','Delivery Lead','Legal Lead','Supply Chain Lead'];
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:600px;">
+    <div class="modal-hdr"><div class="modal-title">Edit Team Member</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <form id="tm-edit-form" onsubmit="event.preventDefault();_submitEditTeamMember('${memberId}')">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">Name</label><input class="inp" name="name" value="${h(m.name)}" required></div>
+        <div class="form-col"><label class="form-label req">Role</label><input class="inp" name="role" value="${h(m.role)}" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Organisation</label><input class="inp" name="organisation" value="${h(m.organisation)}"></div>
+        <div class="form-col"><label class="form-label">Workstreams</label><input class="inp" name="workstreams" value="${h(m.workstreams || '')}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Email</label><input class="inp" name="email" value="${h(m.email)}" type="email"></div>
+        <div class="form-col"><label class="form-label">Phone</label><input class="inp" name="phone" value="${h(m.phone)}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Clearance</label><input class="inp" name="clearance" value="${h(m.clearance)}"></div>
+        <div class="form-col"><label class="form-label">Clearance Status</label>
+          <select class="sel" name="clearanceStatus">
+            <option value="">—</option><option value="held" ${m.clearanceStatus==='held'?'selected':''}>Held</option>
+            <option value="in_progress" ${m.clearanceStatus==='in_progress'?'selected':''}>In Progress</option>
+            <option value="not_required" ${m.clearanceStatus==='not_required'?'selected':''}>Not Required</option>
+          </select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Contractor?</label>
+          <select class="sel" name="isContractor"><option value="false" ${!m.isContractor?'selected':''}>No</option><option value="true" ${m.isContractor?'selected':''}>Yes</option></select>
+        </div>
+        <div class="form-col"><label class="form-label">Individual Day Rate (£)</label><input class="inp" name="individualDayRate" type="number" min="0" step="1" value="${m.individualDayRate||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Reports To</label>
+          <select class="sel" name="reportsTo"><option value="">— (Bid Manager)</option>${nameOpts}</select></div>
+        <div class="form-col"><label class="form-label">Core Role</label>
+          <select class="sel" name="coreRole">${coreOpts.map((v,i) => `<option value="${v}" ${(m.coreRole||'')===v?'selected':''}>${coreLabels[i]}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Start Date</label><input class="inp" name="startDate" type="date" value="${m.startDate||''}"></div>
+        <div class="form-col"><label class="form-label">End Date</label><input class="inp" name="endDate" type="date" value="${m.endDate||''}"></div>
+      </div>
+      <div class="modal-footer"><button class="btn" type="button" onclick="closeModal()">Cancel</button><button class="btn btn-primary" type="submit">Save Changes</button></div>
+    </form>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _submitEditTeamMember(memberId) {
+  const f = document.getElementById('tm-edit-form');
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    _ensureTeamData(bid);
+    const m = bid.teamMembers.find(x => x.id === memberId);
+    if (!m) return;
+    const oldName = m.name;
+    m.name = f.querySelector('[name=name]').value.trim();
+    m.role = f.querySelector('[name=role]').value.trim();
+    m.organisation = f.querySelector('[name=organisation]').value.trim();
+    m.workstreams = f.querySelector('[name=workstreams]').value.trim();
+    m.email = f.querySelector('[name=email]').value.trim();
+    m.phone = f.querySelector('[name=phone]').value.trim();
+    m.clearance = f.querySelector('[name=clearance]').value.trim();
+    m.clearanceStatus = f.querySelector('[name=clearanceStatus]').value;
+    m.isContractor = f.querySelector('[name=isContractor]').value === 'true';
+    m.individualDayRate = parseFloat(f.querySelector('[name=individualDayRate]').value) || null;
+    m.reportsTo = f.querySelector('[name=reportsTo]').value || null;
+    m.startDate = f.querySelector('[name=startDate]').value || '';
+    m.endDate = f.querySelector('[name=endDate]').value || '';
+    const newCoreRole = f.querySelector('[name=coreRole]').value || null;
+    if (newCoreRole !== m.coreRole) {
+      if (newCoreRole) {
+        const existing = bid.teamMembers.find(x => x.coreRole === newCoreRole && x.isActive !== false && x.id !== memberId);
+        if (existing) existing.coreRole = null;
+      }
+      m.coreRole = newCoreRole;
+    }
+    // Propagate name change to activity ownership
+    if (oldName !== m.name) {
+      (bid.activities || []).forEach(a => { if (a.owner === oldName) a.owner = m.name; });
+      (bid.unavailability || []).forEach(u => { if (u.name === oldName) u.name = m.name; });
+    }
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleRemoveTeamMember(memberId) {
+  if (!confirm('Remove this team member? They will be marked inactive but preserved for historical records.')) return;
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    _ensureTeamData(bid);
+    const m = bid.teamMembers.find(x => x.id === memberId);
+    if (m) m.isActive = false;
+  });
+  renderApp();
+}
+
+function handleReactivateTeamMember(memberId) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const m = bid.teamMembers.find(x => x.id === memberId);
+    if (m) m.isActive = true;
+  });
+  renderApp();
+}
+
+// CSV Import/Export for team
+function handleTeamCsvImport() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Import Team Members</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="co co-g" style="margin-bottom:12px;">
+      <div class="co-l">CSV Structure</div>
+      <div class="co-t" style="font-family:'DM Mono',monospace;font-size:10px;">name, role, organisation, workstreams, email, phone, clearance, clearanceStatus, isContractor, individualDayRate</div>
+    </div>
+    <div class="bt">Header row optional. isContractor: true/false. individualDayRate: number.</div>
+    <label class="btn" style="cursor:pointer;display:inline-block;margin-top:8px;">
+      Upload CSV <input type="file" accept=".csv,.txt" style="display:none;" onchange="_teamCsvFileLoad(this)">
+    </label>
+    <span id="team-csv-msg" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);margin-left:10px;"></span>
+    <div class="modal-footer"><button class="btn" onclick="closeModal()">Close</button></div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _teamCsvFileLoad(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const rows = ev.target.result.trim().split(/\r?\n/);
+    let added = 0, skipped = 0;
+    STORE.mutateBid(ROUTER.bidId, bid => {
+      _ensureTeamData(bid);
+      rows.forEach((row, i) => {
+        const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        if (i === 0 && /^name$/i.test(cols[0])) return;
+        const [name='', role='', organisation='', workstreams='', email='', phone='', clearance='', clearanceStatus='', isContr='', dayRate=''] = cols;
+        if (!name || !role) { skipped++; return; }
+        bid.teamMembers.push({
+          id: STORE.uuid(), name, role, organisation, workstreams, email, phone, clearance, clearanceStatus,
+          isContractor: isContr.toLowerCase() === 'true' || isContr === '1',
+          individualDayRate: parseFloat(dayRate) || null,
+          coreRole: null, reportsTo: null, startDate: '', endDate: '', isActive: true,
+        });
+        added++;
+      });
+    });
+    const msg = document.getElementById('team-csv-msg');
+    if (msg) msg.textContent = `${added} added${skipped ? ', ' + skipped + ' skipped' : ''}`;
+    input.value = '';
+    renderApp();
+  };
+  reader.readAsText(file);
+}
+
+function handleTeamCsvExport() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  if (!bid) return;
+  _ensureTeamData(bid);
+  const header = 'name,role,organisation,workstreams,email,phone,clearance,clearanceStatus,isContractor,individualDayRate';
+  const rows = bid.teamMembers.filter(m => m.isActive !== false).map(m =>
+    [m.name, m.role, m.organisation, m.workstreams||'', m.email, m.phone, m.clearance, m.clearanceStatus, m.isContractor, m.individualDayRate||''].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  );
+  _downloadCsv('team_members.csv', [header, ...rows].join('\n'));
+}
+
+function _downloadCsv(filename, content) {
+  const blob = new Blob([content], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Unavailability handlers
+function handleAddUnavailability() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  _ensureTeamData(bid);
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+  const opts = members.map(m => `<option value="${h(m.name)}">${h(m.name)}</option>`).join('');
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Add Unavailability</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <form id="unavail-form" onsubmit="event.preventDefault();_submitAddUnavailability()">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">Person</label><select class="sel" name="name" required>${opts}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">From</label><input class="inp" name="from" type="date" required></div>
+        <div class="form-col"><label class="form-label req">To</label><input class="inp" name="to" type="date" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Notes</label><input class="inp" name="notes" placeholder="e.g. Annual leave"></div>
+      </div>
+      <div class="modal-footer"><button class="btn" type="button" onclick="closeModal()">Cancel</button><button class="btn btn-primary" type="submit">Add</button></div>
+    </form>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _submitAddUnavailability() {
+  const f = document.getElementById('unavail-form');
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.unavailability) bid.unavailability = [];
+    bid.unavailability.push({
+      id: STORE.uuid(),
+      name: f.querySelector('[name=name]').value,
+      from: f.querySelector('[name=from]').value,
+      to: f.querySelector('[name=to]').value,
+      notes: f.querySelector('[name=notes]').value.trim(),
+    });
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleBulkUnavailability() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  _ensureTeamData(bid);
+  const members = bid.teamMembers.filter(m => m.isActive !== false);
+  const checkboxes = members.map(m => `<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;color:var(--t2);cursor:pointer;">
+    <input type="checkbox" name="bulk-person" value="${h(m.name)}" checked> ${h(m.name)}
+  </label>`).join('');
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Bulk Add Unavailability</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="bt">Apply the same date range to multiple team members (e.g. bank holiday shutdown).</div>
+    <form id="bulk-unavail-form" onsubmit="event.preventDefault();_submitBulkUnavailability()">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">From</label><input class="inp" name="from" type="date" required></div>
+        <div class="form-col"><label class="form-label req">To</label><input class="inp" name="to" type="date" required></div>
+      </div>
+      <div class="form-row"><div class="form-col"><label class="form-label">Notes</label><input class="inp" name="notes" placeholder="e.g. Christmas shutdown"></div></div>
+      <div class="form-row"><div class="form-col"><label class="form-label">Select People</label>${checkboxes}</div></div>
+      <div class="modal-footer"><button class="btn" type="button" onclick="closeModal()">Cancel</button><button class="btn btn-primary" type="submit">Add for Selected</button></div>
+    </form>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _submitBulkUnavailability() {
+  const f = document.getElementById('bulk-unavail-form');
+  const from = f.querySelector('[name=from]').value;
+  const to = f.querySelector('[name=to]').value;
+  const notes = f.querySelector('[name=notes]').value.trim();
+  const checked = [...f.querySelectorAll('[name=bulk-person]:checked')].map(cb => cb.value);
+  if (!from || !to || checked.length === 0) { alert('Dates and at least one person are required.'); return; }
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.unavailability) bid.unavailability = [];
+    checked.forEach(name => {
+      bid.unavailability.push({ id: STORE.uuid(), name, from, to, notes });
+    });
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleRemoveUnavailability(index) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (bid.unavailability) bid.unavailability.splice(index, 1);
+  });
+  renderApp();
+}
+
+function handleUnavailCsvImport() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Import Unavailability</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="co co-g" style="margin-bottom:12px;">
+      <div class="co-l">CSV Structure</div>
+      <div class="co-t" style="font-family:'DM Mono',monospace;font-size:10px;">name, from, to, notes</div>
+    </div>
+    <label class="btn" style="cursor:pointer;display:inline-block;margin-top:8px;">
+      Upload CSV <input type="file" accept=".csv,.txt" style="display:none;" onchange="_unavailCsvFileLoad(this)">
+    </label>
+    <span id="unavail-csv-msg2" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);margin-left:10px;"></span>
+    <div class="modal-footer"><button class="btn" onclick="closeModal()">Close</button></div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _unavailCsvFileLoad(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const rows = ev.target.result.trim().split(/\r?\n/);
+    let added = 0, skipped = 0;
+    STORE.mutateBid(ROUTER.bidId, bid => {
+      if (!bid.unavailability) bid.unavailability = [];
+      rows.forEach((row, i) => {
+        const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        if (i === 0 && /^name$/i.test(cols[0])) return;
+        const [name='', from='', to='', notes=''] = cols;
+        if (!name || !from || !to) { skipped++; return; }
+        bid.unavailability.push({ id: STORE.uuid(), name, from, to, notes });
+        added++;
+      });
+    });
+    const msg = document.getElementById('unavail-csv-msg2');
+    if (msg) msg.textContent = `${added} added${skipped ? ', ' + skipped + ' skipped' : ''}`;
+    input.value = '';
+    renderApp();
+  };
+  reader.readAsText(file);
+}
+
+function handleUnavailCsvExport() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  if (!bid) return;
+  const header = 'name,from,to,notes';
+  const rows = (bid.unavailability || []).map(u =>
+    [u.name, u.from, u.to, u.notes].map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
+  );
+  _downloadCsv('unavailability.csv', [header, ...rows].join('\n'));
+}
+
+// Rate card handlers
+function handleAddRateCardEntry() {
+  const roleName = prompt('Role name:');
+  if (!roleName) return;
+  const rate = parseFloat(prompt('Standard day rate (£):'));
+  if (isNaN(rate) || rate <= 0) { alert('Invalid rate.'); return; }
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    _ensureTeamData(bid);
+    bid.rateCard.push({ id: STORE.uuid(), roleName: roleName.trim(), standardDayRate: rate });
+  });
+  renderApp();
+}
+
+function handleRemoveRateCardEntry(index) {
+  if (!confirm('Remove this rate card entry?')) return;
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (bid.rateCard) bid.rateCard.splice(index, 1);
+  });
+  renderApp();
+}
+
+// Stakeholder handlers
+function handleAddStakeholder() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  const gates = bid.governanceGates || [];
+  const gateChecks = gates.map(g => `<label style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px;color:var(--t2);cursor:pointer;">
+    <input type="checkbox" name="stk-gate" value="${g.id}"> ${h(g.name || g.templateId)}
+  </label>`).join('');
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:560px;">
+    <div class="modal-hdr"><div class="modal-title">Add Stakeholder</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <form id="stk-form" onsubmit="event.preventDefault();_submitAddStakeholder()">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">Name</label><input class="inp" name="name" required></div>
+        <div class="form-col"><label class="form-label req">Role</label><input class="inp" name="role" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Organisation</label><input class="inp" name="organisation"></div>
+        <div class="form-col"><label class="form-label req">Type</label>
+          <select class="sel" name="stakeholderType" required>
+            <option value="sponsor">Sponsor</option><option value="approver">Approver</option>
+            <option value="reviewer">Reviewer</option><option value="influencer">Influencer</option><option value="sme">SME</option>
+          </select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Email</label><input class="inp" name="email" type="email"></div>
+        <div class="form-col"><label class="form-label">Phone</label><input class="inp" name="phone"></div>
+      </div>
+      <div class="form-row"><div class="form-col"><label class="form-label">Notes</label><input class="inp" name="notes"></div></div>
+      ${gates.length ? `<div class="form-row"><div class="form-col"><label class="form-label">Linked Gates</label>${gateChecks}</div></div>` : ''}
+      <div class="modal-footer"><button class="btn" type="button" onclick="closeModal()">Cancel</button><button class="btn btn-primary" type="submit">Add Stakeholder</button></div>
+    </form>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _submitAddStakeholder() {
+  const f = document.getElementById('stk-form');
+  const name = f.querySelector('[name=name]').value.trim();
+  const role = f.querySelector('[name=role]').value.trim();
+  if (!name || !role) { alert('Name and role are required.'); return; }
+  const linkedGates = [...f.querySelectorAll('[name=stk-gate]:checked')].map(cb => cb.value);
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.stakeholders) bid.stakeholders = [];
+    bid.stakeholders.push({
+      id: STORE.uuid(), name, role,
+      organisation: f.querySelector('[name=organisation]').value.trim(),
+      stakeholderType: f.querySelector('[name=stakeholderType]').value,
+      email: f.querySelector('[name=email]').value.trim(),
+      phone: f.querySelector('[name=phone]').value.trim(),
+      notes: f.querySelector('[name=notes]').value.trim(),
+      linkedGates, isActive: true,
+    });
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleEditStakeholder(index) {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  const s = (bid.stakeholders || [])[index];
+  if (!s) return;
+  const gates = bid.governanceGates || [];
+  const gateChecks = gates.map(g => `<label style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px;color:var(--t2);cursor:pointer;">
+    <input type="checkbox" name="stk-gate" value="${g.id}" ${(s.linkedGates||[]).includes(g.id)?'checked':''}> ${h(g.name || g.templateId)}
+  </label>`).join('');
+  const types = ['sponsor','approver','reviewer','influencer','sme'];
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:560px;">
+    <div class="modal-hdr"><div class="modal-title">Edit Stakeholder</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <form id="stk-edit-form" onsubmit="event.preventDefault();_submitEditStakeholder(${index})">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label req">Name</label><input class="inp" name="name" value="${h(s.name)}" required></div>
+        <div class="form-col"><label class="form-label req">Role</label><input class="inp" name="role" value="${h(s.role)}" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Organisation</label><input class="inp" name="organisation" value="${h(s.organisation||'')}"></div>
+        <div class="form-col"><label class="form-label req">Type</label>
+          <select class="sel" name="stakeholderType">${types.map(t => `<option value="${t}" ${s.stakeholderType===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Email</label><input class="inp" name="email" value="${h(s.email||'')}" type="email"></div>
+        <div class="form-col"><label class="form-label">Phone</label><input class="inp" name="phone" value="${h(s.phone||'')}"></div>
+      </div>
+      <div class="form-row"><div class="form-col"><label class="form-label">Notes</label><input class="inp" name="notes" value="${h(s.notes||'')}"></div></div>
+      ${gates.length ? `<div class="form-row"><div class="form-col"><label class="form-label">Linked Gates</label>${gateChecks}</div></div>` : ''}
+      <div class="modal-footer"><button class="btn" type="button" onclick="closeModal()">Cancel</button><button class="btn btn-primary" type="submit">Save</button></div>
+    </form>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _submitEditStakeholder(index) {
+  const f = document.getElementById('stk-edit-form');
+  const linkedGates = [...f.querySelectorAll('[name=stk-gate]:checked')].map(cb => cb.value);
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const s = (bid.stakeholders || [])[index];
+    if (!s) return;
+    s.name = f.querySelector('[name=name]').value.trim();
+    s.role = f.querySelector('[name=role]').value.trim();
+    s.organisation = f.querySelector('[name=organisation]').value.trim();
+    s.stakeholderType = f.querySelector('[name=stakeholderType]').value;
+    s.email = f.querySelector('[name=email]').value.trim();
+    s.phone = f.querySelector('[name=phone]').value.trim();
+    s.notes = f.querySelector('[name=notes]').value.trim();
+    s.linkedGates = linkedGates;
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleRemoveStakeholder(index) {
+  if (!confirm('Remove this stakeholder?')) return;
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (bid.stakeholders) bid.stakeholders[index].isActive = false;
+  });
+  renderApp();
+}
+
+function handleToggleGateParticipation(stkIndex, gateId) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const s = (bid.stakeholders || [])[stkIndex];
+    if (!s) return;
+    if (!s.linkedGates) s.linkedGates = [];
+    const idx = s.linkedGates.indexOf(gateId);
+    if (idx >= 0) s.linkedGates.splice(idx, 1);
+    else s.linkedGates.push(gateId);
+  });
+  renderApp();
+}
+
+function handleStakeholderCsvImport() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay';
+  el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Import Stakeholders</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="co co-g" style="margin-bottom:12px;">
+      <div class="co-l">CSV Structure</div>
+      <div class="co-t" style="font-family:'DM Mono',monospace;font-size:10px;">name, role, organisation, stakeholderType, email, phone, notes</div>
+    </div>
+    <div class="bt">stakeholderType: sponsor, approver, reviewer, influencer, or sme.</div>
+    <label class="btn" style="cursor:pointer;display:inline-block;margin-top:8px;">
+      Upload CSV <input type="file" accept=".csv,.txt" style="display:none;" onchange="_stkCsvFileLoad(this)">
+    </label>
+    <span id="stk-csv-msg" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);margin-left:10px;"></span>
+    <div class="modal-footer"><button class="btn" onclick="closeModal()">Close</button></div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function _stkCsvFileLoad(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const rows = ev.target.result.trim().split(/\r?\n/);
+    let added = 0, skipped = 0;
+    STORE.mutateBid(ROUTER.bidId, bid => {
+      if (!bid.stakeholders) bid.stakeholders = [];
+      rows.forEach((row, i) => {
+        const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        if (i === 0 && /^name$/i.test(cols[0])) return;
+        const [name='', role='', organisation='', stakeholderType='reviewer', email='', phone='', notes=''] = cols;
+        if (!name || !role) { skipped++; return; }
+        bid.stakeholders.push({ id: STORE.uuid(), name, role, organisation, stakeholderType, email, phone, notes, linkedGates: [], isActive: true });
+        added++;
+      });
+    });
+    const msg = document.getElementById('stk-csv-msg');
+    if (msg) msg.textContent = `${added} added${skipped ? ', ' + skipped + ' skipped' : ''}`;
+    input.value = '';
+    renderApp();
+  };
+  reader.readAsText(file);
+}
+
+function handleStakeholderCsvExport() {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  if (!bid) return;
+  const header = 'name,role,organisation,stakeholderType,email,phone,notes';
+  const rows = (bid.stakeholders || []).filter(s => s.isActive !== false).map(s =>
+    [s.name, s.role, s.organisation, s.stakeholderType, s.email, s.phone, s.notes].map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
+  );
+  _downloadCsv('stakeholders.csv', [header, ...rows].join('\n'));
 }
 
 
