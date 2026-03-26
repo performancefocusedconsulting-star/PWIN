@@ -651,6 +651,22 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .ri-word-bar{height:4px;background:var(--bg4);border-radius:2px;margin-top:3px;overflow:hidden;}
 .ri-word-fill{height:100%;border-radius:2px;transition:width .3s;}
 
+/* Production pipeline */
+.pipeline-stage{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:60px;}
+.pipeline-count{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1;}
+.pipeline-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.04em;text-transform:uppercase;text-align:center;line-height:1.2;color:var(--t3);}
+.pipeline-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--bg4);width:100%;}
+.pipeline-seg{height:100%;transition:width .3s;}
+
+/* Win themes */
+.wt-row{display:grid;grid-template-columns:60px 1fr 90px 80px 80px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;}
+.wt-hdr{display:grid;grid-template-columns:60px 1fr 90px 80px 80px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
+
+/* Quality overview */
+.qual-card{background:var(--bg3);border:1px solid var(--bdr-s);border-radius:8px;padding:12px;text-align:center;}
+.qual-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1;}
+.qual-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);margin-top:4px;}
+
 /* Compliance matrix */
 .cm-hdr{display:grid;grid-template-columns:70px 1fr 130px 130px 80px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
 .cm-row{display:grid;grid-template-columns:70px 1fr 130px 130px 80px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;}
@@ -1240,6 +1256,8 @@ const WIZARD = (() => {
     requirements:[],        // legacy
     responseItems:[],       // new: submission deliverables
     complianceRequirements:[], // new: prescriptive requirements (optional)
+    winThemes: [],
+    clientScoringScheme: null,
   });
 
   let _d = null;
@@ -1750,11 +1768,16 @@ const TRANSITIONS = (() => {
 
   // Rule 2.5: Valid ResponseItem status transitions
   const _respValid = {
-    not_started:   ['in_progress'],
-    in_progress:   ['draft_complete', 'not_started'],
-    draft_complete:['under_review', 'in_progress'],
-    under_review:  ['final', 'draft_complete'],
-    final:         ['under_review'],
+    not_started:        ['storyboard'],
+    storyboard:         ['storyboard_approved', 'not_started'],
+    storyboard_approved:['first_draft', 'storyboard'],
+    first_draft:        ['pink_ready', 'storyboard_approved'],
+    pink_ready:         ['pink_reviewed'],           // auto-advance on review closure
+    pink_reviewed:      ['red_ready', 'first_draft'],
+    red_ready:          ['red_reviewed'],             // auto-advance on review closure
+    red_reviewed:       ['gold_ready', 'pink_reviewed'],
+    gold_ready:         ['final'],                    // auto-advance on review closure
+    final:              [],
   };
 
   // Rule 2.6: Valid ComplianceRequirement status transitions
@@ -1973,20 +1996,32 @@ const COMPLIANCE = (() => {
   }
 
   // ── Rule 6.1: Response completion calculations ──────────
+  const STAGE_WEIGHTS = {
+    not_started: 0, storyboard: 10, storyboard_approved: 20,
+    first_draft: 35, pink_ready: 45, pink_reviewed: 55,
+    red_ready: 65, red_reviewed: 75, gold_ready: 85, final: 100
+  };
+
   function calculateResponseCompletion(responseItems) {
     if (!responseItems || responseItems.length === 0) {
-      return { total: 0, completion: 0, byStatus: {}, totalMarks: 0, totalEffortDays: 0 };
+      return { total: 0, completion: 0, progress: 0, pipeline: {}, byStatus: {}, totalMarks: 0, totalEffortDays: 0, qualityCoverage: 0 };
     }
-    const byStatus = { not_started: 0, in_progress: 0, draft_complete: 0, under_review: 0, final: 0 };
-    let totalMarks = 0, totalEffortDays = 0;
+    const pipeline = {};
+    Object.keys(STAGE_WEIGHTS).forEach(s => pipeline[s] = 0);
+    let totalMarks = 0, totalEffortDays = 0, qualityAssessed = 0;
+    let progressSum = 0;
     responseItems.forEach(r => {
-      byStatus[r.status || 'not_started'] = (byStatus[r.status || 'not_started'] || 0) + 1;
+      const st = r.status || 'not_started';
+      pipeline[st] = (pipeline[st] || 0) + 1;
       totalMarks += r.evaluationMaxScore || 0;
       totalEffortDays += deriveEffort(r);
+      progressSum += STAGE_WEIGHTS[st] || 0;
+      // Quality coverage: count items with at least answers_question assessed
+      if (r.qualityAnswersQuestion && r.qualityAnswersQuestion !== 'not_assessed') qualityAssessed++;
     });
-    const done = (byStatus.final || 0) + (byStatus.under_review || 0);
-    const completion = Math.round((done / responseItems.length) * 1000) / 10;
-    return { total: responseItems.length, completion, byStatus, totalMarks, totalEffortDays };
+    const completion = Math.round((pipeline.final || 0) / responseItems.length * 1000) / 10;
+    const progress = Math.round(progressSum / (responseItems.length * 100) * 1000) / 10;
+    return { total: responseItems.length, completion, progress, pipeline, byStatus: pipeline, totalMarks, totalEffortDays, qualityCoverage: Math.round(qualityAssessed / responseItems.length * 1000) / 10 };
   }
 
   // ── Rule 6.2: Compliance coverage calculations ──────────
@@ -2032,7 +2067,7 @@ const COMPLIANCE = (() => {
     };
   }
 
-  return { deriveEffort, calculateResponseCompletion, calculateComplianceCoverage, calculateCoverage };
+  return { deriveEffort, calculateResponseCompletion, calculateComplianceCoverage, calculateCoverage, STAGE_WEIGHTS };
 })();
 
 
@@ -2488,8 +2523,8 @@ const READINESS = (() => {
 
     // 1. Response item completion (25%) — hollow-score guard: 0% when empty
     const respComp = COMPLIANCE.calculateResponseCompletion(responseItems);
-    const respScore = responseItems.length > 0 ? respComp.completion : 0;
-    signals.push({ name: 'Response item completion', weight: 25, score: Math.round(respScore * 10) / 10, source: responseItems.length > 0 ? `${(respComp.byStatus.final||0)+(respComp.byStatus.under_review||0)}/${responseItems.length}` : 'none', target: 'all complete' });
+    const respScore = responseItems.length > 0 ? respComp.progress : 0;
+    signals.push({ name: 'Response item completion', weight: 25, score: Math.round(respScore * 10) / 10, source: responseItems.length > 0 ? `${(respComp.byStatus.final||0)}/${responseItems.length} final` : 'none', target: 'all complete' });
 
     // 2. Compliance declarations complete (25%) — hollow-score guard: 0% when empty
     const compCov = COMPLIANCE.calculateComplianceCoverage(compReqs);
@@ -2707,7 +2742,7 @@ const ROUTER = {
   actView: 'workstream', // 'workstream' | 'list' | 'gantt'
   ganttScale: 'fortnight', // 'day' | 'week' | 'fortnight' | 'month'
   setGanttScale(s) { this.ganttScale = s; renderApp(); },
-  compView: 'responses',  // 'responses' | 'compliance' | 'coverage' | 'gaps'
+  subView: 'responses',  // 'responses' | 'pipeline' | 'compliance' | 'winthemes' | 'quality' | 'gaps'
   revView: 'timeline',   // 'timeline' | 'cross'
   revCycleId: null,       // selected cycle id for detail view
   revActionSort: { col: 'severity', dir: 'asc' },
@@ -2738,7 +2773,7 @@ const ROUTER = {
   },
   setBidTab(tab) { this.bidTab = tab; this._slideout = null; renderApp(); },
   setActView(v) { this.actView = v; renderApp(); },
-  setCompView(v) { this.compView = v; renderApp(); },
+  setSubView(v) { this.subView = v; renderApp(); },
   toggleWs(wsId) {
     this._expandedWs[wsId] = !this._expandedWs[wsId];
     renderApp();
@@ -2765,7 +2800,7 @@ const ROUTER = {
 const BID_TABS = [
   { id:'workspace',  l:'Workspace'  },
   { id:'activities', l:'Activities' },
-  { id:'compliance', l:'Submissions' },
+  { id:'submissions', l:'Submissions' },
   { id:'reviews',    l:'Reviews'    },
   { id:'governance', l:'Governance' },
   { id:'readiness',  l:'Readiness'  },
@@ -3621,7 +3656,7 @@ function renderModule(bid) {
   switch(ROUTER.bidTab) {
     case 'workspace':   return renderWorkspace(bid);
     case 'activities':  return renderActivities(bid);
-    case 'compliance':  return renderCompliance(bid);
+    case 'submissions': return renderSubmissions(bid);
     case 'reviews':     return renderReviews(bid);
     case 'governance':  return renderGovernance(bid);
     case 'readiness':   return renderReadiness(bid);
@@ -4378,37 +4413,54 @@ function _renderActivitySlideout(bid, actId) {
   </div>`;
 }
 
-function renderCompliance(bid) {
+function renderSubmissions(bid) {
   const responseItems = bid.responseItems || [];
   const compReqs = bid.complianceRequirements || [];
   const respComp = COMPLIANCE.calculateResponseCompletion(responseItems);
   const compCov = COMPLIANCE.calculateComplianceCoverage(compReqs);
 
-  // View tabs — 4 views per architecture
-  const views = [['responses','Submission Requirements'],['compliance','Compliance Matrix'],['coverage','Coverage'],['gaps','Gap Report']];
+  // Status metadata for 10-stage lifecycle
+  const _statusMeta = {
+    not_started:        { cls:'fe-mute', label:'Not Started' },
+    storyboard:         { cls:'fe-b',    label:'Storyboard' },
+    storyboard_approved:{ cls:'fe-p',    label:'SB Approved' },
+    first_draft:        { cls:'fe-a',    label:'1st Draft' },
+    pink_ready:         { cls:'fe-a',    label:'Pink Ready' },
+    pink_reviewed:      { cls:'fe-g',    label:'Pink Done' },
+    red_ready:          { cls:'fe-a',    label:'Red Ready' },
+    red_reviewed:       { cls:'fe-g',    label:'Red Done' },
+    gold_ready:         { cls:'fe-a',    label:'Gold Ready' },
+    final:              { cls:'fe-g',    label:'Final' },
+  };
+
+  const PIPELINE_COLORS = {
+    not_started:'var(--t4)', storyboard:'var(--blu)', storyboard_approved:'var(--cyn)',
+    first_draft:'var(--amb)', pink_ready:'var(--pink)', pink_reviewed:'var(--pink)',
+    red_ready:'var(--red)', red_reviewed:'var(--red)', gold_ready:'var(--gold)', final:'var(--grn)'
+  };
+
+  // View tabs — 6 views
+  const views = [['responses','Response Requirements'],['pipeline','Production Pipeline'],['compliance','Compliance Matrix'],['winthemes','Win Themes'],['quality','Quality Overview'],['gaps','Gap Report']];
   const tabHtml = `<div class="view-tabs">${views.map(([id,l]) =>
-    `<button class="view-tab ${ROUTER.compView===id?'on':''}" onclick="ROUTER.setCompView('${id}')">${l}</button>`
+    `<button class="view-tab ${ROUTER.subView===id?'on':''}" onclick="ROUTER.setSubView('${id}')">${l}</button>`
   ).join('')}</div>`;
 
   // Metrics — response-item focused
-  const metricsHtml = `<div class="cg c5" style="margin-bottom:16px;">
+  const metricsHtml = `<div class="cg c6" style="margin-bottom:16px;">
     <div class="metric"><div class="metric-val" style="color:var(--t1);">${responseItems.length}</div><div class="metric-lbl">Response Items</div></div>
-    <div class="metric"><div class="metric-val" style="color:${respComp.completion>=80?'var(--grn)':respComp.completion>=40?'var(--amb)':'var(--red)'};">${respComp.completion}%</div><div class="metric-lbl">Completion</div></div>
+    <div class="metric"><div class="metric-val" style="color:${respComp.progress>=80?'var(--grn)':respComp.progress>=40?'var(--amb)':'var(--red)'};">${respComp.progress}%</div><div class="metric-lbl">Progress</div></div>
+    <div class="metric"><div class="metric-val" style="color:${respComp.completion>=80?'var(--grn)':respComp.completion>=40?'var(--amb)':'var(--red)'};">${respComp.completion}%</div><div class="metric-lbl">Final</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--gold);">${respComp.totalMarks}</div><div class="metric-lbl">Total Marks</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--blu);">${respComp.totalEffortDays}</div><div class="metric-lbl">Effort (days)</div></div>
     <div class="metric"><div class="metric-val" style="color:${compCov.hasNonCompliant?'var(--red)':'var(--grn)'};">${compReqs.length ? compCov.completion + '%' : 'N/A'}</div><div class="metric-lbl">Compliance</div></div>
   </div>`;
 
-  // Status bar for response items
-  const barSegments = [
-    { label:'Final', count: respComp.byStatus.final||0, color:'var(--grn)' },
-    { label:'Under Review', count: respComp.byStatus.under_review||0, color:'var(--blu)' },
-    { label:'Draft Complete', count: respComp.byStatus.draft_complete||0, color:'var(--amb)' },
-    { label:'In Progress', count: respComp.byStatus.in_progress||0, color:'var(--cyn)' },
-    { label:'Not Started', count: respComp.byStatus.not_started||0, color:'var(--t4)' },
-  ];
-  const barHtml = responseItems.length ? `<div class="cov-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
-    `<div class="cov-seg" style="width:${(s.count/responseItems.length*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
+  // Pipeline status bar for 10 stages
+  const barSegments = Object.keys(COMPLIANCE.STAGE_WEIGHTS).reverse().map(s => ({
+    label: (_statusMeta[s]||{}).label || s, count: respComp.pipeline[s]||0, color: PIPELINE_COLORS[s]||'var(--t4)'
+  }));
+  const barHtml = responseItems.length ? `<div class="pipeline-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
+    `<div class="pipeline-seg" style="width:${(s.count/responseItems.length*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
   ).join('')}</div>` : '';
 
   // Hard gate warnings
@@ -4416,14 +4468,16 @@ function renderCompliance(bid) {
   if (compCov.hasNonCompliant) gateHtml += `<div class="co co-r" style="margin-bottom:10px;"><div class="co-l">Hard Gate</div><div class="co-t">${compCov.nonCompliant} non-compliant declaration${compCov.nonCompliant!==1?'s':''}. Readiness capped at 30%.</div></div>`;
 
   let bodyHtml = '';
-  if (ROUTER.compView === 'compliance') bodyHtml = _renderComplianceMatrix(bid);
-  else if (ROUTER.compView === 'coverage') bodyHtml = _renderCoverageDashboard(bid, respComp, compCov);
-  else if (ROUTER.compView === 'gaps') bodyHtml = _renderGapReport(bid);
-  else bodyHtml = _renderResponseRegister(bid);
+  if (ROUTER.subView === 'pipeline') bodyHtml = _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS);
+  else if (ROUTER.subView === 'compliance') bodyHtml = _renderComplianceMatrix(bid);
+  else if (ROUTER.subView === 'winthemes') bodyHtml = _renderWinThemes(bid);
+  else if (ROUTER.subView === 'quality') bodyHtml = _renderQualityOverview(bid);
+  else if (ROUTER.subView === 'gaps') bodyHtml = _renderGapReport(bid);
+  else bodyHtml = _renderResponseRegister(bid, _statusMeta);
 
   return `<div class="sl">Module M5</div>
-    <div class="pg-title">Compliance Engine</div>
-    <div class="pg-desc">Track submission deliverables, manage compliance declarations, and monitor production progress. Items sorted by evaluation weight.</div>
+    <div class="pg-title">Submissions</div>
+    <div class="pg-desc">Track submission deliverables through the 10-stage production lifecycle, manage compliance declarations, win themes, and quality dimensions.</div>
     ${metricsHtml}
     ${barHtml}
     ${gateHtml}
@@ -4434,10 +4488,11 @@ function renderCompliance(bid) {
       <button class="btn" onclick="handleResponseCsvImport()">Import Responses CSV</button>
       <button class="btn" onclick="handleAddCompReqModal()">+ Compliance Req</button>
       <button class="btn" onclick="handleCompReqCsvImport()">Import Compliance CSV</button>
+      <button class="btn" onclick="handleAddWinThemeModal()">+ Win Theme</button>
     </div>`;
 }
 
-function _renderResponseRegister(bid) {
+function _renderResponseRegister(bid, _statusMeta) {
   const items = bid.responseItems || [];
   if (items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response items yet. Add submission deliverables to track production progress.</div>';
 
@@ -4445,8 +4500,8 @@ function _renderResponseRegister(bid) {
   const sorted = [...items].sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
 
   const _statusBadge = s => {
-    const m = { not_started:'fe-mute', in_progress:'fe-b', draft_complete:'fe-a', under_review:'fe-p', final:'fe-g' };
-    return `<span class="fe ${m[s]||'fe-mute'}">${(s||'not_started').replace(/_/g,' ')}</span>`;
+    const meta = (_statusMeta||{})[s] || { cls:'fe-mute', label:(s||'not_started').replace(/_/g,' ') };
+    return `<span class="fe ${meta.cls}">${meta.label}</span>`;
   };
 
   const rows = sorted.map((r, i) => {
@@ -4467,9 +4522,9 @@ function _renderResponseRegister(bid) {
       <div class="ri-owner">${h(r.owner || '\u2014')}</div>
       <div>
         <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onclick="event.stopPropagation()" onchange="handleResponseStatus(${idx},this.value)">
-          <option value="${r.status||'not_started'}" selected>${(r.status||'not_started').replace(/_/g,' ')}</option>
+          <option value="${r.status||'not_started'}" selected>${((_statusMeta||{})[r.status||'not_started']||{}).label||(r.status||'not_started').replace(/_/g,' ')}</option>
           ${TRANSITIONS.validNextResponseStatuses(r.status||'not_started').map(s =>
-            `<option value="${s}">${s.replace(/_/g,' ')}</option>`
+            `<option value="${s}">${((_statusMeta||{})[s]||{}).label||s.replace(/_/g,' ')}</option>`
           ).join('')}
         </select>
       </div>
@@ -4480,6 +4535,58 @@ function _renderResponseRegister(bid) {
     <div class="ri-hdr"><span>Ref</span><span>Deliverable</span><span>Words</span><span>Weight</span><span>Status</span><span>Effort</span><span>Owner</span><span>Action</span></div>
     ${rows}
   </div>`;
+}
+
+function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) {
+  const items = bid.responseItems || [];
+  if (items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response items yet.</div>';
+
+  const stages = Object.keys(COMPLIANCE.STAGE_WEIGHTS);
+  const stagesHtml = stages.map(s => {
+    const count = respComp.pipeline[s] || 0;
+    const meta = _statusMeta[s] || { label: s.replace(/_/g,' ') };
+    const color = PIPELINE_COLORS[s] || 'var(--t4)';
+    return `<div class="pipeline-stage">
+      <div class="pipeline-count" style="color:${count > 0 ? color : 'var(--t4)'};">${count}</div>
+      <div class="pipeline-label">${meta.label}</div>
+    </div>`;
+  }).join('');
+
+  // Pipeline bar
+  const barSegs = stages.map(s => {
+    const count = respComp.pipeline[s] || 0;
+    if (count === 0) return '';
+    return `<div class="pipeline-seg" style="width:${(count/items.length*100)}%;background:${PIPELINE_COLORS[s]||'var(--t4)'};" title="${(_statusMeta[s]||{}).label||s}: ${count}"></div>`;
+  }).join('');
+
+  // Items grouped by stage
+  const groupedHtml = stages.map(s => {
+    const stageItems = items.filter(r => (r.status||'not_started') === s);
+    if (stageItems.length === 0) return '';
+    const meta = _statusMeta[s] || { cls:'fe-mute', label: s.replace(/_/g,' ') };
+    const color = PIPELINE_COLORS[s] || 'var(--t4)';
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="width:4px;height:16px;background:${color};border-radius:2px;"></div>
+        <span class="fe ${meta.cls}">${meta.label}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${stageItems.length} item${stageItems.length!==1?'s':''}</span>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bdr);">
+        ${stageItems.sort((a,b)=>(b.evaluationWeightPct||0)-(a.evaluationWeightPct||0)).map(r => `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(r.reference||'')}</span>
+          <span style="flex:1;font-size:12px;color:var(--t1);">${h(r.title||r.questionText||'')}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${r.evaluationWeightPct ? r.evaluationWeightPct+'%' : ''}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${h(r.owner||'')}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div style="display:flex;gap:4px;margin-bottom:16px;padding:16px;background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
+    ${stagesHtml}
+  </div>
+  <div class="pipeline-bar" style="margin-bottom:16px;">${barSegs}</div>
+  ${groupedHtml}`;
 }
 
 function _renderComplianceMatrix(bid) {
@@ -4515,43 +4622,131 @@ function _renderComplianceMatrix(bid) {
   </div>`;
 }
 
-function _renderCoverageDashboard(bid, respComp, compCov) {
+function _renderWinThemes(bid) {
+  const themes = bid.winThemes || [];
   const responseItems = bid.responseItems || [];
-  const compReqs = bid.complianceRequirements || [];
 
-  // Response completion by type
-  const byType = {};
-  responseItems.forEach(r => {
-    const t = r.responseType || 'Other';
-    if (!byType[t]) byType[t] = { total: 0, done: 0 };
-    byType[t].total++;
-    if (r.status === 'final' || r.status === 'under_review') byType[t].done++;
+  // Summary metrics
+  const confirmed = themes.filter(t => t.status === 'confirmed').length;
+  let totalLinked = 0, totalIntegrated = 0;
+  themes.forEach(t => {
+    const linked = responseItems.filter(r => (r.qualityWinThemeAssessments||[]).some(a => a.themeId === t.id));
+    totalLinked += linked.length;
+    totalIntegrated += linked.filter(r => (r.qualityWinThemeAssessments||[]).find(a => a.themeId === t.id && a.integrated)).length;
   });
-  const typeSummary = Object.entries(byType).map(([t, d]) => {
-    const pct = d.total > 0 ? Math.round((d.done / d.total) * 100) : 0;
-    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg4);">
-      <span style="flex:1;font-size:12px;color:var(--t1);">${h(t)}</span>
-      <span class="fe fe-mute">${d.done}/${d.total}</span>
-      <div class="prog" style="width:80px;"><div class="prog-fill" style="width:${pct}%;background:${pct>=80?'var(--grn)':pct>=40?'var(--amb)':'var(--red)'}"></div></div>
+  const integrationPct = totalLinked > 0 ? Math.round(totalIntegrated / totalLinked * 100) : 0;
+
+  const metricsHtml = `<div class="cg c4" style="margin-bottom:14px;">
+    <div class="metric"><div class="metric-val" style="color:var(--t1);">${themes.length}</div><div class="metric-lbl">Total Themes</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--grn);">${confirmed}</div><div class="metric-lbl">Confirmed</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--blu);">${totalLinked}</div><div class="metric-lbl">Linked Responses</div></div>
+    <div class="metric"><div class="metric-val" style="color:${integrationPct>=80?'var(--grn)':integrationPct>=40?'var(--amb)':'var(--red)'};">${integrationPct}%</div><div class="metric-lbl">Integration</div></div>
+  </div>`;
+
+  if (themes.length === 0) {
+    return `${metricsHtml}<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">
+      No win themes defined. Win themes articulate why the client should choose you.
+      <br><br><button class="btn btn-primary" onclick="handleAddWinThemeModal()">+ Add Win Theme</button>
+    </div>`;
+  }
+
+  const _wtStatus = s => {
+    const m = { draft:'fe-mute', proposed:'fe-b', confirmed:'fe-g', retired:'fe-r' };
+    return `<span class="fe ${m[s]||'fe-mute'}">${(s||'draft').replace(/_/g,' ')}</span>`;
+  };
+
+  const rows = themes.map((t, i) => {
+    const linked = responseItems.filter(r => (r.qualityWinThemeAssessments||[]).some(a => a.themeId === t.id));
+    const integrated = linked.filter(r => (r.qualityWinThemeAssessments||[]).find(a => a.themeId === t.id && a.integrated)).length;
+    const iPct = linked.length > 0 ? Math.round(integrated / linked.length * 100) : 0;
+    return `<div class="wt-row">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);">${h(t.reference||'WT'+(i+1))}</div>
+      <div style="font-size:12px;color:var(--t1);line-height:1.4;">${h(t.statement||'')}${t.rationale ? `<div style="font-size:10px;color:var(--t3);margin-top:1px;">${h(t.rationale)}</div>` : ''}</div>
+      <div>${_wtStatus(t.status)}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);text-align:center;">${linked.length}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:${iPct>=80?'var(--grn)':iPct>=40?'var(--amb)':'var(--t3)'};text-align:center;">${iPct}%</div>
     </div>`;
   }).join('');
 
-  // Compliance summary
-  const compSummaryHtml = compReqs.length ? `<div style="margin-top:14px;">
-    <div class="sh2">Compliance Summary</div>
-    <div class="cg c4">
-      <div class="metric"><div class="metric-val" style="color:var(--grn);">${compCov.compliant}</div><div class="metric-lbl">Compliant</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--amb);">${compCov.partial}</div><div class="metric-lbl">Partial</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--red);">${compCov.nonCompliant}</div><div class="metric-lbl">Non-Compliant</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--t3);">${compCov.notApplicable}</div><div class="metric-lbl">N/A</div></div>
-    </div>
-  </div>` : '';
+  return `${metricsHtml}
+    <div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
+      <div class="wt-hdr"><span>Ref</span><span>Statement</span><span>Status</span><span>Linked</span><span>Intg %</span></div>
+      ${rows}
+    </div>`;
+}
 
-  return `<div class="sh2">Response Completion by Type</div>
+function _renderQualityOverview(bid) {
+  const items = bid.responseItems || [];
+  if (items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response items to assess quality against.</div>';
+
+  // Aggregate quality dimensions
+  let aqY=0, aqP=0, aqN=0, aqNA=0;
+  let fsY=0, fsP=0, fsN=0, fsNA=0;
+  let credY=0, credP=0, credN=0, credNA=0;
+  let selfScoreSum=0, selfScoreCount=0;
+  items.forEach(r => {
+    const aq = r.qualityAnswersQuestion || 'not_assessed';
+    if (aq === 'yes') aqY++; else if (aq === 'partial') aqP++; else if (aq === 'no') aqN++; else aqNA++;
+    const fs = r.qualityFollowsStructure || 'not_assessed';
+    if (fs === 'yes') fsY++; else if (fs === 'partial') fsP++; else if (fs === 'no') fsN++; else fsNA++;
+    const cr = r.qualityCredentials || 'not_assessed';
+    if (cr === 'yes') credY++; else if (cr === 'partial') credP++; else if (cr === 'no') credN++; else credNA++;
+    if (r.qualityScoreSelfAssessment != null) { selfScoreSum += r.qualityScoreSelfAssessment; selfScoreCount++; }
+  });
+  const tot = items.length;
+  const avgScore = selfScoreCount > 0 ? Math.round(selfScoreSum / selfScoreCount * 10) / 10 : 'N/A';
+
+  const metricsHtml = `<div class="cg c5" style="margin-bottom:14px;">
+    <div class="qual-card"><div class="qual-val" style="color:${aqY/tot>=.8?'var(--grn)':'var(--amb)'};">${Math.round(aqY/tot*100)}%</div><div class="qual-lbl">Answers Question</div></div>
+    <div class="qual-card"><div class="qual-val" style="color:${fsY/tot>=.8?'var(--grn)':'var(--amb)'};">${Math.round(fsY/tot*100)}%</div><div class="qual-lbl">Follows Structure</div></div>
+    <div class="qual-card"><div class="qual-val" style="color:var(--cyn);">${avgScore}</div><div class="qual-lbl">Avg Self Score</div></div>
+    <div class="qual-card"><div class="qual-val" style="color:${credY/tot>=.8?'var(--grn)':'var(--amb)'};">${Math.round(credY/tot*100)}%</div><div class="qual-lbl">Credentials Used</div></div>
+    <div class="qual-card"><div class="qual-val" style="color:var(--t1);">${Math.round((tot-aqNA)/tot*100)}%</div><div class="qual-lbl">Quality Assessed</div></div>
+  </div>`;
+
+  // Quality dimension detail breakdown
+  const dimRow = (label, y, p, n, na) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bg4);">
+    <span style="flex:1;font-size:12px;color:var(--t1);">${label}</span>
+    <span class="fe fe-g">${y} yes</span>
+    <span class="fe fe-a">${p} partial</span>
+    <span class="fe fe-r">${n} no</span>
+    <span class="fe fe-mute">${na} n/a</span>
+  </div>`;
+
+  const detailHtml = `<div class="sh2">Quality Dimension Breakdown</div>
     <div style="background:var(--bg2);border:1px solid var(--bdr);padding:10px 14px;margin-bottom:14px;">
-      ${typeSummary || '<span style="color:var(--t3);font-size:12px;">No response items to summarise.</span>'}
-    </div>
-    ${compSummaryHtml}`;
+      ${dimRow('Answers the Question', aqY, aqP, aqN, aqNA)}
+      ${dimRow('Follows Required Structure', fsY, fsP, fsN, fsNA)}
+      ${dimRow('Credentials Incorporated', credY, credP, credN, credNA)}
+    </div>`;
+
+  // Items with quality gaps
+  const gapItems = items.filter(r =>
+    r.qualityAnswersQuestion === 'no' || r.qualityAnswersQuestion === 'partial' ||
+    r.qualityFollowsStructure === 'no' || r.qualityFollowsStructure === 'partial' ||
+    r.qualityCredentials === 'no' || r.qualityCredentials === 'partial'
+  ).sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
+
+  let gapHtml = '';
+  if (gapItems.length > 0) {
+    gapHtml = `<div class="sh2">Items with Quality Gaps (${gapItems.length})</div>
+      <div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
+        ${gapItems.map(r => {
+          const gaps = [];
+          if (r.qualityAnswersQuestion === 'no' || r.qualityAnswersQuestion === 'partial') gaps.push('answers');
+          if (r.qualityFollowsStructure === 'no' || r.qualityFollowsStructure === 'partial') gaps.push('structure');
+          if (r.qualityCredentials === 'no' || r.qualityCredentials === 'partial') gaps.push('credentials');
+          return `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(r.reference||'')}</span>
+            <span style="flex:1;font-size:12px;color:var(--t1);">${h(r.title||r.questionText||'')}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${r.evaluationWeightPct ? r.evaluationWeightPct+'%' : ''}</span>
+            ${gaps.map(g => `<span class="fe fe-r">${g}</span>`).join('')}
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+
+  return `${metricsHtml}${detailHtml}${gapHtml}`;
 }
 
 function _renderGapReport(bid) {
@@ -4565,8 +4760,15 @@ function _renderGapReport(bid) {
   // Compliance gaps: non_compliant or partially_compliant
   const compGaps = compReqs.filter(r => r.complianceStatus === 'non_compliant' || r.complianceStatus === 'partially_compliant');
 
-  if (respGaps.length === 0 && compGaps.length === 0) {
-    return '<div class="co co-v"><div class="co-l">No gaps</div><div class="co-t">All response items are in progress and no compliance issues found.</div></div>';
+  // Quality gaps: items with any quality dimension at no or partial
+  const qualGaps = responseItems.filter(r =>
+    r.qualityAnswersQuestion === 'no' || r.qualityAnswersQuestion === 'partial' ||
+    r.qualityFollowsStructure === 'no' || r.qualityFollowsStructure === 'partial' ||
+    r.qualityCredentials === 'no' || r.qualityCredentials === 'partial'
+  ).sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
+
+  if (respGaps.length === 0 && compGaps.length === 0 && qualGaps.length === 0) {
+    return '<div class="co co-v"><div class="co-l">No gaps</div><div class="co-t">All response items are in progress, no compliance issues, and no quality gaps found.</div></div>';
   }
 
   let html = '';
@@ -4584,13 +4786,31 @@ function _renderGapReport(bid) {
 
   if (respGaps.length > 0) {
     html += `<div class="sh2">Response Items Not Started (${respGaps.length})</div>
-      <div style="background:var(--bg2);border:1px solid var(--bdr);">
+      <div style="background:var(--bg2);border:1px solid var(--bdr);margin-bottom:14px;">
         ${respGaps.map(g => `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
           <span class="fe fe-mute">${h(g.reference||'')}</span>
           <span style="flex:1;font-size:12px;color:var(--t2);">${h(g.title || g.questionText || '')}</span>
           <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${g.evaluationWeightPct ? g.evaluationWeightPct + '%' : ''}</span>
           <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${COMPLIANCE.deriveEffort(g) ? COMPLIANCE.deriveEffort(g) + 'd' : ''}</span>
         </div>`).join('')}
+      </div>`;
+  }
+
+  if (qualGaps.length > 0) {
+    html += `<div class="sh2">Quality Gaps (${qualGaps.length})</div>
+      <div style="background:var(--bg2);border:1px solid var(--bdr);">
+        ${qualGaps.map(r => {
+          const gaps = [];
+          if (r.qualityAnswersQuestion === 'no' || r.qualityAnswersQuestion === 'partial') gaps.push('answers');
+          if (r.qualityFollowsStructure === 'no' || r.qualityFollowsStructure === 'partial') gaps.push('structure');
+          if (r.qualityCredentials === 'no' || r.qualityCredentials === 'partial') gaps.push('credentials');
+          return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
+            <span class="fe fe-mute">${h(r.reference||'')}</span>
+            <span style="flex:1;font-size:12px;color:var(--t2);">${h(r.title||r.questionText||'')}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${r.evaluationWeightPct ? r.evaluationWeightPct+'%' : ''}</span>
+            ${gaps.map(g => `<span class="fe fe-r">${g}</span>`).join('')}
+          </div>`;
+        }).join('')}
       </div>`;
   }
 
@@ -6103,6 +6323,18 @@ function handleAddResponseItemConfirm() {
     dueDate: '',
     notes: '',
     lastUpdated: STORE.now(),
+    qualityAnswersQuestion: 'not_assessed',
+    qualityAnswersQuestionNotes: '',
+    qualityFollowsStructure: 'not_assessed',
+    qualityFollowsStructureNotes: '',
+    hurdleScore: null,
+    qualityScoreSelfAssessment: null,
+    qualityScoreRationale: '',
+    qualityScoreGap: '',
+    qualityCredentials: 'not_assessed',
+    qualityCredentialsRefs: '',
+    qualityWinThemeAssessments: [],
+    qualityComplianceMapping: '',
   };
   STORE.mutateBid(ROUTER.bidId, bid => {
     if (!bid.responseItems) bid.responseItems = [];
@@ -6178,6 +6410,18 @@ function _doResponseCsvImport() {
             effortDays: 0, owner, status: 'not_started',
             linkedActivityCode: '', linkedComplianceIds: [],
             dueDate: '', notes: '', lastUpdated: STORE.now(),
+            qualityAnswersQuestion: 'not_assessed',
+            qualityAnswersQuestionNotes: '',
+            qualityFollowsStructure: 'not_assessed',
+            qualityFollowsStructureNotes: '',
+            hurdleScore: null,
+            qualityScoreSelfAssessment: null,
+            qualityScoreRationale: '',
+            qualityScoreGap: '',
+            qualityCredentials: 'not_assessed',
+            qualityCredentialsRefs: '',
+            qualityWinThemeAssessments: [],
+            qualityComplianceMapping: '',
           });
           imported++;
         });
@@ -6331,6 +6575,107 @@ function _doCompReqCsvImport() {
     reader.readAsText(file);
   };
   input.click();
+}
+
+// ── Win Theme handlers ────────────────────────────────────
+function handleAddWinThemeModal() {
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">Add Win Theme</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div class="form-row">
+      <div class="form-col" style="max-width:100px;"><label class="form-label">Reference</label><input class="inp" id="wt-ref" placeholder="e.g. WT1"></div>
+      <div class="form-col" style="flex:2;"><label class="form-label req">Statement</label><input class="inp" id="wt-stmt" placeholder="Win theme statement"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Rationale</label><textarea class="textarea" id="wt-rationale" placeholder="Why this theme wins\u2026" style="min-height:60px;"></textarea></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Status</label>
+        <select class="sel" id="wt-status">
+          <option value="draft">Draft</option><option value="proposed">Proposed</option><option value="confirmed">Confirmed</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="handleAddWinThemeConfirm()">Add</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function handleAddWinThemeConfirm() {
+  const stmt = (document.getElementById('wt-stmt').value || '').trim();
+  if (!stmt) { alert('Statement is required.'); return; }
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.winThemes) bid.winThemes = [];
+    bid.winThemes.push({
+      id: STORE.uuid(),
+      reference: (document.getElementById('wt-ref').value || '').trim(),
+      statement: stmt,
+      rationale: (document.getElementById('wt-rationale').value || '').trim(),
+      status: document.getElementById('wt-status').value || 'draft',
+      lastUpdated: STORE.now(),
+    });
+  });
+  closeModal();
+  renderApp();
+}
+
+function handleEditWinTheme(idx) {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  if (!bid) return;
+  const t = (bid.winThemes || [])[idx];
+  if (!t) return;
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">Edit Win Theme</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div class="form-row">
+      <div class="form-col" style="max-width:100px;"><label class="form-label">Reference</label><input class="inp" id="wt-ref" value="${h(t.reference||'')}"></div>
+      <div class="form-col" style="flex:2;"><label class="form-label req">Statement</label><input class="inp" id="wt-stmt" value="${h(t.statement||'')}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Rationale</label><textarea class="textarea" id="wt-rationale" style="min-height:60px;">${h(t.rationale||'')}</textarea></div>
+    </div>
+    <div class="form-row">
+      <div class="form-col"><label class="form-label">Status</label>
+        <select class="sel" id="wt-status">
+          <option value="draft" ${t.status==='draft'?'selected':''}>Draft</option>
+          <option value="proposed" ${t.status==='proposed'?'selected':''}>Proposed</option>
+          <option value="confirmed" ${t.status==='confirmed'?'selected':''}>Confirmed</option>
+          <option value="retired" ${t.status==='retired'?'selected':''}>Retired</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="(function(){
+        var stmt=document.getElementById('wt-stmt').value.trim();
+        if(!stmt){alert('Statement required.');return;}
+        STORE.mutateBid(ROUTER.bidId,function(bid){
+          var th=(bid.winThemes||[])[${idx}];
+          if(!th)return;
+          th.reference=document.getElementById('wt-ref').value.trim();
+          th.statement=stmt;
+          th.rationale=document.getElementById('wt-rationale').value.trim();
+          th.status=document.getElementById('wt-status').value;
+          th.lastUpdated=STORE.now();
+        });
+        closeModal();renderApp();
+      })()">Save</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
 }
 
 // ── Legacy handlers (kept for backward compat with old requirement data) ──
