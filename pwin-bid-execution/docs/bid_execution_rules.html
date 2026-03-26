@@ -68,8 +68,8 @@ const TABS=[
   {id:'readiness',l:'Readiness Scoring'},
   {id:'nudging',l:'Smart Nudging'},
   {id:'gates',l:'Governance Gates'},
-  {id:'compliance',l:'Compliance Engine'},
-  {id:'reviews',l:'Review Governance'},
+  {id:'compliance',l:'Submissions'},
+  {id:'reviews',l:'Reviews'},
   {id:'portfolio',l:'Practice Portfolio'},
   {id:'standup',l:'Standup Actions'},
   {id:'feasibility',l:'Feasibility Check'},
@@ -317,23 +317,48 @@ ON STATUS CHANGE:
     ACTIVATE POST workstream activities based on bid flags
     (hasPresentation → POST-01,02,03; hasBafo → POST-05,06; etc.)</div>
 
-<div class="sh">2.5 ResponseItem Status Transitions</div>
-<div class="rule">VALID TRANSITIONS:
-  not_started   → in_progress      // author has begun work
-  in_progress   → draft_complete   // first draft finished
-  draft_complete→ under_review     // submitted for review
-  under_review  → final            // approved after review
-  // Revert paths (rework):
-  draft_complete→ in_progress      // rework required
-  under_review  → in_progress      // review rejected, back to drafting
-  final         → under_review     // post-final revision required (rare)
+<div class="sh">2.5 ResponseItem Production Status Transitions</div>
+<div class="rule">10-STAGE PRODUCTION LIFECYCLE:
+  not_started → storyboard → storyboard_approved → first_draft →
+  pink_ready → pink_reviewed → red_ready → red_reviewed →
+  gold_ready → final
+
+VALID FORWARD TRANSITIONS:
+  not_started        → storyboard          // author begins storyboard/outline
+  storyboard         → storyboard_approved // bid manager or lead approves storyboard
+  storyboard_approved→ first_draft         // first full draft written
+  first_draft        → pink_ready          // draft ready for pink review
+  pink_ready         → pink_reviewed       // pink review closed in Reviews module (auto-advance)
+  pink_reviewed      → red_ready           // rework complete, ready for red review
+  red_ready          → red_reviewed        // red review closed in Reviews module (auto-advance)
+  red_reviewed       → gold_ready          // rework complete, ready for gold review
+  gold_ready         → final               // gold review closed in Reviews module (auto-advance)
+
+VALID REVERT TRANSITIONS (rework):
+  storyboard_approved→ storyboard         // storyboard needs rework
+  first_draft        → storyboard_approved// significant restructure needed
+  pink_reviewed      → first_draft        // major rework after pink review
+  red_reviewed       → pink_reviewed      // major rework after red review (rare)
+
+REVIEW-DRIVEN TRANSITIONS (automatic on review closure in M6):
+  pink_ready  → pink_reviewed   // triggered when pink ReviewCycle closes
+  red_ready   → red_reviewed    // triggered when red ReviewCycle closes
+  gold_ready  → final           // triggered when gold ReviewCycle closes
+
+INVALID (system must reject):
+  not_started → first_draft               // cannot skip storyboard
+  not_started → pink_ready                // cannot skip to review-ready
+  first_draft → pink_reviewed             // must go through pink_ready first
+  pink_ready  → red_ready                 // cannot skip pink review
+  red_ready   → gold_ready                // cannot skip red review
 
 ON STATUS CHANGE:
   SET responseItem.lastUpdated = NOW()
   UPDATE linked ComplianceRequirements coverage status (see 2.7)
   IF responseItem.responseType IN ('certificate','cv','case_study','pricing_schedule','presentation'):
-    UPDATE linked Artefact status to match (not_started→not_started, in_progress→draft,
-    draft_complete→draft, under_review→draft, final→final)</div>
+    UPDATE linked Artefact status to match (not_started→not_started,
+    storyboard/storyboard_approved/first_draft→draft,
+    pink_ready through red_reviewed→draft, gold_ready→draft, final→final)</div>
 
 <div class="sh">2.6 ComplianceStatus Transitions</div>
 <div class="rule">VALID TRANSITIONS:
@@ -360,8 +385,8 @@ ON STATUS CHANGE:
 <div class="sh">2.7 Compliance Requirement Coverage Status (Derived)</div>
 <div class="rule">VALID TRANSITIONS:
   unmapped          → mapped             // at least one ResponseItem linked
-  mapped            → draft_in_progress  // any linked ResponseItem status >= 'in_progress'
-  draft_in_progress → reviewed           // ALL linked ResponseItems status >= 'under_review'
+  mapped            → draft_in_progress  // any linked ResponseItem status >= 'storyboard'
+  draft_in_progress → reviewed           // ALL linked ResponseItems status >= 'pink_reviewed'
   reviewed          → approved           // ALL linked ResponseItems status == 'final'
                                          //   AND complianceStatus has been assessed (!= 'not_assessed')
   ANY               → gap                // bid manager flags as a gap (manual override)
@@ -373,8 +398,8 @@ AUTO-TRANSITION RULE:
       coverageStatus = 'unmapped'
     ELSE:
       linkedItems = getResponseItems(complianceRequirement.linkedResponseItemIds)
-      IF ANY linkedItem.status >= 'in_progress': coverageStatus = 'draft_in_progress'
-      IF ALL linkedItems.status >= 'under_review': coverageStatus = 'reviewed'
+      IF ANY linkedItem.status >= 'storyboard': coverageStatus = 'draft_in_progress'
+      IF ALL linkedItems.status >= 'pink_reviewed': coverageStatus = 'reviewed'
       IF ALL linkedItems.status == 'final' AND complianceStatus != 'not_assessed':
         coverageStatus = 'approved'
       ELSE IF linkedItems.length > 0 AND ALL at 'not_started':
@@ -464,8 +489,8 @@ FUNCTION avgProgress(workstream):
 
   Signal                            | Weight | Calculation
   ─────────────────────────────────────────────────────────────
-  Response item completion %        |  25%   | (ResponseItems at 'final' or 'draft_complete')
-                                    |        |   / (total ResponseItems) * 100
+  Response item production progress  |  25%   | Weighted average using STAGE_WEIGHTS
+                                    |        |   (see 6.1) across all ResponseItems
                                     |        | IF zero ResponseItems exist: score = 0 (NOT 100)
   Compliance declarations complete %|  25%   | (ComplianceRequirements WHERE complianceStatus
                                     |        |   != 'not_assessed') / (total ComplianceRequirements)
@@ -767,8 +792,8 @@ AGGREGATION:
 // ═══════════════════════════════════════
 R.compliance=()=>`
 <div class="sl">Rule Set 6</div>
-<div class="st">Compliance Engine</div>
-<div class="sd">Rules for the Submission Requirements Register and optional Compliance Matrix. Word count limits drive effort estimation. Evaluation weightings drive team prioritisation. Response completion tracking, compliance declarations (when used), coverage calculation, gap detection, and hard gates. The submission register is always present; the compliance matrix is optional (common in BPO/ITO, not typical in consulting).</div>
+<div class="st">Submissions</div>
+<div class="sd">Rules for the Client Response Requirements Register (Track 1) and optional Client Compliance Matrix (Track 2). Track 1: 10-stage production lifecycle with per-response quality dimensions. Word count limits drive effort estimation. Evaluation weightings drive team prioritisation. Quality dimensions (answers question, structure, score, credentials, win themes, compliance mapping) are structured data fields — manual in base product, AI-ready for future. Track 2: compliance declarations with solution alignment mapping. Hard gates on mandatory gaps. The response register is always present; the compliance matrix is optional (common in BPO/ITO, not typical in consulting).</div>
 
 <div class="sh">6.1 Response Item Completion Calculations</div>
 <div class="rule">FUNCTION calculateResponseCompletion(responseItems):
@@ -777,24 +802,38 @@ R.compliance=()=>`
 
   total = responseItems.length
   byStatus = GROUP responseItems BY status
-  finalCount = COUNT(status == 'final')
-  draftCompleteCount = COUNT(status == 'draft_complete')
-  underReviewCount = COUNT(status == 'under_review')
-  inProgressCount = COUNT(status == 'in_progress')
-  notStartedCount = COUNT(status == 'not_started')
 
-  completionPct = (finalCount + draftCompleteCount) / total * 100
-  progressPct = (finalCount * 100 + draftCompleteCount * 75 + underReviewCount * 60
-                 + inProgressCount * 25) / (total * 100) * 100
+  // 10-stage production lifecycle with weighted progress
+  STAGE_WEIGHTS = {
+    not_started: 0,
+    storyboard: 10,
+    storyboard_approved: 20,
+    first_draft: 35,
+    pink_ready: 45,
+    pink_reviewed: 55,
+    red_ready: 65,
+    red_reviewed: 75,
+    gold_ready: 85,
+    final: 100
+  }
+
+  progressPct = SUM(STAGE_WEIGHTS[item.status] for each item) / (total * 100) * 100
+  completionPct = COUNT(status == 'final') / total * 100
+
+  // Pipeline distribution — count at each stage
+  pipelineCounts = { not_started: COUNT(...), storyboard: COUNT(...), ... final: COUNT(...) }
 
   // By response type
   byType = GROUP responseItems BY responseType
   FOR EACH type:
-    typeCompletion = COUNT(type WHERE status IN ('final','draft_complete')) / COUNT(type) * 100
+    typeCompletion = COUNT(type WHERE status == 'final') / COUNT(type) * 100
+    typeProgress = SUM(STAGE_WEIGHTS[item.status]) / (COUNT(type) * 100) * 100
 
-  // Evaluation weight coverage
+  // Evaluation weight coverage (items at first_draft or beyond have material content)
   totalWeight = SUM(responseItems.evaluationWeightPct WHERE evaluationWeightPct != null)
-  coveredWeight = SUM(responseItems.evaluationWeightPct WHERE status IN ('final','draft_complete')
+  coveredWeight = SUM(responseItems.evaluationWeightPct
+                      WHERE status IN ('first_draft','pink_ready','pink_reviewed','red_ready',
+                            'red_reviewed','gold_ready','final')
                       AND evaluationWeightPct != null)
   evalCoveragePct = totalWeight > 0 ? (coveredWeight / totalWeight * 100) : null
 
@@ -802,8 +841,15 @@ R.compliance=()=>`
   totalWordLimit = SUM(responseItems.wordLimit WHERE wordLimit != null)
   totalWordsWritten = SUM(responseItems.currentWordCount WHERE currentWordCount != null)
 
-  RETURN { completionPct, progressPct, byStatus, byType, evalCoveragePct,
-           totalWordLimit, totalWordsWritten, isEmpty: false }
+  // Quality dimensions coverage
+  qualityAssessedCount = COUNT(responseItems WHERE qualityAnswersQuestion != 'not_assessed'
+                               AND qualityFollowsStructure != 'not_assessed'
+                               AND qualityScoreSelfAssessment != null)
+  qualityCoveragePct = qualityAssessedCount / total * 100
+
+  RETURN { completionPct, progressPct, pipelineCounts, byStatus, byType,
+           evalCoveragePct, totalWordLimit, totalWordsWritten,
+           qualityCoveragePct, isEmpty: false }
 
 EFFORT DERIVATION FROM WORD COUNT:
   // Industry baseline: 2 person-days per page of text for a qualitative question,
@@ -971,51 +1017,62 @@ AUTO-LINKING SUGGESTION:
 // ═══════════════════════════════════════
 R.reviews=()=>`
 <div class="sl">Rule Set 7</div>
-<div class="st">Review Governance</div>
-<div class="sd">Rules for review cycle management, scorecard logic, action severity handling, and gate enforcement.</div>
+<div class="st">Reviews</div>
+<div class="sd">Rules for formal peer and external SME review of written responses at pink, red, and gold stages. Scorecard logic, action severity handling, resolution tracking, and production status advancement. Development reviews (solution, commercial, risk) are organisational assurance decisions and live in Governance (Rule Set 5), not here.</div>
 
 <div class="sh">7.1 Review Cycle Lifecycle</div>
 <div class="rule">FUNCTION manageReviewCycle(cycle):
+  // Review types: pink | red | gold | adhoc
+  // Reviews are linked to ResponseItems, not Activities
+
   // Auto-transition from 'scheduled' to 'in_progress'
   IF cycle.status == 'scheduled' AND cycle.actualDate IS SET:
     cycle.status = 'in_progress'
-  
+
   // Auto-transition from 'in_progress' to 'actions_open'
   IF cycle.status == 'in_progress' AND cycle.actions.length > 0:
     cycle.status = 'actions_open'
-  
+
   // Closure check
   IF cycle.status == 'actions_open':
-    criticalOpen = COUNT(cycle.actions WHERE severity == 'critical' 
+    criticalOpen = COUNT(cycle.actions WHERE severity == 'critical'
                          AND status IN ('open', 'in_progress'))
     IF criticalOpen == 0:
       ENABLE "Close review" button
     ELSE:
       DISABLE "Close review" button
       DISPLAY: "{criticalOpen} critical action(s) must be resolved before closing"
-  
-  // On closure
+
+  // On closure — advance production status of linked response items
   ON cycle.status → 'closed':
-    FOR EACH activity IN cycle.targetActivities:
-      IF getActivity(activity).outputAssurance == 'under_review':
-        SET getActivity(activity).outputAssurance = 'assured'</div>
+    FOR EACH responseItemId IN cycle.targetResponseItemIds:
+      item = getResponseItem(responseItemId)
+      IF cycle.type == 'pink' AND item.status == 'pink_ready':
+        SET item.status = 'pink_reviewed'
+      IF cycle.type == 'red' AND item.status == 'red_ready':
+        SET item.status = 'red_reviewed'
+      IF cycle.type == 'gold' AND item.status == 'gold_ready':
+        SET item.status = 'final'
+
+TRIGGERING REVIEWS:
+  // Reviews are triggered when response items reach *_ready status
+  // The bid manager schedules a review cycle and assigns response items to it
+  // A response item at pink_ready can only be included in a pink review cycle
+  // A response item at red_ready can only be included in a red review cycle
+  // A response item at gold_ready can only be included in a gold review cycle</div>
 
 <div class="sh">7.2 Scorecard Criteria</div>
-<div class="rule">DEFAULT CRITERIA (per review type):
+<div class="rule">REVIEW CRITERIA (same quality dimensions used in Submissions self-assessment):
 
-  Development reviews (solution_review, pricing_review, risk_review):
-    compliance    — meets tender requirements
-    feasibility   — technically and operationally achievable
-    risk          — risks identified and mitigated
-    evidence      — claims supported by evidence
-    differentiation — competitive advantage demonstrated
-  
-  Production reviews (pink, red, gold):
-    compliance    — answers the question asked
-    responsiveness — addresses evaluation criteria
-    evidence      — supported by case studies, data, proof
-    differentiation — stands out from likely competitor responses
-    readability   — clear, concise, well-structured
+  All reviews (pink, red, gold) score per response against:
+    answers_question   — does the response actually answer what was asked?
+    follows_structure  — does the response mirror the structure/order of the question?
+    responsiveness     — does it address the client's evaluation criteria?
+    evidence           — supported by case studies, data, quantified proof?
+    credentials        — past success references and delivery track record incorporated?
+    win_themes         — agreed win themes woven into the response?
+    readability        — clear, concise, well-structured prose?
+    differentiation    — stands out from likely competitor responses?
 
 SCORING SCALE:
   1 = Significant gaps / fails to meet standard
@@ -1024,12 +1081,17 @@ SCORING SCALE:
   4 = Above standard / strong
   5 = Exceptional / compelling
 
-SECTION PASS THRESHOLD:
+RESPONSE PASS THRESHOLD:
   Pink review: average >= 2.0 (it's early, expect gaps)
   Red review: average >= 3.0 (must meet standard)
   Gold review: average >= 3.5 (must be strong to submit)
-  
-  Sections below threshold flagged as: "Below gate standard — requires improvement"</div>
+
+  Responses below threshold flagged as: "Below gate standard — requires improvement"
+
+SCORE TRACKING ACROSS CYCLES:
+  // System tracks how each response item's score evolves: pink → red → gold
+  // This reveals whether review feedback is being acted on
+  // Cross-review dashboard highlights responses that did NOT improve between cycles</div>
 
 <div class="sh">7.3 Action Severity Rules</div>
 <div class="rule">CRITICAL:
@@ -1047,7 +1109,12 @@ MAJOR:
 MINOR:
   Could be improved but does not affect outcome
   Does NOT auto-generate standup action (bid manager can manually create)
-  Default resolution deadline: 5 working days</div>
+  Default resolution deadline: 5 working days
+
+RESOLUTION PATH:
+  Each action must have: what needs to change, who does it, by when
+  Resolution notes are mandatory when moving to 'resolved' status
+  Reviewer confirms resolution (→ accepted) or rejects (→ back to open)</div>
 `;
 
 // ═══════════════════════════════════════
