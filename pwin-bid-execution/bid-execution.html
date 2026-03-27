@@ -684,9 +684,25 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .ri-word-fill{height:100%;border-radius:2px;transition:width .3s;}
 
 /* Production pipeline */
-.pipeline-stage{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:60px;}
-.pipeline-count{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1;}
-.pipeline-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.04em;text-transform:uppercase;text-align:center;line-height:1.2;color:var(--t3);}
+/* Pipeline stage flow */
+.pp-flow{display:flex;align-items:stretch;gap:0;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:12px 8px;margin-bottom:16px;overflow-x:auto;}
+.pp-stage{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:64px;position:relative;padding:0 4px;}
+.pp-stage:not(:last-child)::after{content:'\u203A';position:absolute;right:-4px;top:8px;font-size:16px;color:var(--t4);}
+.pp-stage-count{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;line-height:1;}
+.pp-stage-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.04em;text-transform:uppercase;text-align:center;line-height:1.2;color:var(--t3);}
+.pp-stage-num{font-family:'DM Mono',monospace;font-size:8px;color:var(--t4);margin-bottom:2px;}
+.pp-stage-pip{width:6px;height:6px;border-radius:50%;margin-top:3px;}
+/* Pipeline collapsible groups */
+.pp-group-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border:1px solid var(--bdr-s);border-radius:8px;margin-bottom:2px;cursor:pointer;user-select:none;transition:background .15s;}
+.pp-group-hdr:hover{background:var(--bg4);}
+.pp-group-pip{width:4px;height:18px;border-radius:2px;flex-shrink:0;}
+.pp-group-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t1);flex:1;}
+.pp-group-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);}
+.pp-group-toggle{font-size:9px;color:var(--t3);transition:transform .2s;}
+.pp-group-toggle.collapsed{transform:rotate(-90deg);}
+.pp-group-body{margin-bottom:12px;}
+.pp-group-body.collapsed{display:none;}
+/* Retained for production metrics bar on prod tabs */
 .pipeline-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--bg4);width:100%;}
 .pipeline-seg{height:100%;transition:width .3s;}
 
@@ -4658,6 +4674,107 @@ function handleResponseItemNotes(idx, val) {
   });
 }
 
+function _renderProductionSlideout(bid, sectionId) {
+  const sections = bid.responseSections || [];
+  const items = bid.responseItems || [];
+  const sec = sections.find(s => s.id === sectionId);
+  if (!sec) return '';
+  const item = sec.linkedResponseItemId ? items.find(r => r.id === sec.linkedResponseItemId) : null;
+  const effort = item ? COMPLIANCE.deriveEffort(item, bid) : 0;
+
+  const _sm = {
+    not_started:{cls:'fe-mute',label:'Not Started'}, storyboard:{cls:'fe-b',label:'Storyboard'},
+    storyboard_approved:{cls:'fe-p',label:'SB Approved'}, first_draft:{cls:'fe-a',label:'1st Draft'},
+    pink_ready:{cls:'fe-a',label:'Pink Ready'}, pink_reviewed:{cls:'fe-g',label:'Pink Done'},
+    red_ready:{cls:'fe-a',label:'Red Ready'}, red_reviewed:{cls:'fe-g',label:'Red Done'},
+    gold_ready:{cls:'fe-a',label:'Gold Ready'}, final:{cls:'fe-g',label:'Final'},
+  };
+  const status = item ? (item.status || 'not_started') : 'not_started';
+  const statusMeta = _sm[status] || { cls:'fe-mute', label:status };
+  const statusBadge = `<span class="fe ${statusMeta.cls}">${statusMeta.label}</span>`;
+
+  // Status transition buttons
+  let statusBtns = '';
+  if (item) {
+    const validNext = TRANSITIONS.validNextResponseStatuses(status);
+    statusBtns = validNext.map(s => {
+      const meta = _sm[s] || { label: s.replace(/_/g,' ') };
+      const idx = items.indexOf(item);
+      return `<button class="btn btn-sm" onclick="handleResponseStatus(${idx},'${s}');renderApp();">${meta.label}</button>`;
+    }).join(' ');
+  }
+
+  // Word count progress
+  const wordLimit = sec.wordLimit || 0;
+  const wordCount = item ? (item.currentWordCount || 0) : 0;
+  const wordPct = wordLimit > 0 ? Math.min(100, Math.round(wordCount / wordLimit * 100)) : 0;
+
+  // Quality dimensions
+  const qDims = item ? [
+    { label:'Answers Question', val:item.qualityAnswersQuestion, notes:item.qualityAnswersQuestionNotes },
+    { label:'Follows Structure', val:item.qualityFollowsStructure, notes:item.qualityFollowsStructureNotes },
+    { label:'Credentials', val:item.qualityCredentials, notes:item.qualityCredentialsRefs },
+  ] : [];
+  const qBadge = v => {
+    if (v === 'yes') return '<span class="fe fe-g">Yes</span>';
+    if (v === 'partial') return '<span class="fe fe-a">Partial</span>';
+    if (v === 'no') return '<span class="fe fe-r">No</span>';
+    return '<span class="fe fe-mute">Not Assessed</span>';
+  };
+
+  const idx = item ? items.indexOf(item) : -1;
+
+  return `<div class="slideout-overlay" onclick="ROUTER.closeSlideout()"></div>
+  <div class="slideout slideout-wide">
+    <div class="slideout-hdr">
+      <div>
+        <div class="slideout-title">${h(sec.reference||'')} \u2014 ${h(sec.title||'')}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:2px;">Production Tracking</div>
+      </div>
+      <button class="modal-close" onclick="ROUTER.closeSlideout()">\u00D7</button>
+    </div>
+    <div class="slideout-body">
+      ${sec.questionText ? `<div class="co co-g" style="margin-bottom:14px;"><div class="co-l">Question</div><div class="co-t" style="white-space:pre-line;font-size:12px;line-height:1.5;max-height:120px;overflow-y:auto;">${h(sec.questionText)}</div></div>` : ''}
+
+      <div class="sh2">Status ${statusBadge}</div>
+      ${item ? `
+      <div style="margin:8px 0 14px;display:flex;gap:6px;flex-wrap:wrap;">${statusBtns || '<span style="color:var(--t3);font-size:11px;">No valid transitions</span>'}</div>
+
+      <div class="sg">
+        <div class="sg-k">Owner</div><div class="sg-v">
+          <input class="inp" style="font-size:12px;padding:4px 8px;width:160px;" value="${h(item.owner||'')}" onchange="STORE.mutateBid(ROUTER.bidId,b=>{const r=(b.responseItems||[]).find(x=>x.id==='${item.id}');if(r){r.owner=this.value;r.lastUpdated=STORE.now();}});renderApp();" placeholder="Assign owner">
+        </div>
+        <div class="sg-k">Words</div><div class="sg-v" style="display:flex;align-items:center;gap:8px;">
+          <input class="inp" style="font-size:12px;padding:4px 8px;width:80px;" type="number" value="${wordCount}" onchange="STORE.mutateBid(ROUTER.bidId,b=>{const r=(b.responseItems||[]).find(x=>x.id==='${item.id}');if(r){r.currentWordCount=parseInt(this.value)||0;r.lastUpdated=STORE.now();}});renderApp();">
+          ${wordLimit ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">/ ${wordLimit}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:${wordPct>=100?'var(--grn)':wordPct>=50?'var(--amb)':'var(--t3)'};">${wordPct}%</span>` : ''}
+        </div>
+        <div class="sg-k">Complexity</div><div class="sg-v">
+          <select class="sel" style="font-size:11px;padding:3px 18px 3px 6px;" onchange="STORE.mutateBid(ROUTER.bidId,b=>{const r=(b.responseItems||[]).find(x=>x.id==='${item.id}');if(r){r.complexityEstimate=this.value;r.lastUpdated=STORE.now();}});renderApp();">
+            ${['low','medium','high','very_high'].map(c => `<option value="${c}" ${(item.complexityEstimate||'high')===c?'selected':''}>${c.replace(/_/g,' ')}</option>`).join('')}
+          </select>
+        </div>
+        <div class="sg-k">Effort</div><div class="sg-v">${effort ? effort + ' days' : '\u2014'}</div>
+        <div class="sg-k">Due Date</div><div class="sg-v">
+          <input class="inp" style="font-size:12px;padding:4px 8px;width:140px;" type="date" value="${item.dueDate||''}" onchange="STORE.mutateBid(ROUTER.bidId,b=>{const r=(b.responseItems||[]).find(x=>x.id==='${item.id}');if(r){r.dueDate=this.value||null;r.lastUpdated=STORE.now();}});renderApp();">
+        </div>
+      </div>
+
+      <div class="sh2" style="margin-top:14px;">Quality Dimensions</div>
+      ${qDims.map(d => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:120px;">${d.label}</span>
+        ${qBadge(d.val)}
+        ${d.notes ? `<span style="font-size:10px;color:var(--t3);">${h(d.notes)}</span>` : ''}
+      </div>`).join('')}
+      ${item.qualityScoreSelfAssessment != null ? `<div style="margin-top:6px;"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">Self-Assessment:</span> <span style="color:var(--gold);font-weight:700;">${item.qualityScoreSelfAssessment}</span>${item.qualityScoreRationale ? ` <span style="font-size:10px;color:var(--t3);">\u2014 ${h(item.qualityScoreRationale)}</span>` : ''}</div>` : ''}
+
+      <div class="sh2" style="margin-top:14px;">Notes</div>
+      <textarea class="textarea" placeholder="Add notes\u2026" onchange="handleResponseItemNotes(${idx},this.value)">${h(item.notes||'')}</textarea>
+      ` : `<div style="padding:16px 0;"><button class="btn btn-primary" onclick="handleStartProductionForSection('${sec.id}');ROUTER.closeSlideout();">Start Production</button></div>`}
+    </div>
+  </div>`;
+}
+
 function renderSubmissions(bid) {
   const responseItems = bid.responseItems || [];
   const responseSections = bid.responseSections || [];
@@ -4730,9 +4847,13 @@ function renderSubmissions(bid) {
   else if (ROUTER.subView === 'quality') bodyHtml = _renderQualityOverview(bid);
   else bodyHtml = _renderResponseRegister(bid);
 
-  // Response section detail slideout (reference data only)
-  const slideoutHtml = ROUTER._slideout && ROUTER._slideout.type === 'response'
-    ? _renderResponseSlideout(bid, ROUTER._slideout.id) : '';
+  // Slideout — reference or production depending on type
+  let slideoutHtml = '';
+  if (ROUTER._slideout && ROUTER._slideout.type === 'response') {
+    slideoutHtml = _renderResponseSlideout(bid, ROUTER._slideout.id);
+  } else if (ROUTER._slideout && ROUTER._slideout.type === 'production') {
+    slideoutHtml = _renderProductionSlideout(bid, ROUTER._slideout.id);
+  }
 
   return `<div class="sl">Module M5</div>
     <div class="pg-title">Submissions</div>
@@ -4953,68 +5074,86 @@ function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) 
   if (total === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response sections or items yet.</div>';
 
   const stages = Object.keys(COMPLIANCE.STAGE_WEIGHTS);
-  const stagesHtml = stages.map(s => {
+  const items = bid.responseItems || [];
+  const sections = bid.responseSections || [];
+
+  // ── Stage Flow Diagram ── labelled 10-stage lifecycle
+  const flowHtml = stages.map((s, i) => {
     const count = respComp.pipeline[s] || 0;
+    // For not_started, include unstarted sections
+    const extra = s === 'not_started' ? sections.filter(sec => !sec.linkedResponseItemId).length : 0;
+    const displayCount = count + extra;
     const meta = _statusMeta[s] || { label: s.replace(/_/g,' ') };
     const color = PIPELINE_COLORS[s] || 'var(--t4)';
-    return `<div class="pipeline-stage">
-      <div class="pipeline-count" style="color:${count > 0 ? color : 'var(--t4)'};">${count}</div>
-      <div class="pipeline-label">${meta.label}</div>
+    return `<div class="pp-stage">
+      <div class="pp-stage-num">${i+1}</div>
+      <div class="pp-stage-count" style="color:${displayCount > 0 ? color : 'var(--t4)'};">${displayCount}</div>
+      <div class="pp-stage-label">${meta.label}</div>
+      <div class="pp-stage-pip" style="background:${color};"></div>
     </div>`;
   }).join('');
 
-  // Coverage banner
-  const covHtml = respComp.totalSections > 0 ? `<div class="co co-b" style="margin-bottom:10px;"><div class="co-l">Coverage</div><div class="co-t">${respComp.totalItems} of ${respComp.totalSections} response sections have active production (${respComp.productionCoverage}%)</div></div>` : '';
-
-  // Pipeline bar
-  const barSegs = stages.map(s => {
-    const count = respComp.pipeline[s] || 0;
-    if (count === 0) return '';
-    return `<div class="pipeline-seg" style="width:${(count/total*100)}%;background:${PIPELINE_COLORS[s]||'var(--t4)'};" title="${(_statusMeta[s]||{}).label||s}: ${count}"></div>`;
-  }).join('');
-
-  // Items grouped by stage — resolve section data for display
-  const items = bid.responseItems || [];
-  const sections = bid.responseSections || [];
+  // ── Collapsible Stage Groups ──
+  const _ppCollapsed = window._ppCollapsed || (window._ppCollapsed = {});
   const groupedHtml = stages.map(s => {
     const stageItems = items.filter(r => (r.status||'not_started') === s);
-    // For not_started, also include sections without any linked ResponseItem
     let unstartedSections = [];
     if (s === 'not_started') {
       unstartedSections = sections.filter(sec => !sec.linkedResponseItemId);
     }
     const totalCount = stageItems.length + unstartedSections.length;
     if (totalCount === 0) return '';
+
     const meta = _statusMeta[s] || { cls:'fe-mute', label: s.replace(/_/g,' ') };
     const color = PIPELINE_COLORS[s] || 'var(--t4)';
-    return `<div style="margin-bottom:12px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <div style="width:4px;height:16px;background:${color};border-radius:2px;"></div>
-        <span class="fe ${meta.cls}">${meta.label}</span>
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${totalCount} item${totalCount!==1?'s':''}</span>
+    const isCollapsed = _ppCollapsed[s] === true;
+
+    // Item rows — clickable to open production slideout
+    const itemRows = stageItems.map(r => {
+      const sec = COMPLIANCE.resolveSection(r, bid);
+      const wordLimit = sec.wordLimit || r.wordLimit || 0;
+      const wordCount = r.currentWordCount || 0;
+      const wordPct = wordLimit > 0 ? Math.min(100, Math.round(wordCount / wordLimit * 100)) : 0;
+      const sectionId = r.linkedResponseSectionId || sec.id || '';
+      const idx = items.indexOf(r);
+      return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;cursor:pointer;" onclick="ROUTER.openSlideout('production','${sectionId}')">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(r.reference||sec.reference||'')}</span>
+        <span style="flex:1;font-size:12px;color:var(--t1);">${h(r.title||sec.title||'')}</span>
+        ${wordLimit ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:${wordPct>=100?'var(--grn)':wordPct>=50?'var(--amb)':'var(--t3)'};">${wordCount}/${wordLimit}w</span>` : ''}
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);min-width:70px;">${h(r.owner||'\u2014')}</span>
+        <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onclick="event.stopPropagation()" onchange="handleResponseStatus(${idx},this.value)">
+          <option value="${r.status||'not_started'}" selected>${meta.label}</option>
+          ${TRANSITIONS.validNextResponseStatuses(r.status||'not_started').map(ns =>
+            `<option value="${ns}">${((_statusMeta||{})[ns]||{}).label||ns.replace(/_/g,' ')}</option>`
+          ).join('')}
+        </select>
+      </div>`;
+    }).join('');
+
+    const unstartedRows = unstartedSections.map(sec =>
+      `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;opacity:0.6;">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(sec.reference||'')}</span>
+        <span style="flex:1;font-size:12px;color:var(--t2);">${h(sec.title||'')}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);">\u2014</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);min-width:70px;">\u2014</span>
+        <button class="btn btn-sm" onclick="handleStartProductionForSection('${sec.id}')">Start</button>
+      </div>`
+    ).join('');
+
+    return `<div class="pp-group-hdr" onclick="window._ppCollapsed=window._ppCollapsed||{};window._ppCollapsed['${s}']=!window._ppCollapsed['${s}'];renderApp();">
+      <div class="pp-group-pip" style="background:${color};"></div>
+      <span class="pp-group-toggle ${isCollapsed ? 'collapsed' : ''}">&#9660;</span>
+      <span class="pp-group-label">${meta.label}</span>
+      <span class="pp-group-count">${totalCount} item${totalCount!==1?'s':''}</span>
+    </div>
+    ${!isCollapsed ? `<div class="pp-group-body">
+      <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:0 0 8px 8px;margin-bottom:4px;">
+        ${itemRows}${unstartedRows}
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--bdr);">
-        ${stageItems.map(r => { const sec = COMPLIANCE.resolveSection(r, bid); return `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(r.reference||'')}</span>
-          <span style="flex:1;font-size:12px;color:var(--t1);">${h(r.title||sec.title||'')}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${(sec.evaluationWeightPct||r.evaluationWeightPct) ? (sec.evaluationWeightPct||r.evaluationWeightPct)+'%' : ''}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${h(r.owner||'')}</span>
-        </div>`; }).join('')}
-        ${unstartedSections.map(sec => `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;opacity:0.6;">
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(sec.reference||'')}</span>
-          <span style="flex:1;font-size:12px;color:var(--t2);">${h(sec.title||'')}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${sec.evaluationWeightPct ? sec.evaluationWeightPct+'%' : ''}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);">—</span>
-        </div>`).join('')}
-      </div>
-    </div>`;
+    </div>` : ''}`;
   }).join('');
 
-  return `${covHtml}<div style="display:flex;gap:4px;margin-bottom:16px;padding:16px;background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
-    ${stagesHtml}
-  </div>
-  <div class="pipeline-bar" style="margin-bottom:16px;">${barSegs}</div>
-  ${groupedHtml}`;
+  return `<div class="pp-flow">${flowHtml}</div>${groupedHtml}`;
 }
 
 // _renderComplianceMatrix removed — compliance matrix UX deferred to V2 (managed externally via AI + Excel in V1)
