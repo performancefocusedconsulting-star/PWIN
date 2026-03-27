@@ -6594,24 +6594,25 @@ function handleResponseCsvImport() {
     <div style="padding:0 20px 16px;">
       <div class="sh2">Required CSV Structure</div>
       <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px;">
-        Import the exam paper \u2014 the questions and deliverables the client is asking for. Each row creates a <strong>Response Section</strong>. Production tracking (Response Items) can be started individually after import.
-        <br><br>Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Title</strong> is the only mandatory field \u2014 all others are optional.
+        Import the exam paper \u2014 the questions and deliverables the client is asking for. Each row creates a <strong>Response Section</strong>. Row order determines display order (matching the client\u2019s document structure). Production tracking (Response Items) can be started individually after import.
       </div>
       <div style="background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;overflow-x:auto;margin-bottom:12px;">
-        <div style="color:var(--gold);margin-bottom:4px;">Column Order:</div>
-        <div><span style="color:var(--t1);">1. reference</span> \u2014 e.g. Q1.1, 4.2.1</div>
-        <div><span style="color:var(--t1);">2. title</span> <span style="color:var(--red);">*required</span> \u2014 question or deliverable title</div>
-        <div><span style="color:var(--t1);">3. responseType</span> \u2014 written_question | document_upload | certificate | cv | pricing_schedule | case_study | other</div>
-        <div><span style="color:var(--t1);">4. wordLimit</span> \u2014 number (e.g. 3000)</div>
-        <div><span style="color:var(--t1);">5. pageLimit</span> \u2014 number (e.g. 6)</div>
-        <div><span style="color:var(--t1);">6. evaluationWeightPct</span> \u2014 number (e.g. 15)</div>
-        <div><span style="color:var(--t1);">7. evaluationMaxScore</span> \u2014 number (e.g. 100)</div>
-        <div><span style="color:var(--t1);">8. evaluationCriteria</span> \u2014 what the evaluator is looking for (optional)</div>
-        <div><span style="color:var(--t1);">9. sectionNumber</span> \u2014 ITT section reference for grouping (optional)</div>
-        <div><span style="color:var(--t1);">10. questionText</span> \u2014 full question text (optional)</div>
+        <div style="color:var(--gold);margin-bottom:4px;">Required Columns:</div>
+        <div><span style="color:var(--t1);">1. reference</span> <span style="color:var(--red);">*</span> \u2014 question/section number (e.g. Q1.1, 4.2.1)</div>
+        <div><span style="color:var(--t1);">2. title</span> <span style="color:var(--red);">*</span> \u2014 short question title</div>
+        <div><span style="color:var(--t1);">3. questionText</span> <span style="color:var(--red);">*</span> \u2014 full question text including sub-questions</div>
+        <div><span style="color:var(--t1);">4. responseType</span> <span style="color:var(--red);">*</span> \u2014 written_question | document_upload | certificate | cv | pricing_schedule | case_study | other</div>
+        <div><span style="color:var(--t1);">5. evaluationCategory</span> <span style="color:var(--red);">*</span> \u2014 quality | price | social_value | pass_fail | unscored</div>
+        <div><span style="color:var(--t1);">6. evaluationMaxScore</span> <span style="color:var(--red);">*</span> \u2014 raw marks for this question (adds up to 100 within section)</div>
+        <div><span style="color:var(--t1);">7. evaluationCriteria</span> <span style="color:var(--red);">*</span> \u2014 what the evaluator is looking for</div>
+        <div><span style="color:var(--t1);">8. sectionNumber</span> <span style="color:var(--red);">*</span> \u2014 ITT document section/paragraph reference</div>
+        <div style="color:var(--gold);margin-top:6px;margin-bottom:4px;">Optional Columns:</div>
+        <div><span style="color:var(--t1);">9. hurdleScore</span> \u2014 minimum score to qualify (leave blank if no hurdle)</div>
+        <div><span style="color:var(--t1);">10. wordLimit</span> \u2014 max words (leave blank for non-written deliverables)</div>
+        <div><span style="color:var(--t1);">11. pageLimit</span> \u2014 max pages (leave blank if not specified)</div>
       </div>
       <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">
-        <strong>Example row:</strong> Q1.1, "Describe your approach to service delivery", written_question, 3000, 6, 15, 100, "Evidence of similar projects", "4.2", "Full question text here"
+        <strong>Example row:</strong> Q1.1, "Approach to service delivery", "Describe in detail your approach to\u2026", written_question, quality, 40, "Evidence of similar projects and delivery credentials", "Section 4.2", 30, 3000, 6
       </div>
     </div>
     <div class="modal-footer">
@@ -6632,26 +6633,33 @@ function _doResponseCsvImport() {
     reader.onload = ev => {
       const rows = ev.target.result.trim().split(/\r?\n/);
       let imported = 0, rejected = 0, duplicates = 0;
+      const validTypes = ['written_question','document_upload','certificate','cv','pricing_schedule','case_study','presentation','form','data_return','other'];
+      const validCategories = ['quality','price','social_value','pass_fail','unscored'];
       STORE.mutateBid(ROUTER.bidId, bid => {
         if (!bid.responseSections) bid.responseSections = [];
         rows.forEach((row, i) => {
           const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
           if (i === 0 && /^ref/i.test(cols[0])) return;
-          const [ref='', title='', type='written_question', wl='', pl='', wt='', ms='', criteria='', secNum='', qtext=''] = cols;
-          if (!title) { rejected++; return; }
+          // Column order: reference, title, questionText, responseType, evaluationCategory,
+          //   evaluationMaxScore, evaluationCriteria, sectionNumber, hurdleScore, wordLimit, pageLimit
+          const [ref='', title='', qtext='', type='', cat='', ms='', criteria='', secNum='', hurdle='', wl='', pl=''] = cols;
+          // Validate required fields
+          if (!ref || !title || !qtext || !type || !cat || !ms || !criteria || !secNum) { rejected++; return; }
+          if (!validTypes.includes(type)) { rejected++; return; }
+          if (!validCategories.includes(cat)) { rejected++; return; }
           // Duplicate detection: warn but still import
-          if (ref && bid.responseSections.some(s => s.reference === ref)) duplicates++;
+          if (bid.responseSections.some(s => s.reference === ref)) duplicates++;
           bid.responseSections.push({
             id: STORE.uuid(), bidId: bid.id,
             reference: ref, title, questionText: qtext,
-            responseType: type || 'written_question',
+            responseType: type,
             ittVolume: null,
             sectionNumber: secNum,
-            evaluationCategory: 'quality',
-            evaluationWeightPct: parseFloat(wt) || 0,
+            evaluationCategory: cat,
+            evaluationWeightPct: 0, // section-level weight derived from EvaluationFramework
             evaluationMaxScore: parseFloat(ms) || 0,
             evaluationCriteria: criteria,
-            hurdleScore: null,
+            hurdleScore: hurdle ? parseFloat(hurdle) : null,
             wordLimit: parseInt(wl) || 0, pageLimit: parseInt(pl) || 0,
             responseFormat: null,
             linkedResponseItemId: null,
@@ -6663,7 +6671,7 @@ function _doResponseCsvImport() {
         });
       });
       let msg = `${imported} response section${imported!==1?'s':''} imported`;
-      if (rejected) msg += `, ${rejected} rejected (missing title)`;
+      if (rejected) msg += `, ${rejected} rejected (missing required field or invalid enum)`;
       if (duplicates) msg += `, ${duplicates} duplicate reference${duplicates!==1?'s':''} (imported anyway)`;
       alert(msg);
       renderApp();
