@@ -193,6 +193,7 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 ═══════════════════════════════════════ */
 .slideout-overlay{position:fixed;inset:0;background:rgba(8,14,26,.5);z-index:150;}
 .slideout{position:fixed;right:0;top:0;bottom:0;width:480px;max-width:95vw;background:var(--bg1);border-left:1px solid var(--bdr);z-index:160;overflow-y:auto;animation:slideIn .2s ease both;}
+.slideout.slideout-wide{width:780px;}
 @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 .slideout-hdr{padding:16px 20px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg1);z-index:10;}
 .slideout-title{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--t1);}
@@ -638,16 +639,24 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .sm-ready{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(0,200,120,.1);border:1px solid var(--grn);border-radius:6px;margin-bottom:6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--grn);}
 
 /* Response items register */
-.ri-hdr{display:grid;grid-template-columns:70px 1fr 80px 70px 80px 70px 90px 90px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
-.ri-row{display:grid;grid-template-columns:70px 1fr 80px 70px 80px 70px 90px 90px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;cursor:pointer;transition:background .15s;}
+/* Response Requirements register — reference view */
+.ri-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--bdr);cursor:pointer;user-select:none;transition:background .15s;}
+.ri-section-hdr:hover{background:var(--bg4);}
+.ri-section-name{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--t1);letter-spacing:.02em;}
+.ri-section-weight{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);}
+.ri-section-toggle{font-size:10px;color:var(--t3);margin-right:8px;transition:transform .2s;}
+.ri-section-toggle.collapsed{transform:rotate(-90deg);}
+.ri-section-body{border-bottom:2px solid var(--bdr);}
+.ri-section-body.collapsed{display:none;}
+.ri-hdr{display:grid;grid-template-columns:70px 1fr 100px 90px 70px 50px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
+.ri-row{display:grid;grid-template-columns:70px 1fr 100px 90px 70px 50px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;cursor:pointer;transition:background .15s;}
 .ri-row:hover{background:var(--bg3);}
 .ri-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);}
 .ri-title{font-size:12px;color:var(--t1);line-height:1.4;}
 .ri-title-sub{font-size:10px;color:var(--t3);margin-top:1px;}
 .ri-words{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);}
-.ri-weight{font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);text-align:center;}
-.ri-effort{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);text-align:center;}
-.ri-owner{font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ri-marks{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;color:var(--t1);text-align:center;}
+.ri-hurdle{text-align:center;}
 .ri-word-bar{height:4px;background:var(--bg4);border-radius:2px;margin-top:3px;overflow:hidden;}
 .ri-word-fill{height:100%;border-radius:2px;transition:width .3s;}
 
@@ -667,11 +676,7 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .qual-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1;}
 .qual-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);margin-top:4px;}
 
-/* Compliance matrix */
-.cm-hdr{display:grid;grid-template-columns:70px 1fr 130px 130px 80px;gap:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);}
-.cm-row{display:grid;grid-template-columns:70px 1fr 130px 130px 80px;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bdr-s);align-items:center;}
-.cm-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);}
-.cm-text{font-size:12px;color:var(--t1);line-height:1.4;}
+/* Compliance matrix CSS removed — UX deferred to V2 */
 
 /* ═══════════════════════════════════════
    TEAM MANAGER (M10)
@@ -2847,7 +2852,7 @@ const ROUTER = {
   actView: 'workstream', // 'workstream' | 'list' | 'gantt'
   ganttScale: 'fortnight', // 'day' | 'week' | 'fortnight' | 'month'
   setGanttScale(s) { this.ganttScale = s; renderApp(); },
-  subView: 'responses',  // 'responses' | 'pipeline' | 'compliance' | 'winthemes' | 'quality' | 'gaps'
+  subView: 'responses',  // 'responses' | 'pipeline' | 'winthemes' | 'quality'
   revView: 'timeline',   // 'timeline' | 'cross'
   revCycleId: null,       // selected cycle id for detail view
   revActionSort: { col: 'severity', dir: 'asc' },
@@ -4564,87 +4569,50 @@ function _renderActivitySlideout(bid, actId) {
 
 function _renderResponseSlideout(bid, sectionId) {
   const sections = bid.responseSections || [];
-  const items = bid.responseItems || [];
   const sec = sections.find(s => s.id === sectionId);
   if (!sec) return '';
-  const item = sec.linkedResponseItemId ? items.find(r => r.id === sec.linkedResponseItemId) : null;
-  const effort = item ? COMPLIANCE.deriveEffort(item, bid) : 0;
+  const ef = bid.evaluationFramework || {};
 
-  const _statusMeta = {
-    not_started:{cls:'fe-mute',label:'Not Started'}, storyboard:{cls:'fe-b',label:'Storyboard'},
-    storyboard_approved:{cls:'fe-p',label:'SB Approved'}, first_draft:{cls:'fe-a',label:'1st Draft'},
-    pink_ready:{cls:'fe-a',label:'Pink Ready'}, pink_reviewed:{cls:'fe-g',label:'Pink Done'},
-    red_ready:{cls:'fe-a',label:'Red Ready'}, red_reviewed:{cls:'fe-g',label:'Red Done'},
-    gold_ready:{cls:'fe-a',label:'Gold Ready'}, final:{cls:'fe-g',label:'Final'},
-  };
-  const status = item ? (item.status || 'not_started') : 'not_started';
-  const statusBadge = `<span class="fe ${(_statusMeta[status]||{}).cls||'fe-mute'}">${(_statusMeta[status]||{}).label||status}</span>`;
+  // Category label for context
+  const catLabels = { quality:'Quality', price:'Price / Commercial', social_value:'Social Value', pass_fail:'Pass / Fail', unscored:'Unscored' };
+  const catLabel = catLabels[sec.evaluationCategory] || (sec.evaluationCategory || '').replace(/_/g, ' ');
 
-  // Status transition buttons
-  let statusBtns = '';
-  if (item) {
-    const validNext = TRANSITIONS.validNextResponseStatuses(status);
-    statusBtns = validNext.map(s => {
-      const meta = _statusMeta[s] || { label: s.replace(/_/g,' ') };
-      const idx = items.indexOf(item);
-      return `<button class="btn btn-sm" onclick="handleResponseStatus(${idx},'${s}');ROUTER.closeSlideout();">${meta.label}</button>`;
-    }).join(' ');
-  }
-
-  // Quality dimensions
-  const qDims = item ? [
-    { label:'Answers Question', val:item.qualityAnswersQuestion, notes:item.qualityAnswersQuestionNotes },
-    { label:'Follows Structure', val:item.qualityFollowsStructure, notes:item.qualityFollowsStructureNotes },
-    { label:'Credentials', val:item.qualityCredentials, notes:item.qualityCredentialsRefs },
-  ] : [];
-  const qBadge = v => {
-    if (v === 'yes') return '<span class="fe fe-g">Yes</span>';
-    if (v === 'partial') return '<span class="fe fe-a">Partial</span>';
-    if (v === 'no') return '<span class="fe fe-r">No</span>';
-    return '<span class="fe fe-mute">Not Assessed</span>';
-  };
+  // Hurdle detail
+  const hasHurdle = sec.hurdleScore != null;
+  const hurdleHtml = hasHurdle ? `<div class="co co-r" style="margin-bottom:16px;">
+    <div class="co-l">Hurdle</div>
+    <div class="co-t" style="font-size:13px;line-height:1.7;">Minimum score of <strong>${sec.hurdleScore}</strong>${sec.evaluationMaxScore != null ? ` out of ${sec.evaluationMaxScore}` : ''} required to qualify. Responses scoring below this threshold may be excluded from further evaluation regardless of overall bid quality.</div>
+  </div>` : '';
 
   return `<div class="slideout-overlay" onclick="ROUTER.closeSlideout()"></div>
-  <div class="slideout">
+  <div class="slideout slideout-wide">
     <div class="slideout-hdr">
-      <div class="slideout-title">${h(sec.reference||'')} \u2014 ${h(sec.title||'')}</div>
+      <div>
+        <div class="slideout-title">${h(sec.reference||'')} \u2014 ${h(sec.title||'')}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:2px;">${h(catLabel)}${sec.sectionNumber ? ' \u2014 ' + h(sec.sectionNumber) : ''}${sec.ittVolume ? ' \u2014 ' + h(sec.ittVolume) : ''}</div>
+      </div>
       <button class="modal-close" onclick="ROUTER.closeSlideout()">\u00D7</button>
     </div>
     <div class="slideout-body">
-      ${sec.questionText ? `<div class="co co-g" style="margin-bottom:14px;"><div class="co-l">Question Text</div><div class="co-t" style="white-space:pre-line;">${h(sec.questionText)}</div></div>` : ''}
-      ${sec.evaluationCriteria ? `<div class="co co-b" style="margin-bottom:14px;"><div class="co-l">Evaluation Criteria</div><div class="co-t">${h(sec.evaluationCriteria)}</div></div>` : ''}
+      ${sec.questionText ? `<div class="co co-g" style="margin-bottom:16px;"><div class="co-l">Question Text</div><div class="co-t" style="white-space:pre-line;font-size:13px;line-height:1.7;">${h(sec.questionText)}</div></div>` : ''}
+      ${sec.evaluationCriteria ? `<div class="co co-b" style="margin-bottom:16px;"><div class="co-l">Evaluation Criteria</div><div class="co-t" style="font-size:13px;line-height:1.7;">${h(sec.evaluationCriteria)}</div></div>` : ''}
+      ${hurdleHtml}
+      ${sec.responseFormat ? `<div class="co co-v" style="margin-bottom:16px;"><div class="co-l">Format Requirements</div><div class="co-t" style="font-size:12px;">${h(sec.responseFormat)}</div></div>` : ''}
 
+      <div class="sh2">Scoring &amp; Limits</div>
       <div class="sg">
         <div class="sg-k">Response Type</div><div class="sg-v">${h((sec.responseType||'').replace(/_/g,' '))}</div>
+        <div class="sg-k">Marks Available</div><div class="sg-v" style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--t1);">${sec.evaluationMaxScore != null ? sec.evaluationMaxScore : '\u2014'}</div>
+        <div class="sg-k">Word Limit</div><div class="sg-v">${sec.wordLimit ? sec.wordLimit.toLocaleString() + ' words' : '\u2014'}</div>
+        <div class="sg-k">Page Limit</div><div class="sg-v">${sec.pageLimit ? sec.pageLimit + ' pages' : '\u2014'}</div>
+      </div>
+
+      <div class="sh2" style="margin-top:18px;">Source Reference</div>
+      <div class="sg">
         <div class="sg-k">ITT Section</div><div class="sg-v">${h(sec.sectionNumber || '\u2014')}</div>
-        <div class="sg-k">Eval Weight</div><div class="sg-v">${sec.evaluationWeightPct ? sec.evaluationWeightPct + '%' : '\u2014'}</div>
-        <div class="sg-k">Max Score</div><div class="sg-v">${sec.evaluationMaxScore || '\u2014'}</div>
-        <div class="sg-k">Hurdle Score</div><div class="sg-v">${sec.hurdleScore || '\u2014'}</div>
-        <div class="sg-k">Word Limit</div><div class="sg-v">${sec.wordLimit || '\u2014'}</div>
-        <div class="sg-k">Page Limit</div><div class="sg-v">${sec.pageLimit || '\u2014'}</div>
+        <div class="sg-k">Source Volume</div><div class="sg-v">${h(sec.ittVolume || '\u2014')}</div>
+        <div class="sg-k">Evaluation Category</div><div class="sg-v">${h(catLabel)}</div>
       </div>
-
-      <div class="sh2" style="margin-top:16px;">Production ${statusBadge}</div>
-      ${item ? `<div class="sg">
-        <div class="sg-k">Owner</div><div class="sg-v">${h(item.owner || '\u2014')}</div>
-        <div class="sg-k">Words</div><div class="sg-v">${item.currentWordCount || 0}${sec.wordLimit ? ' / ' + sec.wordLimit : ''}</div>
-        <div class="sg-k">Complexity</div><div class="sg-v">${h((item.complexityEstimate||'high').replace(/_/g,' '))}</div>
-        <div class="sg-k">Effort</div><div class="sg-v">${effort ? effort + ' days' : '\u2014'}</div>
-        <div class="sg-k">Due Date</div><div class="sg-v">${item.dueDate ? STORE.fmtDate(item.dueDate) : '\u2014'}</div>
-      </div>
-      <div style="margin:10px 0;">${statusBtns || '<span style="color:var(--t3);font-size:11px;">No valid transitions</span>'}</div>
-
-      <div class="sh2">Quality Dimensions</div>
-      ${qDims.map(d => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:120px;">${d.label}</span>
-        ${qBadge(d.val)}
-        ${d.notes ? `<span style="font-size:10px;color:var(--t3);">${h(d.notes)}</span>` : ''}
-      </div>`).join('')}
-      ${item.qualityScoreSelfAssessment != null ? `<div style="margin-top:6px;"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">Self-Assessment:</span> <span style="color:var(--gold);font-weight:700;">${item.qualityScoreSelfAssessment}</span>${item.qualityScoreRationale ? ` <span style="font-size:10px;color:var(--t3);">\u2014 ${h(item.qualityScoreRationale)}</span>` : ''}</div>` : ''}
-
-      <div class="sh2" style="margin-top:14px;">Notes</div>
-      <textarea class="textarea" placeholder="Add notes\u2026" onchange="handleResponseItemNotes(${items.indexOf(item)},this.value)">${h(item.notes||'')}</textarea>
-      ` : `<div style="padding:16px 0;"><button class="btn btn-primary" onclick="handleStartProductionForSection('${sec.id}');ROUTER.closeSlideout();">Start Production</button></div>`}
     </div>
   </div>`;
 }
@@ -4683,140 +4651,157 @@ function renderSubmissions(bid) {
     red_ready:'var(--red)', red_reviewed:'var(--red)', gold_ready:'var(--gold)', final:'var(--grn)'
   };
 
-  // View tabs — 6 views
-  const views = [['responses','Response Requirements'],['pipeline','Production Pipeline'],['compliance','Compliance Matrix'],['winthemes','Win Themes'],['quality','Quality Overview'],['gaps','Gap Report']];
+  // View tabs — 4 views (compliance matrix and gap report deferred to V2)
+  const views = [['responses','Response Requirements'],['pipeline','Production Pipeline'],['winthemes','Win Themes'],['quality','Quality Overview']];
   const tabHtml = `<div class="view-tabs">${views.map(([id,l]) =>
     `<button class="view-tab ${ROUTER.subView===id?'on':''}" onclick="ROUTER.setSubView('${id}')">${l}</button>`
   ).join('')}</div>`;
 
-  // Metrics — ResponseSection denominator, ResponseItem production
-  const covPct = respComp.productionCoverage;
-  const metricsHtml = `<div class="cg c6" style="margin-bottom:16px;">
-    <div class="metric"><div class="metric-val" style="color:var(--t1);">${respComp.totalSections || responseItems.length}</div><div class="metric-lbl">${respComp.totalSections ? 'Response Sections' : 'Response Items'}</div></div>
-    <div class="metric"><div class="metric-val" style="color:${covPct>=80?'var(--grn)':covPct>=40?'var(--amb)':'var(--red)'};">${respComp.totalSections ? respComp.totalItems + '/' + respComp.totalSections : responseItems.length}</div><div class="metric-lbl">Production Started</div></div>
-    <div class="metric"><div class="metric-val" style="color:${respComp.progress>=80?'var(--grn)':respComp.progress>=40?'var(--amb)':'var(--red)'};">${respComp.progress}%</div><div class="metric-lbl">Progress</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--gold);">${respComp.totalMarks}</div><div class="metric-lbl">Total Marks</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--blu);">${respComp.totalEffortDays}</div><div class="metric-lbl">Effort (days)</div></div>
-    <div class="metric"><div class="metric-val" style="color:${compCov.hasNonCompliant?'var(--red)':'var(--grn)'};">${compReqs.length ? compCov.completion + '%' : 'N/A'}</div><div class="metric-lbl">Compliance</div></div>
-  </div>`;
-
-  // Pipeline status bar for 10 stages (denominator = ResponseSection count or ResponseItem count)
-  const barSegments = Object.keys(COMPLIANCE.STAGE_WEIGHTS).reverse().map(s => ({
-    label: (_statusMeta[s]||{}).label || s, count: respComp.pipeline[s]||0, color: PIPELINE_COLORS[s]||'var(--t4)'
-  }));
-  const barTotal = respComp.total || responseItems.length;
-  const barHtml = barTotal ? `<div class="pipeline-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
-    `<div class="pipeline-seg" style="width:${(s.count/barTotal*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
-  ).join('')}</div>` : '';
-
-  // Hard gate warnings
+  // Production metrics and pipeline bar — only shown on production-related tabs
+  const isProdTab = ROUTER.subView === 'pipeline' || ROUTER.subView === 'quality';
+  let metricsHtml = '';
+  let barHtml = '';
   let gateHtml = '';
-  if (compCov.hasNonCompliant) gateHtml += `<div class="co co-r" style="margin-bottom:10px;"><div class="co-l">Hard Gate</div><div class="co-t">${compCov.nonCompliant} non-compliant declaration${compCov.nonCompliant!==1?'s':''}. Readiness capped at 30%.</div></div>`;
+
+  if (isProdTab) {
+    const covPct = respComp.productionCoverage;
+    metricsHtml = `<div class="cg c5" style="margin-bottom:16px;">
+      <div class="metric"><div class="metric-val" style="color:var(--t1);">${respComp.totalSections || responseItems.length}</div><div class="metric-lbl">${respComp.totalSections ? 'Response Sections' : 'Response Items'}</div></div>
+      <div class="metric"><div class="metric-val" style="color:${covPct>=80?'var(--grn)':covPct>=40?'var(--amb)':'var(--red)'};">${respComp.totalSections ? respComp.totalItems + '/' + respComp.totalSections : responseItems.length}</div><div class="metric-lbl">Production Started</div></div>
+      <div class="metric"><div class="metric-val" style="color:${respComp.progress>=80?'var(--grn)':respComp.progress>=40?'var(--amb)':'var(--red)'};">${respComp.progress}%</div><div class="metric-lbl">Progress</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--gold);">${respComp.totalMarks}</div><div class="metric-lbl">Total Marks</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--blu);">${respComp.totalEffortDays}</div><div class="metric-lbl">Effort (days)</div></div>
+    </div>`;
+
+    // Pipeline status bar
+    const barSegments = Object.keys(COMPLIANCE.STAGE_WEIGHTS).reverse().map(s => ({
+      label: (_statusMeta[s]||{}).label || s, count: respComp.pipeline[s]||0, color: PIPELINE_COLORS[s]||'var(--t4)'
+    }));
+    const barTotal = respComp.total || responseItems.length;
+    barHtml = barTotal ? `<div class="pipeline-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
+      `<div class="pipeline-seg" style="width:${(s.count/barTotal*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
+    ).join('')}</div>` : '';
+
+    // Hard gate warnings
+    if (compCov.hasNonCompliant) gateHtml = `<div class="co co-r" style="margin-bottom:10px;"><div class="co-l">Hard Gate</div><div class="co-t">${compCov.nonCompliant} non-compliant declaration${compCov.nonCompliant!==1?'s':''}. Readiness capped at 30%.</div></div>`;
+  }
 
   let bodyHtml = '';
   if (ROUTER.subView === 'pipeline') bodyHtml = _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS);
-  else if (ROUTER.subView === 'compliance') bodyHtml = _renderComplianceMatrix(bid);
   else if (ROUTER.subView === 'winthemes') bodyHtml = _renderWinThemes(bid);
   else if (ROUTER.subView === 'quality') bodyHtml = _renderQualityOverview(bid);
-  else if (ROUTER.subView === 'gaps') bodyHtml = _renderGapReport(bid);
-  else bodyHtml = _renderResponseRegister(bid, _statusMeta);
+  else bodyHtml = _renderResponseRegister(bid);
 
-  // Response item slideout
+  // Response section detail slideout (reference data only)
   const slideoutHtml = ROUTER._slideout && ROUTER._slideout.type === 'response'
     ? _renderResponseSlideout(bid, ROUTER._slideout.id) : '';
 
   return `<div class="sl">Module M5</div>
     <div class="pg-title">Submissions</div>
-    <div class="pg-desc">Track submission deliverables through the 10-stage production lifecycle, manage compliance declarations, win themes, and quality dimensions.</div>
+    <div class="pg-desc">${ROUTER.subView === 'responses' ? 'What the client has released for submission — structured by evaluation category.' : 'Track submission deliverables through the 10-stage production lifecycle, win themes, and quality dimensions.'}</div>
     ${metricsHtml}
     ${barHtml}
     ${gateHtml}
     ${tabHtml}
     ${bodyHtml}
     <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      ${ROUTER.subView === 'responses' ? `<button class="btn" onclick="handleResponseCsvImport()">Import Sections CSV</button>` : `
       <button class="btn" onclick="handleAddResponseItemModal()">+ Response Item</button>
-      <button class="btn" onclick="handleResponseCsvImport()">Import Sections CSV</button>
-      <button class="btn" onclick="handleAddCompReqModal()">+ Compliance Req</button>
-      <button class="btn" onclick="handleCompReqCsvImport()">Import Compliance CSV</button>
-      <button class="btn" onclick="handleAddWinThemeModal()">+ Win Theme</button>
+      <button class="btn" onclick="handleResponseCsvImport()">Import Sections CSV</button>`}
+      ${ROUTER.subView === 'winthemes' ? `<button class="btn" onclick="handleAddWinThemeModal()">+ Win Theme</button>` : ''}
     </div>
     ${slideoutHtml}`;
 }
 
-function _renderResponseRegister(bid, _statusMeta) {
+function _renderResponseRegister(bid) {
   const sections = bid.responseSections || [];
   const items = bid.responseItems || [];
-  const hasSections = sections.length > 0;
+  const ef = bid.evaluationFramework || {};
 
-  if (!hasSections && items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response sections or items yet. Import the exam paper via CSV or add response items to track production progress.</div>';
+  if (sections.length === 0 && items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response sections yet. Import the exam paper via CSV or add sections manually.</div>';
 
-  const _statusBadge = s => {
-    const meta = (_statusMeta||{})[s] || { cls:'fe-mute', label:(s||'not_started').replace(/_/g,' ') };
-    return `<span class="fe ${meta.cls}">${meta.label}</span>`;
+  // Category display order and weight % from EvaluationFramework
+  const categoryOrder = ['quality','price','social_value','pass_fail','unscored'];
+  const categoryLabels = { quality:'Quality', price:'Price / Commercial', social_value:'Social Value', pass_fail:'Pass / Fail', unscored:'Unscored' };
+  const categoryWeights = {
+    quality: ef.qualityWeightPct || null,
+    price: ef.priceWeightPct || null,
+    social_value: ef.socialValueWeightPct || null,
   };
+  if (ef.otherWeightPct) { categoryWeights[ef.otherWeightLabel || 'other'] = ef.otherWeightPct; }
 
-  // Build joined rows: ResponseSection + linked ResponseItem
-  // If no sections exist (legacy data), fall back to ResponseItems directly
-  let joinedRows;
-  if (hasSections) {
-    joinedRows = sections.map(sec => {
-      const item = sec.linkedResponseItemId ? items.find(r => r.id === sec.linkedResponseItemId) : null;
-      return { section: sec, item, ref: sec.reference, title: sec.title, sortOrder: sec.sortOrder || 0 };
-    });
-    // Sort by evaluation weight descending (Rule 6.1: prioritise where the marks are)
-    joinedRows.sort((a,b) => (b.section.evaluationWeightPct||0) - (a.section.evaluationWeightPct||0));
+  // Build rows from sections, sorted by client document structure (sortOrder)
+  let allRows;
+  if (sections.length > 0) {
+    allRows = sections.map(sec => ({ section: sec, ref: sec.reference, title: sec.title, sortOrder: sec.sortOrder || 0 }));
+    allRows.sort((a,b) => a.sortOrder - b.sortOrder);
   } else {
-    // Legacy mode: no sections, use items directly
-    joinedRows = items.map(r => ({
-      section: null, item: r, ref: r.reference, title: r.title || r.questionText || '', sortOrder: 0
+    // Legacy mode: no sections, use items directly — flat list
+    allRows = items.map(r => ({
+      section: { id: r.linkedResponseSectionId || r.id, reference: r.reference, title: r.title || r.questionText || '',
+        responseType: r.responseType, evaluationCategory: r.evaluationCategory || 'quality',
+        evaluationMaxScore: r.evaluationMaxScore, wordLimit: r.wordLimit, pageLimit: r.pageLimit,
+        hurdleScore: r.hurdleScore, questionText: r.questionText, evaluationCriteria: r.evaluationCriteria,
+        sectionNumber: r.sectionNumber, sortOrder: 0 },
+      ref: r.reference, title: r.title || r.questionText || '', sortOrder: 0
     }));
-    joinedRows.sort((a,b) => ((b.item && b.item.evaluationWeightPct)||0) - ((a.item && a.item.evaluationWeightPct)||0));
   }
 
-  const rows = joinedRows.map((row, i) => {
-    const sec = row.section;
-    const r = row.item;
-    const hasItem = !!r;
-    const wordLimit = sec ? sec.wordLimit : (r ? r.wordLimit : 0);
-    const wordCount = r ? (r.currentWordCount || 0) : 0;
-    const wordPct = wordLimit > 0 ? Math.min(100, Math.round(wordCount / wordLimit * 100)) : 0;
-    const wordBarColor = wordPct >= 100 ? 'var(--grn)' : wordPct >= 70 ? 'var(--amb)' : 'var(--blu)';
-    const weight = sec ? sec.evaluationWeightPct : (r ? r.evaluationWeightPct : 0);
-    const responseType = sec ? sec.responseType : (r ? r.responseType : '');
-    const effort = r ? COMPLIANCE.deriveEffort(r, bid) : 0;
-    const status = r ? (r.status || 'not_started') : 'not_started';
-    const owner = r ? r.owner : '';
-    const idx = r ? items.indexOf(r) : -1;
-    const rowStyle = !hasItem ? 'opacity:0.6;border-left:2px dashed var(--t4);' : '';
-    const sectionId = sec ? sec.id : (r && r.linkedResponseSectionId ? r.linkedResponseSectionId : '');
-    const rowClick = sectionId ? `onclick="ROUTER.openSlideout('response','${sectionId}')"` : '';
+  // Group by evaluationCategory
+  const groups = {};
+  allRows.forEach(row => {
+    const cat = (row.section && row.section.evaluationCategory) || 'unscored';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(row);
+  });
 
-    return `<div class="ri-row" style="${rowStyle}cursor:pointer;" ${rowClick}>
-      <div class="ri-ref">${h(row.ref || (i+1))}</div>
-      <div><div class="ri-title">${h(row.title)}</div>
-        ${wordLimit ? `<div class="ri-word-bar"><div class="ri-word-fill" style="width:${wordPct}%;background:${wordBarColor};"></div></div>` : ''}
-        ${responseType ? `<div class="ri-title-sub">${h(responseType)}</div>` : ''}
+  // Render each category group in prescribed order
+  const _collapsedSections = window._rrCollapsed || (window._rrCollapsed = {});
+  let html = '';
+  categoryOrder.forEach(cat => {
+    if (!groups[cat] || groups[cat].length === 0) return;
+    const rows = groups[cat];
+    const weight = categoryWeights[cat];
+    const label = categoryLabels[cat] || cat.replace(/_/g,' ');
+    const isCollapsed = _collapsedSections[cat] === true;
+
+    html += `<div class="ri-section-hdr" onclick="window._rrCollapsed=window._rrCollapsed||{};window._rrCollapsed['${cat}']=!window._rrCollapsed['${cat}'];renderApp();">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="ri-section-toggle ${isCollapsed ? 'collapsed' : ''}">&#9660;</span>
+        <span class="ri-section-name">${h(label)}</span>
       </div>
-      <div class="ri-words">${wordLimit ? `${wordCount}/${wordLimit}` : '\u2014'}</div>
-      <div class="ri-weight">${weight ? weight + '%' : '\u2014'}</div>
-      <div>${_statusBadge(status)}</div>
-      <div class="ri-effort">${effort ? effort + 'd' : '\u2014'}</div>
-      <div class="ri-owner">${h(owner || '\u2014')}</div>
-      <div>${hasItem ? `
-        <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onclick="event.stopPropagation()" onchange="handleResponseStatus(${idx},this.value)">
-          <option value="${status}" selected>${((_statusMeta||{})[status]||{}).label||status.replace(/_/g,' ')}</option>
-          ${TRANSITIONS.validNextResponseStatuses(status).map(s =>
-            `<option value="${s}">${((_statusMeta||{})[s]||{}).label||s.replace(/_/g,' ')}</option>`
-          ).join('')}
-        </select>` : `<button class="btn btn-sm" onclick="handleStartProductionForSection('${sec ? sec.id : ''}')">Start</button>`}
-      </div>
+      ${weight ? `<span class="ri-section-weight">${weight}%</span>` : ''}
     </div>`;
-  }).join('');
 
-  return `<div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
-    <div class="ri-hdr"><span>Ref</span><span>Deliverable</span><span>Words</span><span>Weight</span><span>Status</span><span>Effort</span><span>Owner</span><span>Action</span></div>
-    ${rows}
-  </div>`;
+    if (!isCollapsed) {
+      html += `<div class="ri-section-body">`;
+      html += `<div class="ri-hdr"><span>Ref</span><span>Deliverable</span><span>Type</span><span>Output</span><span>Marks</span><span>Hurdle</span></div>`;
+      rows.forEach((row, i) => {
+        const sec = row.section;
+        const wordLimit = sec.wordLimit;
+        const pageLimit = sec.pageLimit;
+        const marks = sec.evaluationMaxScore;
+        const hasHurdle = sec.hurdleScore != null;
+        const responseType = (sec.responseType || '').replace(/_/g, ' ');
+        const sectionId = sec.id || '';
+        const outputParts = [];
+        if (wordLimit) outputParts.push(`${wordLimit.toLocaleString()} words`);
+        if (pageLimit) outputParts.push(`${pageLimit} pg`);
+
+        html += `<div class="ri-row" onclick="ROUTER.openSlideout('response','${sectionId}')">
+          <div class="ri-ref">${h(row.ref || '')}</div>
+          <div><div class="ri-title">${h(row.title)}</div></div>
+          <div class="ri-title-sub">${h(responseType)}</div>
+          <div class="ri-words">${outputParts.length ? outputParts.join(' / ') : '\u2014'}</div>
+          <div class="ri-marks">${marks != null ? marks : '\u2014'}</div>
+          <div class="ri-hurdle">${hasHurdle ? `<span class="fe fe-r">Yes</span>` : `<span style="color:var(--t4);">\u2014</span>`}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  });
+
+  return `<div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">${html}</div>`;
 }
 
 function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) {
@@ -4888,38 +4873,7 @@ function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) 
   ${groupedHtml}`;
 }
 
-function _renderComplianceMatrix(bid) {
-  const reqs = bid.complianceRequirements || [];
-  if (reqs.length === 0) return `<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">
-    No compliance requirements imported. This register is optional — common in BPO/ITO bids with prescriptive specifications.
-    <br><br><button class="btn" onclick="handleAddCompReqModal()">+ Add Compliance Requirement</button>
-  </div>`;
-
-  const _compBadge = s => {
-    const m = { not_assessed:'fe-mute', compliant:'fe-g', partially_compliant:'fe-a', non_compliant:'fe-r', not_applicable:'fe-mute' };
-    return `<span class="fe ${m[s]||'fe-mute'}">${(s||'not_assessed').replace(/_/g,' ')}</span>`;
-  };
-
-  const rows = reqs.map((r, i) => `<div class="cm-row">
-    <div class="cm-ref">${h(r.reference || (i+1))}</div>
-    <div class="cm-text">${h(r.text || '')}${r.complianceExplanation ? `<div style="font-size:10px;color:var(--t3);margin-top:2px;font-style:italic;">${h(r.complianceExplanation)}</div>` : ''}</div>
-    <div>${_compBadge(r.complianceStatus)}</div>
-    <div>
-      <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onchange="handleCompStatus(${i},this.value)">
-        <option value="${r.complianceStatus||'not_assessed'}" selected>${(r.complianceStatus||'not_assessed').replace(/_/g,' ')}</option>
-        ${TRANSITIONS.validNextComplianceStatuses(r.complianceStatus||'not_assessed').map(s =>
-          `<option value="${s}">${s.replace(/_/g,' ')}</option>`
-        ).join('')}
-      </select>
-    </div>
-    <div><button class="btn btn-sm" onclick="handleCompExplanation(${i})">Note</button></div>
-  </div>`).join('');
-
-  return `<div style="background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
-    <div class="cm-hdr"><span>Ref</span><span>Requirement</span><span>Status</span><span>Action</span><span>Note</span></div>
-    ${rows}
-  </div>`;
-}
+// _renderComplianceMatrix removed — compliance matrix UX deferred to V2 (managed externally via AI + Excel in V1)
 
 function _renderWinThemes(bid) {
   const themes = bid.winThemes || [];
@@ -5048,73 +5002,7 @@ function _renderQualityOverview(bid) {
   return `${metricsHtml}${detailHtml}${gapHtml}`;
 }
 
-function _renderGapReport(bid) {
-  const responseItems = bid.responseItems || [];
-  const compReqs = bid.complianceRequirements || [];
-
-  // Response gaps: not_started items sorted by weight
-  const respGaps = responseItems.filter(r => r.status === 'not_started' || !r.status)
-    .sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
-
-  // Compliance gaps: non_compliant or partially_compliant
-  const compGaps = compReqs.filter(r => r.complianceStatus === 'non_compliant' || r.complianceStatus === 'partially_compliant');
-
-  // Quality gaps: items with any quality dimension at no or partial
-  const qualGaps = responseItems.filter(r =>
-    r.qualityAnswersQuestion === 'no' || r.qualityAnswersQuestion === 'partial' ||
-    r.qualityFollowsStructure === 'no' || r.qualityFollowsStructure === 'partial' ||
-    r.qualityCredentials === 'no' || r.qualityCredentials === 'partial'
-  ).sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
-
-  if (respGaps.length === 0 && compGaps.length === 0 && qualGaps.length === 0) {
-    return '<div class="co co-v"><div class="co-l">No gaps</div><div class="co-t">All response items are in progress, no compliance issues, and no quality gaps found.</div></div>';
-  }
-
-  let html = '';
-  if (compGaps.length > 0) {
-    html += `<div class="co co-r" style="margin-bottom:10px;"><div class="co-l">Compliance Gaps</div>
-      <div class="co-t">${compGaps.length} requirement${compGaps.length!==1?'s':''} with compliance issues.</div></div>
-      <div style="background:var(--bg2);border:1px solid var(--bdr);margin-bottom:14px;">
-        ${compGaps.map(g => `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
-          <span class="fe fe-mute">${h(g.reference||'')}</span>
-          <span style="flex:1;font-size:12px;color:var(--t2);">${h(g.text||'')}</span>
-          <span class="fe ${g.complianceStatus==='non_compliant'?'fe-r':'fe-a'}">${g.complianceStatus.replace(/_/g,' ')}</span>
-        </div>`).join('')}
-      </div>`;
-  }
-
-  if (respGaps.length > 0) {
-    html += `<div class="sh2">Response Items Not Started (${respGaps.length})</div>
-      <div style="background:var(--bg2);border:1px solid var(--bdr);margin-bottom:14px;">
-        ${respGaps.map(g => `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
-          <span class="fe fe-mute">${h(g.reference||'')}</span>
-          <span style="flex:1;font-size:12px;color:var(--t2);">${h(g.title || g.questionText || '')}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${g.evaluationWeightPct ? g.evaluationWeightPct + '%' : ''}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${COMPLIANCE.deriveEffort(g) ? COMPLIANCE.deriveEffort(g) + 'd' : ''}</span>
-        </div>`).join('')}
-      </div>`;
-  }
-
-  if (qualGaps.length > 0) {
-    html += `<div class="sh2">Quality Gaps (${qualGaps.length})</div>
-      <div style="background:var(--bg2);border:1px solid var(--bdr);">
-        ${qualGaps.map(r => {
-          const gaps = [];
-          if (r.qualityAnswersQuestion === 'no' || r.qualityAnswersQuestion === 'partial') gaps.push('answers');
-          if (r.qualityFollowsStructure === 'no' || r.qualityFollowsStructure === 'partial') gaps.push('structure');
-          if (r.qualityCredentials === 'no' || r.qualityCredentials === 'partial') gaps.push('credentials');
-          return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
-            <span class="fe fe-mute">${h(r.reference||'')}</span>
-            <span style="flex:1;font-size:12px;color:var(--t2);">${h(r.title||r.questionText||'')}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${r.evaluationWeightPct ? r.evaluationWeightPct+'%' : ''}</span>
-            ${gaps.map(g => `<span class="fe fe-r">${g}</span>`).join('')}
-          </div>`;
-        }).join('')}
-      </div>`;
-  }
-
-  return html;
-}
+// _renderGapReport removed — gap report UX deferred to V2 (depends on in-product compliance tracking)
 
 function renderReviews(bid) {
   const cycles = bid.reviewCycles || [];
@@ -6786,147 +6674,8 @@ function _doResponseCsvImport() {
 }
 
 // ── Compliance Requirement handlers ───────────────────────
-function handleCompStatus(idx, newStatus) {
-  STORE.mutateBid(ROUTER.bidId, bid => {
-    const req = (bid.complianceRequirements || [])[idx];
-    if (!req) return;
-    // If changing to partial/non-compliant, prompt for explanation
-    if ((newStatus === 'partially_compliant' || newStatus === 'non_compliant') && !req.complianceExplanation) {
-      const expl = prompt(`Explanation required for "${newStatus.replace(/_/g,' ')}":`);
-      if (!expl) return; // cancelled
-      req.complianceExplanation = expl;
-    }
-    const result = TRANSITIONS.changeComplianceStatus(req, newStatus);
-    if (!result.ok) { alert(result.error); return; }
-  });
-  renderApp();
-}
-
-function handleCompExplanation(idx) {
-  const bid = STORE.loadBid(ROUTER.bidId);
-  const req = (bid && bid.complianceRequirements || [])[idx];
-  if (!req) return;
-  const expl = prompt('Compliance explanation / evidence:', req.complianceExplanation || '');
-  if (expl === null) return;
-  STORE.mutateBid(ROUTER.bidId, bid => {
-    const r = bid.complianceRequirements[idx];
-    if (r) { r.complianceExplanation = expl; r.lastUpdated = STORE.now(); }
-  });
-  renderApp();
-}
-
-function handleAddCompReqModal() {
-  const el = document.createElement('div');
-  el.id = 'modal-overlay'; el.className = 'overlay';
-  el.innerHTML = `<div class="modal">
-    <div class="modal-hdr">
-      <div class="modal-title">Add Compliance Requirement</div>
-      <button class="modal-close" onclick="closeModal()">\u00D7</button>
-    </div>
-    <div class="form-row">
-      <div class="form-col" style="max-width:100px;"><label class="form-label">Reference</label><input class="inp" id="cr-ref" placeholder="e.g. 3.1.2"></div>
-      <div class="form-col" style="flex:2;"><label class="form-label req">Requirement Text</label><textarea class="textarea" id="cr-text" placeholder="The supplier shall\u2026"></textarea></div>
-    </div>
-    <div class="form-row">
-      <div class="form-col"><label class="form-label">Category</label>
-        <select class="sel" id="cr-cat">
-          <option>Technical</option><option>Commercial</option><option>Legal</option><option>Delivery</option><option>Governance</option><option>Other</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="handleAddCompReqConfirm()">Add</button>
-    </div>
-  </div>`;
-  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
-  document.body.appendChild(el);
-}
-
-function handleAddCompReqConfirm() {
-  const text = (document.getElementById('cr-text').value || '').trim();
-  if (!text) { alert('Requirement text is required.'); return; }
-  STORE.mutateBid(ROUTER.bidId, bid => {
-    if (!bid.complianceRequirements) bid.complianceRequirements = [];
-    bid.complianceRequirements.push({
-      id: STORE.uuid(),
-      reference: (document.getElementById('cr-ref').value || '').trim(),
-      text,
-      category: document.getElementById('cr-cat').value,
-      complianceStatus: 'not_assessed',
-      complianceExplanation: '',
-      evidenceReference: '',
-      linkedResponseItemIds: [],
-      lastUpdated: STORE.now(),
-    });
-  });
-  closeModal();
-  renderApp();
-}
-
-function handleCompReqCsvImport() {
-  const el = document.createElement('div');
-  el.id = 'modal-overlay'; el.className = 'overlay';
-  el.innerHTML = `<div class="modal" style="max-width:580px;">
-    <div class="modal-hdr">
-      <div class="modal-title">Import Compliance Requirements CSV</div>
-      <button class="modal-close" onclick="closeModal()">\u00D7</button>
-    </div>
-    <div style="padding:0 20px 16px;">
-      <div class="sh2">Required CSV Structure</div>
-      <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px;">
-        Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Text</strong> is the only mandatory field.
-      </div>
-      <div style="background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;overflow-x:auto;margin-bottom:12px;">
-        <div style="color:var(--gold);margin-bottom:4px;">Column Order:</div>
-        <div><span style="color:var(--t1);">1. reference</span> \u2014 e.g. 3.1.2, REQ-007</div>
-        <div><span style="color:var(--t1);">2. text</span> <span style="color:var(--red);">*required</span> \u2014 the prescriptive requirement</div>
-        <div><span style="color:var(--t1);">3. category</span> \u2014 Technical | Commercial | Legal | Delivery | Governance | Other</div>
-      </div>
-      <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">
-        <strong>Example row:</strong> 3.1.2, "The supplier shall provide 24/7 service desk coverage", Technical
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="closeModal();_doCompReqCsvImport();">Select CSV File</button>
-    </div>
-  </div>`;
-  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
-  document.body.appendChild(el);
-}
-
-function _doCompReqCsvImport() {
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = '.csv';
-  input.onchange = e => {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const rows = ev.target.result.trim().split(/\r?\n/);
-      let imported = 0, rejected = 0;
-      STORE.mutateBid(ROUTER.bidId, bid => {
-        if (!bid.complianceRequirements) bid.complianceRequirements = [];
-        rows.forEach((row, i) => {
-          const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
-          if (i === 0 && /^ref/i.test(cols[0])) return;
-          const [ref='', text='', category=''] = cols;
-          if (!text) { rejected++; return; }
-          bid.complianceRequirements.push({
-            id: STORE.uuid(), reference: ref, text, category: category || 'Other',
-            complianceStatus: 'not_assessed', complianceExplanation: '',
-            evidenceReference: '', linkedResponseItemIds: [], lastUpdated: STORE.now(),
-          });
-          imported++;
-        });
-      });
-      alert(`${imported} compliance requirements imported, ${rejected} rejected`);
-      renderApp();
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
+// Compliance requirement handlers removed — compliance matrix UX deferred to V2
+// Data model (complianceRequirements array, TRANSITIONS.changeComplianceStatus) retained for governance hard gates and V2
 
 // ── Win Theme handlers ────────────────────────────────────
 function handleAddWinThemeModal() {
