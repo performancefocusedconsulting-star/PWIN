@@ -4562,6 +4562,100 @@ function _renderActivitySlideout(bid, actId) {
   </div>`;
 }
 
+function _renderResponseSlideout(bid, sectionId) {
+  const sections = bid.responseSections || [];
+  const items = bid.responseItems || [];
+  const sec = sections.find(s => s.id === sectionId);
+  if (!sec) return '';
+  const item = sec.linkedResponseItemId ? items.find(r => r.id === sec.linkedResponseItemId) : null;
+  const effort = item ? COMPLIANCE.deriveEffort(item, bid) : 0;
+
+  const _statusMeta = {
+    not_started:{cls:'fe-mute',label:'Not Started'}, storyboard:{cls:'fe-b',label:'Storyboard'},
+    storyboard_approved:{cls:'fe-p',label:'SB Approved'}, first_draft:{cls:'fe-a',label:'1st Draft'},
+    pink_ready:{cls:'fe-a',label:'Pink Ready'}, pink_reviewed:{cls:'fe-g',label:'Pink Done'},
+    red_ready:{cls:'fe-a',label:'Red Ready'}, red_reviewed:{cls:'fe-g',label:'Red Done'},
+    gold_ready:{cls:'fe-a',label:'Gold Ready'}, final:{cls:'fe-g',label:'Final'},
+  };
+  const status = item ? (item.status || 'not_started') : 'not_started';
+  const statusBadge = `<span class="fe ${(_statusMeta[status]||{}).cls||'fe-mute'}">${(_statusMeta[status]||{}).label||status}</span>`;
+
+  // Status transition buttons
+  let statusBtns = '';
+  if (item) {
+    const validNext = TRANSITIONS.validNextResponseStatuses(status);
+    statusBtns = validNext.map(s => {
+      const meta = _statusMeta[s] || { label: s.replace(/_/g,' ') };
+      const idx = items.indexOf(item);
+      return `<button class="btn btn-sm" onclick="handleResponseStatus(${idx},'${s}');ROUTER.closeSlideout();">${meta.label}</button>`;
+    }).join(' ');
+  }
+
+  // Quality dimensions
+  const qDims = item ? [
+    { label:'Answers Question', val:item.qualityAnswersQuestion, notes:item.qualityAnswersQuestionNotes },
+    { label:'Follows Structure', val:item.qualityFollowsStructure, notes:item.qualityFollowsStructureNotes },
+    { label:'Credentials', val:item.qualityCredentials, notes:item.qualityCredentialsRefs },
+  ] : [];
+  const qBadge = v => {
+    if (v === 'yes') return '<span class="fe fe-g">Yes</span>';
+    if (v === 'partial') return '<span class="fe fe-a">Partial</span>';
+    if (v === 'no') return '<span class="fe fe-r">No</span>';
+    return '<span class="fe fe-mute">Not Assessed</span>';
+  };
+
+  return `<div class="slideout-overlay" onclick="ROUTER.closeSlideout()"></div>
+  <div class="slideout">
+    <div class="slideout-hdr">
+      <div class="slideout-title">${h(sec.reference||'')} \u2014 ${h(sec.title||'')}</div>
+      <button class="modal-close" onclick="ROUTER.closeSlideout()">\u00D7</button>
+    </div>
+    <div class="slideout-body">
+      ${sec.questionText ? `<div class="co co-g" style="margin-bottom:14px;"><div class="co-l">Question Text</div><div class="co-t" style="white-space:pre-line;">${h(sec.questionText)}</div></div>` : ''}
+      ${sec.evaluationCriteria ? `<div class="co co-b" style="margin-bottom:14px;"><div class="co-l">Evaluation Criteria</div><div class="co-t">${h(sec.evaluationCriteria)}</div></div>` : ''}
+
+      <div class="sg">
+        <div class="sg-k">Response Type</div><div class="sg-v">${h((sec.responseType||'').replace(/_/g,' '))}</div>
+        <div class="sg-k">ITT Section</div><div class="sg-v">${h(sec.sectionNumber || '\u2014')}</div>
+        <div class="sg-k">Eval Weight</div><div class="sg-v">${sec.evaluationWeightPct ? sec.evaluationWeightPct + '%' : '\u2014'}</div>
+        <div class="sg-k">Max Score</div><div class="sg-v">${sec.evaluationMaxScore || '\u2014'}</div>
+        <div class="sg-k">Hurdle Score</div><div class="sg-v">${sec.hurdleScore || '\u2014'}</div>
+        <div class="sg-k">Word Limit</div><div class="sg-v">${sec.wordLimit || '\u2014'}</div>
+        <div class="sg-k">Page Limit</div><div class="sg-v">${sec.pageLimit || '\u2014'}</div>
+      </div>
+
+      <div class="sh2" style="margin-top:16px;">Production ${statusBadge}</div>
+      ${item ? `<div class="sg">
+        <div class="sg-k">Owner</div><div class="sg-v">${h(item.owner || '\u2014')}</div>
+        <div class="sg-k">Words</div><div class="sg-v">${item.currentWordCount || 0}${sec.wordLimit ? ' / ' + sec.wordLimit : ''}</div>
+        <div class="sg-k">Complexity</div><div class="sg-v">${h((item.complexityEstimate||'high').replace(/_/g,' '))}</div>
+        <div class="sg-k">Effort</div><div class="sg-v">${effort ? effort + ' days' : '\u2014'}</div>
+        <div class="sg-k">Due Date</div><div class="sg-v">${item.dueDate ? STORE.fmtDate(item.dueDate) : '\u2014'}</div>
+      </div>
+      <div style="margin:10px 0;">${statusBtns || '<span style="color:var(--t3);font-size:11px;">No valid transitions</span>'}</div>
+
+      <div class="sh2">Quality Dimensions</div>
+      ${qDims.map(d => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:120px;">${d.label}</span>
+        ${qBadge(d.val)}
+        ${d.notes ? `<span style="font-size:10px;color:var(--t3);">${h(d.notes)}</span>` : ''}
+      </div>`).join('')}
+      ${item.qualityScoreSelfAssessment != null ? `<div style="margin-top:6px;"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">Self-Assessment:</span> <span style="color:var(--gold);font-weight:700;">${item.qualityScoreSelfAssessment}</span>${item.qualityScoreRationale ? ` <span style="font-size:10px;color:var(--t3);">\u2014 ${h(item.qualityScoreRationale)}</span>` : ''}</div>` : ''}
+
+      <div class="sh2" style="margin-top:14px;">Notes</div>
+      <textarea class="textarea" placeholder="Add notes\u2026" onchange="handleResponseItemNotes(${items.indexOf(item)},this.value)">${h(item.notes||'')}</textarea>
+      ` : `<div style="padding:16px 0;"><button class="btn btn-primary" onclick="handleStartProductionForSection('${sec.id}');ROUTER.closeSlideout();">Start Production</button></div>`}
+    </div>
+  </div>`;
+}
+
+function handleResponseItemNotes(idx, val) {
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const item = (bid.responseItems||[])[idx];
+    if (item) { item.notes = val; item.lastUpdated = STORE.now(); }
+  });
+}
+
 function renderSubmissions(bid) {
   const responseItems = bid.responseItems || [];
   const responseSections = bid.responseSections || [];
@@ -4627,6 +4721,10 @@ function renderSubmissions(bid) {
   else if (ROUTER.subView === 'gaps') bodyHtml = _renderGapReport(bid);
   else bodyHtml = _renderResponseRegister(bid, _statusMeta);
 
+  // Response item slideout
+  const slideoutHtml = ROUTER._slideout && ROUTER._slideout.type === 'response'
+    ? _renderResponseSlideout(bid, ROUTER._slideout.id) : '';
+
   return `<div class="sl">Module M5</div>
     <div class="pg-title">Submissions</div>
     <div class="pg-desc">Track submission deliverables through the 10-stage production lifecycle, manage compliance declarations, win themes, and quality dimensions.</div>
@@ -4641,7 +4739,8 @@ function renderSubmissions(bid) {
       <button class="btn" onclick="handleAddCompReqModal()">+ Compliance Req</button>
       <button class="btn" onclick="handleCompReqCsvImport()">Import Compliance CSV</button>
       <button class="btn" onclick="handleAddWinThemeModal()">+ Win Theme</button>
-    </div>`;
+    </div>
+    ${slideoutHtml}`;
 }
 
 function _renderResponseRegister(bid, _statusMeta) {
@@ -4689,8 +4788,10 @@ function _renderResponseRegister(bid, _statusMeta) {
     const owner = r ? r.owner : '';
     const idx = r ? items.indexOf(r) : -1;
     const rowStyle = !hasItem ? 'opacity:0.6;border-left:2px dashed var(--t4);' : '';
+    const sectionId = sec ? sec.id : (r && r.linkedResponseSectionId ? r.linkedResponseSectionId : '');
+    const rowClick = sectionId ? `onclick="ROUTER.openSlideout('response','${sectionId}')"` : '';
 
-    return `<div class="ri-row" style="${rowStyle}">
+    return `<div class="ri-row" style="${rowStyle}cursor:pointer;" ${rowClick}>
       <div class="ri-ref">${h(row.ref || (i+1))}</div>
       <div><div class="ri-title">${h(row.title)}</div>
         ${wordLimit ? `<div class="ri-word-bar"><div class="ri-word-fill" style="width:${wordPct}%;background:${wordBarColor};"></div></div>` : ''}
