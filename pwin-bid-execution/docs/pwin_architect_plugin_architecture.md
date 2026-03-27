@@ -1,10 +1,10 @@
 # PWIN Architect — Bid Execution Product
 ## AI Plugin Architecture Brief for Claude Code
 
-**Version:** 1.1 | March 2026
+**Version:** 1.2 | March 2026
 **Status:** Authoritative design input for all Claude Code build sessions
-**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, SaaS trajectory
-**Aligned with:** Architecture v6 (Session 7, 2026-03-26)
+**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, SaaS trajectory
+**Aligned with:** Architecture v6 (Session 8, 2026-03-27)
 
 ---
 
@@ -63,16 +63,18 @@ A critical architectural principle: the Bid Execution product is **one data sour
 
 The Bid Execution product manages the full operational bid process from ITT receipt through to submission and post-submission. It is the most sophisticated product in the platform.
 
-Confirmed architecture (from Claude Code build sessions, Architecture v6 — Session 7):
+Confirmed architecture (from Claude Code build sessions, Architecture v6 — Session 8):
 - **79 activities** across **10 workstreams**
 - **Services archetype** as the default template (new business and rebid)
 - **Governance gates** covering development assurance (solution, commercial, risk reviews) and executive governance (price, risk, margin approval)
-- **Submissions engine** with 10-stage production lifecycle for response items and per-response quality dimensions
+- **Submissions engine** with ResponseSection/ResponseItem split — exam paper separated from answer sheet, 10-stage production lifecycle, per-response quality dimensions
+- **ITT ingestion data layer** — ResponseSection, EvaluationFramework, ITTDocument entities as write targets for future AI skills
 - **Reviews module** for formal peer/SME review of written responses at pink, red, and gold stages with dual scoring
 - **Win theme tracking** with integration heatmap across all response items
 - **Optional client scoring scheme** with grade bands and hurdle marks
 - **Dual-track readiness** — development complete AND production complete
 - **Backward-planned timeline** from submission deadline
+- **Bid extended** with procurement context (route, portal, contract duration, TUPE, security clearance)
 
 ### 3.2 The 10 Workstreams
 
@@ -89,7 +91,7 @@ Confirmed architecture (from Claude Code build sessions, Architecture v6 — Ses
 | PRD | Proposal Production | Production | ~9 |
 | POST | Post-Submission | Post-Submission | ~8 |
 
-### 3.3 The Data Model — 21 Entities (Architecture v6 — Session 7)
+### 3.3 The Data Model — 24 Entities (Architecture v6 — Session 8)
 
 > **AUTHORITATIVE SOURCE:** The field-level schema is defined in `bid_execution_architecture_v6.html`. The summary below is for plugin design reference. If any field here conflicts with Architecture v6, the architecture document wins.
 
@@ -97,16 +99,24 @@ Confirmed architecture (from Claude Code build sessions, Architecture v6 — Ses
 
 | Entity | Purpose | Key Fields |
 |---|---|---|
-| **Bid** | Top-level container | archetype, tcv, acv, submissionDeadline, ittIssueDate, status (setup/active/submitted/post_submission/won/lost/withdrawn) |
+| **Bid** | Top-level container, extended with procurement context | archetype, tcv, acv, submissionDeadline, ittIssueDate, status, procurementRoute, portalPlatform, portalReference, contractDurationMonths, extensionOptions, tupeApplicable, securityClearanceTier, isRebid, linkedEvaluationFrameworkId |
 | **BidCalendar** | Scheduling constraints | workingDays, publicHolidays, weekendWorking, teamUnavailability, clientBlackouts |
 | **Workstream** | Major track of activity | code, phase (development/production/post_submission/continuous), progressPct (computed), timingHealth (computed) |
 | **Activity** | Atomic unit of work — THE SPINE | code (human label e.g. SOL-04), status, outputAssurance (unassured/under_review/assured/accepted_at_gate), effortDays, teamSize, parallelisationType (P/S/C), dependencies[], dependencyThreshold, lastUpdated |
+
+**ITT Ingestion Entities (new in Session 8):**
+
+| Entity | Purpose | Key Fields |
+|---|---|---|
+| **ResponseSection** | The exam paper — what the client is asking. Populated at ITT commencement before any response work begins | reference, title, questionText, responseType, evaluationCategory, evaluationWeightPct, evaluationMaxScore, evaluationCriteria, hurdleScore, wordLimit, pageLimit, linkedResponseItemId, sourceDocumentId, createdBy (manual/csv_import/ai_ingestion) |
+| **EvaluationFramework** | Tender-level evaluation structure — one per bid | methodology (meat/lowest_price/quality_only/fixed_price_quality_only), qualityWeightPct, priceWeightPct, socialValueWeightPct, priceEvaluationMethod, scoringScale, scoringDescriptors[], passFail[], presentationRequired, bafoExpected |
+| **ITTDocument** | Registry of all documents received in the ITT pack | filename, title, volumeType (instructions/specification/contract/pricing/response_template/etc.), fileType, version, receivedDate, source, parsedStatus, extractedEntityCounts |
 
 **Submissions Entities (10-stage production lifecycle):**
 
 | Entity | Purpose | Key Fields |
 |---|---|---|
-| **ResponseItem** | ITT deliverable — the granular unit of production work | reference, questionText, responseType, status (10-stage: not_started/storyboard/storyboard_approved/first_draft/pink_ready/pink_reviewed/red_ready/red_reviewed/gold_ready/final), evaluationWeightPct, wordLimit, currentWordCount, hurdleScore (optional), quality dimensions (6 structured fields — AI-ready) |
+| **ResponseItem** | Production tracking for a single response — linked 1:1 to ResponseSection. Question-definition fields now live on ResponseSection | linkedResponseSectionId, reference, status (10-stage), currentWordCount, complexityEstimate, effortDays, owner, quality dimensions (6 structured fields — AI-ready). UI resolves questionText, wordLimit, evaluationWeightPct from linked ResponseSection |
 | **ComplianceRequirement** | Prescriptive tender requirement — compliance declaration + solution alignment | classification (mandatory/scored/pass_fail/evidential/contractual), complianceStatus, solutionAlignment, coverageStatus (derived from linked ResponseItems) |
 | **WinTheme** | Differentiating value proposition — from capture, refined at ITT | statement, rationale, sourceActivity (SAL-04/05/06), status (draft/confirmed/revised), linkedResponseItemIds |
 | **ClientScoringScheme** | Optional client marking scheme — grade bands with descriptors | maxScore, gradeBands[], isActive (false if no scheme) |
@@ -183,15 +193,22 @@ Examples:
 **Role 3 — Data Extraction and Ingestion Bridge**
 Claude reads external content and transforms it into structured records consumable by the application.
 
-Examples:
-- Parse ITT document → extract requirements → create ResponseItem records in Submissions
-- Parse ITT evaluation criteria → create ClientScoringScheme with GradeBands
-- Parse compliance matrix → create ComplianceRequirement records
+Three purpose-built skills handle ITT ingestion (see Section 4.4 for full scope):
+
+| Skill | What it reads | What it writes | V1/V2 |
+|---|---|---|---|
+| **itt-intelligence** | Full ITT pack | Narrative strategic briefing (no data write) | V1 |
+| **itt-ingestion** | ITT volumes | ResponseSection, EvaluationFramework, ITTDocument, Bid procurement context | V1 |
+| **itt-ingestion** (extended) | Specification, contract, SLA annexes | Requirement, ComplianceRequirement linkage, traceability matrix | **V2** |
+| **clarification-qa** | Clarification logs | ClarificationItem, requirement impact flags, competitive intelligence | **V2** |
+
+Other Role 3 examples (future, not in scope):
 - Ingest client strategy document → populate Client Profile fields
 - Read competitor award notice → update Competitor Dossier
-- Process clarification Q&A → flag impacted ResponseItems and ComplianceRequirements
 
 > **KEY DISTINCTION:** Role 1 reads application data and writes AI insight back. Role 3 reads external data and writes structured records into the application. Both write directions are different and must be handled separately in the MCP tool schema.
+
+> **V1/V2 SCOPE BOUNDARY:** V1 builds data targets for ResponseSection, EvaluationFramework, and ITTDocument. V2 adds Requirement and ClarificationItem entities. The skills that write to V2 entities are not built until those entities exist. See Section 9.5 for the full scope boundary.
 
 ### 4.2 One Plugin — Not Multiple
 
@@ -226,9 +243,13 @@ pwin-architect-plugin/
 │   │   └── SKILL.md
 │   ├── timeline-analysis/             — PRIMARY SKILL — build first
 │   │   └── SKILL.md
-│   ├── response-quality/              — NEW: quality dimension analysis
+│   ├── response-quality/              — quality dimension analysis
 │   │   └── SKILL.md
-│   └── clarification-qa/
+│   ├── itt-intelligence/              — V1: strategic briefing from ITT pack (narrative output)
+│   │   └── SKILL.md
+│   ├── itt-ingestion/                 — V1: structured data extraction into platform
+│   │   └── SKILL.md
+│   └── clarification-qa/             — V2: Q&A monitoring + competitive intelligence (depends on ClarificationItem entity)
 │       └── SKILL.md
 │
 ├── agents/                            — persona-specific sub-agents
@@ -254,8 +275,11 @@ pwin-architect-plugin/
     ├── pursuit-health.md              — /pwin:pursuit-health
     ├── stakeholder-update.md          — /pwin:stakeholder-update
     ├── gate-pack.md                   — /pwin:gate-pack
-    ├── ingest-requirements.md         — /pwin:ingest-requirements (Role 3)
-    ├── response-quality-check.md      — /pwin:response-quality (NEW)
+    ├── itt-briefing.md                — /pwin:itt-briefing (V1 — narrative strategic briefing from ITT pack)
+    ├── ingest-itt.md                  — /pwin:ingest-itt (V1 — extract ResponseSections, EvaluationFramework, ITTDocuments)
+    ├── ingest-requirements.md         — /pwin:ingest-requirements (V2 — extract Requirements from specification)
+    ├── clarification-monitor.md       — /pwin:clarification-monitor (V2 — process clarification Q&As)
+    ├── response-quality-check.md      — /pwin:response-quality
     └── competitive-brief.md           — /pwin:competitive-brief
 ```
 
@@ -267,6 +291,49 @@ pwin-architect-plugin/
 | Agents | Persona-specific reasoning and workflow | Activated by user role or explicit command |
 | Reference | Static intelligence documents | Claude draws on during analysis without prompting |
 | Commands | Slash command trigger definitions | User-invoked, launch with structured input forms |
+
+### 4.4 ITT Ingestion Skills — Scope and Phasing
+
+Three purpose-built skills automate the extraction of structured data from UK government procurement documentation. These are Role 3 skills — they read external documents and write structured records into the application.
+
+**Skill 1: itt-intelligence (V1)**
+
+| Aspect | Detail |
+|---|---|
+| **Purpose** | Strategic briefing from the ITT pack — narrative output for the bid team |
+| **Input** | Full ITT pack documents (all volumes) |
+| **Output** | Written briefing: evaluation methodology, key risks, competitive dynamics, effort allocation recommendations, procurement timeline, TUPE implications, security requirements |
+| **Writes to** | No data records — this is a narrative deliverable (Role 2, not Role 3) |
+| **Dependencies** | None — works with any ITT pack, no platform entities required |
+| **Command** | `/pwin:itt-briefing` |
+| **Build priority** | Can build immediately — no data target dependencies |
+
+**Skill 2: itt-ingestion (V1 scope)**
+
+| Aspect | Detail |
+|---|---|
+| **Purpose** | Structured data extraction from ITT pack into platform entities |
+| **Input** | Volume 1 (Instructions/Evaluation), Volume 5 (Response Templates), document metadata |
+| **V1 Output** | ResponseSection records (exam paper), EvaluationFramework (scoring methodology), ITTDocument records (document registry), Bid procurement context fields |
+| **V2 Output (deferred)** | Requirement records (from Volume 2 Specification), ComplianceRequirement linkage, traceability matrix links |
+| **Writes to (V1)** | `create_response_section`, `batch_create_response_sections`, `create_evaluation_framework`, `create_itt_document`, `update_bid_procurement_context` |
+| **Dependencies** | ResponseSection, EvaluationFramework, ITTDocument entities must exist in the platform |
+| **Command** | `/pwin:ingest-itt` |
+| **Build priority** | After Sprint 1a completes (data targets must exist first) |
+
+**Skill 3: clarification-qa (V2 — deferred)**
+
+| Aspect | Detail |
+|---|---|
+| **Purpose** | Monitor clarification Q&As for requirement changes, competitive intelligence, and action tracking |
+| **Input** | Clarification log documents published during tender period |
+| **Output** | ClarificationItem records, requirement impact flags, competitive intelligence notes, action items |
+| **Writes to** | `create_clarification_item`, `flag_requirement_clarification_impact` (both V2 tools) |
+| **Dependencies** | ClarificationItem entity and Requirement entity must exist — both are V2 |
+| **Command** | `/pwin:clarification-monitor` |
+| **Why deferred** | Depends on Requirement and ClarificationItem entities which are V2 scope. Clarification management can be handled outside the product for MVP |
+
+> **V1/V2 BOUNDARY:** itt-intelligence and itt-ingestion (V1 scope) can be built once the data targets from Sprint 1a exist. Requirements extraction, traceability, and clarification monitoring are deferred to V2 — they require entities that are not in the V1 data model.
 
 ---
 
@@ -302,18 +369,46 @@ get_workstream_summary(bidId)
   → All workstreams with progressPct, timingHealth, and phase
 ```
 
+**ITT Ingestion & Exam Paper:**
+```
+get_response_sections(bidId, filters?)
+  → ResponseSections (the exam paper) with evaluation weights, word limits, linked ResponseItem status
+  → Filters: evaluationCategory, responseType, sectionNumber, hasLinkedResponseItem
+  → Returns joined data: ResponseSection fields + linked ResponseItem status (if exists)
+
+get_response_section(bidId, reference)
+  → Full ResponseSection record with linked ResponseItem (if exists)
+
+get_evaluation_framework(bidId)
+  → EvaluationFramework for this bid (or null if not yet captured)
+  → methodology, quality/price/social value weights, scoring scale, pass/fail criteria
+
+get_itt_documents(bidId, filters?)
+  → ITTDocument registry with parse status
+  → Filters: volumeType, parsedStatus
+
+get_coverage_summary(bidId)
+  → ResponseSection count (total exam paper size)
+  → ResponseItem count (production started)
+  → Coverage percentage (sections with linked ResponseItems)
+  → Unstarted sections list (exam questions with no production)
+```
+
 **Submissions & Production:**
 ```
 get_response_items(bidId, filters?)
   → ResponseItems with production status, quality dimensions, word counts
+  → Joins linked ResponseSection for question text, word limit, evaluation weight
   → Filters: status, responseType, owner, evaluationWeightPct threshold
   → IMPORTANT: use filters for targeted analysis, not full list
 
 get_response_item(bidId, reference)
   → Full ResponseItem record with all quality dimension fields
+  → Includes linked ResponseSection data (question text, evaluation criteria, word limit)
 
 get_production_pipeline(bidId)
   → Summary counts at each of the 10 production stages
+  → Denominator = ResponseSection count (total exam paper)
   → Pipeline distribution, evaluation weight coverage, quality coverage %
 
 get_compliance_requirements(bidId, filters?)
@@ -329,6 +424,7 @@ get_client_scoring_scheme(bidId)
 get_quality_gaps(bidId)
   → ResponseItems with quality dimensions assessed as 'no' or 'partial',
     or self-assessed scores below hurdle marks — pre-filtered for action
+  → Includes hurdle score from linked ResponseSection
 ```
 
 **Reviews:**
@@ -407,23 +503,55 @@ log_gate_recommendation(bidId, gateName, recommendation: GateRecommendation)
   → Writes AI gate readiness assessment before review meeting
 ```
 
-**Ingestion (Role 3):**
+**Ingestion (Role 3) — V1:**
 ```
-ingest_response_item(bidId, item: ResponseItemInput)
-  → Creates new ResponseItem from parsed ITT document
-  → Used by /pwin:ingest-requirements command
+create_response_section(bidId, data: ResponseSectionInput)
+  → Creates ResponseSection from parsed ITT response template
+  → Used by /pwin:ingest-itt and CSV import
+  → Returns created record with UUID
 
-ingest_compliance_requirement(bidId, requirement: ComplianceRequirementInput)
-  → Creates ComplianceRequirement from parsed compliance matrix
+batch_create_response_sections(bidId, data: ResponseSectionInput[])
+  → Batch creation for efficiency during full ITT ingestion
+  → Returns array of created records with UUIDs
+
+create_itt_document(bidId, data: ITTDocumentInput)
+  → Creates ITTDocument record in the document registry
+  → Returns created record with UUID
+
+create_evaluation_framework(bidId, data: EvaluationFrameworkInput)
+  → Creates or updates the EvaluationFramework for a bid (one per bid)
+  → Returns created/updated record
+
+update_bid_procurement_context(bidId, data: BidProcurementContextInput)
+  → Updates procurement context fields on Bid (route, portal, duration, TUPE, etc.)
+  → Only writes to procurement context fields, not bid manager-owned fields
 
 ingest_scoring_scheme(bidId, scheme: ClientScoringSchemeInput)
   → Creates or updates ClientScoringScheme with GradeBands from parsed ITT
 
-ingest_stakeholder(bidId, stakeholder: StakeholderInput)
-  → Creates Stakeholder record from parsed document
-
 generate_report_output(bidId, type: string, content: string)
   → Stores AI-generated report with reference link in bid record
+```
+
+**Ingestion (Role 3) — V2 (deferred, depends on Requirement and ClarificationItem entities):**
+```
+create_requirement(bidId, data: RequirementInput)
+  → Creates Requirement from parsed specification [V2]
+
+batch_create_requirements(bidId, data: RequirementInput[])
+  → Batch creation for full specification ingestion [V2]
+
+link_requirement_to_response_section(requirementId, responseSectionId)
+  → Adds traceability link (many-to-many) [V2]
+
+create_clarification_item(bidId, data: ClarificationItemInput)
+  → Creates ClarificationItem from parsed Q&A log [V2]
+
+flag_requirement_clarification_impact(requirementId, clarificationItemId)
+  → Sets impact flag on Requirement [V2]
+
+ingest_compliance_requirement(bidId, requirement: ComplianceRequirementInput)
+  → Creates ComplianceRequirement, optionally linked to parent Requirement [V2]
 ```
 
 ---
@@ -513,10 +641,12 @@ BidAIInsight {
 }
 
 ProductionHealth {
-  total_response_items:     integer
+  total_response_sections:  integer                  — the full exam paper (denominator)
+  total_response_items:     integer                  — production started (numerator)
+  production_coverage_pct:  number                   — response_items / response_sections * 100
   pipeline_distribution:    Object                   — counts at each of the 10 stages
   quality_coverage_pct:     number                   — % of items with quality dimensions assessed
-  below_hurdle_count:       integer                  — items predicted below hurdle mark
+  below_hurdle_count:       integer                  — items predicted below hurdle mark (hurdle from ResponseSection)
   win_theme_coverage_pct:   number                   — % of linked themes integrated
   compliance_gaps:          integer                  — mandatory requirements at unmapped/gap
 }
@@ -538,14 +668,18 @@ GateReadiness {
 
 **Claude never writes to bid manager-owned fields. This must be enforced at the MCP server API layer — not just as a convention.**
 
-| Bid Manager Owns (Claude must never write) | Claude Owns (bid manager must never edit) |
-|---|---|
-| Activity: owner, status, plannedStart/End, actualStart/End, notes, dependencies[], outputAssurance | AIInsight: rag_status, gap_working_days, cascade_risk, downstream_impact[], ai_narrative, mitigation_options[], rule_violations[], confidence |
-| ResponseItem: status (10-stage), all quality dimension fields, owner, dueDate, notes | ResponseItemAIInsight: all fields (future) |
-| ComplianceRequirement: complianceStatus, complianceExplanation, solutionAlignment | — |
-| ReviewAction: status, resolutionNotes (these are reviewer-owned, also not AI-writable) | — |
-| GovernanceGate: decision, conditions, riskPremiumPct | GateRecommendation (AI advisory) |
-| WinTheme: statement, rationale, status | — |
+| Bid Manager Owns (Claude must never write) | Claude Owns (bid manager must never edit) | AI Can Create (Role 3 ingestion) |
+|---|---|---|
+| Activity: owner, status, plannedStart/End, actualStart/End, notes, dependencies[], outputAssurance | AIInsight: rag_status, gap_working_days, cascade_risk, downstream_impact[], ai_narrative, mitigation_options[], rule_violations[], confidence | — |
+| ResponseItem: status (10-stage), all quality dimension fields, owner, dueDate, notes | ResponseItemAIInsight: all fields (future) | — |
+| ComplianceRequirement: complianceStatus, complianceExplanation, solutionAlignment | — | — |
+| ReviewAction: status, resolutionNotes (these are reviewer-owned, also not AI-writable) | — | — |
+| GovernanceGate: decision, conditions, riskPremiumPct | GateRecommendation (AI advisory) | — |
+| WinTheme: statement, rationale, status | — | — |
+| — | — | ResponseSection: all fields (ingested data — exam paper) |
+| — | — | EvaluationFramework: all fields (ingested data) |
+| — | — | ITTDocument: all fields (ingested data) |
+| — | — | Bid: procurement context fields only (procurementRoute, portalPlatform, etc.) |
 
 > **KEY PRINCIPLE:** Quality dimensions on ResponseItem are bid manager-owned in the base product. When the AI quality monitoring layer is built, AI writes to ResponseItemAIInsight (a separate entity) — it never overwrites the bid manager's manual assessment. The two assessments coexist, enabling comparison.
 
@@ -625,15 +759,19 @@ Self-contained HTML applications with local data storage. Intentional — proves
 
 ## 9. Build Instructions for Claude Code
 
-### 9.1 Phasing — Plugin Comes After Core Modules
+### 9.1 Phasing — Data Targets Before Skills, Skills Before Plugin
 
-The plugin architecture is a forward-looking design document. The immediate build priority is completing the core Bid Execution modules:
+The plugin architecture is a forward-looking design document. Build priority follows a clear dependency chain: data targets → skills → plugin intelligence layer.
 
-**Phase 1 (current):** Complete core modules — Submissions (10-stage lifecycle, quality dimensions, win themes, client scoring), Reviews (dual scorecard), Governance (development reviews absorbed), Workspace, Activity Tracker deepening, Readiness Dashboard.
+**Phase 1a (current — Sprint 1a):** ITT ingestion data layer — ResponseSection, EvaluationFramework, ITTDocument entities. ResponseItem migration. CSV import. Auto-migration of existing data.
 
-**Phase 2 (after core):** Data visualisation pass — how each module's data is presented, dashboard design, cross-module views.
+**Phase 1 (in progress):** Complete core Bid Execution modules — Submissions (10-stage lifecycle, quality dimensions, win themes, client scoring, ResponseSection/ResponseItem joined view), Reviews (dual scorecard), Governance (development reviews absorbed), Workspace, Activity Tracker, Readiness Dashboard.
 
-**Phase 3 (after visualisation):** Plugin implementation — AIInsight entities, MCP server, timeline analysis skill, write-back capability.
+**Phase 2 (after core):** Data visualisation pass — dashboard design, cross-module views. ITT ingestion skills (itt-intelligence, itt-ingestion V1 scope) — these can be built once Sprint 1a data targets exist.
+
+**Phase 3 (after visualisation):** Plugin intelligence layer — AIInsight entities, MCP server, timeline analysis skill, write-back capability.
+
+**Phase 4 (V2):** Requirement and ClarificationItem entities. Requirements Register and Traceability Matrix views. itt-ingestion extended scope (specification extraction). clarification-qa skill. Full requirements traceability.
 
 ### 9.2 Plugin Build Sequence — When the Time Comes
 
@@ -668,6 +806,42 @@ The plugin architecture is a forward-looking design document. The immediate buil
 - SaaS infrastructure — Supabase, hosted MCP server, multi-tenancy — these come after the HTML prototype is validated on a live engagement
 - Full plugin manifest with all five agents — timeline-analysis skill and bid-manager-agent are the build priority; other agents follow
 
+### 9.5 V1/V2 Scope Boundary (decided Session 8, 2026-03-27)
+
+**V1 — Build Now:**
+
+| What | Status |
+|---|---|
+| ResponseSection entity (exam paper) | Sprint 1a |
+| EvaluationFramework entity (one per bid) | Sprint 1a |
+| ITTDocument entity (document registry) | Sprint 1a |
+| Bid extended with procurement context | Sprint 1a |
+| ResponseItem migrated (question fields → ResponseSection) | Sprint 1a |
+| CSV import for ResponseSections | Sprint 1a |
+| Auto-migration of existing ResponseItem data | Sprint 1a |
+| Submissions Response Register joins through ResponseSection | Sprint 1a |
+| Coverage Dashboard uses ResponseSection as denominator | Sprint 1a |
+| itt-intelligence skill (narrative briefing) | Phase 2 |
+| itt-ingestion skill V1 scope (ResponseSection, EvaluationFramework, ITTDocument extraction) | Phase 2 |
+| MCP read tools for new entities | Phase 3 |
+| MCP write tools for V1 entities (create_response_section, create_evaluation_framework, etc.) | Phase 3 |
+
+**V2 — Deferred (build when core product is battle-tested):**
+
+| What | Why deferred |
+|---|---|
+| Requirement entity | Too large for MVP — a product in its own right. Pulls in Requirements Register view, Traceability Matrix view, many-to-many cross-referencing |
+| ClarificationItem entity | Clarification management can live outside the app for now |
+| Requirements Register view in Submissions | Depends on Requirement entity |
+| Traceability Matrix view in Submissions | Depends on Requirement entity + ResponseSection many-to-many |
+| ComplianceRequirement.linkedRequirementId FK | No parent Requirement entity in V1 |
+| ResponseSection.linkedRequirementIds | No Requirement entity in V1 |
+| itt-ingestion extended scope (specification extraction) | No Requirement entity to write to |
+| clarification-qa skill | No ClarificationItem entity to write to |
+| MCP write tools for V2 entities | No entities to write to |
+
+> **WHY THIS BOUNDARY:** The product isn't finished yet. Adding Requirement pulls in two complex new views and many-to-many rendering before existing views are battle-tested. Better to live with the exam paper / answer sheet split, ship the core product, and let real usage inform the shape of Requirements when the time comes.
+
 ---
 
 ## 10. Key Terms Reference
@@ -694,5 +868,5 @@ The plugin architecture is a forward-looking design document. The immediate buil
 
 ---
 
-*PWIN Architect — AI Plugin Architecture Brief | v1.1 | March 2026 | BIP Management Consulting | Confidential*
-*Aligned with Architecture v6, Session 7 (2026-03-26)*
+*PWIN Architect — AI Plugin Architecture Brief | v1.2 | March 2026 | BIP Management Consulting | Confidential*
+*Aligned with Architecture v6, Session 8 (2026-03-27)*
