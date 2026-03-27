@@ -917,6 +917,7 @@ const STORE = (() => {
         notes: null,
         sourceDocumentId: null,
         createdBy: 'manual',
+        lastAmended: null,
         lastUpdated: item.lastUpdated || new Date().toISOString(),
       };
       bid.responseSections.push(section);
@@ -4584,6 +4585,12 @@ function _renderResponseSlideout(bid, sectionId) {
     <div class="co-t" style="font-size:13px;line-height:1.7;">Minimum score of <strong>${sec.hurdleScore}</strong>${sec.evaluationMaxScore != null ? ` out of ${sec.evaluationMaxScore}` : ''} required to qualify. Responses scoring below this threshold may be excluded from further evaluation regardless of overall bid quality.</div>
   </div>` : '';
 
+  // Last amended indicator
+  const amendedHtml = sec.lastAmended ? `<div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;padding:8px 12px;background:var(--bg3);border:1px solid var(--amb);border-radius:6px;">
+    <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">AMENDED</span>
+    <span style="font-size:11px;color:var(--t2);">${STORE.fmtDate ? STORE.fmtDate(sec.lastAmended) : sec.lastAmended.split('T')[0]}</span>
+  </div>` : '';
+
   return `<div class="slideout-overlay" onclick="ROUTER.closeSlideout()"></div>
   <div class="slideout slideout-wide">
     <div class="slideout-hdr">
@@ -4591,9 +4598,13 @@ function _renderResponseSlideout(bid, sectionId) {
         <div class="slideout-title">${h(sec.reference||'')} \u2014 ${h(sec.title||'')}</div>
         <div style="font-size:10px;color:var(--t3);margin-top:2px;">${h(catLabel)}${sec.sectionNumber ? ' \u2014 ' + h(sec.sectionNumber) : ''}${sec.ittVolume ? ' \u2014 ' + h(sec.ittVolume) : ''}</div>
       </div>
-      <button class="modal-close" onclick="ROUTER.closeSlideout()">\u00D7</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn btn-sm" onclick="handleEditResponseSection('${sec.id}')">Edit</button>
+        <button class="modal-close" onclick="ROUTER.closeSlideout()">\u00D7</button>
+      </div>
     </div>
     <div class="slideout-body">
+      ${amendedHtml}
       ${sec.questionText ? `<div class="co co-g" style="margin-bottom:16px;"><div class="co-l">Question Text</div><div class="co-t" style="white-space:pre-line;font-size:13px;line-height:1.7;">${h(sec.questionText)}</div></div>` : ''}
       ${sec.evaluationCriteria ? `<div class="co co-b" style="margin-bottom:16px;"><div class="co-l">Evaluation Criteria</div><div class="co-t" style="font-size:13px;line-height:1.7;">${h(sec.evaluationCriteria)}</div></div>` : ''}
       ${hurdleHtml}
@@ -4770,7 +4781,7 @@ function _renderResponseRegister(bid) {
         <span class="ri-section-toggle ${isCollapsed ? 'collapsed' : ''}">&#9660;</span>
         <span class="ri-section-name">${h(label)}</span>
       </div>
-      ${weight ? `<span class="ri-section-weight">${weight}%</span>` : ''}
+      ${weight != null ? `<span class="ri-section-weight" onclick="event.stopPropagation();handleEditSectionWeight('${cat}')" title="Click to edit">${weight}%</span>` : ''}
     </div>`;
 
     if (!isCollapsed) {
@@ -6583,6 +6594,92 @@ function handleAddResponseItemConfirm() {
   renderApp();
 }
 
+// ── Section weight inline edit ────────────────────────────
+function handleEditSectionWeight(category) {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  if (!bid) return;
+  const ef = bid.evaluationFramework || {};
+  const fieldMap = { quality:'qualityWeightPct', price:'priceWeightPct', social_value:'socialValueWeightPct' };
+  const field = fieldMap[category];
+  if (!field) { alert('Section weight editing is only available for quality, price, and social value categories.'); return; }
+  const current = ef[field] || 0;
+  const input = prompt(`Edit ${category.replace(/_/g,' ')} section weight (%)`, current);
+  if (input === null) return;
+  const val = parseFloat(input);
+  if (isNaN(val) || val < 0 || val > 100) { alert('Please enter a number between 0 and 100.'); return; }
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.evaluationFramework) bid.evaluationFramework = {};
+    bid.evaluationFramework[field] = val;
+  });
+  renderApp();
+}
+
+// ── Question detail edit mode ─────────────────────────────
+function handleEditResponseSection(sectionId) {
+  const bid = STORE.loadBid(ROUTER.bidId);
+  if (!bid) return;
+  const sec = (bid.responseSections || []).find(s => s.id === sectionId);
+  if (!sec) return;
+
+  const el = document.createElement('div');
+  el.id = 'modal-overlay'; el.className = 'overlay';
+  el.innerHTML = `<div class="modal" style="max-width:700px;">
+    <div class="modal-hdr">
+      <div class="modal-title">Edit: ${(sec.reference||'')} \u2014 ${(sec.title||'').substring(0,60)}</div>
+      <button class="modal-close" onclick="closeModal()">\u00D7</button>
+    </div>
+    <div style="padding:0 20px 16px;">
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Question Text</label>
+          <textarea class="textarea" id="edit-qtext" rows="6" style="font-size:13px;line-height:1.6;">${(sec.questionText||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}</textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label class="form-label">Evaluation Criteria</label>
+          <textarea class="textarea" id="edit-criteria" rows="3">${(sec.evaluationCriteria||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}</textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col" style="max-width:120px;"><label class="form-label">Marks Available</label><input class="inp" id="edit-marks" type="number" value="${sec.evaluationMaxScore||''}"></div>
+        <div class="form-col" style="max-width:120px;"><label class="form-label">Hurdle Score</label><input class="inp" id="edit-hurdle" type="number" value="${sec.hurdleScore!=null?sec.hurdleScore:''}" placeholder="None"></div>
+        <div class="form-col" style="max-width:120px;"><label class="form-label">Word Limit</label><input class="inp" id="edit-wl" type="number" value="${sec.wordLimit||''}"></div>
+        <div class="form-col" style="max-width:120px;"><label class="form-label">Page Limit</label><input class="inp" id="edit-pl" type="number" value="${sec.pageLimit||''}"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="handleSaveResponseSection('${sectionId}')">Save Changes</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if (e.target === el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function handleSaveResponseSection(sectionId) {
+  const qtext = document.getElementById('edit-qtext').value;
+  const criteria = document.getElementById('edit-criteria').value;
+  const marks = document.getElementById('edit-marks').value;
+  const hurdle = document.getElementById('edit-hurdle').value;
+  const wl = document.getElementById('edit-wl').value;
+  const pl = document.getElementById('edit-pl').value;
+
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const sec = (bid.responseSections || []).find(s => s.id === sectionId);
+    if (!sec) return;
+    sec.questionText = qtext;
+    sec.evaluationCriteria = criteria;
+    sec.evaluationMaxScore = marks ? parseFloat(marks) : sec.evaluationMaxScore;
+    sec.hurdleScore = hurdle ? parseFloat(hurdle) : null;
+    sec.wordLimit = wl ? parseInt(wl) : 0;
+    sec.pageLimit = pl ? parseInt(pl) : 0;
+    sec.lastAmended = STORE.now();
+    sec.lastUpdated = STORE.now();
+  });
+  closeModal();
+  ROUTER.closeSlideout();
+  renderApp();
+}
+
 function handleResponseCsvImport() {
   const el = document.createElement('div');
   el.id = 'modal-overlay'; el.className = 'overlay';
@@ -6665,7 +6762,7 @@ function _doResponseCsvImport() {
             linkedResponseItemId: null,
             sortOrder: bid.responseSections.length,
             notes: null, sourceDocumentId: null,
-            createdBy: 'csv_import', lastUpdated: STORE.now(),
+            createdBy: 'csv_import', lastAmended: null, lastUpdated: STORE.now(),
           });
           imported++;
         });
