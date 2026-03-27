@@ -4770,10 +4770,6 @@ function _renderProductionSlideout(bid, sectionId) {
           <input class="inp" style="font-size:12px;padding:4px 8px;width:140px;" type="date" value="${item.dueDate||''}" onchange="STORE.mutateBid(ROUTER.bidId,b=>{const r=(b.responseItems||[]).find(x=>x.id==='${item.id}');if(r){r.dueDate=this.value||null;r.lastUpdated=STORE.now();}});renderApp();">
           <span style="font-size:10px;color:var(--t3);margin-top:2px;display:block;">Date to complete this stage and move to next</span>
         </div>
-        <div class="sg-k">Forecast Completion</div><div class="sg-v">
-          <input class="inp" style="font-size:12px;padding:4px 8px;width:140px;" type="date" value="${item.forecastCompletionDate||''}" onchange="STORE.mutateBid(ROUTER.bidId,b=>{const r=(b.responseItems||[]).find(x=>x.id==='${item.id}');if(r){r.forecastCompletionDate=this.value||null;r.lastUpdated=STORE.now();}});renderApp();">
-          <span style="font-size:10px;color:var(--t3);margin-top:2px;display:block;">Expected date to reach Final</span>
-        </div>
       </div>
 
       <div class="sh2" style="margin-top:16px;">Production Log</div>
@@ -5218,14 +5214,13 @@ function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) 
         else if (diffDays <= 3) schedHtml = `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${diffDays}d left</span>`;
         else schedHtml = `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--grn);">${diffDays}d left</span>`;
       }
-      return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:grid;grid-template-columns:50px 1fr 80px 45px 80px 80px 75px 70px;gap:8px;align-items:center;cursor:pointer;" onclick="ROUTER.openSlideout('production','${sectionId}')">
+      return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:grid;grid-template-columns:50px 1fr 80px 45px 80px 80px 70px;gap:8px;align-items:center;cursor:pointer;" onclick="ROUTER.openSlideout('production','${sectionId}')">
         <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);">${h(r.reference||sec.reference||'')}</span>
         <span style="font-size:12px;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h(r.title||sec.title||'')}</span>
         <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);">${h(responseType)}</span>
         <span style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--t1);text-align:center;">${marks != null ? marks : '\u2014'}</span>
         <span style="font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h(r.owner||'\u2014')}</span>
         <span class="fe ${((_statusMeta||{})[r.status||'not_started']||{}).cls||'fe-mute'}" style="font-size:9px;">${statusLabel}</span>
-        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t2);">${r.forecastCompletionDate ? r.forecastCompletionDate.substring(5) : '\u2014'}</span>
         ${schedHtml}
       </div>`;
     }).join('');
@@ -5233,14 +5228,13 @@ function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) 
     const unstartedRows = unstartedSections.map(sec => {
       const marks = sec.evaluationMaxScore;
       const responseType = (sec.responseType || '').replace(/_/g, ' ');
-      return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:grid;grid-template-columns:50px 1fr 80px 45px 80px 80px 75px 70px;gap:8px;align-items:center;opacity:0.6;">
+      return `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr-s);display:grid;grid-template-columns:50px 1fr 80px 45px 80px 80px 70px;gap:8px;align-items:center;opacity:0.6;">
         <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);">${h(sec.reference||'')}</span>
         <span style="font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h(sec.title||'')}</span>
         <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t4);">${h(responseType)}</span>
         <span style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--t4);text-align:center;">${marks != null ? marks : '\u2014'}</span>
         <span style="color:var(--t4);">\u2014</span>
         <span class="fe fe-mute" style="font-size:9px;">Not Started</span>
-        <span style="color:var(--t4);">\u2014</span>
         <span style="color:var(--t4);">\u2014</span>
       </div>`;
     }).join('');
@@ -5253,8 +5247,8 @@ function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) 
     </div>
     ${!isCollapsed ? `<div class="pp-group-body">
       <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:0 0 8px 8px;margin-bottom:4px;">
-        <div style="display:grid;grid-template-columns:50px 1fr 80px 45px 80px 80px 75px 70px;gap:8px;padding:4px 14px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.06em;text-transform:uppercase;color:var(--t4);border-bottom:1px solid var(--bdr);">
-          <span>Ref</span><span>Deliverable</span><span>Type</span><span>Marks</span><span>Owner</span><span>Status</span><span>Forecast</span><span>Schedule</span>
+        <div style="display:grid;grid-template-columns:50px 1fr 80px 45px 80px 80px 70px;gap:8px;padding:4px 14px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.06em;text-transform:uppercase;color:var(--t4);border-bottom:1px solid var(--bdr);">
+          <span>Ref</span><span>Deliverable</span><span>Type</span><span>Marks</span><span>Owner</span><span>Status</span><span>Schedule</span>
         </div>
         ${itemRows}${unstartedRows}
       </div>
@@ -6456,7 +6450,7 @@ function wizAddResponseItem() {
     status: 'not_started',
     linkedActivityCode: '',
     linkedComplianceIds: [],
-    dueDate: '', forecastCompletionDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
+    dueDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
   });
   renderApp();
 }
@@ -6539,7 +6533,7 @@ function _doWizResponseCsvImport() {
           currentWordCount: 0, complexityEstimate: cx || 'high',
           effortDays: 0, owner, status: 'not_started',
           linkedActivityCode: '', linkedComplianceIds: [],
-          dueDate: '', forecastCompletionDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
+          dueDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
         });
         imported++;
       });
@@ -6842,7 +6836,7 @@ function handleStartProductionForSection(sectionId) {
       currentWordCount: 0, complexityEstimate: 'high', effortDays: 0,
       owner: '', status: 'not_started',
       linkedActivityCode: '', linkedComplianceIds: [],
-      dueDate: '', forecastCompletionDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
+      dueDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
       qualityAnswersQuestion: 'not_assessed', qualityAnswersQuestionNotes: '',
       qualityFollowsStructure: 'not_assessed', qualityFollowsStructureNotes: '',
       qualityScoreSelfAssessment: null, qualityScoreRationale: '', qualityScoreGap: '',
@@ -6956,7 +6950,7 @@ function handleAddResponseItemConfirm() {
     owner: (document.getElementById('ri-owner').value || '').trim(),
     status: 'not_started',
     linkedActivityCode: '', linkedComplianceIds: [],
-    dueDate: '', forecastCompletionDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
+    dueDate: '', notes: '', notesNextSteps: '', notesIssues: '', notesRisks: '', notesConversations: '', lastUpdated: STORE.now(),
     qualityAnswersQuestion: 'not_assessed', qualityAnswersQuestionNotes: '',
     qualityFollowsStructure: 'not_assessed', qualityFollowsStructureNotes: '',
     qualityScoreSelfAssessment: null, qualityScoreRationale: '', qualityScoreGap: '',
