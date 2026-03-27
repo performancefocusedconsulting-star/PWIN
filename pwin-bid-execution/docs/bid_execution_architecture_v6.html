@@ -805,7 +805,13 @@ R.ux=()=>`
         <br/>• Risks — what could derail quality or timeline
         <br/>• Conversation Log — record of discussions, decisions, and agreements with the author/owner
         <br/><br/>Quality dimensions removed from production slideout — they belong on the Quality Overview tab. Complexity selector removed — effort is directly editable.</div></div>
-        <div class="ux-box"><div class="ux-box-label">Production Metrics</div><div class="ux-box-content">Summary metrics shown above tabs on Pipeline and Quality tabs only: Response Sections count, Production Started (X/Y), Progress %, Total Marks, Effort Days. Pipeline status bar (proportional stacked segments by stage). Hard gate warnings from compliance if applicable.</div></div>
+        <div class="ux-box"><div class="ux-box-label">Production Ribbon</div><div class="ux-box-content">Six-metric summary ribbon shown on the Production Pipeline tab. Gives the bid manager an immediate read on production health.
+        <br/><br/><strong>Panel 1 — Progress:</strong> Weighted progress % colour-coded against time elapsed. Compares production stage completion (weighted 0-100 across 10 stages) against % of time elapsed between ITT issue date and submission deadline. Green = on track (progress ahead of or within 5% of time). Amber = at risk (5-20% behind). Red = behind (>20% behind). Shows time elapsed % underneath for context.
+        <br/><br/><strong>Panel 2 — Coverage:</strong> How many response sections have active production started (X/Y). Colour-coded: green ≥80%, amber ≥50%, red below.
+        <br/><br/><strong>Panel 3 — Overdue:</strong> Count of deliverables past their stage deadline. Red if any, green if zero. Drives immediate action.
+        <br/><br/><strong>Panel 4 — Effort Left:</strong> Total person-days remaining across all non-final items (from editable effortDays field). Tells the bid manager whether resource capacity matches remaining work.
+        <br/><br/><strong>Panel 5 — Unassigned:</strong> Count of items with no owner plus unstarted sections. Red if >0. Production without ownership doesn't happen.
+        <br/><br/><strong>Stage Distribution Bar:</strong> Proportional stacked bar showing how items are distributed across the 10 stages, with colour-coded segments and a labelled legend. At a glance: is work flowing through or bunched at early stages?</div></div>
       </div>
 
       <div class="sh2">View 2: Client Compliance Matrix — Deferred to V2</div>
@@ -1096,8 +1102,9 @@ R.build=()=>`
   <br/>14. Mid-bid amendment capability added. Section weight % on headers is inline-editable (updates EvaluationFramework). Question detail panel has edit mode toggle for fields most likely to change via client clarification: evaluationMaxScore, wordLimit, pageLimit, hurdleScore, evaluationCriteria, questionText. Save sets lastAmended date on ResponseSection — flags post-import changes. lastAmended field added to ResponseSection entity.
   <br/>15. CSV import structure finalised: 8 required columns (reference, title, questionText, responseType, evaluationCategory, evaluationMaxScore, evaluationCriteria, sectionNumber), 3 optional (hurdleScore, wordLimit, pageLimit). evaluationWeightPct dropped. Import validates all required fields and enum values.
   <br/>16. Production Pipeline tab redesigned. 10-stage lifecycle flow as numbered horizontal diagram with arrow connectors — makes methodology visible. Duplicate proportional bar removed. Deliverables grouped by stage with collapsible headers. Row columns: Ref, Title, Type, Marks, Owner, Status (display only), Schedule indicator (days ahead/behind from stage deadline). No inline editing in rows — all editing in production slideout. Production slideout (780px): full question text, status transitions, owner dropdown from team org chart, word limit read-only, effort editable (person-days), stage deadline with schedule context. Production Log with 4 structured sections: Next Steps, Issues &amp; Blockers, Risks, Conversation Log. Quality dimensions removed (belong on Quality tab). Complexity selector removed (effort directly editable). Footer action buttons removed from pipeline tab.
+  <br/>17. Production Ribbon designed and built. Six metrics: (1) Progress — weighted % colour-coded against time elapsed (green/amber/red based on progress vs time gap), (2) Coverage — items started vs total, (3) Overdue — count past stage deadline, (4) Effort Left — person-days remaining, (5) Unassigned — items with no owner, (6) Stage Distribution Bar — proportional stacked bar with legend. Old production metrics bar replaced.
   <br/><br/><strong>Open questions:</strong>
-  <br/>— Production Pipeline summary metrics ribbon: revisit design to match reference ribbon quality (parked for end of pipeline work).
+  <br/>— None.
   </div></div>
 `;
 
