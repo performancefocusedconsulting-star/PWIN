@@ -785,7 +785,9 @@ const STORE = (() => {
     // ── Bid ───────────────────────────────────────────────
     loadBid(id) {
       if (!_s.bids[id]) _s.bids[id] = _load(`pwin:bid:${id}`);
-      return _s.bids[id] || null;
+      const bid = _s.bids[id];
+      if (bid) _migrateBidData(bid, id);
+      return bid || null;
     },
     saveBid(id) {
       if (_s.bids[id]) _save(`pwin:bid:${id}`, _s.bids[id]);
@@ -868,6 +870,68 @@ const STORE = (() => {
       return JSON.stringify({ version:'1.0', exportDate:this.now(), bid }, null, 2);
     },
   };
+
+  // Auto-migration: ResponseItem → ResponseSection split
+  // If a bid has ResponseItems with legacy question fields (questionText, evaluationWeightPct, etc.)
+  // and no responseSections array, auto-create ResponseSections from those fields.
+  function _migrateBidData(bid, id) {
+    if (!bid) return;
+    let changed = false;
+
+    // Ensure new arrays exist
+    if (!bid.responseSections) { bid.responseSections = []; changed = true; }
+    if (!bid.ittDocuments) { bid.ittDocuments = []; changed = true; }
+    if (bid.evaluationFramework === undefined) { bid.evaluationFramework = null; changed = true; }
+
+    // Migrate ResponseItems with legacy question fields
+    const items = bid.responseItems || [];
+    items.forEach(item => {
+      if (item.linkedResponseSectionId) return; // already migrated
+      if (!item.questionText && !item.evaluationWeightPct && !item.wordLimit) return; // nothing to migrate
+
+      const sectionId = 'rs-' + (item.id || Math.random().toString(36).slice(2));
+      const section = {
+        id: sectionId,
+        bidId: bid.id,
+        reference: item.reference || '',
+        title: item.title || '',
+        questionText: item.questionText || '',
+        responseType: item.responseType || 'written_question',
+        ittVolume: null,
+        sectionNumber: item.sectionNumber || '',
+        evaluationCategory: 'quality',
+        evaluationWeightPct: item.evaluationWeightPct || 0,
+        evaluationMaxScore: item.evaluationMaxScore || 0,
+        evaluationCriteria: item.evaluationCriteria || '',
+        hurdleScore: item.hurdleScore || null,
+        wordLimit: item.wordLimit || 0,
+        pageLimit: item.pageLimit || 0,
+        responseFormat: null,
+        linkedResponseItemId: item.id,
+        sortOrder: bid.responseSections.length,
+        notes: null,
+        sourceDocumentId: null,
+        createdBy: 'manual',
+        lastUpdated: item.lastUpdated || new Date().toISOString(),
+      };
+      bid.responseSections.push(section);
+
+      // Link ResponseItem back and remove migrated fields
+      item.linkedResponseSectionId = sectionId;
+      delete item.questionText;
+      delete item.responseType;
+      delete item.sectionNumber;
+      delete item.evaluationWeightPct;
+      delete item.evaluationMaxScore;
+      delete item.evaluationCriteria;
+      delete item.hurdleScore;
+      delete item.wordLimit;
+      delete item.pageLimit;
+      changed = true;
+    });
+
+    if (changed) _save(`pwin:bid:${id}`, bid);
+  }
 
   function _load(key) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
@@ -1254,10 +1318,20 @@ const WIZARD = (() => {
     extendedTeam:[],
     // Stage 5
     requirements:[],        // legacy
-    responseItems:[],       // new: submission deliverables
-    complianceRequirements:[], // new: prescriptive requirements (optional)
+    responseSections:[],    // exam paper — what the client is asking (ITT ingestion layer)
+    responseItems:[],       // answer sheet — production tracking (linked to responseSections)
+    complianceRequirements:[], // prescriptive requirements (optional)
+    ittDocuments:[],        // ITT document registry
+    evaluationFramework: null, // tender-level evaluation structure (one per bid)
     winThemes: [],
     clientScoringScheme: null,
+    // Procurement context (optional at setup, populated later or by AI ingestion)
+    procurementRoute: '', portalPlatform: '', portalReference: '',
+    contractDurationMonths: '', extensionOptions: '',
+    estimatedTotalValue: '',
+    tupeApplicable: false, tupeStaffCount: '',
+    securityClearanceTier: '',
+    isRebid: false,
   });
 
   let _d = null;
@@ -1318,10 +1392,14 @@ const WIZARD = (() => {
     removeExtendedTeam(i)   { _d.extendedTeam.splice(i,1); _persist(); },
     addReq(r)     { _d.requirements.push(r); _persist(); },
     removeReq(i)  { _d.requirements.splice(i,1); _persist(); },
+    addResponseSection(r)  { _d.responseSections.push(r); _persist(); },
+    removeResponseSection(i){ _d.responseSections.splice(i,1); _persist(); },
     addResponseItem(r)     { _d.responseItems.push(r); _persist(); },
     removeResponseItem(i)  { _d.responseItems.splice(i,1); _persist(); },
     addCompReq(r)          { _d.complianceRequirements.push(r); _persist(); },
     removeCompReq(i)       { _d.complianceRequirements.splice(i,1); _persist(); },
+    addITTDocument(r)      { _d.ittDocuments.push(r); _persist(); },
+    removeITTDocument(i)   { _d.ittDocuments.splice(i,1); _persist(); },
     addHoliday(d) { if (!_d.publicHolidays.includes(d)) { _d.publicHolidays.push(d); _d.publicHolidays.sort(); _persist(); } },
     removeHoliday(i){ _d.publicHolidays.splice(i,1); _persist(); },
     setMilestoneDate(i, date) { _d.milestones[i].date = date; _persist(); },
@@ -1983,14 +2061,25 @@ const NUDGE = (() => {
 ════════════════════════════════════════════════════════════ */
 const COMPLIANCE = (() => {
 
+  // ── ResponseSection resolver ────────────────────────────
+  // Resolves question-definition fields from the linked ResponseSection
+  function resolveSection(item, bid) {
+    if (!bid || !bid.responseSections) return {};
+    const sid = item.linkedResponseSectionId;
+    if (!sid) return item; // legacy item, fields still inline
+    return bid.responseSections.find(s => s.id === sid) || {};
+  }
+
   // ── Effort derivation (Rule 6.1) ────────────────────────
   // Days per page by complexity tier (page = ~500 words)
   const _daysPerPage = { low: 0.5, medium: 1.0, high: 2.0, very_high: 3.0 };
 
-  function deriveEffort(item) {
+  function deriveEffort(item, bid) {
     if (item.effortDays != null && item.effortDays > 0) return item.effortDays; // manual override
-    if (!item.wordLimit || item.wordLimit <= 0) return 0;
-    const pages = item.wordLimit / 500;
+    const sec = resolveSection(item, bid);
+    const wl = sec.wordLimit || item.wordLimit || 0;
+    if (wl <= 0) return 0;
+    const pages = wl / 500;
     const complexity = item.complexityEstimate || 'high';
     return Math.round(pages * (_daysPerPage[complexity] || 2.0) * 10) / 10;
   }
@@ -2002,26 +2091,42 @@ const COMPLIANCE = (() => {
     red_ready: 65, red_reviewed: 75, gold_ready: 85, final: 100
   };
 
-  function calculateResponseCompletion(responseItems) {
-    if (!responseItems || responseItems.length === 0) {
-      return { total: 0, completion: 0, progress: 0, pipeline: {}, byStatus: {}, totalMarks: 0, totalEffortDays: 0, qualityCoverage: 0 };
+  function calculateResponseCompletion(responseItems, bid) {
+    const sections = (bid && bid.responseSections) || [];
+    const totalSections = sections.length;
+    const denominator = totalSections > 0 ? totalSections : (responseItems ? responseItems.length : 0);
+    if (denominator === 0) {
+      return { total: 0, totalSections: 0, totalItems: 0, productionCoverage: 0, completion: 0, progress: 0, pipeline: {}, byStatus: {}, totalMarks: 0, totalEffortDays: 0, qualityCoverage: 0 };
     }
     const pipeline = {};
     Object.keys(STAGE_WEIGHTS).forEach(s => pipeline[s] = 0);
     let totalMarks = 0, totalEffortDays = 0, qualityAssessed = 0;
     let progressSum = 0;
-    responseItems.forEach(r => {
+    // Count production status from ResponseItems
+    (responseItems || []).forEach(r => {
       const st = r.status || 'not_started';
       pipeline[st] = (pipeline[st] || 0) + 1;
-      totalMarks += r.evaluationMaxScore || 0;
-      totalEffortDays += deriveEffort(r);
+      const sec = resolveSection(r, bid);
+      totalMarks += sec.evaluationMaxScore || r.evaluationMaxScore || 0;
+      totalEffortDays += deriveEffort(r, bid);
       progressSum += STAGE_WEIGHTS[st] || 0;
-      // Quality coverage: count items with at least answers_question assessed
       if (r.qualityAnswersQuestion && r.qualityAnswersQuestion !== 'not_assessed') qualityAssessed++;
     });
-    const completion = Math.round((pipeline.final || 0) / responseItems.length * 1000) / 10;
-    const progress = Math.round(progressSum / (responseItems.length * 100) * 1000) / 10;
-    return { total: responseItems.length, completion, progress, pipeline, byStatus: pipeline, totalMarks, totalEffortDays, qualityCoverage: Math.round(qualityAssessed / responseItems.length * 1000) / 10 };
+    // Sections without linked ResponseItems count as not_started
+    const unstarted = denominator - (responseItems ? responseItems.length : 0);
+    if (unstarted > 0) pipeline.not_started = (pipeline.not_started || 0) + unstarted;
+    // Add marks from unlinked sections
+    if (totalSections > 0) {
+      sections.forEach(s => {
+        if (!s.linkedResponseItemId) totalMarks += s.evaluationMaxScore || 0;
+      });
+    }
+    const itemCount = responseItems ? responseItems.length : 0;
+    const completion = Math.round((pipeline.final || 0) / denominator * 1000) / 10;
+    const progress = Math.round(progressSum / (denominator * 100) * 1000) / 10;
+    const productionCoverage = totalSections > 0 ? Math.round(itemCount / totalSections * 1000) / 10 : 100;
+    const qDenom = itemCount > 0 ? itemCount : 1;
+    return { total: denominator, totalSections, totalItems: itemCount, productionCoverage, completion, progress, pipeline, byStatus: pipeline, totalMarks, totalEffortDays, qualityCoverage: Math.round(qualityAssessed / qDenom * 1000) / 10 };
   }
 
   // ── Rule 6.2: Compliance coverage calculations ──────────
@@ -2067,7 +2172,7 @@ const COMPLIANCE = (() => {
     };
   }
 
-  return { deriveEffort, calculateResponseCompletion, calculateComplianceCoverage, calculateCoverage, STAGE_WEIGHTS };
+  return { resolveSection, deriveEffort, calculateResponseCompletion, calculateComplianceCoverage, calculateCoverage, STAGE_WEIGHTS };
 })();
 
 
@@ -2522,9 +2627,9 @@ const READINESS = (() => {
     const signals = [];
 
     // 1. Response item completion (25%) — hollow-score guard: 0% when empty
-    const respComp = COMPLIANCE.calculateResponseCompletion(responseItems);
-    const respScore = responseItems.length > 0 ? respComp.progress : 0;
-    signals.push({ name: 'Response item completion', weight: 25, score: Math.round(respScore * 10) / 10, source: responseItems.length > 0 ? `${(respComp.byStatus.final||0)}/${responseItems.length} final` : 'none', target: 'all complete' });
+    const respComp = COMPLIANCE.calculateResponseCompletion(responseItems, bid);
+    const respScore = respComp.total > 0 ? respComp.progress : 0;
+    signals.push({ name: 'Response item completion', weight: 25, score: Math.round(respScore * 10) / 10, source: respComp.total > 0 ? `${(respComp.byStatus.final||0)}/${respComp.total} final` : 'none', target: 'all complete' });
 
     // 2. Compliance declarations complete (25%) — hollow-score guard: 0% when empty
     const compCov = COMPLIANCE.calculateComplianceCoverage(compReqs);
@@ -3089,7 +3194,51 @@ function renderWizS1(d) {
         <label class="form-label">Incumbent Name (if not us)</label>
         <input class="inp" value="${h(d.incumbent)}" placeholder="Or leave blank if we are the incumbent" oninput="WIZARD.set('incumbent',this.value)">
       </div>
-    </div>` : ''}`;
+    </div>` : ''}
+
+    <hr class="divider">
+    <div class="sh2">Procurement Context <span class="fe fe-mute" style="font-size:8px;vertical-align:middle;">optional</span></div>
+    <div style="font-size:11px;color:var(--t3);margin-bottom:10px;">These fields are optional at setup. They can be populated later or by future AI ingestion.</div>
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">Procurement Route</label>
+        <select class="sel" onchange="WIZARD.set('procurementRoute',this.value)">
+          ${[['','— Select —'],['open','Open'],['restricted','Restricted'],['competitive_dialogue','Competitive Dialogue'],['competitive_flexible','Competitive Flexible'],['negotiated','Negotiated'],['direct_award','Direct Award'],['framework_calloff','Framework Call-off'],['dynamic_market','Dynamic Market']].map(([v,l])=>`<option value="${v}" ${d.procurementRoute===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-col">
+        <label class="form-label">Portal Platform</label>
+        <select class="sel" onchange="WIZARD.set('portalPlatform',this.value)">
+          ${[['','— Select —'],['jaggaer','Jaggaer'],['oracle','Oracle'],['proactis','Proactis'],['intend','In-Tend'],['procontract','ProContract'],['bravo','Bravo'],['atamis','Atamis'],['delta','Delta'],['ariba','Ariba'],['other','Other']].map(([v,l])=>`<option value="${v}" ${d.portalPlatform===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-col">
+        <label class="form-label">Portal Reference</label>
+        <input class="inp" value="${h(d.portalReference||'')}" placeholder="e.g. ITT_5435" oninput="WIZARD.set('portalReference',this.value)">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">Contract Duration (months)</label>
+        <input class="inp" type="number" value="${d.contractDurationMonths||''}" placeholder="e.g. 60" oninput="WIZARD.set('contractDurationMonths',this.value)">
+      </div>
+      <div class="form-col">
+        <label class="form-label">Extension Options</label>
+        <input class="inp" value="${h(d.extensionOptions||'')}" placeholder="e.g. 2 x 12 months" oninput="WIZARD.set('extensionOptions',this.value)">
+      </div>
+      <div class="form-col">
+        <label class="form-label">Security Clearance</label>
+        <select class="sel" onchange="WIZARD.set('securityClearanceTier',this.value)">
+          ${[['','— Select —'],['none','None'],['bpss','BPSS'],['ctc','CTC'],['sc','SC'],['dv','DV']].map(([v,l])=>`<option value="${v}" ${d.securityClearanceTier===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="align-items:center;gap:24px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--t2);">
+        <input type="checkbox" ${d.tupeApplicable?'checked':''} onchange="WIZARD.set('tupeApplicable',this.checked);renderApp();"> TUPE applicable
+      </label>
+      ${d.tupeApplicable ? `<div class="form-col" style="max-width:160px;"><label class="form-label">TUPE Staff Count</label><input class="inp" type="number" value="${d.tupeStaffCount||''}" placeholder="e.g. 150" oninput="WIZARD.set('tupeStaffCount',this.value)"></div>` : ''}
+    </div>`;
 }
 
 /* ── Stage 2: Archetype, Activities, Complexity & Gates ── */
@@ -4415,8 +4564,9 @@ function _renderActivitySlideout(bid, actId) {
 
 function renderSubmissions(bid) {
   const responseItems = bid.responseItems || [];
+  const responseSections = bid.responseSections || [];
   const compReqs = bid.complianceRequirements || [];
-  const respComp = COMPLIANCE.calculateResponseCompletion(responseItems);
+  const respComp = COMPLIANCE.calculateResponseCompletion(responseItems, bid);
   const compCov = COMPLIANCE.calculateComplianceCoverage(compReqs);
 
   // Status metadata for 10-stage lifecycle
@@ -4445,22 +4595,24 @@ function renderSubmissions(bid) {
     `<button class="view-tab ${ROUTER.subView===id?'on':''}" onclick="ROUTER.setSubView('${id}')">${l}</button>`
   ).join('')}</div>`;
 
-  // Metrics — response-item focused
+  // Metrics — ResponseSection denominator, ResponseItem production
+  const covPct = respComp.productionCoverage;
   const metricsHtml = `<div class="cg c6" style="margin-bottom:16px;">
-    <div class="metric"><div class="metric-val" style="color:var(--t1);">${responseItems.length}</div><div class="metric-lbl">Response Items</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--t1);">${respComp.totalSections || responseItems.length}</div><div class="metric-lbl">${respComp.totalSections ? 'Response Sections' : 'Response Items'}</div></div>
+    <div class="metric"><div class="metric-val" style="color:${covPct>=80?'var(--grn)':covPct>=40?'var(--amb)':'var(--red)'};">${respComp.totalSections ? respComp.totalItems + '/' + respComp.totalSections : responseItems.length}</div><div class="metric-lbl">Production Started</div></div>
     <div class="metric"><div class="metric-val" style="color:${respComp.progress>=80?'var(--grn)':respComp.progress>=40?'var(--amb)':'var(--red)'};">${respComp.progress}%</div><div class="metric-lbl">Progress</div></div>
-    <div class="metric"><div class="metric-val" style="color:${respComp.completion>=80?'var(--grn)':respComp.completion>=40?'var(--amb)':'var(--red)'};">${respComp.completion}%</div><div class="metric-lbl">Final</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--gold);">${respComp.totalMarks}</div><div class="metric-lbl">Total Marks</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--blu);">${respComp.totalEffortDays}</div><div class="metric-lbl">Effort (days)</div></div>
     <div class="metric"><div class="metric-val" style="color:${compCov.hasNonCompliant?'var(--red)':'var(--grn)'};">${compReqs.length ? compCov.completion + '%' : 'N/A'}</div><div class="metric-lbl">Compliance</div></div>
   </div>`;
 
-  // Pipeline status bar for 10 stages
+  // Pipeline status bar for 10 stages (denominator = ResponseSection count or ResponseItem count)
   const barSegments = Object.keys(COMPLIANCE.STAGE_WEIGHTS).reverse().map(s => ({
     label: (_statusMeta[s]||{}).label || s, count: respComp.pipeline[s]||0, color: PIPELINE_COLORS[s]||'var(--t4)'
   }));
-  const barHtml = responseItems.length ? `<div class="pipeline-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
-    `<div class="pipeline-seg" style="width:${(s.count/responseItems.length*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
+  const barTotal = respComp.total || responseItems.length;
+  const barHtml = barTotal ? `<div class="pipeline-bar" style="margin-bottom:14px;">${barSegments.filter(s=>s.count>0).map(s =>
+    `<div class="pipeline-seg" style="width:${(s.count/barTotal*100)}%;background:${s.color};" title="${s.label}: ${s.count}"></div>`
   ).join('')}</div>` : '';
 
   // Hard gate warnings
@@ -4485,7 +4637,7 @@ function renderSubmissions(bid) {
     ${bodyHtml}
     <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn" onclick="handleAddResponseItemModal()">+ Response Item</button>
-      <button class="btn" onclick="handleResponseCsvImport()">Import Responses CSV</button>
+      <button class="btn" onclick="handleResponseCsvImport()">Import Sections CSV</button>
       <button class="btn" onclick="handleAddCompReqModal()">+ Compliance Req</button>
       <button class="btn" onclick="handleCompReqCsvImport()">Import Compliance CSV</button>
       <button class="btn" onclick="handleAddWinThemeModal()">+ Win Theme</button>
@@ -4493,40 +4645,69 @@ function renderSubmissions(bid) {
 }
 
 function _renderResponseRegister(bid, _statusMeta) {
+  const sections = bid.responseSections || [];
   const items = bid.responseItems || [];
-  if (items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response items yet. Add submission deliverables to track production progress.</div>';
+  const hasSections = sections.length > 0;
 
-  // Sort by evaluation weight descending (Rule 6.1: prioritise where the marks are)
-  const sorted = [...items].sort((a,b) => (b.evaluationWeightPct||0) - (a.evaluationWeightPct||0));
+  if (!hasSections && items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response sections or items yet. Import the exam paper via CSV or add response items to track production progress.</div>';
 
   const _statusBadge = s => {
     const meta = (_statusMeta||{})[s] || { cls:'fe-mute', label:(s||'not_started').replace(/_/g,' ') };
     return `<span class="fe ${meta.cls}">${meta.label}</span>`;
   };
 
-  const rows = sorted.map((r, i) => {
-    const idx = items.indexOf(r);
-    const wordPct = r.wordLimit > 0 ? Math.min(100, Math.round((r.currentWordCount||0) / r.wordLimit * 100)) : 0;
+  // Build joined rows: ResponseSection + linked ResponseItem
+  // If no sections exist (legacy data), fall back to ResponseItems directly
+  let joinedRows;
+  if (hasSections) {
+    joinedRows = sections.map(sec => {
+      const item = sec.linkedResponseItemId ? items.find(r => r.id === sec.linkedResponseItemId) : null;
+      return { section: sec, item, ref: sec.reference, title: sec.title, sortOrder: sec.sortOrder || 0 };
+    });
+    // Sort by evaluation weight descending (Rule 6.1: prioritise where the marks are)
+    joinedRows.sort((a,b) => (b.section.evaluationWeightPct||0) - (a.section.evaluationWeightPct||0));
+  } else {
+    // Legacy mode: no sections, use items directly
+    joinedRows = items.map(r => ({
+      section: null, item: r, ref: r.reference, title: r.title || r.questionText || '', sortOrder: 0
+    }));
+    joinedRows.sort((a,b) => ((b.item && b.item.evaluationWeightPct)||0) - ((a.item && a.item.evaluationWeightPct)||0));
+  }
+
+  const rows = joinedRows.map((row, i) => {
+    const sec = row.section;
+    const r = row.item;
+    const hasItem = !!r;
+    const wordLimit = sec ? sec.wordLimit : (r ? r.wordLimit : 0);
+    const wordCount = r ? (r.currentWordCount || 0) : 0;
+    const wordPct = wordLimit > 0 ? Math.min(100, Math.round(wordCount / wordLimit * 100)) : 0;
     const wordBarColor = wordPct >= 100 ? 'var(--grn)' : wordPct >= 70 ? 'var(--amb)' : 'var(--blu)';
-    const effort = COMPLIANCE.deriveEffort(r);
-    return `<div class="ri-row">
-      <div class="ri-ref">${h(r.reference || (idx+1))}</div>
-      <div><div class="ri-title">${h(r.title || r.questionText || '')}</div>
-        ${r.wordLimit ? `<div class="ri-word-bar"><div class="ri-word-fill" style="width:${wordPct}%;background:${wordBarColor};"></div></div>` : ''}
-        ${r.responseType ? `<div class="ri-title-sub">${h(r.responseType)}</div>` : ''}
+    const weight = sec ? sec.evaluationWeightPct : (r ? r.evaluationWeightPct : 0);
+    const responseType = sec ? sec.responseType : (r ? r.responseType : '');
+    const effort = r ? COMPLIANCE.deriveEffort(r, bid) : 0;
+    const status = r ? (r.status || 'not_started') : 'not_started';
+    const owner = r ? r.owner : '';
+    const idx = r ? items.indexOf(r) : -1;
+    const rowStyle = !hasItem ? 'opacity:0.6;border-left:2px dashed var(--t4);' : '';
+
+    return `<div class="ri-row" style="${rowStyle}">
+      <div class="ri-ref">${h(row.ref || (i+1))}</div>
+      <div><div class="ri-title">${h(row.title)}</div>
+        ${wordLimit ? `<div class="ri-word-bar"><div class="ri-word-fill" style="width:${wordPct}%;background:${wordBarColor};"></div></div>` : ''}
+        ${responseType ? `<div class="ri-title-sub">${h(responseType)}</div>` : ''}
       </div>
-      <div class="ri-words">${r.wordLimit ? `${r.currentWordCount||0}/${r.wordLimit}` : '\u2014'}</div>
-      <div class="ri-weight">${r.evaluationWeightPct ? r.evaluationWeightPct + '%' : '\u2014'}</div>
-      <div>${_statusBadge(r.status)}</div>
+      <div class="ri-words">${wordLimit ? `${wordCount}/${wordLimit}` : '\u2014'}</div>
+      <div class="ri-weight">${weight ? weight + '%' : '\u2014'}</div>
+      <div>${_statusBadge(status)}</div>
       <div class="ri-effort">${effort ? effort + 'd' : '\u2014'}</div>
-      <div class="ri-owner">${h(r.owner || '\u2014')}</div>
-      <div>
+      <div class="ri-owner">${h(owner || '\u2014')}</div>
+      <div>${hasItem ? `
         <select class="sel" style="font-size:10px;padding:3px 18px 3px 4px;" onclick="event.stopPropagation()" onchange="handleResponseStatus(${idx},this.value)">
-          <option value="${r.status||'not_started'}" selected>${((_statusMeta||{})[r.status||'not_started']||{}).label||(r.status||'not_started').replace(/_/g,' ')}</option>
-          ${TRANSITIONS.validNextResponseStatuses(r.status||'not_started').map(s =>
+          <option value="${status}" selected>${((_statusMeta||{})[status]||{}).label||status.replace(/_/g,' ')}</option>
+          ${TRANSITIONS.validNextResponseStatuses(status).map(s =>
             `<option value="${s}">${((_statusMeta||{})[s]||{}).label||s.replace(/_/g,' ')}</option>`
           ).join('')}
-        </select>
+        </select>` : `<button class="btn btn-sm" onclick="handleStartProductionForSection('${sec ? sec.id : ''}')">Start</button>`}
       </div>
     </div>`;
   }).join('');
@@ -4538,8 +4719,8 @@ function _renderResponseRegister(bid, _statusMeta) {
 }
 
 function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) {
-  const items = bid.responseItems || [];
-  if (items.length === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response items yet.</div>';
+  const total = respComp.total || 0;
+  if (total === 0) return '<div style="padding:32px;text-align:center;color:var(--t3);font-size:12px;">No response sections or items yet.</div>';
 
   const stages = Object.keys(COMPLIANCE.STAGE_WEIGHTS);
   const stagesHtml = stages.map(s => {
@@ -4552,37 +4733,54 @@ function _renderProductionPipeline(bid, respComp, _statusMeta, PIPELINE_COLORS) 
     </div>`;
   }).join('');
 
+  // Coverage banner
+  const covHtml = respComp.totalSections > 0 ? `<div class="co co-b" style="margin-bottom:10px;"><div class="co-l">Coverage</div><div class="co-t">${respComp.totalItems} of ${respComp.totalSections} response sections have active production (${respComp.productionCoverage}%)</div></div>` : '';
+
   // Pipeline bar
   const barSegs = stages.map(s => {
     const count = respComp.pipeline[s] || 0;
     if (count === 0) return '';
-    return `<div class="pipeline-seg" style="width:${(count/items.length*100)}%;background:${PIPELINE_COLORS[s]||'var(--t4)'};" title="${(_statusMeta[s]||{}).label||s}: ${count}"></div>`;
+    return `<div class="pipeline-seg" style="width:${(count/total*100)}%;background:${PIPELINE_COLORS[s]||'var(--t4)'};" title="${(_statusMeta[s]||{}).label||s}: ${count}"></div>`;
   }).join('');
 
-  // Items grouped by stage
+  // Items grouped by stage — resolve section data for display
+  const items = bid.responseItems || [];
+  const sections = bid.responseSections || [];
   const groupedHtml = stages.map(s => {
     const stageItems = items.filter(r => (r.status||'not_started') === s);
-    if (stageItems.length === 0) return '';
+    // For not_started, also include sections without any linked ResponseItem
+    let unstartedSections = [];
+    if (s === 'not_started') {
+      unstartedSections = sections.filter(sec => !sec.linkedResponseItemId);
+    }
+    const totalCount = stageItems.length + unstartedSections.length;
+    if (totalCount === 0) return '';
     const meta = _statusMeta[s] || { cls:'fe-mute', label: s.replace(/_/g,' ') };
     const color = PIPELINE_COLORS[s] || 'var(--t4)';
     return `<div style="margin-bottom:12px;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <div style="width:4px;height:16px;background:${color};border-radius:2px;"></div>
         <span class="fe ${meta.cls}">${meta.label}</span>
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${stageItems.length} item${stageItems.length!==1?'s':''}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${totalCount} item${totalCount!==1?'s':''}</span>
       </div>
       <div style="background:var(--bg2);border:1px solid var(--bdr);">
-        ${stageItems.sort((a,b)=>(b.evaluationWeightPct||0)-(a.evaluationWeightPct||0)).map(r => `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
+        ${stageItems.map(r => { const sec = COMPLIANCE.resolveSection(r, bid); return `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;">
           <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(r.reference||'')}</span>
-          <span style="flex:1;font-size:12px;color:var(--t1);">${h(r.title||r.questionText||'')}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${r.evaluationWeightPct ? r.evaluationWeightPct+'%' : ''}</span>
+          <span style="flex:1;font-size:12px;color:var(--t1);">${h(r.title||sec.title||'')}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${(sec.evaluationWeightPct||r.evaluationWeightPct) ? (sec.evaluationWeightPct||r.evaluationWeightPct)+'%' : ''}</span>
           <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);">${h(r.owner||'')}</span>
+        </div>`; }).join('')}
+        ${unstartedSections.map(sec => `<div style="padding:6px 14px;border-bottom:1px solid var(--bdr-s);display:flex;gap:10px;align-items:center;opacity:0.6;">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);min-width:50px;">${h(sec.reference||'')}</span>
+          <span style="flex:1;font-size:12px;color:var(--t2);">${h(sec.title||'')}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--amb);">${sec.evaluationWeightPct ? sec.evaluationWeightPct+'%' : ''}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);">—</span>
         </div>`).join('')}
       </div>
     </div>`;
   }).join('');
 
-  return `<div style="display:flex;gap:4px;margin-bottom:16px;padding:16px;background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
+  return `${covHtml}<div style="display:flex;gap:4px;margin-bottom:16px;padding:16px;background:var(--bg2);border:1px solid var(--bdr);overflow-x:auto;">
     ${stagesHtml}
   </div>
   <div class="pipeline-bar" style="margin-bottom:16px;">${barSegs}</div>
@@ -6135,6 +6333,17 @@ function _generateBidFromWizard(d) {
     hasCompetitiveDialogue: d.hasCompetitiveDialogue,
     hasPresentation: d.milestones.some(m=>m.type==='presentation'&&m.date),
     hasBafo: d.hasBafo,
+    // Procurement context (ITT ingestion layer)
+    procurementRoute: d.procurementRoute || '',
+    portalPlatform: d.portalPlatform || '',
+    portalReference: d.portalReference || '',
+    contractDurationMonths: parseFloat(d.contractDurationMonths) || null,
+    extensionOptions: d.extensionOptions || '',
+    estimatedTotalValue: parseFloat(d.estimatedTotalValue) || null,
+    tupeApplicable: !!d.tupeApplicable,
+    tupeStaffCount: parseInt(d.tupeStaffCount) || null,
+    securityClearanceTier: d.securityClearanceTier || '',
+    isRebid: !!d.isRebid,
     status: 'setup', archetype: 'services', complexity: d.complexity,
     tcv: tcvM, acv: acvM, winFeeValue: 0,
     health: 'unk', devReadiness: 0, prodReadiness: 0,
@@ -6148,8 +6357,11 @@ function _generateBidFromWizard(d) {
     },
     workstreams, activities,
     requirements: [...d.requirements],  // legacy — kept for backward compat
+    responseSections: [...(d.responseSections || [])],
     responseItems: [...(d.responseItems || [])],
     complianceRequirements: [...(d.complianceRequirements || [])],
+    ittDocuments: [...(d.ittDocuments || [])],
+    evaluationFramework: d.evaluationFramework ? {...d.evaluationFramework} : null,
     reviewCycles: [], governanceGates, standupActions: [],
     riskAssumptions: [],
     teamMembers: (d.extendedTeam||[]).map(m=>({...m, id:STORE.uuid()})),
@@ -6235,6 +6447,33 @@ function actSortBy(col) {
 ════════════════════════════════════════════════════════════ */
 
 // ── Response Item handlers ────────────────────────────────
+// Create a ResponseItem for a ResponseSection that doesn't have one yet (start production)
+function handleStartProductionForSection(sectionId) {
+  if (!sectionId) return;
+  STORE.mutateBid(ROUTER.bidId, bid => {
+    const sec = (bid.responseSections || []).find(s => s.id === sectionId);
+    if (!sec || sec.linkedResponseItemId) return; // already has an item
+    const itemId = STORE.uuid();
+    if (!bid.responseItems) bid.responseItems = [];
+    bid.responseItems.push({
+      id: itemId, bidId: bid.id,
+      linkedResponseSectionId: sectionId,
+      reference: sec.reference || '', title: sec.title || '',
+      currentWordCount: 0, complexityEstimate: 'high', effortDays: 0,
+      owner: '', status: 'not_started',
+      linkedActivityCode: '', linkedComplianceIds: [],
+      dueDate: '', notes: '', lastUpdated: STORE.now(),
+      qualityAnswersQuestion: 'not_assessed', qualityAnswersQuestionNotes: '',
+      qualityFollowsStructure: 'not_assessed', qualityFollowsStructureNotes: '',
+      qualityScoreSelfAssessment: null, qualityScoreRationale: '', qualityScoreGap: '',
+      qualityCredentials: 'not_assessed', qualityCredentialsRefs: '',
+      qualityWinThemeAssessments: [], qualityComplianceMapping: '',
+    });
+    sec.linkedResponseItemId = itemId;
+  });
+  renderApp();
+}
+
 function handleResponseStatus(idx, newStatus) {
   STORE.mutateBid(ROUTER.bidId, bid => {
     const item = (bid.responseItems || [])[idx];
@@ -6301,43 +6540,54 @@ function handleAddResponseItemModal() {
 function handleAddResponseItemConfirm() {
   const title = (document.getElementById('ri-title').value || '').trim();
   if (!title) { alert('Title is required.'); return; }
-  const item = {
-    id: STORE.uuid(),
-    reference: (document.getElementById('ri-ref').value || '').trim(),
-    title,
+  const sectionId = STORE.uuid();
+  const itemId = STORE.uuid();
+  const ref = (document.getElementById('ri-ref').value || '').trim();
+
+  // Create ResponseSection (exam paper)
+  const section = {
+    id: sectionId, bidId: ROUTER.bidId,
+    reference: ref, title,
     questionText: (document.getElementById('ri-qtext').value || '').trim(),
     responseType: document.getElementById('ri-type').value,
+    ittVolume: null,
     sectionNumber: (document.getElementById('ri-section').value || '').trim(),
+    evaluationCategory: 'quality',
     evaluationWeightPct: parseFloat(document.getElementById('ri-weight').value) || 0,
     evaluationMaxScore: parseFloat(document.getElementById('ri-maxscore').value) || 0,
     evaluationCriteria: '',
+    hurdleScore: null,
     wordLimit: parseInt(document.getElementById('ri-words').value) || 0,
     pageLimit: parseInt(document.getElementById('ri-pages').value) || 0,
+    responseFormat: null,
+    linkedResponseItemId: itemId,
+    sortOrder: 0, notes: null, sourceDocumentId: null,
+    createdBy: 'manual', lastUpdated: STORE.now(),
+  };
+
+  // Create ResponseItem (answer sheet — production tracking)
+  const item = {
+    id: itemId, bidId: ROUTER.bidId,
+    linkedResponseSectionId: sectionId,
+    reference: ref, title,
     currentWordCount: 0,
     complexityEstimate: document.getElementById('ri-complex').value,
-    effortDays: 0, // derived from word count + complexity
+    effortDays: 0,
     owner: (document.getElementById('ri-owner').value || '').trim(),
     status: 'not_started',
-    linkedActivityCode: '',
-    linkedComplianceIds: [],
-    dueDate: '',
-    notes: '',
-    lastUpdated: STORE.now(),
-    qualityAnswersQuestion: 'not_assessed',
-    qualityAnswersQuestionNotes: '',
-    qualityFollowsStructure: 'not_assessed',
-    qualityFollowsStructureNotes: '',
-    hurdleScore: null,
-    qualityScoreSelfAssessment: null,
-    qualityScoreRationale: '',
-    qualityScoreGap: '',
-    qualityCredentials: 'not_assessed',
-    qualityCredentialsRefs: '',
-    qualityWinThemeAssessments: [],
-    qualityComplianceMapping: '',
+    linkedActivityCode: '', linkedComplianceIds: [],
+    dueDate: '', notes: '', lastUpdated: STORE.now(),
+    qualityAnswersQuestion: 'not_assessed', qualityAnswersQuestionNotes: '',
+    qualityFollowsStructure: 'not_assessed', qualityFollowsStructureNotes: '',
+    qualityScoreSelfAssessment: null, qualityScoreRationale: '', qualityScoreGap: '',
+    qualityCredentials: 'not_assessed', qualityCredentialsRefs: '',
+    qualityWinThemeAssessments: [], qualityComplianceMapping: '',
   };
   STORE.mutateBid(ROUTER.bidId, bid => {
+    if (!bid.responseSections) bid.responseSections = [];
     if (!bid.responseItems) bid.responseItems = [];
+    section.sortOrder = bid.responseSections.length;
+    bid.responseSections.push(section);
     bid.responseItems.push(item);
   });
   closeModal();
@@ -6349,13 +6599,14 @@ function handleResponseCsvImport() {
   el.id = 'modal-overlay'; el.className = 'overlay';
   el.innerHTML = `<div class="modal" style="max-width:680px;">
     <div class="modal-hdr">
-      <div class="modal-title">Import Response Items CSV</div>
+      <div class="modal-title">Import Response Sections CSV</div>
       <button class="modal-close" onclick="closeModal()">\u00D7</button>
     </div>
     <div style="padding:0 20px 16px;">
       <div class="sh2">Required CSV Structure</div>
       <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px;">
-        Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Title</strong> is the only mandatory field \u2014 all others are optional.
+        Import the exam paper \u2014 the questions and deliverables the client is asking for. Each row creates a <strong>Response Section</strong>. Production tracking (Response Items) can be started individually after import.
+        <br><br>Your CSV should contain the following columns in order. The first row may be a header (auto-detected). <strong>Title</strong> is the only mandatory field \u2014 all others are optional.
       </div>
       <div style="background:var(--bg3);border:1px solid var(--bdr);padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;overflow-x:auto;margin-bottom:12px;">
         <div style="color:var(--gold);margin-bottom:4px;">Column Order:</div>
@@ -6366,12 +6617,12 @@ function handleResponseCsvImport() {
         <div><span style="color:var(--t1);">5. pageLimit</span> \u2014 number (e.g. 6)</div>
         <div><span style="color:var(--t1);">6. evaluationWeightPct</span> \u2014 number (e.g. 15)</div>
         <div><span style="color:var(--t1);">7. evaluationMaxScore</span> \u2014 number (e.g. 100)</div>
-        <div><span style="color:var(--t1);">8. complexity</span> \u2014 low | medium | high | very_high (default: high)</div>
-        <div><span style="color:var(--t1);">9. owner</span> \u2014 e.g. Solution Lead</div>
+        <div><span style="color:var(--t1);">8. evaluationCriteria</span> \u2014 what the evaluator is looking for (optional)</div>
+        <div><span style="color:var(--t1);">9. sectionNumber</span> \u2014 ITT section reference for grouping (optional)</div>
         <div><span style="color:var(--t1);">10. questionText</span> \u2014 full question text (optional)</div>
       </div>
       <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">
-        <strong>Example row:</strong> Q1.1, "Describe your approach to service delivery", written_question, 3000, 6, 15, 100, high, Solution Lead, "Full question text here"
+        <strong>Example row:</strong> Q1.1, "Describe your approach to service delivery", written_question, 3000, 6, 15, 100, "Evidence of similar projects", "4.2", "Full question text here"
       </div>
     </div>
     <div class="modal-footer">
@@ -6391,42 +6642,41 @@ function _doResponseCsvImport() {
     const reader = new FileReader();
     reader.onload = ev => {
       const rows = ev.target.result.trim().split(/\r?\n/);
-      let imported = 0, rejected = 0;
+      let imported = 0, rejected = 0, duplicates = 0;
       STORE.mutateBid(ROUTER.bidId, bid => {
-        if (!bid.responseItems) bid.responseItems = [];
+        if (!bid.responseSections) bid.responseSections = [];
         rows.forEach((row, i) => {
           const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
           if (i === 0 && /^ref/i.test(cols[0])) return;
-          const [ref='', title='', type='written_question', wl='', pl='', wt='', ms='', cx='high', owner='', qtext=''] = cols;
+          const [ref='', title='', type='written_question', wl='', pl='', wt='', ms='', criteria='', secNum='', qtext=''] = cols;
           if (!title) { rejected++; return; }
-          bid.responseItems.push({
-            id: STORE.uuid(), reference: ref, title, questionText: qtext,
-            responseType: type, sectionNumber: '',
+          // Duplicate detection: warn but still import
+          if (ref && bid.responseSections.some(s => s.reference === ref)) duplicates++;
+          bid.responseSections.push({
+            id: STORE.uuid(), bidId: bid.id,
+            reference: ref, title, questionText: qtext,
+            responseType: type || 'written_question',
+            ittVolume: null,
+            sectionNumber: secNum,
+            evaluationCategory: 'quality',
             evaluationWeightPct: parseFloat(wt) || 0,
             evaluationMaxScore: parseFloat(ms) || 0,
-            evaluationCriteria: '',
-            wordLimit: parseInt(wl) || 0, pageLimit: parseInt(pl) || 0,
-            currentWordCount: 0, complexityEstimate: cx || 'high',
-            effortDays: 0, owner, status: 'not_started',
-            linkedActivityCode: '', linkedComplianceIds: [],
-            dueDate: '', notes: '', lastUpdated: STORE.now(),
-            qualityAnswersQuestion: 'not_assessed',
-            qualityAnswersQuestionNotes: '',
-            qualityFollowsStructure: 'not_assessed',
-            qualityFollowsStructureNotes: '',
+            evaluationCriteria: criteria,
             hurdleScore: null,
-            qualityScoreSelfAssessment: null,
-            qualityScoreRationale: '',
-            qualityScoreGap: '',
-            qualityCredentials: 'not_assessed',
-            qualityCredentialsRefs: '',
-            qualityWinThemeAssessments: [],
-            qualityComplianceMapping: '',
+            wordLimit: parseInt(wl) || 0, pageLimit: parseInt(pl) || 0,
+            responseFormat: null,
+            linkedResponseItemId: null,
+            sortOrder: bid.responseSections.length,
+            notes: null, sourceDocumentId: null,
+            createdBy: 'csv_import', lastUpdated: STORE.now(),
           });
           imported++;
         });
       });
-      alert(`${imported} response items imported, ${rejected} rejected`);
+      let msg = `${imported} response section${imported!==1?'s':''} imported`;
+      if (rejected) msg += `, ${rejected} rejected (missing title)`;
+      if (duplicates) msg += `, ${duplicates} duplicate reference${duplicates!==1?'s':''} (imported anyway)`;
+      alert(msg);
       renderApp();
     };
     reader.readAsText(file);
