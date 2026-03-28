@@ -546,7 +546,9 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 .gantt-row-label:hover{color:var(--t1);}
 .gantt-row-bars{position:relative;flex:1;min-height:26px;}
 .gantt-row.ws-hdr{background:var(--bg4);min-height:24px;}
-.gantt-row.ws-hdr .gantt-row-label{background:var(--bg4);font-family:'DM Mono',monospace;font-size:10px;font-weight:600;cursor:default;}
+.gantt-row.ws-hdr .gantt-row-label{background:var(--bg4);font-family:'DM Mono',monospace;font-size:10px;font-weight:600;cursor:pointer;}
+.gantt-chevron{display:inline-block;width:12px;font-size:9px;color:var(--t3);transition:transform .15s ease;margin-right:4px;}
+.gantt-chevron.collapsed{transform:rotate(-90deg);}
 .gantt-bar{position:absolute;top:4px;height:18px;border-radius:3px;opacity:.85;min-width:3px;}
 .gantt-bar-fill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;opacity:.5;background:rgba(255,255,255,.25);}
 .gantt-bar:hover{opacity:1;z-index:4;}
@@ -2906,7 +2908,9 @@ const ROUTER = {
   bidTab: 'workspace',
   actView: 'workstream', // 'workstream' | 'list' | 'gantt'
   ganttScale: 'fortnight', // 'day' | 'week' | 'fortnight' | 'month'
+  ganttCollapsed: new Set(), // collapsed group keys in gantt
   setGanttScale(s) { this.ganttScale = s; renderApp(); },
+  toggleGanttGroup(key) { if (this.ganttCollapsed.has(key)) this.ganttCollapsed.delete(key); else this.ganttCollapsed.add(key); renderApp(); },
   subView: 'responses',  // 'responses' | 'pipeline' | 'winthemes' | 'quality'
   revView: 'timeline',   // 'timeline' | 'cross'
   revCycleId: null,       // selected cycle id for detail view
@@ -4467,63 +4471,75 @@ function _renderGanttChart(bid) {
     msToShow.push({ type:'submission_deadline', label:'Submission Deadline', date: bid.submissionDeadline });
   }
   if (msToShow.length) {
-    rows += `<div class="gantt-row ws-hdr"><div class="gantt-row-label" style="cursor:default;"><span style="color:var(--gold);">◆ Procurement Milestones</span></div>${_barArea('')}</div>`;
-    msToShow.sort((a,b) => a.date.localeCompare(b.date)).forEach(m => {
-      const mx = _x(m.date);
-      const mColor = m.type === 'submission_deadline' ? 'var(--red)' : 'var(--gold)';
-      const mLabel = m.label || m.type.replace(/_/g,' ');
-      const marker = mx !== null ? `<div class="gantt-marker-line" style="left:${Math.round(mx)}px;background:${mColor};" ${_tip}></div>
-        <div class="gantt-tooltip" style="display:none;"><div class="gt-code">◆ ${h(mLabel)}</div><div class="gt-row"><span>${m.date}</span></div></div>` : '';
-      rows += `<div class="gantt-row"><div class="gantt-row-label" style="font-style:italic;" title="${h(mLabel)}">◆ ${h(mLabel)}</div>${_barArea(marker)}</div>`;
-    });
+    const msKey = '_milestones';
+    const msCol = ROUTER.ganttCollapsed.has(msKey);
+    rows += `<div class="gantt-row ws-hdr" onclick="ROUTER.toggleGanttGroup('${msKey}')"><div class="gantt-row-label"><span class="gantt-chevron${msCol?' collapsed':''}">▼</span><span style="color:var(--gold);">◆ Procurement Milestones</span></div>${_barArea('')}</div>`;
+    if (!msCol) {
+      msToShow.sort((a,b) => a.date.localeCompare(b.date)).forEach(m => {
+        const mx = _x(m.date);
+        const mColor = m.type === 'submission_deadline' ? 'var(--red)' : 'var(--gold)';
+        const mLabel = m.label || m.type.replace(/_/g,' ');
+        const marker = mx !== null ? `<div class="gantt-marker-line" style="left:${Math.round(mx)}px;background:${mColor};" ${_tip}></div>
+          <div class="gantt-tooltip" style="display:none;"><div class="gt-code">◆ ${h(mLabel)}</div><div class="gt-row"><span>${m.date}</span></div></div>` : '';
+        rows += `<div class="gantt-row"><div class="gantt-row-label" style="font-style:italic;" title="${h(mLabel)}">◆ ${h(mLabel)}</div>${_barArea(marker)}</div>`;
+      });
+    }
   }
 
   // ── Governance gates ──
   if (gatesWithDates.length) {
-    rows += `<div class="gantt-row ws-hdr"><div class="gantt-row-label" style="cursor:default;"><span style="color:var(--pur);">◆ Governance Gates</span></div>${_barArea('')}</div>`;
-    gatesWithDates.sort((a,b) => a._date.localeCompare(b._date)).forEach(g => {
-      const gx = _x(g._date);
-      const gColor = g.status === 'passed' ? 'var(--grn)' : g.status === 'failed' ? 'var(--red)' : 'var(--pur)';
-      const sl = (g.status||'pending').replace(/_/g,' ');
-      const dateLabel = g._src === 'planned' ? g._date : g._date + ' (' + g._src + ')';
-      const marker = gx !== null ? `<div class="gantt-marker-diamond" style="left:${Math.round(gx - 6)}px;background:${gColor};" ${_tip}></div>
-        <div class="gantt-tooltip" style="display:none;"><div class="gt-code">◆ ${h(g.name)}</div><div class="gt-row"><span>${dateLabel}</span><span>${sl}</span></div></div>` : '';
-      rows += `<div class="gantt-row"><div class="gantt-row-label" style="font-style:italic;cursor:pointer;" onclick="ROUTER.setBidTab('governance')" title="${h(g.name)}">◆ ${h(g.name)}</div>${_barArea(marker)}</div>`;
-    });
+    const gtKey = '_gates';
+    const gtCol = ROUTER.ganttCollapsed.has(gtKey);
+    rows += `<div class="gantt-row ws-hdr" onclick="ROUTER.toggleGanttGroup('${gtKey}')"><div class="gantt-row-label"><span class="gantt-chevron${gtCol?' collapsed':''}">▼</span><span style="color:var(--pur);">◆ Governance Gates</span></div>${_barArea('')}</div>`;
+    if (!gtCol) {
+      gatesWithDates.sort((a,b) => a._date.localeCompare(b._date)).forEach(g => {
+        const gx = _x(g._date);
+        const gColor = g.status === 'passed' ? 'var(--grn)' : g.status === 'failed' ? 'var(--red)' : 'var(--pur)';
+        const sl = (g.status||'pending').replace(/_/g,' ');
+        const dateLabel = g._src === 'planned' ? g._date : g._date + ' (' + g._src + ')';
+        const marker = gx !== null ? `<div class="gantt-marker-diamond" style="left:${Math.round(gx - 6)}px;background:${gColor};" ${_tip}></div>
+          <div class="gantt-tooltip" style="display:none;"><div class="gt-code">◆ ${h(g.name)}</div><div class="gt-row"><span>${dateLabel}</span><span>${sl}</span></div></div>` : '';
+        rows += `<div class="gantt-row"><div class="gantt-row-label" style="font-style:italic;cursor:pointer;" onclick="event.stopPropagation();ROUTER.setBidTab('governance')" title="${h(g.name)}">◆ ${h(g.name)}</div>${_barArea(marker)}</div>`;
+      });
+    }
   }
 
   // ── Activity rows grouped by workstream ──
   wsList.forEach(ws => {
     const wsActs = acts.filter(a => a.workstreamId === ws.id);
     if (!wsActs.length) return;
-    rows += `<div class="gantt-row ws-hdr"><div class="gantt-row-label"><span class="ws-${ws.cls}">${h(ws.name)}</span></div>${_barArea('')}</div>`;
+    const wsKey = 'ws_' + ws.id;
+    const wsCol = ROUTER.ganttCollapsed.has(wsKey);
+    rows += `<div class="gantt-row ws-hdr" onclick="ROUTER.toggleGanttGroup('${wsKey}')"><div class="gantt-row-label"><span class="gantt-chevron${wsCol?' collapsed':''}">▼</span><span class="ws-${ws.cls}">${h(ws.name)}</span> <span style="font-weight:400;color:var(--t3);font-size:9px;">(${wsActs.length})</span></div>${_barArea('')}</div>`;
 
-    wsActs.forEach(act => {
-      const sched = actMap[act.id];
-      const start = (sched && sched.plannedStart) || act.plannedStart;
-      const finish = (sched && sched.plannedEnd) || act.plannedEnd;
-      let barHtml = '';
+    if (!wsCol) {
+      wsActs.forEach(act => {
+        const sched = actMap[act.id];
+        const start = (sched && sched.plannedStart) || act.plannedStart;
+        const finish = (sched && sched.plannedEnd) || act.plannedEnd;
+        let barHtml = '';
 
-      if (start && finish) {
-        const x1 = _x(start); const x2 = _x(finish);
-        if (x1 !== null && x2 !== null) {
-          const dayPx = barAreaW / totalDays;
-          const bw = Math.max(x2 - x1 + dayPx, 4);
-          const prog = _pct(act.status);
-          const color = _wsColor(ws.cls);
-          barHtml = `<div class="gantt-bar" style="left:${Math.round(x1)}px;width:${Math.round(bw)}px;background:${color};" ${_tip}>
-              ${prog > 0 ? `<div class="gantt-bar-fill" style="width:${prog}%;"></div>` : ''}
-            </div><div class="gantt-tooltip" style="display:none;">
-              <div class="gt-code">${h(act.id)} — ${h(act.name)}</div>
-              <div class="gt-row"><span>${(act.status||'not_started').replace(/_/g,' ')}</span><span>${prog}%</span></div>
-              <div class="gt-row"><span>${start} → ${finish}</span></div>
-              <div class="gt-row"><span>Effort: ${act.effortDays||0}d · Team: ${act.teamSize||1}</span></div>
-              ${act.owner ? `<div class="gt-row"><span>${h(act.owner)}</span></div>` : ''}
-            </div>`;
+        if (start && finish) {
+          const x1 = _x(start); const x2 = _x(finish);
+          if (x1 !== null && x2 !== null) {
+            const dayPx = barAreaW / totalDays;
+            const bw = Math.max(x2 - x1 + dayPx, 4);
+            const prog = _pct(act.status);
+            const color = _wsColor(ws.cls);
+            barHtml = `<div class="gantt-bar" style="left:${Math.round(x1)}px;width:${Math.round(bw)}px;background:${color};" ${_tip}>
+                ${prog > 0 ? `<div class="gantt-bar-fill" style="width:${prog}%;"></div>` : ''}
+              </div><div class="gantt-tooltip" style="display:none;">
+                <div class="gt-code">${h(act.id)} — ${h(act.name)}</div>
+                <div class="gt-row"><span>${(act.status||'not_started').replace(/_/g,' ')}</span><span>${prog}%</span></div>
+                <div class="gt-row"><span>${start} → ${finish}</span></div>
+                <div class="gt-row"><span>Effort: ${act.effortDays||0}d · Team: ${act.teamSize||1}</span></div>
+                ${act.owner ? `<div class="gt-row"><span>${h(act.owner)}</span></div>` : ''}
+              </div>`;
+          }
         }
-      }
-      rows += `<div class="gantt-row"><div class="gantt-row-label" onclick="ROUTER.openSlideout('activity','${act.id}')" title="${h(act.name)}">${h(act.id)} ${h((act.name||'').substring(0,28))}</div>${_barArea(barHtml)}</div>`;
-    });
+        rows += `<div class="gantt-row"><div class="gantt-row-label" onclick="event.stopPropagation();ROUTER.openSlideout('activity','${act.id}')" title="${h(act.name)}">${h(act.id)} ${h((act.name||'').substring(0,28))}</div>${_barArea(barHtml)}</div>`;
+      });
+    }
   });
 
   // ── Legend ──
