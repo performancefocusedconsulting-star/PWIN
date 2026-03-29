@@ -45,6 +45,7 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); letter-spacing: -0.01em; }
 h3 { font-size: 1.25rem; }
 p { max-width: 640px; }
 .mono { font-family: var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.75rem; }
+.brand-name { text-transform: none; }
 
 /* ─── LAYOUT ─── */
 .container { max-width: var(--max-width); margin: 0 auto; padding: 0 32px; }
