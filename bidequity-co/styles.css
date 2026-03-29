@@ -480,20 +480,68 @@ p { max-width: 640px; }
   .qualify-step__num { width: 40px; height: 40px; font-size: 1rem; }
 }
 
-/* ─── SECTOR STRIP (Homepage) ─── */
-.sector-strip {
-  display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px;
+/* ─── SECTOR LIST — Variant A: Dash accent ─── */
+.sector-list {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 32px; max-width: 360px;
 }
-.sector-tag {
-  display: inline-block;
-  font-family: var(--font-mono); font-size: 0.75rem;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--teal); border: 1px solid var(--teal);
-  padding: 8px 20px;
-  transition: background 0.2s, color 0.2s;
+.sector-list__item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(2,23,68,0.08);
+  font-family: var(--font-heading); font-weight: 500;
+  font-size: 1.05rem; color: var(--navy);
 }
-.sector-tag:hover {
-  background: var(--teal); color: var(--sand);
+.sector-list__item:last-child { border-bottom: none; }
+.sector-list__dash {
+  display: block; width: 24px; height: 2px; flex-shrink: 0;
+  background: var(--bright-aqua);
+}
+.sector-list__dash--aqua { background: var(--bright-aqua); }
+.sector-list__dash--coral { background: var(--coral); }
+.sector-list__dash--teal { background: var(--teal); }
+
+/* ─── SECTOR GRID — Variant B: Numbered grid ─── */
+.sector-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  margin-top: 32px; max-width: 520px;
+}
+.sector-grid__item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(2,23,68,0.08);
+  font-family: var(--font-heading); font-weight: 500;
+  font-size: 1.05rem; color: var(--navy);
+}
+.sector-grid__num {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--teal); letter-spacing: 0.05em;
+  flex-shrink: 0; width: 24px;
+}
+@media (max-width: 480px) {
+  .sector-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── SECTOR BLOCKS — Variant C: Top-border blocks ─── */
+.sector-blocks {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-top: 32px;
+}
+.sector-block {
+  padding: 16px 20px;
+  border-top: 3px solid var(--bright-aqua);
+  font-family: var(--font-heading); font-weight: 500;
+  font-size: 0.95rem; color: var(--navy);
+  background: var(--white);
+}
+.sector-block--aqua { border-top-color: var(--bright-aqua); }
+.sector-block--coral { border-top-color: var(--coral); }
+.sector-block--teal { border-top-color: var(--teal); }
+@media (max-width: 768px) {
+  .sector-blocks { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .sector-blocks { grid-template-columns: 1fr; }
 }
 
 /* ─── NARRATIVE HEADER (About) ─── */
