@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — BidEquity</title>
+  <meta name="description" content="What BidEquity is, how we work, and why our fees are contingent on contract award. Strategic pursuit consultancy for UK public sector.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')" aria-label="Menu">☰</button>
+      <div class="nav__links">
+        <a href="about.html" class="active">About</a>
+        <a href="services.html">Services</a>
+        <a href="qualify.html">Qualify</a>
+        <a href="contact.html">Contact</a>
+        <a href="qualify.html" class="nav__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+  <!-- ═══ PAGE HEADER ═══ -->
+  <section class="section section--dark" style="padding-top: 140px; padding-bottom: 64px;">
+    <div class="container">
+      <p class="mono" style="color: var(--teal); margin-bottom: 16px;">About BidEquity</p>
+      <h1>The discipline your bid operation is missing.</h1>
+      <div class="divider" style="background: var(--coral); margin-top: 32px;"></div>
+    </div>
+  </section>
+
+  <!-- ═══ WHAT WE ARE ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono color-teal mb-16">What BidEquity is</p>
+          <h2>A strategic pursuit consultancy.</h2>
+          <div class="divider"></div>
+          <p>
+            BidEquity exists to change how organisations compete for major UK public sector contracts. We bring discipline, intelligence, and pressure-testing to pursuit strategy — replacing the ad-hoc, unmeasured approach that most firms accept as inevitable with a forensic methodology that treats every pursuit as a strategic investment.
+          </p>
+          <p class="mt-24">
+            Our operating model spans the full bid lifecycle — from qualification scoring and win strategy through pricing discipline, compliance assurance, and post-outcome analysis. We bring sector depth in Defence, Justice, Emergency Services, and transformation programmes.
+          </p>
+        </div>
+        <div>
+          <p class="mono color-teal mb-16">What BidEquity is not</p>
+          <h3 class="mb-24">We draw clear lines.</h3>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;"><strong style="color: var(--wine);">Not SaaS.</strong> We are not bid management software. We are practitioners who deploy technology as part of an engagement model.</p>
+            </div>
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;"><strong style="color: var(--wine);">Not a writing shop.</strong> We do not produce proposal text on demand. We build the intelligence and strategy that makes the writing possible.</p>
+            </div>
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;"><strong style="color: var(--wine);">Not a retainer.</strong> Our commercial model is tied to outcomes, not time. We are co-invested in every pursuit we take on.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW WE WORK ═══ -->
+  <section class="section section--pale">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono color-teal mb-16">How we work</p>
+          <h2>The expertise and the system, together.</h2>
+          <div class="divider"></div>
+          <p>
+            One without the other is either opinion without structure, or structure without judgement. BidEquity combines deep pursuit expertise with a proprietary methodology platform — consulting-led, platform-enabled.
+          </p>
+          <p class="mt-24">
+            The methodology is built from two decades of complex programme acquisition. It encodes the specific activities, dependencies, and decision points that determine whether a bid operation produces a winning submission. The platform captures, structures, and compounds this knowledge across every engagement.
+          </p>
+          <p class="mt-24">
+            The result is a fundamental reduction in what it costs to produce a competitive submission. Not incremental efficiency — a step change in bid economics driven equally by structured methodology and technology-enabled capability.
+          </p>
+        </div>
+        <div>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="callout" style="margin: 0; border-left-color: var(--teal);">
+              <p style="font-style: normal;"><strong>Methodology-led.</strong> A proprietary pursuit methodology that encodes what works — calibrated effort models, dependency maps, and archetype configurations built from real pursuit experience, not theory.</p>
+            </div>
+            <div class="callout" style="margin: 0; border-left-color: var(--bright-aqua);">
+              <p style="font-style: normal;"><strong>Platform-enabled.</strong> Technology that amplifies the methodology — automating structured activities, surfacing patterns across procurement data, and compressing the effort required to produce competitive submissions.</p>
+            </div>
+            <div class="callout" style="margin: 0; border-left-color: var(--coral);">
+              <p style="font-style: normal;"><strong>Outcome-aligned.</strong> A commercial model where BidEquity invests alongside you. Our fees are contingent on contract award. We share the risk and the conviction.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PAID ON AWARD ═══ -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono" style="color: var(--coral); margin-bottom: 16px;">Commercial model</p>
+          <h2>Paid on Award.</h2>
+          <div class="divider" style="background: var(--coral);"></div>
+          <p style="color: var(--teal); font-size: 1.05rem;">
+            Our fees are contingent on the formal contract award. We absorb the cost of intelligence during the pursuit phase. Our remuneration is mathematically tethered to your success.
+          </p>
+          <p class="mt-24" style="color: var(--sand); opacity: 0.8;">
+            This model creates total incentive alignment. We do not earn unless you win. That means we are selective about the pursuits we take on — and ruthlessly honest about the ones you should walk away from.
+          </p>
+        </div>
+        <div>
+          <div style="background: rgba(92,163,182,0.1); padding: 40px 32px; border-left: 3px solid var(--bright-aqua);">
+            <p class="mono" style="color: var(--bright-aqua); margin-bottom: 20px;">How it works</p>
+            <div style="color: var(--sand); font-size: 0.95rem; line-height: 1.8;">
+              <p><strong style="color: var(--bright-aqua);">1.</strong> We qualify the opportunity together using our scoring methodology.</p>
+              <p class="mt-16"><strong style="color: var(--bright-aqua);">2.</strong> If we proceed, we deploy our intelligence overlay at a small base cost.</p>
+              <p class="mt-16"><strong style="color: var(--bright-aqua);">3.</strong> The substantive fee is paid only on formal contract award.</p>
+              <p class="mt-16"><strong style="color: var(--bright-aqua);">4.</strong> If you do not win, our investment in your pursuit is absorbed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ APPROACH ═══ -->
+  <section class="section">
+    <div class="container text-center">
+      <p class="mono color-teal mb-16">Our approach</p>
+      <h2>Forensic. Disciplined. Outcome-led.</h2>
+      <div class="divider divider--center"></div>
+      <p style="margin: 0 auto 48px; max-width: 560px;">
+        We do not compete on volume or speed of proposal production. We compete on the quality of pursuit decisions and the rigour of win strategy. Every engagement is governed by data, structured by methodology, and measured against outcomes.
+      </p>
+
+      <div class="proof-grid">
+        <div class="proof-card">
+          <h3>Methodology-Led</h3>
+          <p>A proprietary pursuit methodology built from real programme acquisition experience. Structured activities, calibrated effort models, and decision frameworks — not generic templates or borrowed best practice.</p>
+        </div>
+        <div class="proof-card proof-card--coral">
+          <h3>Practitioner-Delivered</h3>
+          <p>Every pursuit is led by practitioners with deep public sector experience. We have delivered programmes including ESN, Project Selborne, MOJ Electronic Tagging, and TfL Cycle Hire.</p>
+        </div>
+        <div class="proof-card proof-card--teal">
+          <h3>Secure by Design</h3>
+          <p>We operate in Defence and Justice environments. Our data handling, access controls, and methodology are built to meet the security expectations of these sectors from day one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="section section--dark" style="padding: 64px 0;">
+    <div class="container text-center">
+      <h2>See whether your next pursuit qualifies.</h2>
+      <p style="margin: 16px auto 32px; color: var(--teal); max-width: 480px;">
+        Our qualification tool scores your opportunity against the factors that predict win probability. Two minutes. No commitment.
+      </p>
+      <a href="qualify.html" class="hero__cta">Qualify a Pursuit</a>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div><p class="footer__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></p></div>
+        <div class="footer__links">
+          <a href="about.html" class="active">About</a>
+          <a href="services.html">Services</a>
+          <a href="qualify.html">Qualify</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BidEquity. All rights reserved.</p>
+        <p class="footer__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — BidEquity</title>
+  <meta name="description" content="Get in touch with BidEquity to discuss a pursuit or explore how we can work together.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')" aria-label="Menu">☰</button>
+      <div class="nav__links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="qualify.html">Qualify</a>
+        <a href="contact.html" class="active">Contact</a>
+        <a href="qualify.html" class="nav__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+  <!-- ═══ PAGE HEADER ═══ -->
+  <section class="section section--dark" style="padding-top: 140px; padding-bottom: 64px;">
+    <div class="container">
+      <p class="mono" style="color: var(--teal); margin-bottom: 16px;">Contact</p>
+      <h1>Start a conversation.</h1>
+      <div class="divider" style="background: var(--coral); margin-top: 32px;"></div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT FORM ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col" style="gap: 80px;">
+        <div>
+          <p class="mono color-teal mb-16">Get in touch</p>
+          <h2>We are selective about the pursuits we take on.</h2>
+          <div class="divider"></div>
+          <p>
+            That selectivity is part of our model. If we do not believe the opportunity is winnable, we will tell you — and we will explain why. A conversation costs nothing and often saves a great deal.
+          </p>
+          <p class="mt-24" style="opacity: 0.8;">
+            Whether you have a live pursuit that needs qualification, a pipeline that needs sharpening, or you simply want to understand how the Paid on Award model works — we are ready to talk.
+          </p>
+
+          <div class="mt-48">
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;">
+                <strong>Prefer to qualify an opportunity first?</strong><br>
+                Use our <a href="qualify.html" style="color: var(--coral); text-decoration: underline;">qualification tool</a> to score your next pursuit before reaching out.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="form-card" style="max-width: none; margin: 0;">
+            <h3>Send us a message</h3>
+            <p>We typically respond within one working day.</p>
+
+            <form onsubmit="event.preventDefault(); document.getElementById('contact-success').style.display='block'; this.style.display='none';">
+              <div class="form-group">
+                <label for="c-name">Your Name</label>
+                <input type="text" id="c-name" name="name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="c-email">Work Email</label>
+                <input type="email" id="c-email" name="email" required>
+              </div>
+
+              <div class="form-group">
+                <label for="c-company">Organisation</label>
+                <input type="text" id="c-company" name="company">
+              </div>
+
+              <div class="form-group">
+                <label for="c-subject">Subject</label>
+                <select id="c-subject" name="subject" required>
+                  <option value="">Select...</option>
+                  <option>Discuss a live pursuit</option>
+                  <option>Understand the Paid on Award model</option>
+                  <option>Pipeline review or qualification</option>
+                  <option>General enquiry</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="c-message">Message</label>
+                <textarea id="c-message" name="message" rows="4" placeholder="Tell us about your situation..."></textarea>
+              </div>
+
+              <button type="submit" class="btn">Send Message</button>
+            </form>
+
+            <div id="contact-success" style="display: none; text-align: center; padding: 40px 0;">
+              <h3 style="color: var(--teal); margin-bottom: 12px;">Message sent.</h3>
+              <p style="color: var(--navy); opacity: 0.8;">We will be in touch within one working day.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div><p class="footer__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></p></div>
+        <div class="footer__links">
+          <a href="about.html">About</a>
+          <a href="services.html">Services</a>
+          <a href="qualify.html">Qualify</a>
+          <a href="contact.html" class="active">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BidEquity. All rights reserved.</p>
+        <p class="footer__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BidEquity — Strategic Pursuit Consultancy</title>
+  <meta name="description" content="BidEquity is a strategic pursuit consultancy for organisations competing for major UK public sector contracts. Methodology-led. Platform-enabled. Paid on Award.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__brand">
+        <span class="brand-bid">Bid</span><span class="brand-equity">Equity</span>
+        <span>Pursuit Intelligence</span>
+      </a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')" aria-label="Menu">☰</button>
+      <div class="nav__links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="qualify.html">Qualify</a>
+        <a href="contact.html">Contact</a>
+        <a href="qualify.html" class="nav__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <main id="main">
+  <section class="hero">
+    <div class="container">
+      <div class="hero__content">
+        <p class="hero__descriptor">Pursuit Intelligence</p>
+        <h1>Every cost line in your business has been optimised.<br>Except the one that determines whether you <span>have a business</span> next year.</h1>
+        <p class="hero__sub">
+          BidEquity brings discipline, intelligence, and pressure-testing to pursuit strategy before the decision gate. We improve your win probability, compress your cost of sale, and protect your margin — with fees contingent on contract award.
+        </p>
+        <a href="qualify.html" class="hero__cta">Qualify a Pursuit</a>
+        <p class="hero__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROOF POINTS ═══ -->
+  <section class="section">
+    <div class="container">
+      <p class="mono color-teal mb-16">What we deliver</p>
+      <h2>Three outcomes. One model.</h2>
+      <div class="divider divider--coral"></div>
+
+      <div class="proof-grid">
+        <div class="proof-card">
+          <h3>Improve PWIN</h3>
+          <p>Better pursuit selection and sharper win strategy. We apply forensic scoring to every opportunity so you compete where conviction is highest.</p>
+        </div>
+        <div class="proof-card proof-card--coral">
+          <h3>Compress Cost of Sale</h3>
+          <p>Structured methodology and platform-enabled capability that dramatically reduces what it costs to produce a competitive submission. Not incremental savings — a fundamental shift in bid economics.</p>
+        </div>
+        <div class="proof-card proof-card--teal">
+          <h3>Protect Margin</h3>
+          <p>Pricing discipline and risk modelling that prevents margin erosion — even on contracts you win. The pursuit economics matter as much as the outcome.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MARKET CONTEXT ═══ -->
+  <section class="section section--pale">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono color-teal mb-16">The market reality</p>
+          <h2>The one cost centre nobody measures.</h2>
+          <div class="divider"></div>
+          <p>
+            Revenue for UK government strategic suppliers is flat. Competition is intensifying. New contracts are drying up as affordability constraints bite. The strategic imperative is clear: retain the business you have, selectively pursue what you can win, and drive down costs to protect profitability.
+          </p>
+          <p class="mt-24">
+            Every function in these organisations has been optimised — finance, project delivery, supply chain, HR. Every function except one. Bidding sits outside your ERP, outside your CRM, outside your PMO. It is the one cost centre that determines your future revenue but has never been measured, structured, or governed with the same discipline applied to everything else.
+          </p>
+        </div>
+        <div>
+          <div class="callout">
+            <p>"Major bids are expensive and inconsistent. Firms waste pursuit effort on low-probability opportunities, enter late with weak positioning, and carry high cost-of-sale with uneven governance — eroding margin even when they win."</p>
+          </div>
+          <p class="mt-24" style="font-size: 0.95rem; opacity: 0.8;">
+            BidEquity exists to change this. We bring the same rigour to pursuit operations that your organisation already applies to programme delivery, financial management, and operational performance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ COMMERCIAL CASE ═══ -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono" style="color: var(--coral); margin-bottom: 16px;">The commercial case</p>
+          <h2>No new revenue required.</h2>
+          <div class="divider" style="background: var(--coral);"></div>
+          <p style="color: var(--teal); font-size: 1.05rem;">
+            A FTSE-listed strategic supplier spends £140m per year on bid activity. It generates £270m profit at a 1:3 win rate. Three quarters of that spend produces nothing.
+          </p>
+          <p class="mt-24" style="color: var(--sand); opacity: 0.8;">
+            A £40m reduction in annual cost of sale delivers an equivalent profit contribution — without winning a single additional contract. At typical market multiples, that translates to approximately £240m in market capitalisation impact.
+          </p>
+          <p class="mt-24" style="color: var(--sand); opacity: 0.8;">
+            No new revenue. No new contracts. Just discipline applied to the cost of winning the ones you already pursue.
+          </p>
+        </div>
+        <div>
+          <div style="background: rgba(92,163,182,0.1); padding: 40px 32px; border-left: 3px solid var(--bright-aqua);">
+            <p class="mono" style="color: var(--bright-aqua); margin-bottom: 20px;">Anonymised worked example</p>
+            <div style="color: var(--sand); font-size: 0.95rem; line-height: 1.8;">
+              <p><strong style="color: var(--bright-aqua);">£140m</strong> — Annual bid spend</p>
+              <p class="mt-16"><strong style="color: var(--bright-aqua);">£270m</strong> — Annual profit</p>
+              <p class="mt-16"><strong style="color: var(--bright-aqua);">1:3</strong> — Win rate</p>
+              <p class="mt-16"><strong style="color: var(--coral);">£40m</strong> — Cost-of-sale reduction achievable</p>
+              <p class="mt-16"><strong style="color: var(--coral);">£240m</strong> — Market cap impact at typical multiples</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STAT STRIP (OUTCOME-FOCUSED) ═══ -->
+  <section class="section section--pale">
+    <div class="container">
+      <div class="stat-strip">
+        <div class="stat-strip__item">
+          <h3>£500k–£2m</h3>
+          <p>Cost of a lost pursuit on a £200m contract</p>
+        </div>
+        <div class="stat-strip__item">
+          <h3>1:3</h3>
+          <p>Typical win rate for strategic suppliers</p>
+        </div>
+        <div class="stat-strip__item">
+          <h3>£240m</h3>
+          <p>Market cap impact from £40m cost-of-sale reduction</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DIFFERENTIATORS ═══ -->
+  <section class="section">
+    <div class="container text-center">
+      <p class="mono color-teal mb-16">What makes us different</p>
+      <h2>Four things that compound.</h2>
+      <div class="divider divider--center"></div>
+      <p style="margin: 0 auto 48px; max-width: 560px;">
+        Most bid consultancies offer people. Some offer tools. BidEquity is built on the interaction between a proprietary methodology, a diagnostic that tells the truth, data that compounds with every engagement, and a commercial model where we invest alongside you.
+      </p>
+
+      <div class="diff-grid">
+        <div class="proof-card">
+          <h3>Encoded Methodology</h3>
+          <p>A pursuit methodology built from two decades of complex programme acquisition — not generic frameworks, but the specific activities, dependencies, and decision points that determine whether a bid operation produces a winning submission or an expensive lesson.</p>
+        </div>
+        <div class="proof-card proof-card--coral">
+          <h3>PWIN Diagnostic</h3>
+          <p>A qualification and scoring system that tells you whether your pipeline number is real. Built-in correction for the optimism bias that inflates most pursuit assessments — because the most expensive bid is the one you should never have started.</p>
+        </div>
+        <div class="proof-card proof-card--teal">
+          <h3>Compounding Data</h3>
+          <p>Every engagement adds to a living dataset of pursuit performance — effort versus estimate, win probability trajectory, workstream compression rates. The system gets sharper with every bid. Your competitors start from zero every time.</p>
+        </div>
+        <div class="proof-card">
+          <h3>Aligned Commercial Model</h3>
+          <p>Our fees are contingent on contract award. We absorb the cost of intelligence during the pursuit phase and get paid when you win. Total incentive alignment — we share the risk and the conviction.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PAID ON AWARD ═══ -->
+  <section class="section section--dark">
+    <div class="container text-center">
+      <p class="mono" style="color: var(--coral); margin-bottom: 16px;">Our commercial model</p>
+      <h2>Paid on Award</h2>
+      <div class="divider divider--center" style="background: var(--teal);"></div>
+      <p style="margin: 0 auto 24px; max-width: 560px; color: var(--teal); font-size: 1.05rem;">
+        Our remuneration is mathematically tethered to your success. We do not earn unless you win. That means we are selective about the pursuits we take on — and ruthlessly honest about the ones you should walk away from.
+      </p>
+      <p style="margin: 0 auto; max-width: 480px; color: var(--sand); opacity: 0.7; font-size: 0.95rem;">
+        This is not "no win, no fee". It is total incentive alignment — a co-investment model where we share the risk and the conviction.
+      </p>
+      <div class="mt-48">
+        <a href="qualify.html" class="hero__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTORS ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono color-teal mb-16">Where we operate</p>
+          <h2>UK public sector. High-stakes contracts.</h2>
+          <div class="divider"></div>
+          <p>
+            We work with firms pursuing contracts across Defence, Justice, Emergency Services, and major transformation programmes. Our clients are commercially sophisticated and procurement-literate. They operate in environments where the cost of losing is measured in millions and the cost of winning badly is measured in margin.
+          </p>
+          <p class="mt-24">
+            We speak the language of these sectors — not generic consulting language, but the specific vocabulary of public sector procurement, framework agreements, and evaluation methodology.
+          </p>
+        </div>
+        <div>
+          <div class="callout">
+            <p>"The market for UK government contracts is flat. Competition is intensifying. New contracts are drying up. The firms that win from here are the ones that apply discipline to the cost of winning — not just the cost of delivery."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA STRIP ═══ -->
+  <section class="section section--dark" style="padding: 64px 0;">
+    <div class="container text-center">
+      <h2>Ready to qualify a pursuit?</h2>
+      <p style="margin: 16px auto 32px; color: var(--teal); max-width: 480px;">
+        Use our opportunity qualification tool to score a live pursuit against our methodology. Two minutes. No commitment.
+      </p>
+      <a href="qualify.html" class="hero__cta">Qualify a Pursuit</a>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div>
+          <p class="footer__brand">
+            <span class="brand-bid">Bid</span><span class="brand-equity">Equity</span>
+            <span>Pursuit Intelligence</span>
+          </p>
+        </div>
+        <div class="footer__links">
+          <a href="about.html">About</a>
+          <a href="services.html">Services</a>
+          <a href="qualify.html">Qualify</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BidEquity. All rights reserved.</p>
+        <p class="footer__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qualify a Pursuit — BidEquity</title>
+  <meta name="description" content="Score your next pursuit against the factors that predict win probability. Free qualification tool from BidEquity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .qualify-steps {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+      margin: 48px 0;
+    }
+    .qualify-step {
+      text-align: center; padding: 24px;
+    }
+    .qualify-step__num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; border: 2px solid var(--bright-aqua);
+      font-family: var(--font-heading); font-weight: 700; font-size: 1.2rem;
+      color: var(--bright-aqua); margin-bottom: 16px;
+    }
+    .qualify-step h4 { margin-bottom: 8px; color: var(--sand); }
+    .qualify-step p { font-size: 0.9rem; color: var(--teal); margin: 0 auto; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .qualify-features {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+      margin-top: 40px;
+    }
+    .qualify-feature {
+      display: flex; gap: 12px; align-items: start;
+    }
+    .qualify-feature__icon {
+      flex-shrink: 0; width: 32px; height: 32px;
+      background: var(--pale-aqua); display: flex;
+      align-items: center; justify-content: center;
+      color: var(--teal); font-weight: 700; font-size: 0.8rem;
+    }
+    .qualify-feature p { font-size: 0.9rem; opacity: 0.85; max-width: none; }
+
+    @media (max-width: 768px) {
+      .qualify-steps { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .qualify-features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')" aria-label="Menu">☰</button>
+      <div class="nav__links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="qualify.html" class="active">Qualify</a>
+        <a href="contact.html">Contact</a>
+        <a href="qualify.html" class="nav__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+  <!-- ═══ HERO ═══ -->
+  <section class="section section--dark" style="padding-top: 140px; padding-bottom: 48px;">
+    <div class="container text-center">
+      <p class="mono" style="color: var(--coral); margin-bottom: 16px;">Opportunity Qualification Tool</p>
+      <h1>Should you <span style="color: var(--bright-aqua);">pursue</span> this contract?</h1>
+      <div class="divider divider--center" style="background: var(--teal);"></div>
+      <p style="margin: 0 auto; max-width: 540px; color: var(--teal); font-size: 1.05rem;">
+        Our qualification methodology evaluates pursuit viability across the factors that genuinely predict win probability — with built-in correction for the optimism bias that inflates most pipeline assessments. Under two minutes. No commitment.
+      </p>
+
+      <div class="qualify-steps">
+        <div class="qualify-step">
+          <div class="qualify-step__num">1</div>
+          <h4>Register</h4>
+          <p>Enter your details and your organisation. We need this to tailor the qualification to your context.</p>
+        </div>
+        <div class="qualify-step">
+          <div class="qualify-step__num">2</div>
+          <h4>Qualify</h4>
+          <p>Answer ten questions about the opportunity covering positioning, incumbency, pricing confidence, and risk.</p>
+        </div>
+        <div class="qualify-step">
+          <div class="qualify-step__num">3</div>
+          <h4>Score</h4>
+          <p>Receive an instant PWIN assessment with a recommendation: pursue, condition, or walk away.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ REGISTRATION FORM ═══ -->
+  <section class="section" style="padding-top: 64px;">
+    <div class="container">
+      <div class="form-card">
+        <h3>Access the Qualification Tool</h3>
+        <p>Enter your details to begin scoring your pursuit.</p>
+
+        <form onsubmit="event.preventDefault(); document.getElementById('form-success').style.display='block'; this.style.display='none';">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first-name">First Name</label>
+              <input type="text" id="first-name" name="first-name" required>
+            </div>
+            <div class="form-group">
+              <label for="last-name">Last Name</label>
+              <input type="text" id="last-name" name="last-name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Work Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="company">Organisation</label>
+            <input type="text" id="company" name="company" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="role">Your Role</label>
+              <select id="role" name="role" required>
+                <option value="">Select...</option>
+                <option>Partner / Managing Partner</option>
+                <option>BD Director / Head of Capture</option>
+                <option>Head of Bids</option>
+                <option>CCO / COO / CFO</option>
+                <option>Bid Manager</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sector">Primary Sector</label>
+              <select id="sector" name="sector" required>
+                <option value="">Select...</option>
+                <option>Defence</option>
+                <option>Justice</option>
+                <option>Emergency Services</option>
+                <option>Central Government</option>
+                <option>Transport</option>
+                <option>Health</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contract-value">Estimated Contract Value</label>
+            <select id="contract-value" name="contract-value" required>
+              <option value="">Select...</option>
+              <option>Under £10m</option>
+              <option>£10m – £50m</option>
+              <option>£50m – £150m</option>
+              <option>£150m – £500m</option>
+              <option>£500m – £1.5bn</option>
+              <option>Over £1.5bn</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn mt-16">Start Qualification</button>
+        </form>
+
+        <div id="form-success" style="display: none; text-align: center; padding: 40px 0;">
+          <h3 style="color: var(--teal); margin-bottom: 12px;">Registration received.</h3>
+          <p style="color: var(--navy); opacity: 0.8;">The qualification tool will be available shortly. We will send access instructions to the email address you provided.</p>
+          <div class="divider divider--center divider--coral" style="margin: 24px auto;"></div>
+          <p style="font-size: 0.85rem; opacity: 0.6;">In the meantime, you can <a href="contact.html" style="color: var(--coral); text-decoration: underline;">contact us directly</a> to discuss your pursuit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ WHAT THE TOOL ASSESSES ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="mono color-teal mb-16">Qualification criteria</p>
+        <h2>What the tool assesses.</h2>
+        <div class="divider divider--center"></div>
+      </div>
+
+      <div class="qualify-features">
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">01</div>
+          <div>
+            <h4>Incumbent Position</h4>
+            <p>Are you the incumbent, a known challenger, or entering cold? This is the single strongest predictor of outcome.</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">02</div>
+          <div>
+            <h4>Relationship Depth</h4>
+            <p>The quality and seniority of your existing relationships with the buying organisation and evaluation panel.</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">03</div>
+          <div>
+            <h4>Solution Readiness</h4>
+            <p>How mature is your technical solution or delivery model for this specific requirement?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">04</div>
+          <div>
+            <h4>Competitive Landscape</h4>
+            <p>How many credible competitors, and what is your assessment of their positioning and intent?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">05</div>
+          <div>
+            <h4>Pricing Confidence</h4>
+            <p>Do you have a credible view of the target price point and confidence in your ability to be competitive?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">06</div>
+          <div>
+            <h4>Strategic Alignment</h4>
+            <p>Does this contract align with your strategic direction, or is it opportunistic pursuit with limited long-term value?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">07</div>
+          <div>
+            <h4>Bid Capacity</h4>
+            <p>Do you have the resource capacity and senior commitment to prosecute this pursuit to the standard required?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">08</div>
+          <div>
+            <h4>Risk Profile</h4>
+            <p>Contract terms, delivery risk, political sensitivity, and reputational exposure of the opportunity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div><p class="footer__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></p></div>
+        <div class="footer__links">
+          <a href="about.html">About</a>
+          <a href="services.html">Services</a>
+          <a href="qualify.html" class="active">Qualify</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BidEquity. All rights reserved.</p>
+        <p class="footer__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services — BidEquity</title>
+  <meta name="description" content="BidEquity engagement tiers and capability areas. Methodology-led pursuit support across the full bid lifecycle.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')" aria-label="Menu">☰</button>
+      <div class="nav__links">
+        <a href="about.html">About</a>
+        <a href="services.html" class="active">Services</a>
+        <a href="qualify.html">Qualify</a>
+        <a href="contact.html">Contact</a>
+        <a href="qualify.html" class="nav__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+  <!-- ═══ PAGE HEADER ═══ -->
+  <section class="section section--dark" style="padding-top: 140px; padding-bottom: 64px;">
+    <div class="container">
+      <p class="mono" style="color: var(--teal); margin-bottom: 16px;">Services</p>
+      <h1>Structured methodology across the full pursuit lifecycle.</h1>
+      <div class="divider" style="background: var(--coral); margin-top: 32px;"></div>
+    </div>
+  </section>
+
+  <!-- ═══ ENGAGEMENT TIERS ═══ -->
+  <section class="section">
+    <div class="container">
+      <p class="mono color-teal mb-16">Engagement tiers</p>
+      <h2>Choose the depth of engagement.</h2>
+      <p class="mt-16" style="opacity: 0.8;">Both tiers are anchored to the Paid on Award model. The difference is the depth of our involvement in your bid operation.</p>
+
+      <div class="tier-grid">
+        <div class="tier-card tier-card--primary">
+          <p class="tier-card__label">Intelligence overlay</p>
+          <h3>BidEquity Core</h3>
+          <p class="poa-badge mb-24">Paid on Award</p>
+          <p>Your bid team stays in place. We provide the intelligence layer that makes them sharper — pursuit scoring, win strategy, competitive positioning, and governance cadence.</p>
+          <ul class="mt-24">
+            <li>Opportunity qualification and scoring</li>
+            <li>Win strategy architecture</li>
+            <li>Competitive intelligence overlay</li>
+            <li>Dashboard and decision cadence</li>
+            <li>Review gate governance</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-card--secondary">
+          <p class="tier-card__label">Embedded bid office</p>
+          <h3>BidEquity Command</h3>
+          <p class="poa-badge mb-24">Embedded + Outcome-Aligned</p>
+          <p>We run the bid machine. Governance, rhythm, platform-enabled tooling — embedded into your operation to dramatically reduce cost of sale and improve PWIN across your portfolio.</p>
+          <ul class="mt-24">
+            <li>Full bid management office</li>
+            <li>Portfolio-level governance</li>
+            <li>Platform and tooling deployment</li>
+            <li>Pricing and commercial modelling</li>
+            <li>Post-outcome analysis and learning</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CAPABILITY AREAS ═══ -->
+  <section class="section section--pale">
+    <div class="container">
+      <div class="text-center">
+        <p class="mono color-teal mb-16">The pursuit lifecycle</p>
+        <h2>Four capability areas. One integrated methodology.</h2>
+        <div class="divider divider--center divider--coral"></div>
+        <p style="margin: 0 auto 16px; max-width: 560px;">
+          Our methodology spans the full pursuit lifecycle — from the decision to compete through to post-outcome learning. Each capability area is structured, repeatable, and governed by data.
+        </p>
+      </div>
+
+      <div class="cap-grid">
+        <div class="cap-card">
+          <div class="cap-card__header" style="border-top-color: var(--bright-aqua);">
+            <h3>Qualification and Intelligence</h3>
+          </div>
+          <div class="cap-card__body">
+            <p>The pursuit decision is the highest-leverage moment in the bid lifecycle. We apply forensic scoring to every opportunity — evaluating positioning, competitive landscape, and commercial fit — so you compete where conviction is highest and walk away from the rest.</p>
+            <p class="mt-16" style="font-size: 0.85rem; color: var(--teal);">Pursuit qualification · Opportunity scoring · Competitive intelligence · Market positioning analysis</p>
+          </div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__header" style="border-top-color: var(--coral);">
+            <h3>Strategy and Positioning</h3>
+          </div>
+          <div class="cap-card__body">
+            <p>Win strategy that starts before the tender lands. We build the intelligence architecture that positions your bid — shaping the narrative, identifying discriminators, and structuring the commercial model to score against evaluation criteria, not just comply with them.</p>
+            <p class="mt-16" style="font-size: 0.85rem; color: var(--teal);">Win strategy architecture · Pre-tender shaping · Pricing strategy · Evaluation alignment</p>
+          </div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__header" style="border-top-color: var(--teal);">
+            <h3>Governance and Delivery</h3>
+          </div>
+          <div class="cap-card__body">
+            <p>Structured governance that eliminates the late-stage scramble. Decision cadence, review gates, compliance assurance, and submission readiness — the operational discipline that dramatically reduces what it costs to produce a competitive submission.</p>
+            <p class="mt-16" style="font-size: 0.85rem; color: var(--teal);">Review gate governance · Compliance assurance · Submission readiness · Decision cadence</p>
+          </div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__header" style="border-top-color: var(--bright-aqua);">
+            <h3>Learning and Improvement</h3>
+          </div>
+          <div class="cap-card__body">
+            <p>Every pursuit generates data. Most organisations discard it. We capture, structure, and compound pursuit performance data — effort versus estimate, PWIN trajectory, and workstream effectiveness — so each engagement makes the next one sharper.</p>
+            <p class="mt-16" style="font-size: 0.85rem; color: var(--teal);">Post-outcome analysis · Performance benchmarking · Capability development · Data compounding</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EFFORT REDUCTION ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="mono color-teal mb-16">The cost advantage</p>
+          <h2>A fundamental reduction in bid cost.</h2>
+          <div class="divider"></div>
+          <p>
+            The combination of structured methodology and platform-enabled capability delivers a step change in what it costs to produce a competitive submission. This is not about writing faster. It is about eliminating the wasted effort, duplicated work, and governance failures that drive up the cost of every bid.
+          </p>
+          <p class="mt-24">
+            Structured activities compress timelines. Platform automation eliminates manual processes. Forensic qualification stops you spending on pursuits you were never going to win. The cumulative effect is a dramatic reduction in cost of sale — across your entire bid portfolio.
+          </p>
+        </div>
+        <div>
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;"><strong>Methodology.</strong> Calibrated effort models and dependency maps that eliminate the guesswork, rework, and late-stage chaos that inflates every bid.</p>
+            </div>
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;"><strong>Platform.</strong> Technology that automates structured activities, surfaces patterns across procurement data, and compresses the manual effort in every workstream.</p>
+            </div>
+            <div class="callout" style="margin: 0;">
+              <p style="font-style: normal;"><strong>Qualification.</strong> The most expensive bid is the one you should never have started. Forensic scoring eliminates low-probability pursuits before they consume resource.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="section section--dark" style="padding: 64px 0;">
+    <div class="container text-center">
+      <h2>Which capability does your next pursuit need?</h2>
+      <p style="margin: 16px auto 32px; color: var(--teal); max-width: 480px;">
+        Start with our qualification tool to assess the opportunity, then we will recommend the right engagement tier and approach.
+      </p>
+      <a href="qualify.html" class="hero__cta">Qualify a Pursuit</a>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div><p class="footer__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></p></div>
+        <div class="footer__links">
+          <a href="about.html">About</a>
+          <a href="services.html" class="active">Services</a>
+          <a href="qualify.html">Qualify</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BidEquity. All rights reserved.</p>
+        <p class="footer__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+/* ══════════════════════════════════════════
+   BIDEQUITY — Global Stylesheet
+   "Forensic Minimal" design system
+   ══════════════════════════════════════════ */
+
+/* ─── VARIABLES ─── */
+:root {
+  --navy: #021744;
+  --sand: #F7F4EE;
+  --teal: #5CA3B6;
+  --pale-aqua: #E0F4F6;
+  --bright-aqua: #7ADDE2;
+  --coral: #C96F5A;
+  --wine: #8C3B36;
+  --desc-cyan: #60F5F7;
+  --white: #FFFFFF;
+
+  --font-heading: 'Spline Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  --max-width: 1120px;
+  --section-pad: 100px;
+}
+
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  color: var(--navy);
+  background: var(--sand);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+/* ─── TYPOGRAPHY ─── */
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height: 1.2; }
+h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); letter-spacing: -0.01em; }
+h3 { font-size: 1.25rem; }
+p { max-width: 640px; }
+.mono { font-family: var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.75rem; }
+
+/* ─── LAYOUT ─── */
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 32px; }
+.section { padding: var(--section-pad) 0; }
+.section--dark { background: var(--navy); color: var(--sand); }
+.section--pale { background: var(--pale-aqua); }
+
+/* ─── NAVIGATION ─── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--navy);
+  border-bottom: 2px solid var(--bright-aqua);
+}
+.nav__inner {
+  max-width: var(--max-width); margin: 0 auto; padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav__brand {
+  font-family: var(--font-heading); font-weight: 700;
+  font-size: 1.1rem; color: var(--sand); letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.nav__brand .brand-bid { color: var(--sand); }
+.nav__brand .brand-equity { color: var(--bright-aqua); }
+.nav__brand span { color: var(--desc-cyan); font-weight: 400; font-size: 0.65rem; display: block; letter-spacing: 0.2em; font-family: var(--font-mono); }
+.nav__links { display: flex; gap: 32px; align-items: center; }
+.nav__links a {
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--teal); transition: color 0.2s;
+}
+.nav__links a:hover, .nav__links a:focus-visible { color: var(--bright-aqua); }
+.nav__links a.active { color: var(--bright-aqua); }
+.nav__links a:focus-visible { outline: 1px solid var(--bright-aqua); outline-offset: 4px; }
+.nav__cta {
+  background: var(--coral); color: var(--sand); padding: 8px 20px;
+  font-family: var(--font-heading); font-weight: 600; font-size: 0.8rem;
+  letter-spacing: 0.05em; border: none; cursor: pointer; transition: background 0.2s;
+}
+.nav__cta:hover, .nav__cta:focus-visible { background: var(--wine); }
+.nav__cta:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 2px; }
+
+/* Mobile nav */
+.nav__toggle { display: none; background: none; border: none; color: var(--teal); font-size: 1.5rem; cursor: pointer; }
+@media (max-width: 768px) {
+  .nav__links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--navy); padding: 24px 32px; gap: 20px; }
+  .nav__links.open { display: flex; }
+  .nav__toggle { display: block; }
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 90vh; display: flex; align-items: center;
+  background: var(--navy); color: var(--sand);
+  padding-top: 64px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(92,163,182,0.05) 79px, rgba(92,163,182,0.05) 80px),
+    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(92,163,182,0.05) 79px, rgba(92,163,182,0.05) 80px);
+  pointer-events: none;
+}
+.hero__content { position: relative; z-index: 1; padding: 80px 0; }
+.hero__descriptor {
+  font-family: var(--font-mono); color: var(--desc-cyan);
+  font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero h1 { margin-bottom: 24px; max-width: 720px; }
+.hero h1 span { color: var(--bright-aqua); }
+.hero__sub {
+  font-size: 1.15rem; color: var(--teal); max-width: 560px;
+  margin-bottom: 40px; line-height: 1.7;
+}
+.hero__cta {
+  display: inline-block; background: var(--coral); color: var(--sand);
+  padding: 14px 36px; font-family: var(--font-heading); font-weight: 600;
+  font-size: 1rem; letter-spacing: 0.03em; transition: background 0.2s;
+}
+.hero__cta:hover, .hero__cta:focus-visible { background: var(--wine); }
+.hero__cta:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 4px; }
+.hero__trust {
+  margin-top: 48px; font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--teal); letter-spacing: 0.15em; text-transform: uppercase;
+}
+
+/* ─── CORNER BRACKETS (decorative) ─── */
+.brackets {
+  position: relative; padding: 48px;
+}
+.brackets::before, .brackets::after,
+.brackets .br-bl::before, .brackets .br-br::before {
+  content: ''; position: absolute; width: 20px; height: 20px;
+  border-color: var(--teal); border-style: solid;
+}
+.brackets::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.brackets::after { top: 0; right: 0; border-width: 2px 2px 0 0; }
+
+/* ─── PROOF POINTS / CARDS ─── */
+.proof-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  margin-top: 48px;
+}
+.proof-card {
+  background: var(--white); padding: 36px 28px;
+  border-top: 4px solid var(--bright-aqua);
+  box-shadow: 0 2px 12px rgba(2,23,68,0.06);
+}
+.proof-card--coral { border-top-color: var(--coral); }
+.proof-card--teal { border-top-color: var(--teal); }
+.proof-card h3 { margin-bottom: 12px; }
+.proof-card p { font-size: 0.95rem; color: #2A3B5C; }
+
+@media (max-width: 768px) {
+  .proof-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── DIFFERENTIATORS GRID ─── */
+.diff-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;
+  margin-top: 48px; text-align: left;
+}
+@media (max-width: 768px) {
+  .diff-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── CAPABILITY CARDS (Services) ─── */
+.cap-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;
+  margin-top: 48px;
+}
+.cap-card {
+  background: var(--white);
+  box-shadow: 0 2px 12px rgba(2,23,68,0.06);
+  overflow: hidden;
+}
+.cap-card__header {
+  padding: 24px 28px 16px;
+  border-top: 4px solid var(--bright-aqua);
+}
+.cap-card__header h3 { margin-bottom: 0; }
+.cap-card__body {
+  padding: 0 28px 28px;
+}
+.cap-card__body p {
+  font-size: 0.95rem; color: #2A3B5C;
+}
+@media (max-width: 768px) {
+  .cap-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── STAT STRIP ─── */
+.stat-strip {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  text-align: center; padding: 48px 0;
+}
+.stat-strip__item h3 {
+  font-size: 2.8rem; font-weight: 700; color: var(--bright-aqua);
+  line-height: 1;
+}
+.stat-strip__item p {
+  margin: 8px auto 0; font-family: var(--font-mono); font-size: 0.7rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal);
+}
+@media (max-width: 768px) {
+  .stat-strip { grid-template-columns: 1fr; gap: 24px; }
+}
+
+/* ─── TWO-COL LAYOUT ─── */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+  align-items: start;
+}
+.two-col--reverse { direction: rtl; }
+.two-col--reverse > * { direction: ltr; }
+@media (max-width: 768px) {
+  .two-col, .two-col--reverse { grid-template-columns: 1fr; gap: 32px; direction: ltr; }
+}
+
+/* ─── MODULE GRID ─── */
+.module-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;
+  margin-top: 48px;
+}
+.module-card {
+  background: var(--white); padding: 24px 16px; text-align: center;
+  border-top: 3px solid var(--bright-aqua);
+  box-shadow: 0 2px 8px rgba(2,23,68,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.module-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(2,23,68,0.1); }
+.module-card__num {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--teal);
+  letter-spacing: 0.15em; margin-bottom: 8px;
+}
+.module-card h4 {
+  font-size: 0.95rem; margin-bottom: 8px;
+}
+.module-card p {
+  font-size: 0.8rem; color: var(--navy); opacity: 0.7; line-height: 1.5;
+}
+@media (max-width: 960px) {
+  .module-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .module-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── TIER CARDS ─── */
+.tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; }
+.tier-card {
+  background: var(--white); padding: 40px 32px;
+  box-shadow: 0 2px 12px rgba(2,23,68,0.06);
+  position: relative;
+}
+.tier-card--primary { border-top: 4px solid var(--coral); }
+.tier-card--secondary { border-top: 4px solid var(--teal); }
+.tier-card__label {
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 12px;
+}
+.tier-card h3 { font-size: 1.4rem; margin-bottom: 16px; }
+.tier-card p { font-size: 0.95rem; opacity: 0.85; margin-bottom: 16px; }
+.tier-card ul { padding-left: 0; }
+.tier-card li {
+  padding: 6px 0; font-size: 0.9rem; opacity: 0.8;
+  border-bottom: 1px solid var(--pale-aqua);
+}
+.tier-card li::before { content: '—'; color: var(--teal); margin-right: 8px; }
+@media (max-width: 768px) {
+  .tier-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── QUALIFY TOOL SECTION ─── */
+.qualify-hero {
+  background: var(--navy); color: var(--sand); padding: 64px 0;
+  text-align: center;
+}
+.qualify-hero h2 { margin-bottom: 16px; }
+.qualify-hero h2 span { color: var(--bright-aqua); }
+.qualify-hero p { margin: 0 auto 40px; color: var(--teal); max-width: 540px; }
+
+/* ─── FORM ─── */
+.form-card {
+  background: var(--white); max-width: 560px; margin: 0 auto;
+  padding: 48px 40px; box-shadow: 0 4px 24px rgba(2,23,68,0.08);
+  border-top: 4px solid var(--bright-aqua);
+}
+.form-card h3 { margin-bottom: 8px; text-align: center; }
+.form-card > p { font-size: 0.9rem; color: var(--teal); text-align: center; margin: 0 auto 32px; }
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-family: var(--font-mono); font-size: 0.7rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal);
+  margin-bottom: 6px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 12px 16px; border: 1px solid #D0CEC8;
+  background: var(--sand); font-family: var(--font-body); font-size: 0.95rem;
+  color: var(--navy); outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--bright-aqua);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.btn {
+  display: inline-block; background: var(--coral); color: var(--sand);
+  padding: 14px 36px; font-family: var(--font-heading); font-weight: 600;
+  font-size: 1rem; border: none; cursor: pointer; width: 100%;
+  text-align: center; letter-spacing: 0.03em; transition: background 0.2s;
+}
+.btn:hover, .btn:focus-visible { background: var(--wine); }
+.btn:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 4px; }
+.btn--outline {
+  background: transparent; border: 1px solid var(--teal); color: var(--teal);
+}
+.btn--outline:hover { border-color: var(--bright-aqua); color: var(--bright-aqua); background: transparent; }
+
+/* ─── CALLOUT BOX ─── */
+.callout {
+  background: var(--pale-aqua); border-left: 4px solid var(--bright-aqua);
+  padding: 24px 28px; margin: 32px 0;
+}
+.callout p { font-style: italic; font-size: 0.95rem; max-width: none; }
+
+/* ─── PAID ON AWARD BADGE ─── */
+.poa-badge {
+  display: inline-block; font-family: var(--font-heading); font-weight: 600;
+  color: var(--coral); font-size: 0.9rem; letter-spacing: 0.08em;
+  border: 1px solid var(--coral); padding: 6px 16px;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--navy); color: var(--teal); padding: 48px 0 32px;
+  border-top: 2px solid rgba(92,163,182,0.2);
+}
+.footer__inner {
+  display: flex; justify-content: space-between; align-items: start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer__brand {
+  font-family: var(--font-heading); font-weight: 700; font-size: 1rem;
+  color: var(--sand); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.footer__brand .brand-bid { color: var(--sand); }
+.footer__brand .brand-equity { color: var(--bright-aqua); }
+.footer__brand span {
+  display: block; font-family: var(--font-mono); font-weight: 400;
+  font-size: 0.6rem; color: var(--desc-cyan); letter-spacing: 0.2em; margin-top: 4px;
+}
+.footer__links { display: flex; gap: 24px; }
+.footer__links a { font-size: 0.85rem; transition: color 0.2s; }
+.footer__links a:hover { color: var(--bright-aqua); }
+.footer__bottom {
+  margin-top: 32px; padding-top: 24px;
+  border-top: 1px solid rgba(92,163,182,0.15);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer__bottom p { font-size: 0.75rem; opacity: 0.6; }
+.footer__trust {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+
+/* ─── UTILITIES ─── */
+.text-center { text-align: center; }
+.text-center p { margin-left: auto; margin-right: auto; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mt-48 { margin-top: 48px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.color-teal { color: var(--teal); }
+.color-coral { color: var(--coral); }
+.color-aqua { color: var(--bright-aqua); }
+.divider {
+  width: 60px; height: 2px; background: var(--teal); margin: 24px 0;
+}
+.divider--center { margin: 24px auto; }
+.divider--coral { background: var(--coral); }
+
+/* ─── SKIP TO CONTENT ─── */
+.skip-link {
+  position: absolute; top: -100px; left: 16px;
+  background: var(--bright-aqua); color: var(--navy);
+  padding: 8px 16px; font-family: var(--font-heading); font-weight: 600;
+  font-size: 0.85rem; z-index: 200; transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
