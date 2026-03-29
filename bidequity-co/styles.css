@@ -110,13 +110,6 @@ p { max-width: 640px; }
   background: var(--navy); color: var(--sand);
   padding-top: 64px; position: relative; overflow: hidden;
 }
-.hero::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(92,163,182,0.05) 79px, rgba(92,163,182,0.05) 80px),
-    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(92,163,182,0.05) 79px, rgba(92,163,182,0.05) 80px);
-  pointer-events: none;
-}
 .hero__content { position: relative; z-index: 1; padding: 80px 0; }
 .hero__descriptor {
   font-family: var(--font-mono); color: var(--desc-cyan);
