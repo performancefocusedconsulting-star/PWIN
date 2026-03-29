@@ -483,7 +483,7 @@ p { max-width: 640px; }
 /* ─── SECTOR LIST — Variant A: Dash accent ─── */
 .sector-list {
   display: flex; flex-direction: column; gap: 0;
-  margin-top: 32px; max-width: 360px;
+  margin-top: 0;
 }
 .sector-list__item {
   display: flex; align-items: center; gap: 16px;
@@ -500,49 +500,6 @@ p { max-width: 640px; }
 .sector-list__dash--aqua { background: var(--bright-aqua); }
 .sector-list__dash--coral { background: var(--coral); }
 .sector-list__dash--teal { background: var(--teal); }
-
-/* ─── SECTOR GRID — Variant B: Numbered grid ─── */
-.sector-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-  margin-top: 32px; max-width: 520px;
-}
-.sector-grid__item {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(2,23,68,0.08);
-  font-family: var(--font-heading); font-weight: 500;
-  font-size: 1.05rem; color: var(--navy);
-}
-.sector-grid__num {
-  font-family: var(--font-mono); font-size: 0.7rem;
-  color: var(--teal); letter-spacing: 0.05em;
-  flex-shrink: 0; width: 24px;
-}
-@media (max-width: 480px) {
-  .sector-grid { grid-template-columns: 1fr; }
-}
-
-/* ─── SECTOR BLOCKS — Variant C: Top-border blocks ─── */
-.sector-blocks {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-  margin-top: 32px;
-}
-.sector-block {
-  padding: 16px 20px;
-  border-top: 3px solid var(--bright-aqua);
-  font-family: var(--font-heading); font-weight: 500;
-  font-size: 0.95rem; color: var(--navy);
-  background: var(--white);
-}
-.sector-block--aqua { border-top-color: var(--bright-aqua); }
-.sector-block--coral { border-top-color: var(--coral); }
-.sector-block--teal { border-top-color: var(--teal); }
-@media (max-width: 768px) {
-  .sector-blocks { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 480px) {
-  .sector-blocks { grid-template-columns: 1fr; }
-}
 
 /* ─── NARRATIVE HEADER (About) ─── */
 .page-header--narrative { padding-bottom: 80px; }
