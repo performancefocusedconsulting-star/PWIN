@@ -79,13 +79,14 @@ p { max-width: 640px; }
 .nav__links a:hover, .nav__links a:focus-visible { color: var(--bright-aqua); }
 .nav__links a.active { color: var(--bright-aqua); }
 .nav__links a:focus-visible { outline: 1px solid var(--bright-aqua); outline-offset: 4px; }
-.nav__cta {
-  background: var(--coral) !important; color: var(--sand) !important; padding: 8px 20px;
+.nav__links a.nav__cta {
+  background: var(--coral); color: var(--sand); padding: 8px 20px;
   font-family: var(--font-heading); font-weight: 600; font-size: 0.8rem;
   letter-spacing: 0.05em; border: none; cursor: pointer; transition: background 0.2s;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
-.nav__cta:hover, .nav__cta:focus-visible { background: var(--wine) !important; }
-.nav__cta:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 2px; }
+.nav__links a.nav__cta:hover, .nav__links a.nav__cta:focus-visible { background: var(--wine); color: var(--sand); }
+.nav__links a.nav__cta:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 2px; }
 
 /* Mobile nav */
 .nav__toggle { display: none; background: none; border: none; color: var(--teal-light); font-size: 1.5rem; cursor: pointer; }
