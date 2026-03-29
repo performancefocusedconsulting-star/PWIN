@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qualify a Pursuit — BidEquity</title>
+  <meta name="description" content="Score your next pursuit against the factors that predict win probability. Free qualification tool from BidEquity.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Qualify a Pursuit — BidEquity">
+  <meta property="og:description" content="Score your next pursuit against the factors that predict win probability.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bidequity.co/qualify">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></a>
+      <button class="nav__toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">&#9776;</button>
+      <div class="nav__links" id="nav-links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="qualify.html" class="active">Qualify</a>
+        <a href="contact.html">Contact</a>
+        <a href="qualify.html" class="nav__cta">Qualify a Pursuit</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+  <!-- ═══ HERO ═══ -->
+  <section class="section section--dark page-header page-header--centered">
+    <div class="container text-center">
+      <p class="mono color-coral mb-16">Opportunity Qualification Tool</p>
+      <h1>Should you <span class="color-aqua">pursue</span> this contract?</h1>
+      <div class="divider divider--center divider--teal"></div>
+      <p class="text-center-intro text-teal text-lg">
+        Our qualification methodology evaluates pursuit viability across the factors that genuinely predict win probability — with built-in correction for the optimism bias that inflates most pipeline assessments. Under two minutes. No commitment.
+      </p>
+
+      <div class="qualify-steps">
+        <div class="qualify-step">
+          <div class="qualify-step__num">1</div>
+          <h3>Register</h3>
+          <p>Enter your details and your organisation. We need this to tailor the qualification to your context.</p>
+        </div>
+        <div class="qualify-step">
+          <div class="qualify-step__num">2</div>
+          <h3>Qualify</h3>
+          <p>Answer ten questions about the opportunity covering positioning, incumbency, pricing confidence, and risk.</p>
+        </div>
+        <div class="qualify-step">
+          <div class="qualify-step__num">3</div>
+          <h3>Score</h3>
+          <p>Receive an instant PWIN assessment with a recommendation: pursue, condition, or walk away.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ REGISTRATION FORM ═══ -->
+  <section class="section" id="qualify-form">
+    <div class="container">
+      <div class="form-card">
+        <h2>Access the Qualification Tool</h2>
+        <p>Enter your details to begin scoring your pursuit.</p>
+
+        <form id="qualify-registration">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first-name">First Name</label>
+              <input type="text" id="first-name" name="first-name" autocomplete="given-name" required>
+            </div>
+            <div class="form-group">
+              <label for="last-name">Last Name</label>
+              <input type="text" id="last-name" name="last-name" autocomplete="family-name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Work Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="company">Organisation</label>
+            <input type="text" id="company" name="company" autocomplete="organization" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="role">Your Role</label>
+              <select id="role" name="role" required>
+                <option value="">Select...</option>
+                <option>Partner / Managing Partner</option>
+                <option>BD Director / Head of Capture</option>
+                <option>Head of Bids</option>
+                <option>CCO / COO / CFO</option>
+                <option>Bid Manager</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sector">Primary Sector</label>
+              <select id="sector" name="sector" required>
+                <option value="">Select...</option>
+                <option>Defence</option>
+                <option>Justice</option>
+                <option>Emergency Services</option>
+                <option>Central Government</option>
+                <option>Transport</option>
+                <option>Health</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contract-value">Estimated Contract Value</label>
+            <select id="contract-value" name="contract-value" required>
+              <option value="">Select...</option>
+              <option>Under £10m</option>
+              <option>£10m – £50m</option>
+              <option>£50m – £150m</option>
+              <option>£150m – £500m</option>
+              <option>£500m – £1.5bn</option>
+              <option>Over £1.5bn</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn mt-16">Start Qualification</button>
+        </form>
+
+        <div id="form-success" class="form-success" hidden>
+          <h3 class="color-teal mb-16">Registration received.</h3>
+          <p class="text-muted">The qualification tool will be available shortly. We will send access instructions to the email address you provided.</p>
+          <div class="divider divider--center divider--coral mt-24 mb-24"></div>
+          <p class="text-sm text-muted">In the meantime, you can <a href="contact.html" class="link-coral">contact us directly</a> to discuss your pursuit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ WHAT THE TOOL ASSESSES ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="mono color-teal mb-16">Qualification criteria</p>
+        <h2>What the tool assesses.</h2>
+        <div class="divider divider--center"></div>
+      </div>
+
+      <div class="qualify-features">
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">01</div>
+          <div>
+            <h3>Incumbent Position</h3>
+            <p>Are you the incumbent, a known challenger, or entering cold? This is the single strongest predictor of outcome.</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">02</div>
+          <div>
+            <h3>Relationship Depth</h3>
+            <p>The quality and seniority of your existing relationships with the buying organisation and evaluation panel.</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">03</div>
+          <div>
+            <h3>Solution Readiness</h3>
+            <p>How mature is your technical solution or delivery model for this specific requirement?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">04</div>
+          <div>
+            <h3>Competitive Landscape</h3>
+            <p>How many credible competitors, and what is your assessment of their positioning and intent?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">05</div>
+          <div>
+            <h3>Pricing Confidence</h3>
+            <p>Do you have a credible view of the target price point and confidence in your ability to be competitive?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">06</div>
+          <div>
+            <h3>Strategic Alignment</h3>
+            <p>Does this contract align with your strategic direction, or is it opportunistic pursuit with limited long-term value?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">07</div>
+          <div>
+            <h3>Bid Capacity</h3>
+            <p>Do you have the resource capacity and senior commitment to prosecute this pursuit to the standard required?</p>
+          </div>
+        </div>
+        <div class="qualify-feature">
+          <div class="qualify-feature__icon">08</div>
+          <div>
+            <h3>Risk Profile</h3>
+            <p>Contract terms, delivery risk, political sensitivity, and reputational exposure of the opportunity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div><p class="footer__brand"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span> <span>Pursuit Intelligence</span></p></div>
+        <div class="footer__links">
+          <a href="about.html">About</a>
+          <a href="services.html">Services</a>
+          <a href="qualify.html" class="active">Qualify</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BidEquity. All rights reserved. <a href="privacy.html">Privacy Policy</a></p>
+        <p class="footer__trust">Methodology-led · Platform-enabled · Outcome-aligned</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
