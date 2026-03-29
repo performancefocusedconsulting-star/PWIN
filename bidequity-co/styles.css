@@ -68,9 +68,9 @@ p { max-width: 640px; }
   font-size: 1.1rem; color: var(--sand); letter-spacing: 0.15em;
   text-transform: uppercase;
 }
-.nav__brand .brand-bid { color: var(--sand); }
-.nav__brand .brand-equity { color: var(--bright-aqua); }
-.nav__brand span { color: var(--desc-cyan); font-weight: 400; font-size: 0.65rem; display: block; letter-spacing: 0.2em; font-family: var(--font-mono); }
+.nav__brand .brand-bid { color: var(--sand); margin-right: 0.25em; }
+.nav__brand .brand-equity { color: var(--sand); }
+.nav__brand .brand-subtitle { color: var(--desc-cyan); font-weight: 400; font-size: 0.65rem; display: block; letter-spacing: 0.2em; font-family: var(--font-mono); }
 .nav__links { display: flex; gap: 32px; align-items: center; }
 .nav__links a {
   font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
@@ -381,9 +381,9 @@ p { max-width: 640px; }
   font-family: var(--font-heading); font-weight: 700; font-size: 1rem;
   color: var(--sand); letter-spacing: 0.1em; text-transform: uppercase;
 }
-.footer__brand .brand-bid { color: var(--sand); }
-.footer__brand .brand-equity { color: var(--bright-aqua); }
-.footer__brand span {
+.footer__brand .brand-bid { color: var(--sand); margin-right: 0.25em; }
+.footer__brand .brand-equity { color: var(--sand); }
+.footer__brand .brand-subtitle {
   display: block; font-family: var(--font-mono); font-weight: 400;
   font-size: 0.6rem; color: var(--desc-cyan); letter-spacing: 0.2em; margin-top: 4px;
 }
@@ -449,6 +449,14 @@ p { max-width: 640px; }
   font-size: 0.85rem; z-index: 200; transition: top 0.2s;
 }
 .skip-link:focus { top: 8px; }
+
+/* ─── PRIVACY PAGE ─── */
+.privacy-content { max-width: 720px; }
+.privacy-content h2 { font-size: 1.4rem; }
+.privacy-list { padding-left: 20px; list-style: disc; }
+.privacy-list li {
+  font-size: 0.95rem; padding: 4px 0; line-height: 1.6;
+}
 
 /* ─── HIDDEN ATTRIBUTE ─── */
 [hidden] { display: none !important; }

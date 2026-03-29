@@ -43,10 +43,28 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      form.hidden = true;
-      success.hidden = false;
-      success.setAttribute('tabindex', '-1');
-      success.focus();
+      var data = new FormData(form);
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+      fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(function (response) {
+        if (response.ok) {
+          form.hidden = true;
+          success.hidden = false;
+          success.setAttribute('tabindex', '-1');
+          success.focus();
+        } else {
+          if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
+          alert('Something went wrong. Please try again.');
+        }
+      }).catch(function () {
+        if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
+        alert('Something went wrong. Please try again.');
+      });
     });
   }
 
