@@ -1,0 +1,4 @@
+[build]
+  base = "bidequity-co"
+  command = "echo 'No build needed'"
+  publish = "."
