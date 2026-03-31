@@ -47,10 +47,10 @@
       var btn = form.querySelector('button[type="submit"]');
       if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
 
-      fetch(form.action, {
+      fetch('/', {
         method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
+        body: new URLSearchParams(data).toString(),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }).then(function (response) {
         if (response.ok) {
           form.hidden = true;
