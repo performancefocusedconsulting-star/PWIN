@@ -6780,8 +6780,1665 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
+---
+
+## LEG-01 — Contract Review & Markup
+
+```javascript
+{
+  id: 'LEG-01',
+  name: 'Contract review & markup',
+  workstream: 'LEG',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'Contract markup with positions log',
+  dependencies: [],                        // Day-1 start
+  effortDays: 8,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { from: 'SAL-06.1.2', artifact: 'ITT documentation analysis summary', note: 'Contract red lines already flagged at strategic level' },
+    { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'Contractual requirements extracted during SOL-01' },
+    { external: true, artifact: 'ITT contract documentation — T&Cs, schedules, annexes, framework call-off terms' },
+    { external: true, artifact: 'Corporate legal policies — standard positions, risk appetite, authority limits' }
+  ],
+
+  subs: [
+    {
+      id: 'LEG-01.1',
+      name: 'Contract Analysis',
+      description: 'Systematically review the contract documentation to identify all obligations, liabilities, and risk areas',
+
+      tasks: [
+        {
+          id: 'LEG-01.1.1',
+          name: 'Review all contract documents — T&Cs, schedules, annexes — identify obligations, liabilities, and non-standard provisions',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Delivery Director' },
+          inputs: [
+            { external: true, artifact: 'ITT contract documentation — T&Cs, schedules, annexes, framework call-off terms' },
+            { external: true, artifact: 'Corporate legal policies — standard positions, risk appetite' }
+          ],
+          outputs: [
+            {
+              name: 'Contract analysis register',
+              format: 'Clause-by-clause structured analysis',
+              quality: [
+                'Every material clause reviewed and categorised — standard, non-standard, onerous, unacceptable',
+                'Obligations identified and mapped — what we are committing to do',
+                'Liabilities identified and quantified where possible — caps, uncapped exposure, indemnities',
+                'Non-standard provisions flagged with risk commentary'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-01.1.2',
+          name: 'Identify red lines and risk areas — terms we cannot accept, terms that need amendment, terms that create unacceptable exposure',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead / Finance', i: 'Senior Responsible Executive' },
+          inputs: [
+            { from: 'LEG-01.1.1', artifact: 'Contract analysis register' },
+            { external: true, artifact: 'Corporate legal policies — authority limits, non-negotiable positions' }
+          ],
+          outputs: [
+            {
+              name: 'Red lines and risk register',
+              format: 'Prioritised risk register',
+              quality: [
+                'Red lines identified — terms that are non-negotiable for us (must change or cannot bid)',
+                'Amber issues identified — terms we want to change but can accept with mitigation',
+                'Financial exposure quantified per risk area — what is the worst case?',
+                'Each issue linked to the specific contract clause for traceability'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'LEG-01.2',
+      name: 'Contract Response',
+      description: 'Prepare the contract markup and negotiation strategy',
+
+      tasks: [
+        {
+          id: 'LEG-01.2.1',
+          name: 'Prepare contract markup and redline — proposed amendments with rationale for each change',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'LEG-01.1.2', artifact: 'Red lines and risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Contract markup / redline',
+              format: 'Tracked-changes contract document',
+              quality: [
+                'Every proposed amendment has a rationale — not just tracked changes but why',
+                'Amendments are proportionate — not a blanket rewrite but targeted risk reduction',
+                'Language is legally precise and commercially sensible',
+                'Markup is submission-ready — format matches client expectations'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-01.2.2',
+          name: 'Develop negotiation strategy and positions log — fallback positions, must-haves vs nice-to-haves, feeds competitive dialogue (BM-09)',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Senior Responsible Executive' },
+          inputs: [
+            { from: 'LEG-01.2.1', artifact: 'Contract markup / redline' },
+            { from: 'LEG-01.1.2', artifact: 'Red lines and risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Contract markup with positions log (activity primary output)',
+              format: 'Markup document with negotiation positions',
+              quality: [
+                'Each amendment has a preferred position and fallback position',
+                'Must-haves distinguished from nice-to-haves — what we will walk away from vs what we will concede',
+                'Negotiation strategy documented — sequencing, trade-offs, package deals',
+                'Positions log is usable by the bid team during competitive dialogue or post-submission negotiation'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Contract markup with positions log',
+      format: 'Markup document with negotiation positions',
+      quality: [
+        'All contract documents reviewed clause by clause',
+        'Red lines and risk areas identified with financial exposure',
+        'Contract markup prepared with rationale per amendment',
+        'Negotiation positions log with preferred and fallback positions'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'LEG-02', consumes: 'Contract markup with positions log', usage: 'Risk allocation analysis builds on contract risk areas' },
+    { activity: 'COM-04', consumes: 'Contract markup with positions log', usage: 'Commercial model incorporates contract terms — payment mechanism, service credits, liabilities' },
+    { activity: 'LEG-06', consumes: 'Contract markup with positions log', usage: 'Subcontractor terms flow down from prime contract positions' },
+    { activity: 'BM-09', consumes: 'Positions log', usage: 'Competitive dialogue preparation uses negotiation strategy' }
+  ]
+}
+```
+
+---
+
+## LEG-02 — Risk Allocation Analysis
+
+```javascript
+{
+  id: 'LEG-02',
+  name: 'Risk allocation analysis',
+  workstream: 'LEG',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'Risk allocation matrix',
+  dependencies: ['LEG-01'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { from: 'LEG-01', artifact: 'Contract markup with positions log' },
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'Solution structure determines where delivery risk sits' },
+    { from: 'SOL-07', artifact: 'Transition plan', note: 'Transition risk allocation' },
+    { external: true, artifact: 'Corporate risk appetite and risk allocation policies' }
+  ],
+
+  subs: [
+    {
+      id: 'LEG-02.1',
+      name: 'Risk Identification & Allocation',
+      description: 'Map how risk is allocated across the contract and assess acceptability',
+
+      tasks: [
+        {
+          id: 'LEG-02.1.1',
+          name: 'Map risk allocation across the contract — who bears what risk (client, supplier, shared) for each category: delivery, financial, transition, TUPE, technology, force majeure',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead / Delivery Director', i: 'Finance' },
+          inputs: [
+            { from: 'LEG-01', artifact: 'Contract markup with positions log' },
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-07', artifact: 'Transition plan' }
+          ],
+          outputs: [
+            {
+              name: 'Risk allocation map',
+              format: 'Matrix (risk category × allocation)',
+              quality: [
+                'Every material risk category mapped — delivery, financial, transition, TUPE, technology, regulatory, force majeure',
+                'Allocation documented per risk — client bears, supplier bears, shared, or unclear',
+                'Where allocation is unclear or disputed, the contract clause is referenced',
+                'Comparison to standard market allocation noted — where is this contract unusually aggressive?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-02.1.2',
+          name: 'Assess acceptability of risk allocation against corporate risk appetite — where are we taking too much risk?',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Finance / Commercial Lead', i: 'Senior Responsible Executive' },
+          inputs: [
+            { from: 'LEG-02.1.1', artifact: 'Risk allocation map' },
+            { external: true, artifact: 'Corporate risk appetite and risk allocation policies' }
+          ],
+          outputs: [
+            {
+              name: 'Risk allocation acceptability assessment',
+              format: 'Structured assessment',
+              quality: [
+                'Each risk allocation assessed against corporate risk appetite — acceptable, tolerable, unacceptable',
+                'Financial exposure quantified for unacceptable and tolerable allocations',
+                'Cumulative risk exposure assessed — total worst-case across all categories'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-02.1.3',
+          name: 'Develop risk mitigation positions and recommend contract amendments — feeds LEG-01 markup and COM-04 commercial model',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Delivery Director' },
+          inputs: [
+            { from: 'LEG-02.1.2', artifact: 'Risk allocation acceptability assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Risk allocation matrix (validated — activity primary output)',
+              format: 'Comprehensive risk allocation document',
+              quality: [
+                'Risk allocation matrix complete with acceptability assessment',
+                'Mitigation positions developed for unacceptable/tolerable allocations — contract amendment, commercial provision, or operational mitigation',
+                'Recommendations fed back to LEG-01 (additional markup) and COM-04 (risk pricing)',
+                'Residual risk position documented — what risk we accept at this allocation'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Risk allocation matrix',
+      format: 'Comprehensive risk allocation document',
+      quality: [
+        'All material risks mapped by category with allocation (client/supplier/shared)',
+        'Acceptability assessed against corporate risk appetite',
+        'Mitigation positions developed for unacceptable allocations',
+        'Residual risk position documented'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'COM-04', consumes: 'Risk allocation matrix', usage: 'Commercial model incorporates financial risk allocation' },
+    { activity: 'COM-07', consumes: 'Risk allocation matrix', usage: 'Commercial risk register uses legal risk allocation as input' },
+    { activity: 'GOV-03', consumes: 'Risk allocation matrix', usage: 'Pricing governance review examines contractual risk position' }
+  ]
+}
+```
+
+---
+
+## LEG-03 — Insurance & Liability Review
+
+```javascript
+{
+  id: 'LEG-03',
+  name: 'Insurance & liability review',
+  workstream: 'LEG',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'Insurance requirements assessment',
+  dependencies: [],                        // Day-1 start
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { external: true, artifact: 'ITT contract documentation — insurance requirements, liability provisions, indemnity clauses' },
+    { external: true, artifact: 'Current corporate insurance portfolio — PI, PL, EL, cyber, product liability coverage and limits' },
+    { from: 'LEG-01', artifact: 'Contract markup with positions log', note: 'Soft dependency — can start in parallel, refines when LEG-01 identifies liability provisions' }
+  ],
+
+  subs: [
+    {
+      id: 'LEG-03.1',
+      name: 'Insurance Requirements Analysis',
+      description: 'Identify what insurance the contract requires, assess gaps against current coverage, and quantify cost',
+
+      tasks: [
+        {
+          id: 'LEG-03.1.1',
+          name: 'Identify insurance requirements from the contract — PI, PL, EL, cyber, product liability minimum levels and specific provisions',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Insurance / Risk Manager', i: 'Commercial Lead' },
+          inputs: [
+            { external: true, artifact: 'ITT contract documentation — insurance requirements, liability provisions' }
+          ],
+          outputs: [
+            {
+              name: 'Insurance requirements register',
+              format: 'Structured requirements list',
+              quality: [
+                'All insurance requirements extracted from contract — type, minimum level, specific provisions',
+                'Duration and maintenance period requirements noted — how long must coverage continue post-contract?',
+                'Any unusual or non-standard insurance requirements flagged'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-03.1.2',
+          name: 'Assess current insurance coverage against requirements — gaps, additional premiums, exclusions that need addressing',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Insurance / Risk Manager / Finance', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'LEG-03.1.1', artifact: 'Insurance requirements register' },
+            { external: true, artifact: 'Current corporate insurance portfolio' }
+          ],
+          outputs: [
+            {
+              name: 'Insurance gap assessment',
+              format: 'Gap analysis',
+              quality: [
+                'Each requirement matched against current coverage — compliant, partially covered, gap',
+                'Additional cover or increased limits required identified with estimated premium impact',
+                'Exclusions in current policies that conflict with contract requirements flagged',
+                'Timeline for procuring additional cover assessed — can we be compliant by contract start?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-03.1.3',
+          name: 'Quantify insurance cost and confirm compliance — additional premium cost feeds COM-01, compliance position confirmed',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Finance / Insurance', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'LEG-03.1.2', artifact: 'Insurance gap assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Insurance requirements assessment (activity primary output)',
+              format: 'Compliance assessment with cost impact',
+              quality: [
+                'Compliance position confirmed — can we meet all insurance requirements?',
+                'Additional premium cost quantified — feeds COM-01 non-workforce cost model',
+                'Any non-compliance flagged with mitigation — negotiation position or alternative provision',
+                'Assessment ready for governance review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Insurance requirements assessment',
+      format: 'Compliance assessment with cost impact',
+      quality: [
+        'All insurance requirements identified from contract',
+        'Current coverage assessed against requirements — gaps identified',
+        'Additional premium cost quantified',
+        'Compliance position confirmed or non-compliance flagged with mitigation'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'COM-01', consumes: 'Insurance requirements assessment', usage: 'Should-cost model includes additional insurance premiums' },
+    { activity: 'COM-07', consumes: 'Insurance requirements assessment', usage: 'Commercial risk register includes insurance compliance risk' }
+  ]
+}
+```
+
+---
+
+## LEG-04 — TUPE Obligations Assessment
+
+```javascript
+{
+  id: 'LEG-04',
+  name: 'TUPE obligations assessment',
+  workstream: 'LEG',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'TUPE compliance assessment',
+  dependencies: ['SOL-06'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'SOL-06 does the HR/commercial TUPE analysis — LEG-04 does the legal compliance review' },
+    { from: 'SOL-06.2.1', artifact: 'TUPE analysis and schedule', note: 'Detailed TUPE register and terms assessment' },
+    { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis', note: 'Restructuring plans that have TUPE legal implications' },
+    { external: true, artifact: 'TUPE Regulations 2006 (as amended), relevant case law, and government guidance' },
+    { external: true, artifact: 'Contract TUPE provisions — information disclosure, consultation obligations, pension requirements' }
+  ],
+
+  subs: [
+    {
+      id: 'LEG-04.1',
+      name: 'TUPE Legal Compliance',
+      description: 'Review the TUPE analysis from a legal perspective — are our plans compliant with regulations, case law, and contractual obligations?',
+
+      tasks: [
+        {
+          id: 'LEG-04.1.1',
+          name: 'Assess TUPE obligations from a legal perspective — regulations, case law, pension obligations (Fair Deal / New Fair Deal), consultation requirements, information rights',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'HR Lead / Commercial Lead', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-06.2.1', artifact: 'TUPE analysis and schedule' },
+            { external: true, artifact: 'TUPE Regulations 2006 (as amended), relevant case law, and government guidance' },
+            { external: true, artifact: 'Contract TUPE provisions' }
+          ],
+          outputs: [
+            {
+              name: 'TUPE legal obligations assessment',
+              format: 'Structured legal assessment',
+              quality: [
+                'All TUPE regulatory obligations identified — information, consultation, terms protection, pension',
+                'Pension obligations assessed under Fair Deal / New Fair Deal — employer cost and risk',
+                'Consultation timeline and requirements defined — who must be consulted, when, about what',
+                'Contractual TUPE provisions cross-referenced with regulatory requirements — any conflicts?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-04.1.2',
+          name: 'Review SOL-06 staffing plans for legal compliance — are the restructuring, redeployment, and gap resolution plans legally sound under TUPE?',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'HR Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis' },
+            { from: 'LEG-04.1.1', artifact: 'TUPE legal obligations assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Staffing plan legal compliance review',
+              format: 'Legal review with recommendations',
+              quality: [
+                'Proposed restructuring assessed for TUPE compliance — can we make these changes post-transfer?',
+                'Redundancy provisions assessed — if role displacement is planned, is the ETO reason defensible?',
+                'Terms harmonisation approach assessed — what can and cannot be changed and when',
+                'Legal risks quantified — tribunal exposure, compensation costs if challenged'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-04.1.3',
+          name: 'Identify TUPE legal risks and develop mitigation advice — feeds SOL-12 and COM-07',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'HR Lead / Commercial Lead', i: 'Finance' },
+          inputs: [
+            { from: 'LEG-04.1.1', artifact: 'TUPE legal obligations assessment' },
+            { from: 'LEG-04.1.2', artifact: 'Staffing plan legal compliance review' }
+          ],
+          outputs: [
+            {
+              name: 'TUPE compliance assessment (activity primary output)',
+              format: 'Comprehensive TUPE legal assessment',
+              quality: [
+                'TUPE legal obligations fully documented',
+                'Staffing plans confirmed as legally compliant or amendments recommended',
+                'Legal risks identified, quantified, and mitigation advice provided',
+                'Pension obligations confirmed with cost implications for COM-01',
+                'Assessment ready for governance review'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'TUPE compliance assessment',
+      format: 'Comprehensive TUPE legal assessment',
+      quality: [
+        'All TUPE regulatory and contractual obligations documented',
+        'Pension obligations assessed under Fair Deal / New Fair Deal',
+        'Staffing plans reviewed for legal compliance',
+        'Legal risks quantified with mitigation advice',
+        'Compliance confirmed or amendments recommended'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'SOL-12', consumes: 'TUPE compliance assessment', usage: 'Solution risk register includes TUPE legal risks' },
+    { activity: 'COM-07', consumes: 'TUPE compliance assessment', usage: 'Commercial risk register includes TUPE financial exposure' },
+    { activity: 'COM-01', consumes: 'TUPE compliance assessment', usage: 'Should-cost model updated with pension obligation costs from legal assessment' }
+  ]
+}
+```
+
+---
+
+## LEG-05 — Data Protection & Security Review
+
+```javascript
+{
+  id: 'LEG-05',
+  name: 'Data protection & security review',
+  workstream: 'LEG',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'DPIA / security assessment',
+  dependencies: ['SOL-05'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: critical for defence, justice, and central government contracts.
+  // Security classification (OFFICIAL, SECRET, TOP SECRET) drives everything.
+
+  inputs: [
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'What systems process what data — the basis for the DPIA and security review' },
+    { from: 'SOL-05.1.3', artifact: 'Security and information assurance design', note: 'Technical security architecture' },
+    { external: true, artifact: 'ITT documentation — data handling requirements, security classification, vetting requirements, accreditation standards' },
+    { external: true, artifact: 'UK GDPR, Data Protection Act 2018, ICO guidance' },
+    { external: true, artifact: 'Government security frameworks — HMG Security Policy Framework, Cyber Essentials, ISO 27001' }
+  ],
+
+  subs: [
+    {
+      id: 'LEG-05.1',
+      name: 'Data Protection & IA Assessment',
+      description: 'Conduct the legal data protection and information assurance review',
+
+      tasks: [
+        {
+          id: 'LEG-05.1.1',
+          name: 'Conduct Data Protection Impact Assessment (DPIA) — personal data handling, lawful basis, data processor/controller roles, data subject rights, international transfers',
+          raci: { r: 'Legal Lead / DPO', a: 'Bid Director', c: 'Technical Lead / Solution Architect', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { external: true, artifact: 'UK GDPR, Data Protection Act 2018, ICO guidance' }
+          ],
+          outputs: [
+            {
+              name: 'Data Protection Impact Assessment (DPIA)',
+              format: 'Structured DPIA document',
+              quality: [
+                'All personal data processing identified — what data, whose data, what processing, what purpose',
+                'Lawful basis established per processing activity',
+                'Data processor / controller / joint controller roles defined between us, client, and partners',
+                'Data subject rights obligations documented — access, rectification, erasure, portability',
+                'International transfer implications assessed (if applicable)',
+                'Privacy risks identified with mitigations'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-05.1.2',
+          name: 'Assess information security requirements — security classification, accreditation pathway, vetting levels, Cyber Essentials/ISO 27001 compliance',
+          raci: { r: 'Legal Lead / Security Lead', a: 'Bid Director', c: 'Technical Lead', i: 'HR Lead' },
+          inputs: [
+            { from: 'SOL-05.1.3', artifact: 'Security and information assurance design' },
+            { external: true, artifact: 'ITT documentation — security classification, vetting requirements, accreditation standards' },
+            { external: true, artifact: 'Government security frameworks' }
+          ],
+          outputs: [
+            {
+              name: 'Information security compliance assessment',
+              format: 'Structured compliance assessment',
+              quality: [
+                'Security classification requirements documented — OFFICIAL, SECRET, or higher',
+                'Accreditation pathway defined — what certifications needed, timeline, process',
+                'Vetting requirements mapped to roles — SC, DV, BPSS, CTC per role in staffing model',
+                'Current compliance status assessed — what we already hold vs what we need to obtain',
+                'Compliance gaps and timeline risks identified'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'LEG-05.1.3',
+          name: 'Identify data protection and security risks — feeds SOL-12 solution risk register',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Technical Lead / Security Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'LEG-05.1.1', artifact: 'Data Protection Impact Assessment (DPIA)' },
+            { from: 'LEG-05.1.2', artifact: 'Information security compliance assessment' }
+          ],
+          outputs: [
+            {
+              name: 'DPIA / security assessment (activity primary output)',
+              format: 'Comprehensive data protection and security document',
+              quality: [
+                'DPIA complete with privacy risks and mitigations',
+                'Security compliance position confirmed — compliant, gap, or timeline risk',
+                'Combined data protection and security risks documented',
+                'Cost implications identified — accreditation, vetting, additional security infrastructure',
+                'Assessment ready for governance review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'DPIA / security assessment',
+      format: 'Comprehensive data protection and security document',
+      quality: [
+        'DPIA complete — personal data processing, lawful basis, roles, rights, risks',
+        'Security compliance assessed — classification, accreditation, vetting',
+        'Compliance gaps and timeline risks identified',
+        'Cost implications quantified for COM-01'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'SOL-12', consumes: 'DPIA / security assessment', usage: 'Solution risk register includes data protection and security risks' },
+    { activity: 'COM-01', consumes: 'DPIA / security assessment', usage: 'Should-cost model includes accreditation, vetting, and security infrastructure costs' },
+    { activity: 'SOL-06', consumes: 'Information security compliance assessment', usage: 'Staffing model incorporates vetting requirements per role' }
+  ]
+}
+```
+
+---
+
+## LEG-06 — Subcontractor Terms Review
+
+```javascript
+{
+  id: 'LEG-06',
+  name: 'Subcontractor terms review',
+  workstream: 'LEG',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'Subcontract terms summary',
+  dependencies: ['SUP-03', 'LEG-01'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { from: 'SUP-03', artifact: 'Signed teaming agreements', note: 'The teaming agreements to review' },
+    { from: 'LEG-01', artifact: 'Contract markup with positions log', note: 'Prime contract terms that must flow down' },
+    { from: 'COM-03.1.1', artifact: 'Inter-party commercial framework', note: 'Commercial terms agreed between parties' },
+    { external: true, artifact: 'Corporate subcontracting policies and standard terms' }
+  ],
+
+  subs: [
+    {
+      id: 'LEG-06.1',
+      name: 'Subcontractor Legal Review',
+      description: 'Review subcontractor and partner legal arrangements for completeness, compliance, and back-to-back alignment',
+
+      tasks: [
+        {
+          id: 'LEG-06.1.1',
+          name: 'Review partner/subcontractor teaming agreements and terms — legal structure, liability, IP, confidentiality, termination, dispute resolution',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead / Supply Chain Lead', i: 'Partner Leads' },
+          inputs: [
+            { from: 'SUP-03', artifact: 'Signed teaming agreements' },
+            { external: true, artifact: 'Corporate subcontracting policies and standard terms' }
+          ],
+          outputs: [
+            {
+              name: 'Subcontractor legal review',
+              format: 'Structured legal assessment per partner',
+              quality: [
+                'Each teaming agreement reviewed for legal completeness — all essential terms present',
+                'Liability and indemnity provisions assessed — are they proportionate and enforceable?',
+                'IP ownership and licensing provisions confirmed — who owns what, especially for jointly developed IP',
+                'Termination and exit provisions assessed — can we exit a partner if they underperform?',
+                'Confidentiality and data sharing provisions confirmed'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'          // Multiple partner agreements reviewed concurrently
+        },
+        {
+          id: 'LEG-06.1.2',
+          name: 'Ensure back-to-back alignment — subcontractor terms flow down from prime contract appropriately, no gaps in risk coverage',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Finance' },
+          inputs: [
+            { from: 'LEG-06.1.1', artifact: 'Subcontractor legal review' },
+            { from: 'LEG-01', artifact: 'Contract markup with positions log' },
+            { from: 'COM-03.1.1', artifact: 'Inter-party commercial framework' }
+          ],
+          outputs: [
+            {
+              name: 'Back-to-back alignment assessment',
+              format: 'Gap analysis',
+              quality: [
+                'Key prime contract obligations mapped to subcontractor terms — are they flowed down?',
+                'Gaps in flow-down identified — risks we bear to the client but have not passed to the partner',
+                'Commercial terms alignment confirmed — payment, indexation, service credits flow through consistently',
+                'Risk allocation between prime and subcontractor is clear and documented'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'LEG-06.1.3',
+          name: 'Validate subcontractor terms — legally sound, commercially aligned, feeds SUP-06 for formalisation',
+          raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead / Supply Chain Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'LEG-06.1.1', artifact: 'Subcontractor legal review' },
+            { from: 'LEG-06.1.2', artifact: 'Back-to-back alignment assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Subcontract terms summary (activity primary output)',
+              format: 'Comprehensive subcontractor legal summary',
+              quality: [
+                'All partner agreements reviewed and assessed',
+                'Back-to-back alignment confirmed or gaps flagged for resolution',
+                'Legal risks documented per partner relationship',
+                'Recommendations for SUP-06 (back-to-back commercial terms) formalisation',
+                'Assessment ready for governance review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Subcontract terms summary',
+      format: 'Comprehensive subcontractor legal summary',
+      quality: [
+        'All partner teaming agreements legally reviewed',
+        'Back-to-back alignment assessed — prime terms flowed down appropriately',
+        'Legal risks per partner documented',
+        'Ready for SUP-06 formalisation'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'SUP-06', consumes: 'Subcontract terms summary', usage: 'Back-to-back commercial terms formalised from legal review' },
+    { activity: 'GOV-03', consumes: 'Subcontract terms summary', usage: 'Pricing governance review examines subcontractor risk position' }
+  ]
+}
+```
+
+---
+
+---
+
+## DEL — Programme & Delivery: Ownership Note
+
+> **Key distinction:** SOL workstream = solution design by the Solution Architect (the WHAT).
+> DEL workstream = delivery planning owned by the Delivery Director (the HOW WE MAKE IT HAPPEN).
+> SOL designs the solution. DEL takes ownership, refines, operationalises, and accepts accountability.
+> The RACI shifts from Solution Architect (R) to Delivery Director (R).
+
+---
+
+## DEL-01 — Delivery Risk & Assumptions Register
+
+```javascript
+{
+  id: 'DEL-01',
+  name: 'Delivery risk & assumptions register',
+  workstream: 'DEL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'Delivery risk & assumptions register (living document)',
+  dependencies: ['SOL-03', 'SOL-04'],
+  effortDays: 8,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: this is the Delivery Director's own risk and assumptions register.
+  // SOL-12 captures solution design risks (Solution Architect's view).
+  // COM-07 captures commercial risks (Commercial Lead's view).
+  // DEL-01 captures delivery-specific risks AND the key assumptions that underpin
+  // the delivery plan — things we've assumed about how delivery will work that,
+  // if wrong, change everything.
+  // BM-13 consolidates all registers into the single bid risk register.
+  // This is a LIVING DOCUMENT — maintained throughout the bid lifecycle.
+
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'Solution design to assess for delivery risk' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Delivery processes to assess for operational risk' },
+    { from: 'SOL-07', artifact: 'Transition plan', note: 'Transition risks from Delivery Director perspective' },
+    { from: 'SOL-12', artifact: 'Solution risk register', note: 'Solution risks to review and accept from delivery perspective' },
+    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Strategic assumptions from capture plan' },
+    { external: true, artifact: 'Corporate delivery risk framework and lessons from previous contracts' }
+  ],
+
+  subs: [
+    {
+      id: 'DEL-01.1',
+      name: 'Risk & Assumption Identification',
+      description: 'Establish the Delivery Director\'s risk and assumptions register — delivery-specific risks plus the key assumptions that underpin the entire delivery plan',
+
+      tasks: [
+        {
+          id: 'DEL-01.1.1',
+          name: 'Identify delivery-specific risks not covered in SOL-12 — bid-to-delivery handover, client readiness, operational ramp-up, supply chain delivery, service continuity during transition',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-12', artifact: 'Solution risk register' },
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-07', artifact: 'Transition plan' }
+          ],
+          outputs: [
+            {
+              name: 'Delivery risk register',
+              format: 'Structured risk register',
+              quality: [
+                'Delivery-specific risks identified — distinct from solution design risks',
+                'Risks cover: bid-to-delivery handover, client dependency, operational ramp-up, supply chain, service continuity, resource availability',
+                'Each risk assessed for likelihood, impact, and proximity',
+                'Risk owner assigned — Delivery Director or delegated to delivery team member'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-01.1.2',
+          name: 'Document key delivery assumptions — assumptions about client behaviour, volumes, timelines, third-party dependencies, resource availability that underpin the delivery plan',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Finance' },
+          inputs: [
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { from: 'SAL-06', artifact: 'Capture plan (locked)' },
+            { external: true, artifact: 'Corporate delivery risk framework and lessons from previous contracts' }
+          ],
+          outputs: [
+            {
+              name: 'Delivery assumptions register',
+              format: 'Structured assumptions register',
+              quality: [
+                'Every material delivery assumption documented — what we are assuming will be true',
+                'Each assumption has: description, basis, owner, validation approach, impact if wrong',
+                'Key assumptions distinguished from routine assumptions — the ones that change the plan if wrong',
+                'Assumptions register feeds COM-05 sensitivity analysis — each is a potential variable'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'DEL-01.2',
+      name: 'Living Register Management',
+      description: 'Maintain and update the register through the bid lifecycle and prepare for governance',
+
+      tasks: [
+        {
+          id: 'DEL-01.2.1',
+          name: 'Maintain and update through the bid lifecycle — refresh as solution, commercial, and legal activities surface new risks and validate assumptions',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Bid Team', i: null },
+          inputs: [
+            { from: 'DEL-01.1.1', artifact: 'Delivery risk register' },
+            { from: 'DEL-01.1.2', artifact: 'Delivery assumptions register' }
+          ],
+          outputs: [
+            {
+              name: 'Updated delivery risk & assumptions register',
+              format: 'Living register (versioned)',
+              quality: [
+                'Register updated at key milestones — post solution lock, post pricing lock, pre-governance',
+                'New risks added as they emerge — not a one-time exercise',
+                'Assumptions validated or flagged as unvalidated — status tracked',
+                'Version history maintained — what changed and why'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Iterative'
+        },
+        {
+          id: 'DEL-01.2.2',
+          name: 'Prepare risk and assumption position for governance gates — summarise for GOV-02 and GOV-03 entry criteria',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: null, i: 'Bid Manager' },
+          inputs: [
+            { from: 'DEL-01.2.1', artifact: 'Updated delivery risk & assumptions register' }
+          ],
+          outputs: [
+            {
+              name: 'Delivery risk & assumptions register (activity primary output — living document)',
+              format: 'Governance-ready risk summary',
+              quality: [
+                'Top delivery risks summarised for executive audience',
+                'Key unvalidated assumptions flagged — what the organisation is betting on',
+                'Feeds BM-13 for consolidation into single bid risk register',
+                'Meets governance gate entry criteria for risk'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Delivery risk & assumptions register (living document)',
+      format: 'Structured risk and assumptions register',
+      quality: [
+        'Delivery-specific risks identified and assessed — distinct from solution and commercial risks',
+        'Key delivery assumptions documented with validation status',
+        'Register maintained as living document through bid lifecycle',
+        'Governance-ready summary prepared for gate reviews'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'BM-13', consumes: 'Delivery risk & assumptions register', usage: 'Bid risk register consolidates delivery risks with solution and commercial risks' },
+    { activity: 'DEL-06', consumes: 'Delivery risk & assumptions register', usage: 'Final risk mitigation and residual acceptance builds on this register' },
+    { activity: 'GOV-02', consumes: 'Delivery risk & assumptions register', usage: 'Solution & strategy review examines delivery risk position' },
+    { activity: 'COM-06', consumes: 'Delivery risk & assumptions register', usage: 'Pricing finalisation informed by delivery risk position' }
+  ]
+}
+```
+
+---
+
+## DEL-02 — Mobilisation & Implementation Planning
+
+```javascript
+{
+  id: 'DEL-02',
+  name: 'Mobilisation & implementation planning',
+  workstream: 'DEL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'Mobilisation plan',
+  dependencies: ['SOL-07'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: SOL-07 designs the transition approach (Solution Architect).
+  // DEL-02 is where the Delivery Director takes ownership and turns it into
+  // an operational programme plan they are accountable for delivering.
+
+  inputs: [
+    { from: 'SOL-07', artifact: 'Transition plan', note: 'The solution-designed transition approach — DEL-02 operationalises it' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'Workforce to mobilise' },
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Technology to deploy' },
+    { from: 'DEL-01', artifact: 'Delivery risk & assumptions register', note: 'Delivery risks that affect mobilisation' },
+    { external: true, artifact: 'ITT documentation — mobilisation timeline, service commencement requirements' },
+    { external: true, artifact: 'Corporate mobilisation playbook and lessons from previous transitions' }
+  ],
+
+  subs: [
+    {
+      id: 'DEL-02.1',
+      name: 'Operational Mobilisation Plan',
+      description: 'Take the SOL-07 transition plan and develop the operational programme the Delivery Director will execute',
+
+      tasks: [
+        {
+          id: 'DEL-02.1.1',
+          name: 'Develop the detailed mobilisation programme — Gantt, dependencies, resource loading, milestones, acceptance criteria — operationalising SOL-07 transition plan',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / HR Lead / Technical Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-07', artifact: 'Transition plan' },
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-05', artifact: 'Technology solution design' }
+          ],
+          outputs: [
+            {
+              name: 'Detailed mobilisation programme',
+              format: 'Programme plan with Gantt, dependencies, resource loading',
+              quality: [
+                'SOL-07 transition plan operationalised into an executable programme with named workstreams',
+                'Dependencies between workstreams mapped — people, technology, service, assets',
+                'Resource loading defined — who is needed when during mobilisation (distinct from steady state)',
+                'Milestones have measurable acceptance criteria — not just dates but what "done" looks like',
+                'Critical path through mobilisation identified — what must happen in sequence'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-02.1.2',
+          name: 'Design mobilisation governance and reporting — how the mobilisation programme will be managed, tracked, and reported to the client',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Bid Manager', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'DEL-02.1.1', artifact: 'Detailed mobilisation programme' }
+          ],
+          outputs: [
+            {
+              name: 'Mobilisation governance framework',
+              format: 'Governance and reporting structure',
+              quality: [
+                'Mobilisation governance structure defined — board, workstream leads, reporting cadence',
+                'Client reporting designed — what the client sees, how often, in what format',
+                'Escalation and decision-making framework defined for mobilisation period',
+                'Handover point defined — when does mobilisation governance transition to steady-state governance?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'DEL-02.2',
+      name: 'Mobilisation Readiness',
+      description: 'Assess what can be done pre-contract and validate the plan',
+
+      tasks: [
+        {
+          id: 'DEL-02.2.1',
+          name: 'Assess mobilisation readiness and pre-contract preparation — what can be started before contract signature to accelerate mobilisation',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'HR Lead / Technical Lead', i: 'Legal' },
+          inputs: [
+            { from: 'DEL-02.1.1', artifact: 'Detailed mobilisation programme' },
+            { from: 'DEL-01', artifact: 'Delivery risk & assumptions register' }
+          ],
+          outputs: [
+            {
+              name: 'Pre-contract preparation plan',
+              format: 'Action list with timeline',
+              quality: [
+                'Activities that can start pre-contract identified — recruitment, clearance applications, technology procurement, training development',
+                'Pre-contract investment required quantified — cost of early start at risk',
+                'Risk of pre-contract activity assessed — what if we don\'t win after investing?'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-02.2.2',
+          name: 'Validate mobilisation plan — achievable, resourced, feeds the proposal response',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'DEL-02.1.1', artifact: 'Detailed mobilisation programme' },
+            { from: 'DEL-02.1.2', artifact: 'Mobilisation governance framework' },
+            { from: 'DEL-02.2.1', artifact: 'Pre-contract preparation plan' }
+          ],
+          outputs: [
+            {
+              name: 'Mobilisation plan (validated — activity primary output)',
+              format: 'Comprehensive mobilisation document',
+              quality: [
+                'Delivery Director accepts accountability for the mobilisation plan',
+                'Plan is achievable within the contracted mobilisation period',
+                'Resources identified and available (or plan to secure them)',
+                'Risks documented in DEL-01 register',
+                'Plan is compelling for the proposal — demonstrates operational readiness'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Mobilisation plan',
+      format: 'Comprehensive mobilisation document',
+      quality: [
+        'SOL-07 transition plan operationalised into executable programme',
+        'Governance and reporting designed for mobilisation period',
+        'Pre-contract preparation activities identified',
+        'Delivery Director accepts accountability for delivery'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'PRD-02', consumes: 'Mobilisation plan', usage: 'Proposal drafting references the mobilisation plan for transition response sections' },
+    { activity: 'COM-01', consumes: 'Mobilisation plan', usage: 'Should-cost model includes mobilisation resource costs' },
+    { activity: 'GOV-02', consumes: 'Mobilisation plan', usage: 'Solution & strategy review examines mobilisation readiness' }
+  ]
+}
+```
+
+---
+
+## DEL-03 — Performance Framework & KPIs/SLAs
+
+```javascript
+{
+  id: 'DEL-03',
+  name: 'Performance framework & KPIs/SLAs',
+  workstream: 'DEL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'KPI/SLA framework',
+  dependencies: [],                        // Day-1 start — can begin reviewing ITT performance requirements immediately
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: SOL-04.2 maps SLAs to delivery components (Solution Architect's design view).
+  // DEL-03 is the Delivery Director's operational view — how we will actually manage
+  // performance day-to-day, report to the client, and ensure we meet commitments.
+
+  inputs: [
+    { from: 'SOL-04.2.1', artifact: 'SLA/KPI-to-delivery commitment matrix', note: 'Solution design maps SLAs to components — DEL-03 operationalises' },
+    { from: 'SOL-04.2.2', artifact: 'Quality assurance and continuous improvement framework', note: 'QA mechanisms designed in solution — DEL-03 makes them operational' },
+    { from: 'SOL-02.2.1', artifact: 'Current performance baseline', note: 'Where performance is today — the baseline we must improve upon' },
+    { external: true, artifact: 'ITT documentation — performance framework, KPIs, SLAs, service credits, reporting requirements' },
+    { external: true, artifact: 'Contract documentation — performance schedules, measurement methodology, penalty/reward provisions' }
+  ],
+
+  subs: [
+    {
+      id: 'DEL-03.1',
+      name: 'Performance Framework Design',
+      description: 'Design the operational performance management regime the Delivery Director will run',
+
+      tasks: [
+        {
+          id: 'DEL-03.1.1',
+          name: 'Design the KPI/SLA operational framework — how each commitment will be measured, monitored, managed, and improved in live service',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-04.2.1', artifact: 'SLA/KPI-to-delivery commitment matrix' },
+            { external: true, artifact: 'ITT documentation — performance framework, KPIs, SLAs' },
+            { external: true, artifact: 'Contract documentation — measurement methodology' }
+          ],
+          outputs: [
+            {
+              name: 'Operational performance framework',
+              format: 'Structured framework document',
+              quality: [
+                'Every KPI/SLA has a defined measurement method — data source, calculation, frequency, baseline',
+                'Monitoring approach defined — real-time, daily, weekly, monthly per KPI',
+                'Escalation triggers defined — at what threshold does a KPI move from green to amber to red?',
+                'Recovery mechanisms designed — what happens when a KPI is trending toward breach?',
+                'Framework is operationally sustainable — not so complex that reporting itself becomes a burden'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-03.1.2',
+          name: 'Design the performance reporting model — dashboards, reports, client governance forums, escalation triggers',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Technical Lead / Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'DEL-03.1.1', artifact: 'Operational performance framework' },
+            { external: true, artifact: 'ITT documentation — reporting requirements, governance forums' }
+          ],
+          outputs: [
+            {
+              name: 'Performance reporting model',
+              format: 'Reporting and governance design',
+              quality: [
+                'Report types, frequency, and audience defined — operational, management, executive, client',
+                'Dashboard design outlined — what the client sees, what we use internally',
+                'Governance forum structure aligned to reporting — right data at the right level',
+                'Trend and predictive reporting included — not just backward-looking actuals'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-03.1.3',
+          name: 'Assess our ability to meet the performance framework — confidence assessment per KPI/SLA, identifies risks for DEL-01',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Service Line Leads', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'DEL-03.1.1', artifact: 'Operational performance framework' },
+            { from: 'SOL-02.2.1', artifact: 'Current performance baseline' }
+          ],
+          outputs: [
+            {
+              name: 'KPI/SLA framework (validated — activity primary output)',
+              format: 'Comprehensive performance framework with confidence assessment',
+              quality: [
+                'Confidence assessment per KPI — high/medium/low with rationale',
+                'KPIs where we are at risk of breach identified — feeds DEL-01 risk register',
+                'Improvement trajectory documented — where current baseline is below target, the path to compliance',
+                'Framework confirmed as deliverable by the Delivery Director'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'KPI/SLA framework',
+      format: 'Comprehensive performance framework with confidence assessment',
+      quality: [
+        'Every KPI/SLA has measurement method, monitoring approach, escalation triggers, recovery mechanisms',
+        'Performance reporting model designed — dashboards, reports, governance forums',
+        'Confidence assessment per KPI with risk identification',
+        'Delivery Director accepts accountability for performance delivery'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'COM-04', consumes: 'KPI/SLA framework', usage: 'Commercial model incorporates service credit exposure from KPI confidence assessment' },
+    { activity: 'PRD-02', consumes: 'KPI/SLA framework', usage: 'Proposal drafting references the performance framework for service delivery response sections' },
+    { activity: 'DEL-01', consumes: 'KPI/SLA framework', usage: 'Delivery risk register updated with KPI breach risks' }
+  ]
+}
+```
+
+---
+
+## DEL-04 — Resource & Capacity Plan
+
+```javascript
+{
+  id: 'DEL-04',
+  name: 'Resource & capacity plan',
+  workstream: 'DEL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'Resource plan',
+  dependencies: ['SOL-06'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: SOL-06 designs the target staffing model (Solution Architect's view — the workforce the solution needs).
+  // DEL-04 is the Delivery Director taking ownership of workforce planning — how to actually
+  // resource, mobilise, manage, and sustain the delivery team. Includes bid team to delivery
+  // team handover planning.
+
+  inputs: [
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'The target workforce design — DEL-04 operationalises' },
+    { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis', note: 'Gaps to fill — recruitment, redeployment, upskilling' },
+    { from: 'DEL-02', artifact: 'Mobilisation plan', note: 'Mobilisation resource requirements' },
+    { external: true, artifact: 'Corporate resource pool — available people, pipeline, recruitment capacity' },
+    { external: true, artifact: 'ITT documentation — resource and key personnel requirements' }
+  ],
+
+  subs: [
+    {
+      id: 'DEL-04.1',
+      name: 'Delivery Resource Planning',
+      description: 'The Delivery Director\'s operational workforce plan — how to resource, mobilise, and sustain the delivery team',
+
+      tasks: [
+        {
+          id: 'DEL-04.1.1',
+          name: 'Develop the delivery resource plan — operational workforce plan building on SOL-06, including mobilisation resourcing, bid-to-delivery handover, and steady-state workforce management',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'HR Lead / Solution Architect', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis' },
+            { from: 'DEL-02', artifact: 'Mobilisation plan' },
+            { external: true, artifact: 'Corporate resource pool — available people, pipeline, recruitment capacity' }
+          ],
+          outputs: [
+            {
+              name: 'Delivery resource plan',
+              format: 'Operational workforce plan',
+              quality: [
+                'SOL-06 staffing model accepted and operationalised by Delivery Director',
+                'Mobilisation resourcing planned — who is needed before, during, and after mobilisation',
+                'Bid-to-delivery team handover planned — how knowledge transfers from bid team to delivery team',
+                'Steady-state workforce management approach defined — attrition management, succession, development',
+                'Resource risks identified — scarce skills, clearance delays, market availability'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-04.1.2',
+          name: 'Plan resource mobilisation and onboarding — recruitment timeline, clearance processing, training, onboarding programme',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'HR Lead', i: 'Finance' },
+          inputs: [
+            { from: 'DEL-04.1.1', artifact: 'Delivery resource plan' },
+            { external: true, artifact: 'ITT documentation — resource and key personnel requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Resource mobilisation and onboarding plan',
+              format: 'Structured timeline with actions',
+              quality: [
+                'Recruitment timeline per role — aligned to mobilisation programme milestones',
+                'Clearance processing timeline factored in — SC/DV applications take months',
+                'Training and induction programme designed — what new team members need before they are productive',
+                'Onboarding sequence defined — who starts when, in what order, with what support'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-04.1.3',
+          name: 'Validate resource plan — achievable, costable, risks identified, Delivery Director accepts accountability',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'HR Lead / Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'DEL-04.1.1', artifact: 'Delivery resource plan' },
+            { from: 'DEL-04.1.2', artifact: 'Resource mobilisation and onboarding plan' }
+          ],
+          outputs: [
+            {
+              name: 'Resource plan (validated — activity primary output)',
+              format: 'Comprehensive delivery resource document',
+              quality: [
+                'Delivery Director accepts the resource plan as achievable',
+                'Resource risks documented and fed to DEL-01',
+                'Costable for COM-01 — mobilisation resourcing costs quantified',
+                'Compelling for the proposal — demonstrates we can stand up the team'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Resource plan',
+      format: 'Comprehensive delivery resource document',
+      quality: [
+        'SOL-06 staffing model operationalised by Delivery Director',
+        'Mobilisation resourcing and bid-to-delivery handover planned',
+        'Resource mobilisation and onboarding timeline defined',
+        'Delivery Director accepts accountability for resourcing'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'COM-01', consumes: 'Resource plan', usage: 'Should-cost model includes mobilisation resourcing costs' },
+    { activity: 'PRD-02', consumes: 'Resource plan', usage: 'Proposal drafting references the resource plan for team and mobilisation response sections' },
+    { activity: 'DEL-01', consumes: 'Resource plan', usage: 'Delivery risk register updated with resourcing risks' }
+  ]
+}
+```
+
+---
+
+## DEL-05 — Business Continuity & Exit Planning
+
+```javascript
+{
+  id: 'DEL-05',
+  name: 'Business continuity & exit planning',
+  workstream: 'DEL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'BC/exit plan',
+  dependencies: [],                        // Day-1 start
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: unique to DEL — no SOL equivalent. Required in most government contracts.
+  // BC/DR addresses service resilience during the contract.
+  // Exit/handback addresses what happens when the contract ends.
+
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'What needs to be resilient / handed back' },
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Systems that need DR and data that needs to be returned' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'Workforce that reverse-TUPEs on exit' },
+    { external: true, artifact: 'ITT documentation — BC/DR requirements, exit provisions, handback obligations' },
+    { external: true, artifact: 'Contract documentation — exit schedule, termination provisions, data return obligations' },
+    { external: true, artifact: 'Corporate BC/DR standards and frameworks' }
+  ],
+
+  subs: [
+    {
+      id: 'DEL-05.1',
+      name: 'Business Continuity & Disaster Recovery',
+      description: 'Design how the service continues during major disruption',
+
+      tasks: [
+        {
+          id: 'DEL-05.1.1',
+          name: 'Design business continuity and disaster recovery approach — how the service continues during major disruption, site loss, technology failure, or pandemic',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Technical Lead / Solution Architect', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { external: true, artifact: 'ITT documentation — BC/DR requirements' },
+            { external: true, artifact: 'Corporate BC/DR standards and frameworks' }
+          ],
+          outputs: [
+            {
+              name: 'Business continuity and disaster recovery plan',
+              format: 'Structured BC/DR document',
+              quality: [
+                'Key services and critical processes identified with recovery time objectives (RTO) and recovery point objectives (RPO)',
+                'BC scenarios covered — site loss, technology failure, supply chain failure, pandemic, key person loss',
+                'DR approach for technology designed — failover, backup, replication, restoration',
+                'BC invocation and communication procedures outlined',
+                'Testing and exercising approach defined — how BC/DR will be validated'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'DEL-05.2',
+      name: 'Exit & Handback Planning',
+      description: 'Design how the contract ends — reverse TUPE, data return, knowledge transfer, asset handback',
+
+      tasks: [
+        {
+          id: 'DEL-05.2.1',
+          name: 'Design exit and handback plan — reverse TUPE, data return, knowledge transfer, asset handback, service continuity during exit period',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Legal / HR Lead / Technical Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { external: true, artifact: 'Contract documentation — exit schedule, termination provisions, data return obligations' }
+          ],
+          outputs: [
+            {
+              name: 'BC/exit plan (validated — activity primary output)',
+              format: 'Comprehensive BC/DR and exit document',
+              quality: [
+                'Exit timeline and phasing designed — aligned to contract termination provisions',
+                'Reverse TUPE process outlined — workforce transfer to successor or client',
+                'Data return and system decommission approach designed — what data, what format, what timeline',
+                'Knowledge transfer approach designed — documentation, shadowing, handover period',
+                'Asset handback identified — property, equipment, IP, licences',
+                'Service continuity during exit period assured — no degradation while handing back'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'BC/exit plan',
+      format: 'Comprehensive BC/DR and exit document',
+      quality: [
+        'BC/DR approach designed with RTO/RPO per critical service',
+        'DR technology approach defined — failover, backup, restoration',
+        'Exit and handback plan designed — reverse TUPE, data, knowledge, assets',
+        'Service continuity assured during both disruption and exit'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'PRD-02', consumes: 'BC/exit plan', usage: 'Proposal drafting references BC/DR and exit plan for relevant response sections' },
+    { activity: 'COM-01', consumes: 'BC/exit plan', usage: 'Should-cost model includes BC/DR infrastructure costs' },
+    { activity: 'LEG-01', consumes: 'BC/exit plan', usage: 'Contract review validates exit provisions align with our plan' }
+  ]
+}
+```
+
+---
+
+## DEL-06 — Risk Mitigation & Residual Acceptance
+
+```javascript
+{
+  id: 'DEL-06',
+  name: 'Risk mitigation & residual acceptance',
+  workstream: 'DEL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'Mitigated risk register (assured)',
+  dependencies: ['DEL-01', 'COM-06'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: this is the Delivery Director's final risk consolidation and acceptance activity.
+  // It brings together solution (SOL-12), commercial (COM-07), and delivery (DEL-01)
+  // risks from the Delivery Director's perspective — what delivery risk remains after
+  // all mitigations? The Delivery Director must accept the residual risk position.
+  // BM-13 is the bid-level consolidation (Bid Manager's view).
+  // DEL-06 is the delivery-level consolidation (Delivery Director's view).
+
+  inputs: [
+    { from: 'DEL-01', artifact: 'Delivery risk & assumptions register' },
+    { from: 'SOL-12', artifact: 'Solution risk register' },
+    { from: 'COM-07', artifact: 'Commercial risk register' },
+    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'Risk contingency included in pricing — what risk has been priced?' },
+    { from: 'LEG-02', artifact: 'Risk allocation matrix', note: 'Contractual risk allocation' },
+    { from: 'LEG-04', artifact: 'TUPE compliance assessment', note: 'TUPE legal risks' },
+    { from: 'LEG-05', artifact: 'DPIA / security assessment', note: 'Data protection and security risks' }
+  ],
+
+  subs: [
+    {
+      id: 'DEL-06.1',
+      name: 'Final Risk Consolidation & Acceptance',
+      description: 'Bring all risk registers together from the Delivery Director\'s perspective, confirm mitigations, and accept the residual risk position for governance',
+
+      tasks: [
+        {
+          id: 'DEL-06.1.1',
+          name: 'Consolidate all risk registers from delivery perspective — solution, commercial, delivery, legal — into one assured view',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Commercial Lead / Legal Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'DEL-01', artifact: 'Delivery risk & assumptions register' },
+            { from: 'SOL-12', artifact: 'Solution risk register' },
+            { from: 'COM-07', artifact: 'Commercial risk register' },
+            { from: 'LEG-02', artifact: 'Risk allocation matrix' },
+            { from: 'LEG-04', artifact: 'TUPE compliance assessment' },
+            { from: 'LEG-05', artifact: 'DPIA / security assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Consolidated delivery risk register',
+              format: 'Comprehensive risk register',
+              quality: [
+                'All risks from solution, commercial, delivery, and legal workstreams consolidated from delivery perspective',
+                'Duplicates removed, cross-cutting risks identified',
+                'Every risk categorised — delivery, solution, commercial, legal, transition, people, technology'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-06.1.2',
+          name: 'Confirm mitigation status and residual risk position — all mitigations assigned and in progress, residual risk accepted by Delivery Director',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Risk Owners', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'DEL-06.1.1', artifact: 'Consolidated delivery risk register' },
+            { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'What risk contingency has been priced?' }
+          ],
+          outputs: [
+            {
+              name: 'Residual risk position statement',
+              format: 'Risk acceptance document',
+              quality: [
+                'Every high/significant risk has confirmed mitigation status — in progress, complete, or accepted',
+                'Residual risk quantified — what exposure remains after mitigations and pricing contingency?',
+                'Delivery Director formally accepts the residual risk position',
+                'Risks that exceed Delivery Director authority escalated to Bid Director / Senior Executive'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-06.1.3',
+          name: 'Prepare risk position for final governance — the authoritative delivery risk view for GOV-03 (Pricing & Risk Review)',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: null, i: 'Bid Manager' },
+          inputs: [
+            { from: 'DEL-06.1.1', artifact: 'Consolidated delivery risk register' },
+            { from: 'DEL-06.1.2', artifact: 'Residual risk position statement' }
+          ],
+          outputs: [
+            {
+              name: 'Mitigated risk register (assured — activity primary output)',
+              format: 'Governance-ready assured risk register',
+              quality: [
+                'Complete risk register with mitigation status and residual position',
+                'Delivery Director sign-off recorded — accountability for delivery risk accepted',
+                'Executive summary for governance audience — top risks, mitigations, residual exposure',
+                'Ready for GOV-03 (Pricing & Risk Review) and feeds BM-13 consolidation'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Mitigated risk register (assured)',
+      format: 'Governance-ready assured risk register',
+      quality: [
+        'All workstream risks consolidated from delivery perspective',
+        'Mitigation status confirmed per risk',
+        'Residual risk position quantified and accepted by Delivery Director',
+        'Governance-ready with executive summary'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'GOV-03', consumes: 'Mitigated risk register (assured)', usage: 'Pricing & Risk Review examines the delivery risk position alongside pricing' },
+    { activity: 'BM-13', consumes: 'Mitigated risk register (assured)', usage: 'Bid risk register consolidates with other risk views' }
+  ]
+}
+```
+
+---
+
 *Gold standard established from SAL-03 — Session 11, 2026-04-01*
 *SAL workstream complete — Session 12, 2026-04-01*
 *SOL workstream complete — Session 12, 2026-04-01*
 *COM workstream complete — Session 12, 2026-04-01*
+*LEG workstream complete — Session 12, 2026-04-01*
+*DEL workstream complete — Session 12, 2026-04-01*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*
