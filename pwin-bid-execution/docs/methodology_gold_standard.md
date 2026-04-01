@@ -1628,13 +1628,97 @@ Use this checklist before marking any activity as mapping-complete:
     },
     {
       id: 'SAL-06.3',
+      name: 'Consortium Design & Partnership Strategy',
+      description: 'Make the strategic decision on consortium structure and partnership model — who we partner with, in what structure, and why that design is a competitive advantage. This is a win strategy decision, not an afterthought. It feeds SUP-01 (partner identification) and COM-03 (commercial structure).',
+
+      tasks: [
+        {
+          id: 'SAL-06.3.1',
+          name: 'Define the consortium strategy — prime/sub, JV, SPV, or sole bidder — with rationale tied to win strategy and competitive positioning',
+          raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Commercial Lead / Capture Lead', i: 'Legal' },
+          inputs: [
+            { from: 'SAL-06.2.4', artifact: 'Win strategy narrative' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis', note: 'Where we need partner capability to close scoring gaps' },
+            { from: 'SAL-02.3.3', artifact: 'Capability gap assessment', note: 'Where we need partner capability to deliver transformation' },
+            { from: 'SAL-01.1.4', artifact: 'Client supplier landscape map', note: 'Who the client already works with, framework incumbents' }
+          ],
+          outputs: [
+            {
+              name: 'Consortium strategy',
+              format: 'Structured strategy paper',
+              quality: [
+                'Consortium model defined — prime/sub, JV, SPV, or sole bidder — with rationale',
+                'Strategic rationale for the model linked to win strategy — how this structure creates competitive advantage',
+                'Client perception considered — does this model signal the right things to the evaluators?',
+                'Risk and governance implications of the model assessed — JV/SPV complexity vs prime/sub simplicity',
+                'Alignment to procurement requirements confirmed — some procurements mandate or restrict certain models'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SAL-06.3.2',
+          name: 'Identify required partner capabilities — mapped to score gaps, capability gaps, and solution components that we cannot deliver alone',
+          raci: { r: 'Capture Lead', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Partner Lead' },
+          inputs: [
+            { from: 'SAL-06.3.1', artifact: 'Consortium strategy' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis' },
+            { from: 'SAL-02.3.3', artifact: 'Capability gap assessment' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'Soft input — solution areas requiring partner capability' }
+          ],
+          outputs: [
+            {
+              name: 'Partner capability requirements',
+              format: 'Structured requirements register',
+              quality: [
+                'Every capability gap that requires a partner is documented — what we need and why',
+                'Each requirement linked to the scoring or solution gap it addresses',
+                'Target partner profile defined per requirement — type of organisation, scale, credentials, track record',
+                'Priority ranked — critical partners (without whom we cannot bid) vs valuable partners (who strengthen the bid)'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SAL-06.3.3',
+          name: 'Define the target delivery model across the consortium — who owns what scope, high-level work breakdown, accountability structure',
+          raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Solution Architect / Commercial Lead', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SAL-06.3.1', artifact: 'Consortium strategy' },
+            { from: 'SAL-06.3.2', artifact: 'Partner capability requirements' },
+            { from: 'SOL-03', artifact: 'Target operating model', note: 'Soft input — solution structure that the consortium must deliver' }
+          ],
+          outputs: [
+            {
+              name: 'Consortium delivery model and work breakdown',
+              format: 'High-level work breakdown with accountability map',
+              quality: [
+                'Scope allocation defined per delivery agent — who owns which solution components and service lines',
+                'Accountability and interface model defined — who is responsible to the client for what',
+                'Dependencies between consortium members identified — where integration risk exists',
+                'High-level enough to brief potential partners — not so detailed it constrains partner creativity',
+                'Feeds SUP-01 (partner identification brief) and COM-03 (commercial structure and pricing requests)'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SAL-06.4',
       name: 'Capture Plan Assembly & Bid Mandate Lock',
       description: 'Assemble the full 360-degree capture plan document, prepare the bid mandate for governance, and formally lock the strategy as the baseline for the bid',
 
       tasks: [
         {
-          id: 'SAL-06.3.1',
-          name: 'Assemble capture plan — the locked strategic baseline document covering all dimensions',
+          id: 'SAL-06.4.1',
+          name: 'Assemble capture plan — the locked strategic baseline document covering all dimensions including consortium strategy',
           raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: null },
           inputs: [
             { from: 'SAL-06.1.1', artifact: 'Capture effectiveness assessment' },
@@ -1642,14 +1726,18 @@ Use this checklist before marking any activity as mapping-complete:
             { from: 'SAL-06.2.1', artifact: 'Deal Qualification Checklist (DQC)' },
             { from: 'SAL-06.2.2', artifact: 'Strategic fit assessment' },
             { from: 'SAL-06.2.3', artifact: 'PWIN score and rationale' },
-            { from: 'SAL-06.2.4', artifact: 'Win strategy narrative' }
+            { from: 'SAL-06.2.4', artifact: 'Win strategy narrative' },
+            { from: 'SAL-06.3.1', artifact: 'Consortium strategy' },
+            { from: 'SAL-06.3.2', artifact: 'Partner capability requirements' },
+            { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown' }
           ],
           outputs: [
             {
               name: 'Capture plan document',
               format: 'Comprehensive strategy document',
               quality: [
-                'Covers all dimensions: customer intelligence, competitive landscape, stakeholder position, win strategy, scoring approach, solution direction, commercial framework, risk, resources',
+                'Covers all dimensions: customer intelligence, competitive landscape, stakeholder position, win strategy, scoring approach, solution direction, commercial framework, consortium strategy, risk, resources',
+                'Consortium strategy and work breakdown documented — who we partner with, in what structure, who owns what scope',
                 'Requirements understanding demonstrated — what the client is asking for at a strategic level',
                 'Contract and commercial risk profile documented — red lines, payment mechanism, SLA regime',
                 'Solution direction articulated — what we believe we can deliver and how',
@@ -1663,11 +1751,11 @@ Use this checklist before marking any activity as mapping-complete:
           type: 'Sequential'
         },
         {
-          id: 'SAL-06.3.2',
-          name: 'Prepare formal Bid Mandate for Bid Board approval — budget, resource, win strategy, risk, PWIN, go/no-go recommendation',
+          id: 'SAL-06.4.2',
+          name: 'Prepare formal Bid Mandate for Bid Board approval — budget, resource, win strategy, consortium, risk, PWIN, go/no-go recommendation',
           raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Commercial Lead / Legal', i: 'Partner' },
           inputs: [
-            { from: 'SAL-06.3.1', artifact: 'Capture plan document' },
+            { from: 'SAL-06.4.1', artifact: 'Capture plan document' },
             { external: true, artifact: 'Resource availability and capacity forecast' }
           ],
           outputs: [
@@ -1689,12 +1777,12 @@ Use this checklist before marking any activity as mapping-complete:
           type: 'Sequential'
         },
         {
-          id: 'SAL-06.3.3',
-          name: 'Confirm lock — capture plan baselined, win strategy locked, methodology gate passed. Feeds GOV-01 (Pursuit Approval)',
+          id: 'SAL-06.4.3',
+          name: 'Confirm lock — capture plan baselined, win strategy locked, consortium strategy locked, methodology gate passed. Feeds GOV-01 (Pursuit Approval)',
           raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: null, i: 'Bid Team (collective)' },
           inputs: [
-            { from: 'SAL-06.3.1', artifact: 'Capture plan document' },
-            { from: 'SAL-06.3.2', artifact: 'Bid Mandate document' }
+            { from: 'SAL-06.4.1', artifact: 'Capture plan document' },
+            { from: 'SAL-06.4.2', artifact: 'Bid Mandate document' }
           ],
           outputs: [
             {
@@ -1729,6 +1817,7 @@ Use this checklist before marking any activity as mapping-complete:
         'Strategic fit confirmed against portfolio and growth plan',
         'PWIN scored with evidence basis across all dimensions',
         'Win strategy synthesised — coherent narrative integrating themes, scoring, competitive positioning, stakeholders',
+        'Consortium strategy defined — structure, partner capabilities, work breakdown as competitive advantage',
         'Capture plan assembled as 360-degree strategic baseline',
         'Bid mandate prepared with go/no-go recommendation, bid cost, and resource ask',
         'Formally locked and baselined — methodology gate passed'
@@ -1744,7 +1833,9 @@ Use this checklist before marking any activity as mapping-complete:
     { activity: 'BM-10', consumes: 'Win strategy narrative', usage: 'Storyboard development builds response structure around locked win strategy' },
     { activity: 'BM-09', consumes: 'Capture plan (locked)', usage: 'Competitive dialogue preparation informed by locked strategy and stakeholder assessment' },
     { activity: 'SOL-03', consumes: 'Win strategy narrative', usage: 'Target operating model design shaped by locked win strategy and solution direction' },
-    { activity: 'COM-01', consumes: 'Capture plan (locked)', usage: 'Should-cost model informed by commercial framework and payment mechanism from capture plan' }
+    { activity: 'COM-01', consumes: 'Capture plan (locked)', usage: 'Should-cost model informed by commercial framework and payment mechanism from capture plan' },
+    { activity: 'SUP-01', consumes: 'Consortium strategy + partner capability requirements', usage: 'Partner identification has a clear brief on who to approach and why' },
+    { activity: 'COM-03', consumes: 'Consortium delivery model and work breakdown', usage: 'Commercial structure and pricing requests built on locked consortium design' }
   ]
 }
 ```
@@ -5606,8 +5697,1091 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
+---
+
+## COM-03 — Subcontractor & Supply Chain Pricing
+
+```javascript
+{
+  id: 'COM-03',
+  name: 'Subcontractor & supply chain pricing',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Partner pricing schedule',
+  dependencies: ['SUP-04'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires commercial negotiation and partner management
+  // Note: the consortium strategy, structure, and work breakdown are already locked
+  // in SAL-06 L2.3. This activity executes against that strategic framework —
+  // defining the detailed commercial structure between parties and getting firm
+  // pricing from each partner.
+  //
+  // The output updates COM-01 — partner cost placeholders replaced with actual pricing.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SAL-06.3.1', artifact: 'Consortium strategy', note: 'Prime/sub, JV, SPV — the locked strategic framework' },
+    { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown', note: 'Who owns what scope — the basis for pricing requests' },
+    { from: 'SUP-04', artifact: 'Partner pricing schedules', note: 'Raw partner pricing submissions' },
+    { from: 'SUP-02', artifact: 'Partner solution inputs pack', note: 'What each partner is delivering — scope context for pricing' },
+    { from: 'COM-01', artifact: 'Should-cost model', note: 'Our cost assumptions — partner pricing must align' },
+    { from: 'COM-01.2.2', artifact: 'Cost assumptions register', note: 'Volume, indexation, demand assumptions that partners must price against' },
+    { external: true, artifact: 'Corporate procurement and partner commercial policies' },
+    { external: true, artifact: 'ITT documentation — pricing schedule structure, subcontractor disclosure requirements' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-03.1',
+      name: 'Commercial Structure & Work Breakdown Detailing',
+      description: 'Take the consortium strategy locked in SAL-06 and detail the commercial framework between parties — margin stack, risk sharing, payment flow — before issuing pricing requests',
+
+      tasks: [
+        {
+          id: 'COM-03.1.1',
+          name: 'Detail the inter-party commercial framework — margin stack, risk sharing principles, payment flow, indexation basis, volume commitments between consortium members',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal / Partner Commercial Leads', i: 'Finance' },
+          inputs: [
+            { from: 'SAL-06.3.1', artifact: 'Consortium strategy' },
+            { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown' },
+            { external: true, artifact: 'Corporate procurement and partner commercial policies' }
+          ],
+          outputs: [
+            {
+              name: 'Inter-party commercial framework',
+              format: 'Structured commercial terms document',
+              quality: [
+                'Margin stack defined — how margin is allocated across the consortium (prime margin, partner margin, management fee)',
+                'Risk sharing principles defined — who bears what risk (delivery, performance, financial, TUPE)',
+                'Payment flow designed — how money flows from client through prime to partners, payment terms, retention',
+                'Indexation and volume commitment basis aligned — partners price against the same assumptions as our model',
+                'Framework is commercially viable for all parties — not so aggressive that partners walk away or price in risk'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-03.1.2',
+          name: 'Prepare structured pricing requests for each partner — scope, volumes, assumptions, timeline, format aligned to work breakdown and our commercial model',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Supply Chain Lead / Solution Architect', i: 'Partner Leads' },
+          inputs: [
+            { from: 'COM-03.1.1', artifact: 'Inter-party commercial framework' },
+            { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown' },
+            { from: 'COM-01.2.2', artifact: 'Cost assumptions register' }
+          ],
+          outputs: [
+            {
+              name: 'Partner pricing request packs',
+              format: 'Per-partner structured pricing request',
+              quality: [
+                'Each partner receives a clear scope definition — what they are pricing, aligned to the work breakdown',
+                'Volume and demand assumptions specified — partners price the same volumes we are modelling',
+                'Pricing format specified — aligned to our commercial model structure for easy integration',
+                'Timeline specified — when we need firm pricing by, aligned to COM-06 pricing lock',
+                'Commercial terms summarised — margin, risk, payment, indexation basis included so partners price realistically'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'COM-03.2',
+      name: 'Partner Pricing Collection & Negotiation',
+      description: 'Collect, validate, and negotiate partner pricing — ensuring submissions are complete, assumptions align, and terms are commercially viable',
+
+      tasks: [
+        {
+          id: 'COM-03.2.1',
+          name: 'Review and validate partner pricing submissions — completeness, assumption alignment, competitiveness, and fit within our commercial model',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Solution Architect', i: 'Supply Chain Lead' },
+          inputs: [
+            { from: 'SUP-04', artifact: 'Partner pricing schedules' },
+            { from: 'COM-03.1.2', artifact: 'Partner pricing request packs' },
+            { from: 'COM-01', artifact: 'Should-cost model' }
+          ],
+          outputs: [
+            {
+              name: 'Partner pricing validation assessment',
+              format: 'Per-partner structured review',
+              quality: [
+                'Each partner submission reviewed for completeness — all scope elements priced, no gaps',
+                'Assumption alignment confirmed — volumes, indexation, demand basis consistent with our model',
+                'Competitiveness assessed — is the partner pricing reasonable vs market benchmarks?',
+                'Integration with our cost model tested — does the partner pricing fit within the overall commercial framework?',
+                'Issues and gaps documented per partner — what needs resolving before pricing can be confirmed'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'          // Multiple partners reviewed concurrently
+        },
+        {
+          id: 'COM-03.2.2',
+          name: 'Negotiate partner pricing and terms — resolve gaps, align assumptions, agree final pricing and risk allocation per partner',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Partner Commercial Leads / Legal', i: 'Finance' },
+          inputs: [
+            { from: 'COM-03.2.1', artifact: 'Partner pricing validation assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Negotiated partner pricing',
+              format: 'Per-partner confirmed pricing with terms',
+              quality: [
+                'Final pricing agreed per partner — firm, not indicative',
+                'Assumptions aligned and documented — any remaining differences explicitly noted',
+                'Commercial terms agreed — margin, risk sharing, payment terms, indexation, volume commitments',
+                'Pricing validity period confirmed — how long the partner will hold these prices',
+                'Any conditions or caveats from partners documented — e.g. "subject to teaming agreement"'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'COM-03.3',
+      name: 'Partner Pricing Integration',
+      description: 'Integrate confirmed partner pricing into the should-cost model and validate the complete partner pricing schedule',
+
+      tasks: [
+        {
+          id: 'COM-03.3.1',
+          name: 'Integrate confirmed partner pricing into the should-cost model — replace placeholders, reconcile assumptions, update year-on-year cost trajectory',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance', i: 'Solution Architect' },
+          inputs: [
+            { from: 'COM-03.2.2', artifact: 'Negotiated partner pricing' },
+            { from: 'COM-01', artifact: 'Should-cost model' }
+          ],
+          outputs: [
+            {
+              name: 'Updated should-cost model (partner pricing confirmed)',
+              format: 'Updated cost model',
+              quality: [
+                'Partner cost placeholders replaced with confirmed pricing',
+                'Year-on-year cost trajectory updated with actual partner pricing profiles',
+                'Any assumption differences between our model and partner pricing reconciled or risk-noted',
+                'Total cost of service recalculated with actual partner costs'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-03.3.2',
+          name: 'Validate partner pricing schedule — all partners priced, assumptions aligned, commercially viable, feeds COM-05 and COM-06',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Supply Chain Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'COM-03.3.1', artifact: 'Updated should-cost model (partner pricing confirmed)' },
+            { from: 'COM-03.2.2', artifact: 'Negotiated partner pricing' }
+          ],
+          outputs: [
+            {
+              name: 'Partner pricing schedule (validated — activity primary output)',
+              format: 'Comprehensive partner pricing document',
+              quality: [
+                'All partners have confirmed, firm pricing — no outstanding indicative submissions',
+                'Commercial terms agreed per partner — margin, risk, payment, indexation',
+                'Should-cost model updated and reconciled with actual partner costs',
+                'Partner pricing risks documented — conditions, caveats, assumption sensitivities',
+                'Schedule ready for COM-05 (sensitivity analysis) and COM-06 (pricing finalisation)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Partner pricing schedule',
+      format: 'Comprehensive partner pricing document',
+      quality: [
+        'Inter-party commercial framework defined — margin stack, risk sharing, payment flow',
+        'Structured pricing requests issued per partner aligned to work breakdown',
+        'All partner pricing collected, validated, and negotiated to firm terms',
+        'Partner pricing integrated into should-cost model — placeholders replaced',
+        'Commercial terms agreed per partner — ready for back-to-back formalisation (SUP-06)',
+        'All partners confirmed — no outstanding indicative submissions'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-05', consumes: 'Partner pricing schedule', usage: 'Sensitivity analysis includes partner pricing assumptions and risks' },
+    { activity: 'COM-06', consumes: 'Partner pricing schedule', usage: 'Pricing finalisation includes confirmed partner costs' },
+    { activity: 'SUP-06', consumes: 'Inter-party commercial framework + negotiated terms', usage: 'Back-to-back commercial terms formalised from agreed framework' },
+    { activity: 'COM-01', consumes: 'Updated should-cost model', usage: 'Should-cost model updated with confirmed partner pricing (feedback loop)' }
+  ]
+}
+```
+
+---
+
+---
+
+## COM-04 — Commercial Model & Payment Mechanisms
+
+```javascript
+{
+  id: 'COM-04',
+  name: 'Commercial model & payment mechanisms',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Commercial model document',
+  dependencies: ['SOL-04', 'LEG-02'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires commercial structuring expertise
+  // Note: this is distinct from COM-01 (what it costs) and COM-02 (what we charge).
+  // COM-04 answers: "what is the commercial structure of the contract?"
+  // — how we get paid, how risk is allocated financially, how the payment mechanism works.
+  //
+  // In government services contracts, the payment mechanism is often complex:
+  // fixed price, unitary charge, payment by results, milestone, outcome-based, or hybrid.
+  // Service credits, gain share, indexation, benchmarking, parent company guarantees.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'What is being delivered — the commercial model must align to service structure' },
+    { from: 'SOL-08.3.2', artifact: 'Innovation value sharing and investment framework', note: 'How productivity gains from AI/automation are shared contractually' },
+    { from: 'LEG-02', artifact: 'Risk allocation matrix', note: 'How risk is distributed — informs financial risk allocation in the commercial model' },
+    { from: 'COM-01', artifact: 'Should-cost model', note: 'Cost base the commercial model must cover' },
+    { from: 'SAL-06.1.2', artifact: 'ITT documentation analysis summary', note: 'Payment mechanism and SLA regime from initial analysis' },
+    { external: true, artifact: 'ITT documentation — payment mechanism, pricing schedule structure, service credit regime, indexation provisions, financial standing requirements' },
+    { external: true, artifact: 'Contract documentation — commercial terms, financial schedules, gain share provisions, benchmarking clauses' },
+    { external: true, artifact: 'Corporate commercial policies — acceptable risk thresholds, guarantee limits, margin floors' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-04.1',
+      name: 'Payment Mechanism & Pricing Structure Design',
+      description: 'Design how we get paid and how the price is structured — the commercial architecture of the contract',
+
+      tasks: [
+        {
+          id: 'COM-04.1.1',
+          name: 'Design the payment mechanism — how we get paid: fixed price, cost-plus, unitary charge, milestone payments, outcome-based, payment by results, or hybrid',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { external: true, artifact: 'ITT documentation — payment mechanism, pricing schedule structure' },
+            { external: true, artifact: 'Contract documentation — commercial terms, financial schedules' }
+          ],
+          outputs: [
+            {
+              name: 'Payment mechanism design',
+              format: 'Structured commercial design',
+              quality: [
+                'Payment mechanism defined — how revenue is earned and invoiced (fixed, variable, milestone, outcome-based, or hybrid)',
+                'Payment profile modelled — when cash flows, payment terms, invoicing frequency',
+                'Mechanism aligned to service delivery structure — payment units map to what we actually deliver',
+                'Client affordability considered — does the payment profile work for the client\'s budget cycle?',
+                'Cash flow implications assessed — is the payment mechanism viable for our working capital position?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-04.1.2',
+          name: 'Design the pricing structure — how the price is presented: annual charge, rate card, unit pricing, blended rates, or combination aligned to ITT pricing schedules',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Bid Manager', i: 'Solution Architect' },
+          inputs: [
+            { from: 'COM-04.1.1', artifact: 'Payment mechanism design' },
+            { from: 'COM-01', artifact: 'Should-cost model' },
+            { external: true, artifact: 'ITT documentation — pricing schedule structure, required format' }
+          ],
+          outputs: [
+            {
+              name: 'Pricing structure design',
+              format: 'Structured pricing framework',
+              quality: [
+                'Pricing structure aligned to ITT pricing schedule format — not our preferred format but the client\'s required format',
+                'Cost model mapped to pricing structure — every cost element has a home in the pricing schedules',
+                'Pricing transparency calibrated — how much cost detail is visible to the client (open book, partially visible, or closed)',
+                'Rate card structure designed where applicable — day rates, unit rates, volume tiers'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-04.1.3',
+          name: 'Design indexation and benchmarking provisions — how prices change over the contract term, and how the client verifies value for money',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal', i: 'Delivery Director' },
+          inputs: [
+            { from: 'COM-04.1.1', artifact: 'Payment mechanism design' },
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model', note: 'Year-on-year cost reduction changes the indexation calculus' },
+            { external: true, artifact: 'Contract documentation — indexation provisions, benchmarking clauses' }
+          ],
+          outputs: [
+            {
+              name: 'Indexation and benchmarking framework',
+              format: 'Structured commercial framework',
+              quality: [
+                'Indexation mechanism defined — which index (CPI, RPI, AWE, bespoke), applied to which cost elements, at what frequency',
+                'Interaction with innovation productivity curve modelled — if costs reduce through AI/automation, does indexation apply on top or net?',
+                'Benchmarking provisions addressed — if the contract includes periodic benchmarking, how does our pricing accommodate it?',
+                'Annual price review mechanism designed if applicable — what triggers a review, what can change, what is locked'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'COM-04.2',
+      name: 'Financial Risk & Commercial Terms',
+      description: 'Design the financial risk allocation, service credit regime, innovation value sharing, and validate the complete commercial model',
+
+      tasks: [
+        {
+          id: 'COM-04.2.1',
+          name: 'Design service credit and deduction regime — how underperformance is penalised financially, our exposure, and earn-back mechanisms',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal / Delivery Director', i: 'Finance' },
+          inputs: [
+            { from: 'LEG-02', artifact: 'Risk allocation matrix' },
+            { from: 'SOL-04.2.1', artifact: 'SLA/KPI-to-delivery commitment matrix' },
+            { external: true, artifact: 'Contract documentation — service credit regime, deduction mechanisms' }
+          ],
+          outputs: [
+            {
+              name: 'Service credit and deduction analysis',
+              format: 'Structured financial risk assessment',
+              quality: [
+                'Service credit regime understood — which KPIs trigger credits, at what thresholds, at what financial value',
+                'Maximum monthly and annual exposure quantified — what is the worst-case service credit deduction?',
+                'Earn-back mechanisms identified — can we recover credits through sustained good performance?',
+                'Financial risk mapped to delivery model — which service lines carry the highest credit exposure?',
+                'Mitigation approach defined — how we manage delivery to avoid credit exposure'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-04.2.2',
+          name: 'Incorporate innovation value sharing mechanism — gain share, reinvestment commitments, annual price reduction trajectory aligned to SOL-08 framework',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Solution Architect / Legal', i: 'Finance' },
+          inputs: [
+            { from: 'SOL-08.3.2', artifact: 'Innovation value sharing and investment framework' },
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model' },
+            { from: 'COM-04.1.1', artifact: 'Payment mechanism design' }
+          ],
+          outputs: [
+            {
+              name: 'Innovation commercial provisions',
+              format: 'Structured commercial terms',
+              quality: [
+                'Gain share mechanism contractualised — how savings from innovation are split between client and supplier',
+                'Annual price reduction trajectory incorporated if applicable — scheduled reductions reflecting productivity gains',
+                'Innovation investment commitment defined — how much we invest, from what source, with what governance',
+                'Innovation milestones linked to commercial triggers — what happens if innovation is not delivered as planned?',
+                'Mechanism is sustainable — supplier margin is protected while client receives progressive benefit'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-04.2.3',
+          name: 'Validate commercial model — coherent with cost model, legally viable, aligned to ITT requirements, commercially sustainable',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal / Solution Architect', i: 'Bid Manager' },
+          inputs: [
+            { from: 'COM-04.1.1', artifact: 'Payment mechanism design' },
+            { from: 'COM-04.1.2', artifact: 'Pricing structure design' },
+            { from: 'COM-04.1.3', artifact: 'Indexation and benchmarking framework' },
+            { from: 'COM-04.2.1', artifact: 'Service credit and deduction analysis' },
+            { from: 'COM-04.2.2', artifact: 'Innovation commercial provisions' }
+          ],
+          outputs: [
+            {
+              name: 'Commercial model document (validated — activity primary output)',
+              format: 'Comprehensive commercial model document',
+              quality: [
+                'Payment mechanism, pricing structure, indexation, service credits, and innovation provisions consolidated',
+                'Commercial model coherent with should-cost model (COM-01) — costs flow into the pricing structure correctly',
+                'Legally viable — LEG-02 risk allocation reflected, no unacceptable commercial risk',
+                'Aligned to ITT requirements — pricing schedule format, commercial terms, financial standing requirements met',
+                'Commercially sustainable — margin protected, cash flow viable, risk exposure quantified and manageable',
+                'Ready for executive review at pricing governance gate (GOV-03)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Commercial model document',
+      format: 'Comprehensive commercial model document',
+      quality: [
+        'Payment mechanism designed — how we get paid, cash flow modelled',
+        'Pricing structure designed — aligned to ITT pricing schedule format',
+        'Indexation and benchmarking provisions designed',
+        'Service credit exposure quantified with earn-back and mitigation',
+        'Innovation gain share and price reduction provisions incorporated',
+        'Validated as coherent, legally viable, ITT-aligned, and commercially sustainable'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-05', consumes: 'Commercial model document', usage: 'Sensitivity analysis tests commercial assumptions — service credit exposure, indexation, gain share' },
+    { activity: 'COM-06', consumes: 'Commercial model document', usage: 'Pricing finalisation integrates commercial model with cost model and price-to-win' },
+    { activity: 'SUP-06', consumes: 'Commercial model document', usage: 'Back-to-back terms flow down the commercial model to partners' },
+    { activity: 'GOV-03', consumes: 'Commercial model document', usage: 'Pricing governance review examines the commercial structure and risk exposure' },
+    { activity: 'PRD-04', consumes: 'Commercial model document', usage: 'Pricing response documents present the commercial model to the client' }
+  ]
+}
+```
+
+---
+
+---
+
+## COM-05 — Margin Structure & Sensitivity Analysis
+
+```javascript
+{
+  id: 'COM-05',
+  name: 'Margin structure & sensitivity analysis',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Margin model with sensitivities',
+  dependencies: ['COM-01', 'COM-03'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires financial modelling expertise
+  // Note: this is standard financial stress testing — testing assumptions and risks to
+  // identify both OPPORTUNITIES (upside) and THREATS (downside), and how each could
+  // impact the overall revenue and cost structure and therefore delivered margin.
+  //
+  // The executive needs to see the full range: downside risk, base case, and upside
+  // opportunity. If things go better than assumed, what does that look like? If things
+  // go worse, what's the exposure? This is the decision paper that determines what
+  // margin the organisation is willing to accept.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'COM-01', artifact: 'Should-cost model', note: 'The cost base to apply margin to' },
+    { from: 'COM-01.2.1', artifact: 'Contract-term cost model', note: 'Year-on-year cost profile' },
+    { from: 'COM-01.2.2', artifact: 'Cost assumptions register', note: 'Each assumption becomes a sensitivity variable' },
+    { from: 'COM-02', artifact: 'Price-to-win assessment', note: 'The price envelope — margin modelled at each price point' },
+    { from: 'COM-03', artifact: 'Partner pricing schedule', note: 'Partner costs and associated risks' },
+    { from: 'COM-04', artifact: 'Commercial model document', note: 'Payment mechanism, service credits, gain share — all create financial variability' },
+    { from: 'COM-04.2.1', artifact: 'Service credit and deduction analysis', note: 'Downside exposure from underperformance' },
+    { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model', note: 'Upside if innovation accelerates, downside if it delays' },
+    { from: 'SOL-12', artifact: 'Solution risk register', note: 'Solution risks with financial implications' },
+    { external: true, artifact: 'Corporate financial policies — minimum margin thresholds, risk appetite, contingency requirements' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-05.1',
+      name: 'Sensitivity & Stress Testing',
+      description: 'Standard financial stress testing — test every key assumption for both upside opportunity and downside risk, and model commercial scenarios. This comes first because the sensitivities inform which price points and margin positions are viable.',
+
+      tasks: [
+        {
+          id: 'COM-05.1.1',
+          name: 'Conduct sensitivity analysis on key cost assumptions — test each variable for upside (better than assumed) and downside (worse than assumed) impact on margin',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Solution Architect', i: 'Delivery Director' },
+          inputs: [
+            { from: 'COM-01.2.2', artifact: 'Cost assumptions register' },
+            { from: 'COM-01.2.1', artifact: 'Contract-term cost model' }
+          ],
+          outputs: [
+            {
+              name: 'Cost assumption sensitivity analysis',
+              format: 'Sensitivity matrix with tornado charts',
+              quality: [
+                'Each key assumption tested independently — what happens if it is X% better or worse than base case?',
+                'Variables tested include: attrition, utilisation, volume, inflation, wage growth, recruitment cost, technology cost, partner cost variance',
+                'Upside opportunities identified — which assumptions, if they go better, create the most margin improvement?',
+                'Downside risks identified — which assumptions, if they go worse, create the most margin erosion?',
+                'Top 5 sensitivity drivers ranked — the variables that matter most to the financial outcome',
+                'Tornado chart or equivalent presentation — visual ranking of sensitivities for executive communication'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-05.1.2',
+          name: 'Stress-test commercial model scenarios — maximum service credit exposure, gain share under/overperformance, volume variance, indexation deviation',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal', i: 'Solution Architect' },
+          inputs: [
+            { from: 'COM-04.2.1', artifact: 'Service credit and deduction analysis' },
+            { from: 'COM-04.2.2', artifact: 'Innovation commercial provisions' },
+            { from: 'COM-01.2.1', artifact: 'Contract-term cost model' },
+            { from: 'SOL-12', artifact: 'Solution risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Commercial scenario stress test',
+              format: 'Scenario-based financial impact analysis',
+              quality: [
+                'Downside scenarios modelled: maximum service credit deductions, innovation failure, volume shortfall, adverse indexation, partner pricing overrun',
+                'Upside scenarios modelled: innovation acceleration, volume growth, performance bonus, lower attrition, favourable indexation',
+                'Combined worst case modelled — what if multiple downside scenarios hit simultaneously?',
+                'Combined best case modelled — what does the upside opportunity look like?',
+                'Break-even analysis — at what point do downside scenarios push margin below acceptable threshold?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'COM-05.2',
+      name: 'Margin Modelling & Executive Decision Paper',
+      description: 'Model the margin at multiple price points informed by the stress test results, produce the contract-term P&L, and present the executive decision paper',
+
+      tasks: [
+        {
+          id: 'COM-05.2.1',
+          name: 'Model margin structure at multiple price points across the price-to-win envelope — informed by sensitivity and stress test results',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance', i: 'Partner' },
+          inputs: [
+            { from: 'COM-01', artifact: 'Should-cost model' },
+            { from: 'COM-02', artifact: 'Price-to-win assessment' },
+            { from: 'COM-03', artifact: 'Partner pricing schedule' },
+            { from: 'COM-05.1.1', artifact: 'Cost assumption sensitivity analysis' },
+            { from: 'COM-05.1.2', artifact: 'Commercial scenario stress test' }
+          ],
+          outputs: [
+            {
+              name: 'Margin model at multiple price points',
+              format: 'Financial model with scenario comparison',
+              quality: [
+                'Margin calculated at floor, midpoint, and ceiling price points from COM-02 envelope',
+                'Margin expressed as absolute value and percentage — total contract and per annum',
+                'Sensitivity impact overlaid — at each price point, what is the margin range under best/base/worst case?',
+                'Corporate minimum margin threshold tested — which price points meet the floor under stress?',
+                'Partner margin and prime margin distinguished — where margin sits in the consortium'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-05.2.2',
+          name: 'Model the P&L profile across the contract term — margin trajectory year by year as innovation reduces costs, indexation adjusts prices, and volumes evolve',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Solution Architect', i: 'Delivery Director' },
+          inputs: [
+            { from: 'COM-05.2.1', artifact: 'Margin model at multiple price points' },
+            { from: 'COM-01.2.1', artifact: 'Contract-term cost model' },
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model' },
+            { from: 'COM-04', artifact: 'Commercial model document' }
+          ],
+          outputs: [
+            {
+              name: 'Contract-term P&L profile',
+              format: 'Year-on-year P&L model',
+              quality: [
+                'Revenue, cost, and margin profiled year by year across full contract term',
+                'Innovation productivity gains reflected — costs reduce, margin may improve if price holds or reduces slower',
+                'Indexation impact modelled — how price and cost indexation interact over time',
+                'Transition year(s) modelled separately — typically lower margin during mobilisation',
+                'Cash flow profile included — when margin is earned, working capital implications'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-05.2.3',
+          name: 'Produce risk-adjusted margin view and validate — the executive decision paper presenting base case, upside, downside, and recommendation',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance', i: 'Senior Responsible Executive' },
+          inputs: [
+            { from: 'COM-05.2.1', artifact: 'Margin model at multiple price points' },
+            { from: 'COM-05.2.2', artifact: 'Contract-term P&L profile' },
+            { from: 'COM-05.1.1', artifact: 'Cost assumption sensitivity analysis' },
+            { from: 'COM-05.1.2', artifact: 'Commercial scenario stress test' },
+            { external: true, artifact: 'Corporate financial policies — minimum margin thresholds, risk appetite, contingency requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Margin model with sensitivities (validated — activity primary output)',
+              format: 'Executive financial decision paper',
+              quality: [
+                'Base case margin presented at recommended price point — absolute and percentage',
+                'Upside opportunity quantified — what margin looks like if things go better than assumed',
+                'Downside risk quantified — what margin looks like if things go worse, and at what point it becomes unacceptable',
+                'Top sensitivity drivers clearly communicated — the 5 variables executives should focus on',
+                'Risk-adjusted margin view presented — expected margin accounting for probability-weighted scenarios',
+                'Recommendation stated — proposed margin and price position with rationale',
+                'Corporate margin threshold tested — does the recommendation meet the organisation\'s financial requirements?',
+                'Paper is executive-ready — clear, visual, defensible, supports the pricing governance decision'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Margin model with sensitivities',
+      format: 'Executive financial decision paper',
+      quality: [
+        'Margin modelled at multiple price points across the price-to-win envelope',
+        'Contract-term P&L profiled year by year — revenue, cost, margin trajectory',
+        'Key cost assumptions sensitivity-tested — upside opportunities and downside risks ranked',
+        'Commercial scenarios stress-tested — service credits, gain share, volume, indexation',
+        'Risk-adjusted margin view produced — probability-weighted expected outcome',
+        'Executive recommendation stated — proposed margin and price with rationale',
+        'Paper is executive-ready for pricing governance decision'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-06', consumes: 'Margin model with sensitivities', usage: 'Pricing finalisation uses the validated margin and sensitivity analysis to set the final price' },
+    { activity: 'GOV-03', consumes: 'Margin model with sensitivities', usage: 'Pricing governance review examines margin, sensitivities, and risk-adjusted view' },
+    { activity: 'COM-07', consumes: 'Margin model with sensitivities', usage: 'Commercial risk register incorporates financial risks from sensitivity analysis' }
+  ]
+}
+```
+
+---
+
+---
+
+## COM-06 — Pricing Model Finalisation
+
+```javascript
+{
+  id: 'COM-06',
+  name: 'Pricing model finalisation',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Pricing model (locked & assured)',
+  dependencies: ['COM-01', 'COM-02', 'COM-03', 'COM-04', 'COM-05', 'DEL-01'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires commercial lead to bring everything together
+  // Note: this is the lock activity for the commercial workstream — same pattern as
+  // SOL-11 for solution. Everything converges here: cost model, price-to-win, partner
+  // pricing, commercial model, margin analysis, risk contingency.
+  //
+  // The output is the final price that goes into the bid — the actual numbers the
+  // client sees. Not a strategy paper but the submitted pricing schedules.
+  //
+  // Distinct from GOV-03 (Pricing & Risk Review) which is the governance gate that
+  // approves the price. COM-06 assembles and locks; GOV-03 assures and approves.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'COM-01', artifact: 'Should-cost model', note: 'The validated cost base' },
+    { from: 'COM-02', artifact: 'Price-to-win assessment', note: 'The validated price envelope and recommended position' },
+    { from: 'COM-03', artifact: 'Partner pricing schedule', note: 'Confirmed partner costs' },
+    { from: 'COM-04', artifact: 'Commercial model document', note: 'Payment mechanism, pricing structure, service credits, innovation provisions' },
+    { from: 'COM-05', artifact: 'Margin model with sensitivities', note: 'Executive decision paper — margin, sensitivities, recommended price position' },
+    { from: 'COM-07', artifact: 'Commercial risk register', note: 'Risk-priced contingency to include in the price' },
+    { from: 'DEL-01', artifact: 'Implementation plan', note: 'Implementation and delivery costs that feed pricing' },
+    { external: true, artifact: 'ITT documentation — pricing schedule templates, submission format, required pricing breakdowns' },
+    { external: true, artifact: 'Executive pricing guidance — approved margin and price position from COM-05 review' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-06.1',
+      name: 'Pricing Assembly',
+      description: 'Set the final price position and populate the pricing schedules in the format the client requires',
+
+      tasks: [
+        {
+          id: 'COM-06.1.1',
+          name: 'Set the final price position — land within the validated envelope based on margin analysis, sensitivity results, and executive guidance',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance', i: 'Senior Responsible Executive' },
+          inputs: [
+            { from: 'COM-02', artifact: 'Price-to-win assessment' },
+            { from: 'COM-05', artifact: 'Margin model with sensitivities' },
+            { external: true, artifact: 'Executive pricing guidance — approved margin and price position' }
+          ],
+          outputs: [
+            {
+              name: 'Final price position',
+              format: 'Confirmed price with rationale',
+              quality: [
+                'Price position set within the validated COM-02 envelope — not outside the tested range',
+                'Margin at this price point confirmed as acceptable — tested under COM-05 sensitivities',
+                'Executive guidance incorporated — any conditions or constraints from the margin review reflected',
+                'Price position rationale documented — why this point in the envelope, not just a number'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-06.1.2',
+          name: 'Populate pricing schedules in the ITT-required format — translate the commercial model into the client\'s pricing tables, rate cards, and financial submissions',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Bid Manager', i: 'Solution Architect' },
+          inputs: [
+            { from: 'COM-06.1.1', artifact: 'Final price position' },
+            { from: 'COM-01', artifact: 'Should-cost model' },
+            { from: 'COM-03', artifact: 'Partner pricing schedule' },
+            { from: 'COM-04', artifact: 'Commercial model document' },
+            { from: 'COM-07', artifact: 'Commercial risk register', note: 'Risk contingency allocation' },
+            { external: true, artifact: 'ITT documentation — pricing schedule templates, submission format' }
+          ],
+          outputs: [
+            {
+              name: 'Completed pricing schedules',
+              format: 'Client-required pricing submission format',
+              quality: [
+                'All pricing schedules populated in the ITT-required format — no gaps or blank cells',
+                'Cost model mapped correctly to pricing schedule structure — every cost element has a home',
+                'Partner costs correctly allocated within the pricing schedules',
+                'Risk contingency allocated appropriately — visible or embedded per commercial strategy',
+                'Year-on-year pricing profile reflects innovation productivity trajectory and indexation',
+                'Pricing schedules are arithmetically correct — totals reconcile, cross-references check'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'COM-06.2',
+      name: 'Pricing Validation & Lock',
+      description: 'Final reconciliation and lock — confirm everything adds up, sign off, and baseline for governance and submission',
+
+      tasks: [
+        {
+          id: 'COM-06.2.1',
+          name: 'Conduct final pricing reconciliation — confirm cost model, commercial model, partner pricing, risk contingency, and submitted price all reconcile',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance', i: 'Bid Manager' },
+          inputs: [
+            { from: 'COM-06.1.2', artifact: 'Completed pricing schedules' },
+            { from: 'COM-01', artifact: 'Should-cost model' },
+            { from: 'COM-04', artifact: 'Commercial model document' }
+          ],
+          outputs: [
+            {
+              name: 'Pricing reconciliation record',
+              format: 'Structured reconciliation checklist',
+              quality: [
+                'Bottom-up cost model reconciles to pricing schedules — no unexplained differences',
+                'Partner pricing in schedules matches confirmed partner pricing from COM-03',
+                'Commercial model provisions (indexation, service credits, gain share) correctly reflected in pricing',
+                'Risk contingency correctly allocated — amount and location in the pricing confirmed',
+                'Margin at submitted price confirmed against COM-05 approved position',
+                'Arithmetic verified — totals, cross-references, formulas all correct'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-06.2.2',
+          name: 'Lock pricing model — formal sign-off, baseline for GOV-03 (Pricing & Risk Review) and PRD-04 (pricing response documents)',
+          raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Commercial Lead / Finance', i: 'Bid Team (collective)' },
+          inputs: [
+            { from: 'COM-06.1.2', artifact: 'Completed pricing schedules' },
+            { from: 'COM-06.2.1', artifact: 'Pricing reconciliation record' }
+          ],
+          outputs: [
+            {
+              name: 'Pricing model (locked & assured — activity primary output)',
+              format: 'Baselined pricing document with formal sign-off',
+              quality: [
+                'Pricing model formally baselined — this is the authoritative price for the bid',
+                'Bid Director sign-off recorded — accountability for the price accepted',
+                'Pricing schedules locked — changes after lock require formal change review',
+                'Reconciliation confirmed — cost model, commercial model, and submitted price all consistent',
+                'Ready for GOV-03 (Pricing & Risk Review) governance gate',
+                'Ready for PRD-04 (pricing response documents) to package for submission'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Pricing model (locked & assured)',
+      format: 'Baselined pricing document with completed schedules',
+      quality: [
+        'Final price position set within validated envelope with rationale',
+        'Pricing schedules populated in ITT-required format — complete, correct, reconciled',
+        'Cost model, partner pricing, commercial provisions, and risk contingency all reflected',
+        'Year-on-year pricing profile reflects innovation and indexation trajectory',
+        'Formally reconciled and locked with Bid Director sign-off'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'GOV-03', consumes: 'Pricing model (locked & assured)', usage: 'Pricing & Risk Review governance gate — formal approval of the submitted price' },
+    { activity: 'PRD-04', consumes: 'Pricing model (locked & assured)', usage: 'Pricing response documents packaged from locked pricing schedules' },
+    { activity: 'DEL-06', consumes: 'Pricing model (locked & assured)', usage: 'Risk mitigation register updated with residual commercial risk at locked price' }
+  ]
+}
+```
+
+---
+
+---
+
+## COM-07 — Commercial Risk Identification & Analysis
+
+```javascript
+{
+  id: 'COM-07',
+  name: 'Commercial risk identification & analysis',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Commercial risk register',
+  dependencies: ['COM-01', 'COM-04', 'LEG-02'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires commercial risk expertise
+  // Note: same pattern as SOL-12 — consolidates risks from the commercial workstream
+  // into a single register. Feeds BM-13 (bid risk register) and governance gates.
+  // Also feeds COM-06 — risk contingency must be priced before pricing locks.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'COM-01', artifact: 'Should-cost model', note: 'Cost assumptions that create risk' },
+    { from: 'COM-01.2.2', artifact: 'Cost assumptions register', note: 'Each assumption is a potential risk' },
+    { from: 'COM-02', artifact: 'Price-to-win assessment', note: 'Pricing position risk — are we too high or too low?' },
+    { from: 'COM-03', artifact: 'Partner pricing schedule', note: 'Partner pricing risks — conditions, caveats, assumption gaps' },
+    { from: 'COM-04', artifact: 'Commercial model document', note: 'Payment mechanism, service credit, gain share risks' },
+    { from: 'COM-05', artifact: 'Margin model with sensitivities', note: 'Financial stress test results — where the risks bite hardest' },
+    { from: 'LEG-02', artifact: 'Risk allocation matrix', note: 'Legal risk allocation that drives commercial risk' },
+    { external: true, artifact: 'Contract documentation — liability caps, indemnities, termination provisions, force majeure' },
+    { external: true, artifact: 'Corporate risk appetite and commercial policies' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-07.1',
+      name: 'Commercial Risk Consolidation',
+      description: 'Harvest all commercial risks from upstream activities and identify additional risks not yet captured',
+
+      tasks: [
+        {
+          id: 'COM-07.1.1',
+          name: 'Harvest commercial risks from all COM activities — cost assumptions, pricing position, partner terms, payment mechanism, service credits, innovation commercial model',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal', i: 'Bid Manager' },
+          inputs: [
+            { from: 'COM-01.2.2', artifact: 'Cost assumptions register' },
+            { from: 'COM-03', artifact: 'Partner pricing schedule' },
+            { from: 'COM-04', artifact: 'Commercial model document' },
+            { from: 'COM-05', artifact: 'Margin model with sensitivities' }
+          ],
+          outputs: [
+            {
+              name: 'Consolidated commercial risk register (draft)',
+              format: 'Structured risk register',
+              quality: [
+                'All risks from COM-01 through COM-05 harvested — cost, pricing, partner, commercial model, margin risks',
+                'Sensitivity analysis top drivers from COM-05 included as risks — the assumptions most likely to move the outcome',
+                'Partner-specific risks captured — conditions, caveats, pricing validity, dependency risks',
+                'Duplicates consolidated and categorised'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-07.1.2',
+          name: 'Identify additional commercial risks not captured upstream — contract terms, foreign exchange, regulatory change, client budget, market shift, competitor pricing behaviour',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal / Finance', i: 'Capture Lead' },
+          inputs: [
+            { from: 'COM-07.1.1', artifact: 'Consolidated commercial risk register (draft)' },
+            { from: 'LEG-02', artifact: 'Risk allocation matrix' },
+            { from: 'COM-02', artifact: 'Price-to-win assessment' },
+            { external: true, artifact: 'Contract documentation — liability caps, indemnities, termination provisions' },
+            { external: true, artifact: 'Corporate risk appetite and commercial policies' }
+          ],
+          outputs: [
+            {
+              name: 'Complete commercial risk register (draft)',
+              format: 'Structured risk register (enriched)',
+              quality: [
+                'Contract-driven risks captured — liability exposure, indemnity obligations, termination costs',
+                'Market and competitive risks captured — what if the market shifts or competitors behave unexpectedly?',
+                'Regulatory and policy risks captured — Procurement Act changes, spending review impacts, policy shifts',
+                'Client budget risks captured — what if the client\'s funding changes mid-contract?',
+                'Foreign exchange risks captured where applicable — partner costs in other currencies'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'COM-07.2',
+      name: 'Risk Assessment & Mitigation',
+      description: 'Assess, prioritise, mitigate, and quantify contingency for all commercial risks',
+
+      tasks: [
+        {
+          id: 'COM-07.2.1',
+          name: 'Assess and prioritise commercial risks — likelihood, impact, financial exposure, and assign risk owner',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal', i: 'Delivery Director' },
+          inputs: [
+            { from: 'COM-07.1.2', artifact: 'Complete commercial risk register (draft)' }
+          ],
+          outputs: [
+            {
+              name: 'Prioritised commercial risk register',
+              format: 'Structured risk register with assessments',
+              quality: [
+                'Every risk assessed for likelihood, impact, and financial exposure (£ value)',
+                'Risk priority derived — critical, significant, moderate, low',
+                'Risk owner assigned for every risk — named role',
+                'Top commercial risks identified — the risks that could materially affect margin or contract viability'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-07.2.2',
+          name: 'Develop mitigation strategies and quantify contingency requirements — what risk premium or contingency should be priced into the bid?',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Legal', i: 'Partner' },
+          inputs: [
+            { from: 'COM-07.2.1', artifact: 'Prioritised commercial risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Mitigated commercial risk register with contingency',
+              format: 'Structured risk register with mitigations and contingency',
+              quality: [
+                'Every high and significant risk has a mitigation strategy — preventive and contingent actions',
+                'Contingency requirement quantified — how much risk premium should be included in the price?',
+                'Contingency allocation recommended — explicit line item vs embedded in margin vs absorbed',
+                'Residual risk after mitigation assessed — what exposure remains?',
+                'Unmitigatable risks flagged for executive acceptance — risks the organisation must knowingly take'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-07.2.3',
+          name: 'Validate commercial risk register — complete, contingency quantified, ready for COM-06 pricing and governance gates',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'COM-07.2.2', artifact: 'Mitigated commercial risk register with contingency' }
+          ],
+          outputs: [
+            {
+              name: 'Commercial risk register (validated — activity primary output)',
+              format: 'Authoritative commercial risk register',
+              quality: [
+                'All commercial dimensions covered — cost, pricing, partner, contractual, market, regulatory',
+                'Top risks understood and accepted by Bid Director',
+                'Contingency quantified and recommended for COM-06 pricing',
+                'Mitigations are credible and resourced',
+                'Register ready for BM-13 consolidation and GOV-03 governance review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Commercial risk register',
+      format: 'Authoritative commercial risk register',
+      quality: [
+        'All commercial risks consolidated from upstream COM activities',
+        'Additional contract, market, regulatory, and client budget risks identified',
+        'Every risk assessed for likelihood, impact, and financial exposure',
+        'Mitigation strategies defined with contingency quantified',
+        'Residual risk position accepted by Bid Director',
+        'Contingency recommendation ready for COM-06 pricing'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-06', consumes: 'Commercial risk register', usage: 'Pricing finalisation includes risk contingency in the submitted price' },
+    { activity: 'BM-13', consumes: 'Commercial risk register', usage: 'Bid risk register consolidates commercial risks with solution, legal, and programme risks' },
+    { activity: 'GOV-03', consumes: 'Commercial risk register', usage: 'Pricing governance review examines commercial risk position' },
+    { activity: 'DEL-06', consumes: 'Commercial risk register', usage: 'Mitigated risk register incorporates commercial risks for delivery planning' }
+  ]
+}
+```
+
+---
+
 *Gold standard established from SAL-03 — Session 11, 2026-04-01*
 *SAL workstream complete — Session 12, 2026-04-01*
 *SOL workstream complete — Session 12, 2026-04-01*
-*COM workstream started — Session 12, 2026-04-01*
+*COM workstream complete — Session 12, 2026-04-01*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*
