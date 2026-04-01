@@ -156,10 +156,9 @@ const WS=[
     {id:'SAL-03',n:'Competitor analysis & positioning',o:'Competitive landscape assessment',d:['SAL-01'],dur:5,ts:1,pt:'S'},
     {id:'SAL-04',n:'Win theme development & refinement',o:'Win theme document',d:['SAL-01','SAL-03'],dur:5,ts:1,pt:'S'},
     {id:'SAL-05',n:'Evaluation criteria mapping & scoring strategy',o:'Evaluation criteria matrix with scoring approach',d:['SAL-04'],dur:3,ts:1,pt:'S'},
-    {id:'SAL-06',n:'Capture plan finalisation & win strategy lock',o:'Capture plan (locked) — METHODOLOGY GATE',d:['SAL-04','SAL-05'],dur:3,ts:1,pt:'S'},
+    {id:'SAL-06',n:'Capture plan finalisation & win strategy lock',o:'Capture plan (locked) — METHODOLOGY GATE',d:['SAL-04','SAL-05','SAL-10'],dur:3,ts:1,pt:'S'},
     {id:'SAL-07',n:'Pre-submission clarification strategy & drafting',o:'Clarification question register (prioritised)',d:['SAL-04','SOL-01'],dur:3,ts:2,pt:'P'},
-    {id:'SAL-08',n:'Clarification submission & response management',o:'Clarification response log with impact assessment',d:['SAL-07'],dur:5,ts:1,pt:'C'},
-    {id:'SAL-09',n:'Clarification impact analysis & workstream updates',o:'Updated requirements/assumptions across workstreams',d:['SAL-08'],dur:3,ts:2,pt:'P'},
+    {id:'SAL-10',n:'Stakeholder relationship mapping & engagement',o:'Stakeholder relationship map & engagement plan',d:['SAL-01'],dur:5,ts:1,pt:'S'},
   ]},
   {id:'SOL',name:'Solution Design',cls:'solution',ph:'DEV',acts:[
     {id:'SOL-01',n:'Requirements analysis & interpretation',o:'Requirements interpretation document',d:['SAL-06'],dur:5,ts:2,pt:'P'},
@@ -216,6 +215,8 @@ const WS=[
     {id:'BM-07',n:'Quality management approach',o:'Quality plan: evaluation weighting analysis, page budgets, scoring strategy',d:['SAL-05','BM-01'],dur:3,ts:1,pt:'C'},
     {id:'BM-08',n:'Stakeholder & communications management',o:'Stakeholder comms plan, decision log',d:['BM-01'],dur:2,ts:1,pt:'C'},
     {id:'BM-09',n:'Competitive dialogue management (if applicable)',o:'Dialogue prep packs, session records, iteration tracker per round',d:['SAL-06','SOL-03'],dur:0,ts:2,pt:'P'},
+    {id:'BM-14',n:'Clarification submission & response management',o:'Clarification response log with impact assessment',d:['SAL-07'],dur:5,ts:1,pt:'C'},
+    {id:'BM-15',n:'Clarification impact analysis & workstream updates',o:'Updated requirements/assumptions across workstreams',d:['BM-14'],dur:3,ts:2,pt:'P'},
     {id:'BM-10',n:'Storyboard development & sign-off',o:'Approved storyboard — METHODOLOGY GATE',d:['SAL-06','SAL-05','SOL-11'],dur:5,ts:2,pt:'P'},
     {id:'BM-11',n:'Hot debrief (post-submission)',o:'Hot debrief notes, immediate lessons log',d:['PRD-09'],dur:1,ts:1,pt:'C'},
     {id:'BM-12',n:'Lessons learned & knowledge capture',o:'Lessons report, content library updates, process improvement actions',d:['BM-11'],dur:3,ts:1,pt:'C'},
@@ -526,7 +527,7 @@ R.deps=()=>`
     {l:'Solution → Price → Governance → Submit (primary)',ch:'SAL-06 → SOL-01 → SOL-03 → SOL-04 → COM-01 → COM-06 → GOV-03 → GOV-05 → PRD-09',r:'The longest chain. ~75 working days. Any delay in solution cascades through pricing and governance.'},
     {l:'Win Strategy → Storyboard → Production',ch:'SAL-06 → BM-10 → PRD-02 → PRD-06 → PRD-07 → PRD-08 → PRD-09',r:'Win strategy lock must precede storyboard, which must precede drafting. Two methodology gates in sequence.'},
     {l:'Partners → Solution → Production',ch:'SUP-01 → SUP-02 → SOL-05 → SOL-11 → PRD-02',r:'Partner delays in solution inputs block technology design, solution lock, and drafting.'},
-    {l:'Clarification cascade',ch:'SAL-07 → SAL-08 → SAL-09 → (impacts SOL/COM/LEG/DEL)',r:'Clarification responses can reshape requirements, invalidate assumptions, and force rework across workstreams.'},
+    {l:'Clarification cascade',ch:'SAL-07 → BM-14 → BM-15 → (impacts SOL/COM/LEG/DEL)',r:'Clarification responses can reshape requirements, invalidate assumptions, and force rework across workstreams.'},
     {l:'Risk premium chain',ch:'SOL-04 → DEL-01 → DEL-06 → COM-06 → GOV-03',r:'Unmitigated risks or unvalidated assumptions force contingency loading at governance.'},
     {l:'Post-submission to award',ch:'PRD-09 → POST-01 → POST-02 → POST-03 / POST-04 → POST-05 → POST-06 → POST-07 → POST-08',r:'Post-submission activities have client-imposed deadlines. BAFO requires fresh governance approval.'},
   ].map((cp,i)=>`
@@ -839,14 +840,14 @@ R.ux=()=>`
         <div class="ux-box"><div class="ux-box-label">V1 Scope</div><div class="ux-box-content">Formal compliance matrix print/export deferred to V2. In V1, the compliance matrix for gate reviews is produced externally (AI + Excel) and presented as a separate document.</div></div>
       </div>
 
-      <div class="sh2">Win Themes Panel</div>
+      <div class="sh2">Win Themes Panel <span style="color:var(--amb);font-size:12px;">[SESSION 12: Moving to new Evaluation &amp; Win Strategy module]</span></div>
       <div class="ux-frame">
         <div class="ux-box"><div class="ux-box-label">Win Themes Register</div><div class="ux-box-content">Collapsible panel at the top of the Submissions view. Lists all WinTheme entities for this bid. Each theme: reference (WT-01), statement, rationale, status (draft/confirmed/revised), source activity (SAL-04/05/06). Inline editing. Add theme button. Themes developed during capture by sales lead; refined at ITT receipt.
         <br/><br/><strong>Integration Heatmap:</strong> Matrix showing theme × response item coverage. Rows = win themes, columns = response items (grouped by section). Cells show: green (integrated), amber (partial), red (not integrated), grey (not applicable — this theme not linked to this response). Summary row: "WT-01 integrated in 12/18 responses (67%)" — identifies themes that are under-represented across the bid. Summary column: "Q3.2.1 has 4/5 themes integrated — WT-03 missing."
         <br/><br/>Win theme statements provide direct framing context for future AI-assisted drafting — the AI uses these to shape how each response is written.</div></div>
       </div>
 
-      <div class="sh2">Client Scoring Scheme (Optional)</div>
+      <div class="sh2">Client Scoring Scheme (Optional) <span style="color:var(--amb);font-size:12px;">[SESSION 12: Moving to new Evaluation &amp; Win Strategy module]</span></div>
       <div class="ux-frame">
         <div class="ux-box"><div class="ux-box-label">Scoring Scheme Configuration</div><div class="ux-box-content">Optional — not all procurements have a client-disclosed marking scheme. Low-value or commodity purchases rarely do. When present: capture during setup or when ITT evaluation criteria become available.
         <br/><br/><strong>Scheme Definition:</strong> Max score (e.g. 10). Grade bands with labels, score ranges, and descriptors. For example:
@@ -860,7 +861,7 @@ R.ux=()=>`
       </div>
 
       <div class="sh2">Clarification Impact</div>
-      <div class="bt">When SAL-09 (clarification impact analysis) flags affected items, both compliance requirements and response items can be marked with a clarification impact indicator. The bid manager reviews each flagged item and updates the compliance status, response content, or mapping as needed. System highlights flagged-but-unreviewed items as an action. Count of unreviewed clarification impacts shown on workspace.</div>
+      <div class="bt">When BM-15 (clarification impact analysis) flags affected items, both compliance requirements and response items can be marked with a clarification impact indicator. The bid manager reviews each flagged item and updates the compliance status, response content, or mapping as needed. System highlights flagged-but-unreviewed items as an action. Count of unreviewed clarification impacts shown on workspace.</div>
     `},
     {id:'ux-review',t:'M6: Reviews',bg:'bg-a',content:`
       <div class="co co-g"><div class="co-l">Design Principle</div><div class="co-t">This module manages <strong>formal peer and external SME review of written responses</strong> at the pink, red, and gold stages. It is distinct from self-assessment quality tracking in Submissions (which the bid manager maintains as responses are authored) and from organisational assurance in Governance (which covers solution, commercial, and executive decision-making). Reviews are triggered when response items reach pink_ready, red_ready, or gold_ready status. Review closure advances the production status of reviewed items (e.g. pink_ready → pink_reviewed). The same quality dimensions used in self-assessment reappear here — but now scored by independent reviewers.</div></div>
@@ -1120,6 +1121,33 @@ R.build=()=>`
   <br/>— Parallelisation rules for production stages: which stages can overlap across different ResponseItems and which require sequential completion? (e.g. can pink review for Q1 overlap with first draft for Q3?)
   <br/>— How do ResponseItem dependencies map to the existing activity dependency model? Are they the same graph or a separate layer?
   <br/>— Buffer policy: what is the minimum buffer between gold review completion and submission deadline?
+  </div></div>
+
+  <div class="co co-b"><div class="co-l">Session 12 — 2026-04-01</div><div class="co-t"><strong>What was decided:</strong>
+  <br/><br/><strong>Methodology mapping — SAL workstream gold standard</strong>
+  <br/>1. SAL-01 mapped to gold standard: 2 L2s (Opportunity Intelligence Gathering, Buyer Values &amp; Client Problem Analysis), 7 L3 tasks. Buyer values are strategic client priorities — explicitly separated from evaluation criteria (SAL-05). Client supplier landscape mapping added (strategic partners, past procurement patterns).
+  <br/>2. SAL-02 mapped: 3 L2s (Incumbent Service Delivery &amp; Performance, Incumbent Stickiness &amp; Competitive Risk, Transformational Disruption &amp; Innovation Opportunity), 10 L3 tasks. New L2.3 assesses: can we leapfrog the incumbent through transformational innovation (AI, automation, new delivery models) AND will the evaluation framework reward it? Tandem test: disruption potential + evaluation alignment. Includes capability gap assessment and commercial disruption modelling.
+  <br/>3. SAL-03 already gold standard reference (Session 11).
+  <br/>4. SAL-04 mapped: 2 L2s (Win Theme Identification &amp; Development, Win Theme Refinement &amp; Messaging), 7 L3 tasks. L2.2 is "Refinement &amp; Messaging" — clear messaging per theme that informs solution design, commercial proposition, and storyboard drafting. Not "value proposition." Elevator pitch dropped (storyboard artefact, BM-10).
+  <br/>5. SAL-05 mapped: 2 L2s (Evaluation Framework Analysis, Scoring Optimisation Strategy), 8 L3 tasks. Score gap analysis added: can we score 100% per section? If not, root cause (missing credentials, capability gap), mitigation (partnering, alternative evidence), residual risk and points cost.
+  <br/>6. SAL-10 added: Stakeholder relationship mapping &amp; engagement (new activity). 2 L2s, 6 L3 tasks. Depends on SAL-01, feeds SAL-06. Covers DMU mapping, influence/disposition assessment, engagement planning, outcome logging.
+  <br/><br/><strong>Structural changes</strong>
+  <br/>7. SAL-08 → BM-14 (Clarification submission &amp; response management). SAL-09 → BM-15 (Clarification impact analysis &amp; workstream updates). SAL-07 (clarification strategy) stays in SAL — it's a capture activity. BM-14/15 are operational bid management. Dependency chain: SAL-07 → BM-14 → BM-15.
+  <br/>8. SAL-06 dependency list updated: now SAL-04, SAL-05, SAL-10.
+  <br/>9. Activity count: 80 (net +1 from SAL-10; SAL-08/09 move is count-neutral).
+  <br/><br/><strong>New module: Evaluation &amp; Win Strategy</strong>
+  <br/>10. New product module decided (M-number TBD — to be assigned during build planning). Consolidates three views currently scattered across or missing from M5 Submissions:
+  <br/>— <strong>Evaluation criteria approach:</strong> Evaluation methodology breakdown, criteria-to-section mapping, marks concentration analysis, score gap analysis with mitigation status, per-section scoring strategy. Currently has no dedicated view.
+  <br/>— <strong>Client scoring view:</strong> Grade bands, hurdle marks, scoring guidance per section. Currently lives as optional section in M5.
+  <br/>— <strong>Win themes view:</strong> Win themes register, integration heatmap, theme messaging. Currently lives as collapsible panel in M5.
+  <br/>— <strong>Scoring insight layer:</strong> Marks concentration and effort prioritisation, win theme integration map (themes × sections), per-section target grades and scoring strategy.
+  <br/>These are the strategic positioning and scoring inputs that drive solution design, storyboard, commercial approach, and production priorities. They do not belong in Submissions (which is production execution). M5 retains: production pipeline, response items, compliance tracking, clarification impact.
+  <br/><br/><strong>Deferred items</strong>
+  <br/>11. New SOL activity needed: current service/operating model detailed analysis — organisation, processes, key capabilities. Solution design input, distinct from SAL-02 competitive intelligence. To be picked up during SOL workstream mapping.
+  <br/><br/><strong>What happens next:</strong>
+  <br/>— Continue methodology mapping: SAL-06, SAL-07, then SOL workstream
+  <br/>— Full module definition for Evaluation &amp; Win Strategy module during build planning
+  <br/>— Renumber modules and update M5 to remove extracted views
   </div></div>
 `;
 

@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN — Methodology Mapping Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;
+  --bdr:#253551;--bdr-s:#1A2844;
+  --gold:#C49438;--gold-d:rgba(196,148,56,.12);--gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;
+  --grn:#34D399;--grn-d:rgba(52,211,153,.10);
+  --red:#F87171;--red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24;--amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA;--blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA;--pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);
+  --pink:#F472B6;--pink-d:rgba(244,114,182,.10);
+  --lime:#A3E635;--lime-d:rgba(163,230,53,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.hdr{padding:16px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);}
+.hdr-l{display:flex;align-items:baseline;gap:12px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.hdr-v{font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);background:var(--bg2);padding:3px 8px;border:1px solid var(--bdr);}
+.ct{padding:22px 28px;max-width:1440px;margin:0 auto;}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:820px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:17px;font-weight:700;color:var(--t1);margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--bdr);}
+.sh2{font-size:14px;font-weight:600;color:var(--t1);margin:18px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+
+/* Workstream header */
+.ws-hdr{padding:14px 18px;margin:24px 0 12px;border:1px solid var(--bdr);border-left:4px solid;background:var(--bg1);}
+.ws-hdr.ws-sal{border-left-color:var(--gold);}
+.ws-hdr.ws-sol{border-left-color:var(--blu);}
+.ws-hdr.ws-com{border-left-color:var(--grn);}
+.ws-hdr.ws-leg{border-left-color:var(--pink);}
+.ws-hdr.ws-del{border-left-color:var(--amb);}
+.ws-hdr.ws-sup{border-left-color:var(--cyn);}
+.ws-hdr.ws-bm{border-left-color:var(--lime);}
+.ws-hdr.ws-gov{border-left-color:var(--pur);}
+.ws-hdr.ws-prd{border-left-color:var(--red);}
+.ws-hdr.ws-post{border-left-color:var(--pink);}
+.ws-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.ws-hdr.ws-sal .ws-code{color:var(--gold);}
+.ws-hdr.ws-sol .ws-code{color:var(--blu);}
+.ws-hdr.ws-com .ws-code{color:var(--grn);}
+.ws-hdr.ws-leg .ws-code{color:var(--pink);}
+.ws-hdr.ws-del .ws-code{color:var(--amb);}
+.ws-hdr.ws-sup .ws-code{color:var(--cyn);}
+.ws-hdr.ws-bm .ws-code{color:var(--lime);}
+.ws-hdr.ws-gov .ws-code{color:var(--pur);}
+.ws-hdr.ws-prd .ws-code{color:var(--red);}
+.ws-hdr.ws-post .ws-code{color:var(--pink);}
+.ws-name{font-size:16px;font-weight:700;color:var(--t1);}
+.ws-desc{font-size:11.5px;color:var(--t2);margin-top:3px;}
+
+/* Activity card */
+.act{background:var(--bg2);border:1px solid var(--bdr);margin:8px 0;overflow:hidden;}
+.act-hdr{padding:10px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bdr-s);}
+.act-code{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--gold);min-width:58px;}
+.act-name{font-size:13px;font-weight:600;color:var(--t1);flex:1;}
+.act-output{font-size:11px;color:var(--t2);font-style:italic;}
+.act-src{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border:1px solid;border-radius:2px;}
+.src-mapped{color:var(--grn);border-color:var(--grn);}
+.src-partial{color:var(--amb);border-color:var(--amb);}
+.src-product{color:var(--blu);border-color:var(--blu);}
+.src-new{color:var(--pur);border-color:var(--pur);}
+.act-body{padding:10px 14px;}
+
+/* L2 sub-process */
+.l2{margin:8px 0;border-left:2px solid var(--bdr);padding-left:14px;}
+.l2-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--t3);margin-bottom:4px;}
+.l2-src{font-family:'DM Mono',monospace;font-size:8px;color:var(--t4);margin-left:8px;}
+
+/* L3 task table */
+.l3-tbl{width:100%;border-collapse:collapse;margin:4px 0 10px;}
+.l3-tbl th{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:4px 6px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.l3-tbl td{padding:5px 6px;font-size:11px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.l3-tbl td:first-child{color:var(--t1);}
+.l3-tbl .raci{font-family:'DM Mono',monospace;font-size:9px;}
+.raci-r{color:var(--grn);}.raci-a{color:var(--blu);}.raci-c{color:var(--amb);}.raci-i{color:var(--t4);}
+
+/* Gap cards */
+.gap{background:var(--bg2);border:1px solid var(--bdr);padding:12px 14px;margin:8px 0;border-left:3px solid;}
+.gap.gap-missing{border-left-color:var(--red);}
+.gap.gap-extra{border-left-color:var(--blu);}
+.gap.gap-partial{border-left-color:var(--amb);}
+.gap-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;}
+.gap.gap-missing .gap-label{color:var(--red);}
+.gap.gap-extra .gap-label{color:var(--blu);}
+.gap.gap-partial .gap-label{color:var(--amb);}
+.gap-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.gap-desc{font-size:11.5px;color:var(--t2);line-height:1.6;}
+.gap-action{font-size:11px;color:var(--gold);margin-top:4px;font-style:italic;}
+
+/* Gate comparison table */
+.gate-tbl{width:100%;border-collapse:collapse;margin:10px 0;}
+.gate-tbl th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.gate-tbl td{padding:6px 8px;font-size:11.5px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.gate-tbl td:first-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);white-space:nowrap;}
+.match-y{color:var(--grn);}
+.match-p{color:var(--amb);}
+.match-n{color:var(--red);}
+
+/* Review status */
+.review-status{display:inline-block;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--t4);color:var(--t3);border-radius:2px;margin-left:8px;}
+
+/* Stats bar */
+.stats{display:flex;gap:16px;margin:12px 0 20px;flex-wrap:wrap;}
+.stat{background:var(--bg2);border:1px solid var(--bdr);padding:10px 16px;min-width:140px;}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold);}
+.stat-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+
+/* Notes */
+.note{background:rgba(196,148,56,.06);border:1px solid rgba(196,148,56,.25);border-radius:6px;padding:10px 14px;margin:8px 0;font-size:11.5px;color:var(--t2);line-height:1.6;}
+.note-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+
+@media print{body{background:#fff;color:#222;}.ws-hdr,.act,.gap,.stat{border-color:#ccc;background:#f8f8f8;}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-brand">PWIN Architect</div>
+    <div class="hdr-sub">Methodology Mapping Review</div>
+  </div>
+  <div class="hdr-v">Working Document — 2026-03-30</div>
+</div>
+
+<div class="ct">
+
+  <div class="sl">Deliverable 1 of 2</div>
+  <div class="st">L1 → L2 → L3 Methodology Mapping</div>
+  <div class="sd">Product workstream activities (L2) mapped to playbook L3 tasks with RACI, inputs, and outputs. Each activity shows its mapping status and source playbook references. For line-by-line review before populating the product data model.</div>
+
+  <div class="note">
+    <div class="note-title">How to read this document</div>
+    <strong>MAPPED</strong> = Playbook L3 tasks directly align to this product activity.<br>
+    <strong>PARTIAL</strong> = Playbook covers some of this activity but not all; product has additional scope or different framing.<br>
+    <strong>PRODUCT ONLY</strong> = No direct playbook equivalent; activity was added based on domain expertise and product requirements.<br>
+    <strong>NEW</strong> = Proposed new activity based on playbook gaps.<br>
+    Review each L3 task row: is it accurate? Is it complete? Are there missing tasks? Is the RACI correct?
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n">79</div><div class="stat-l">Current Product Activities</div></div>
+    <div class="stat"><div class="stat-n">70</div><div class="stat-l">Playbook L3 Tasks</div></div>
+    <div class="stat"><div class="stat-n">19</div><div class="stat-l">Playbook Gates</div></div>
+    <div class="stat"><div class="stat-n">10</div><div class="stat-l">Product Gates</div></div>
+    <div class="stat"><div class="stat-n">13</div><div class="stat-l">Roles Defined</div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SAL — Sales & Capture -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-sal">
+    <div class="ws-code">SAL — Sales &amp; Capture</div>
+    <div class="ws-name">Sales &amp; Capture</div>
+    <div class="ws-desc">7 activities (after moving SAL-08/09 to BM). Maps primarily to Capture Phase (C1–C5) in playbook.</div>
+  </div>
+
+  <!-- SAL-01 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-01</div>
+      <div class="act-name">Customer engagement &amp; intelligence gathering</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Customer intelligence briefing</div>
+      <div class="l2">
+        <div class="l2-name">L2: Intelligence Gathering &amp; Market Scanning <span class="l2-src">← Playbook C1</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Monitor OJEU/Find-a-Tender for relevant procurement notices</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Market Intel Team</td><td class="raci raci-i">Bid Board</td><td>Market scan tools, sector intel reports, client relationship data</td><td>Long-list of target opportunities, opportunity log entry</td><td>Low</td><td>Sequential</td></tr>
+          <tr><td>Conduct stakeholder listening exercises with client contacts</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Account Manager</td><td class="raci raci-i">Commercial Lead</td><td>Existing relationship map, client org chart</td><td>Intelligence notes, relationship map update</td><td>Low</td><td>Parallel</td></tr>
+          <tr><td>Review customer strategic plans, spending reviews &amp; published strategies</td><td class="raci raci-r">Market Intel Analyst</td><td class="raci raci-a">Capture Lead</td><td class="raci raci-c">SME</td><td class="raci raci-i">Bid Director</td><td>Published government/client strategy documents</td><td>Customer insight summary, hot spots register</td><td>Low</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="l2">
+        <div class="l2-name">L2: Customer Needs Analysis <span class="l2-src">← Playbook C1</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Identify and map key stakeholders within the buying authority (DMU)</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Account Manager</td><td class="raci raci-i">Bid Manager</td><td>Org chart, previous bid history, relationship CRM data</td><td>Stakeholder/power map, DMU register</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Conduct structured interviews with key decision makers</td><td class="raci raci-r">Account Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Capture Lead</td><td class="raci raci-i">Commercial Lead</td><td>Stakeholder map, approved engagement plan</td><td>Interview notes, buyer values assessment</td><td>Medium</td><td>Iterative</td></tr>
+          <tr><td>Document and validate buyer values and evaluation criteria</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Architect</td><td class="raci raci-i">Commercial Lead</td><td>Interview outputs, ITN/OJEU notice</td><td>Buyer values register, weightings matrix</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Gate reference: Playbook has "Opportunity Screening Go/No-Go Gate" at C1 and "Buyer Values Sign-off Gate" at end of Customer Needs Analysis. Product doesn't have a buyer values gate — should it?</div>
+    </div>
+  </div>
+
+  <!-- SAL-02 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-02</div>
+      <div class="act-name">Incumbent performance review (rebid)</div>
+      <div class="act-src src-product">PRODUCT ONLY</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Incumbent performance assessment</div>
+      <div class="l2">
+        <div class="l2-name">L2: Incumbent Performance Analysis <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ No L3 tasks defined — needs authoring. Suggested tasks:</td><td colspan="7"></td></tr>
+          <tr><td>Review incumbent's published performance data and KPIs</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Account Manager</td><td class="raci raci-i">Commercial Lead</td><td>Contract performance reports, FOI responses, client publications</td><td>Incumbent performance summary</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Identify incumbent weaknesses and service gaps</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">SME / Delivery Director</td><td class="raci raci-i">Solution Architect</td><td>Performance summary, client intelligence</td><td>Incumbent weakness register, ghost themes</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Assess re-bid risk factors (TUPE, asset transfer, client loyalty)</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Commercial / Legal</td><td class="raci raci-i">Bid Manager</td><td>Contract terms, workforce data, client relationship assessment</td><td>Re-bid risk assessment</td><td>Medium</td><td>Parallel</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>This activity exists in the product but not the playbook. It applies to all opportunities (understanding the incumbent) but has additional depth for rebids. Per point 4 discussion: the "(rebid)" qualifier should be toggled on/off at bid setup based on incumbency. L3 tasks above are suggested — please review.</div>
+    </div>
+  </div>
+
+  <!-- SAL-03 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-03</div>
+      <div class="act-name">Competitor analysis &amp; positioning</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Competitive landscape assessment</div>
+      <div class="l2">
+        <div class="l2-name">L2: Competitive Analysis <span class="l2-src">← Playbook C4</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Map competitive landscape into Incumbents / Contenders / Dark Horse / Opportunists</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Market Intelligence</td><td class="raci raci-i">Partner</td><td>Market intel, procurement history</td><td>Competitive landscape map</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Develop counter-strategies for each credible competitor</td><td class="raci raci-r">Bid / Pursuit Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Architect</td><td class="raci raci-i">Commercial Lead</td><td>Competitive map, win themes</td><td>Counter-strategy register</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook has "Win Strategy Gate (Bid Board)" after counter-strategies. This maps to part of SAL-06 (win strategy lock) in the product.</div>
+    </div>
+  </div>
+
+  <!-- SAL-04 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-04</div>
+      <div class="act-name">Win theme development &amp; refinement</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Win theme document</div>
+      <div class="l2">
+        <div class="l2-name">L2: Win Probability &amp; Theme Development <span class="l2-src">← Playbook C2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Identify win themes and preliminary differentiators vs likely competitors</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Architect</td><td class="raci raci-i">Commercial Lead</td><td>Competitive landscape map, buyer values</td><td>Draft win themes register (3–5 themes)</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="l2">
+        <div class="l2-name">L2: Value Proposition Design <span class="l2-src">← Playbook C4</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Develop customer-centric value proposition aligned to buyer values</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Architect / Commercial Lead</td><td class="raci raci-i">Account Manager</td><td>Buyer values register, solution concept</td><td>Value proposition statement, benefits realisation map</td><td>High</td><td>Iterative</td></tr>
+          <tr><td>Develop elevator pitch (outside-in) and value statement (inside-out)</td><td class="raci raci-r">Bid / Pursuit Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Commercial Lead</td><td class="raci raci-i">Bid Manager</td><td>Value proposition, win themes</td><td>Elevator pitch draft, value statement draft</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAL-05 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-05</div>
+      <div class="act-name">Evaluation criteria mapping &amp; scoring strategy</div>
+      <div class="act-src src-partial">PARTIAL</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Evaluation criteria matrix with scoring approach</div>
+      <div class="l2">
+        <div class="l2-name">L2: Evaluation Criteria Mapping <span class="l2-src">← Derived from Playbook C1 (buyer values) + product extension</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Document and validate buyer values and evaluation criteria</td><td class="raci raci-r">Capture Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Architect</td><td class="raci raci-i">Commercial Lead</td><td>Interview outputs, ITN/OJEU notice</td><td>Buyer values register, weightings matrix</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td style="color:var(--amb);">⚠ Additional tasks needed — product activity is broader than playbook:</td><td colspan="7"></td></tr>
+          <tr><td>Map ITT evaluation criteria to response sections and scoring model</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Capture Lead</td><td class="raci raci-i">Solution Architect</td><td>ITT evaluation model, buyer values register</td><td>Evaluation criteria matrix</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Develop scoring optimisation strategy per evaluation section</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Capture Lead / Commercial</td><td class="raci raci-i">Writers</td><td>Evaluation criteria matrix, competitive positioning</td><td>Scoring strategy document</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook covers buyer values validation (C1) but not the deeper scoring strategy work. Last two tasks are suggested additions to fill the gap. Review whether this level of detail is right.</div>
+    </div>
+  </div>
+
+  <!-- SAL-06 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-06</div>
+      <div class="act-name">Capture plan finalisation &amp; win strategy lock</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Capture plan (locked) — METHODOLOGY GATE</div>
+      <div class="l2">
+        <div class="l2-name">L2: Opportunity Qualification <span class="l2-src">← Playbook C2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Complete Deal Qualification Checklist (DQC) covering attractiveness, deliverability, risk &amp; win likelihood</td><td class="raci raci-r">Bid Director</td><td class="raci raci-a">Senior Responsible Exec</td><td class="raci raci-c">Commercial Lead / SME</td><td class="raci raci-i">Bid Board</td><td>Opportunity brief, buyer values, market intel, resource forecast</td><td>DQC completed artefact, pursue/no pursue recommendation</td><td>High</td><td>Sequential</td></tr>
+          <tr><td>Assess strategic fit against sector portfolio and growth plan</td><td class="raci raci-r">Bid Director</td><td class="raci raci-a">Partner</td><td class="raci raci-c">Capture Lead</td><td class="raci raci-i">Account Manager</td><td>Strategic plan, sector pipeline data</td><td>Strategic fit assessment, risk-adjusted pipeline entry</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="l2">
+        <div class="l2-name">L2: PWIN Assessment <span class="l2-src">← Playbook C2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Score opportunity against competitive position, relationships and solution readiness</td><td class="raci raci-r">Bid Director</td><td class="raci raci-a">Partner</td><td class="raci raci-c">Capture Lead / Commercial Lead</td><td class="raci raci-i">Bid Manager</td><td>DQC output, competitive intelligence, stakeholder map</td><td>PWIN score (%), PWIN rationale note</td><td>Medium</td><td>Iterative</td></tr>
+        </table>
+      </div>
+      <div class="l2">
+        <div class="l2-name">L2: Bid Mandate Preparation <span class="l2-src">← Playbook C5</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Prepare formal Bid Mandate for Bid Board approval (budget, resource, win themes, risk)</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Commercial Lead / Legal</td><td class="raci raci-i">Partner</td><td>DQC, PWIN score, resource plan, solution concept</td><td>Bid Mandate document</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook gate: "BID BOARD FORMAL MANDATE APPROVAL" at C5. This maps to product gate G1 (Pursuit Approval). SAL-06 is also a METHODOLOGY GATE in the product.</div>
+    </div>
+  </div>
+
+  <!-- SAL-07 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SAL-07</div>
+      <div class="act-name">Pre-submission clarification strategy &amp; drafting</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Clarification question register (prioritised)</div>
+      <div class="l2">
+        <div class="l2-name">L2: Clarification Question Strategy <span class="l2-src">← Playbook B2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Develop list of strategic clarification questions to shape the solution and reduce ambiguity</td><td class="raci raci-r">Technical Owner / Commercial</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">SME Panel</td><td class="raci raci-i">Bid Manager</td><td>ITT/ITN, RTM, risk register</td><td>Clarification Q list, prioritised by impact</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SOL — Solution Design -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-sol">
+    <div class="ws-code">SOL — Solution Design</div>
+    <div class="ws-name">Solution Design</div>
+    <div class="ws-desc">11 activities + 1 proposed new (risk). Maps to Capture C3 (early shaping) and Proposal P3 (detailed design).</div>
+  </div>
+
+  <!-- SOL-01 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-01</div>
+      <div class="act-name">Requirements analysis &amp; interpretation</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Requirements interpretation document</div>
+      <div class="l2">
+        <div class="l2-name">L2: Requirements Analysis <span class="l2-src">← Playbook C3 + P3</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Map proposed solution against client's functional and technical requirements</td><td class="raci raci-r">Technical/Solution Owner</td><td class="raci raci-a">Solution Architect</td><td class="raci raci-c">Delivery Director</td><td class="raci raci-i">Bid Manager</td><td>Client requirements document, solution concept</td><td>Requirements traceability matrix (RTM) v0.1</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Product activity is broader than the single playbook task. Additional L3 tasks likely needed: ITT document analysis, requirement categorisation, ambiguity identification, compliance gap analysis.</div>
+    </div>
+  </div>
+
+  <!-- SOL-02 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-02</div>
+      <div class="act-name">Current service model review (rebid)</div>
+      <div class="act-src src-product">PRODUCT ONLY</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: As-is service model assessment</div>
+      <div class="l2">
+        <div class="l2-name">L2: Current Service Model Assessment <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ No L3 tasks defined — needs authoring. Suggested tasks:</td><td colspan="7"></td></tr>
+          <tr><td>Document current service delivery model and operating structure</td><td class="raci raci-r">Delivery Director</td><td class="raci raci-a">Solution Architect</td><td class="raci raci-c">Account Manager</td><td class="raci raci-i">Bid Director</td><td>Current contract, service reports, org charts</td><td>As-is service model document</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Identify service gaps, pain points and improvement opportunities</td><td class="raci raci-r">Solution Architect</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">SME / Delivery</td><td class="raci raci-i">Commercial Lead</td><td>As-is model, client feedback, performance data</td><td>Gap analysis, improvement register</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Per point 4: "(rebid)" qualifier toggleable at bid setup based on incumbency. Activity applies to all bids (understanding the current service) but framing changes. Tasks above are suggested — please review.</div>
+    </div>
+  </div>
+
+  <!-- SOL-03 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-03</div>
+      <div class="act-name">Target operating model design</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Target operating model</div>
+      <div class="l2">
+        <div class="l2-name">L2: Early Solution Shaping <span class="l2-src">← Playbook C3</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Facilitate solution ideation workshop with Technical/Solution Owner</td><td class="raci raci-r">Solution Architect</td><td class="raci raci-a">Technical/Solution Owner</td><td class="raci raci-c">SME Panel</td><td class="raci raci-i">Bid Director</td><td>Client requirements brief, buyer values, prior art library</td><td>Draft solution concept, key assumptions log</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="l2">
+        <div class="l2-name">L2: Solution Architecture &amp; Design <span class="l2-src">← Playbook P3</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Develop full solution architecture responding to each requirement in RTM</td><td class="raci raci-r">Technical/Solution Owner</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">SME Panel</td><td class="raci raci-i">Delivery Director</td><td>RTM v0.1, client requirements, partner inputs</td><td>Solution design document, updated RTM v1</td><td>High</td><td>Iterative</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>SOL-03 is a 45-day activity — the longest in the product. Likely needs more L3 tasks to decompose: e.g. operating model canvas, governance structure, service line architecture, scalability model.</div>
+    </div>
+  </div>
+
+  <!-- SOL-04 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-04</div>
+      <div class="act-name">Service delivery model design</div>
+      <div class="act-src src-partial">PARTIAL</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Service delivery model</div>
+      <div class="l2">
+        <div class="l2-name">L2: Service Delivery Architecture <span class="l2-src">← Playbook P3 (implicit in solution design)</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Playbook does not separate delivery model from solution design. Suggested L3 tasks:</td><td colspan="7"></td></tr>
+          <tr><td>Design service delivery structure per service line</td><td class="raci raci-r">Solution Architect</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">Delivery Director</td><td class="raci raci-i">Commercial Lead</td><td>Target operating model, client requirements</td><td>Service delivery model document</td><td>High</td><td>Sequential</td></tr>
+          <tr><td>Define capacity and scalability model</td><td class="raci raci-r">Solution Architect</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">Delivery Director</td><td class="raci raci-i">Commercial Lead</td><td>Demand projections, service levels</td><td>Capacity model, scalability assessment</td><td>Medium</td><td>Iterative</td></tr>
+          <tr><td>Map SLA/KPI commitments to delivery components</td><td class="raci raci-r">Delivery Director</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">Commercial Lead</td><td class="raci raci-i">Bid Manager</td><td>KPI framework (DEL-03), delivery model</td><td>SLA commitment matrix</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOL-05 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-05</div>
+      <div class="act-name">Technology &amp; digital approach</div>
+      <div class="act-src src-product">PRODUCT ONLY</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Technology solution design</div>
+      <div class="l2">
+        <div class="l2-name">L2: Technology &amp; Digital Solution <span class="l2-src">← No explicit playbook equivalent (embedded in P3 solution architecture)</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Suggested tasks:</td><td colspan="7"></td></tr>
+          <tr><td>Design technology architecture and digital platform approach</td><td class="raci raci-r">Technical Owner</td><td class="raci raci-a">Solution Architect</td><td class="raci raci-c">SME / Partner</td><td class="raci raci-i">Delivery Director</td><td>Target operating model, client tech requirements</td><td>Technology solution design</td><td>High</td><td>Iterative</td></tr>
+          <tr><td>Assess integration requirements and data migration approach</td><td class="raci raci-r">Technical Owner</td><td class="raci raci-a">Solution Architect</td><td class="raci raci-c">Client IT (if available)</td><td class="raci raci-i">Bid Manager</td><td>As-is tech landscape, target architecture</td><td>Integration requirements, migration approach</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOL-06 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-06</div>
+      <div class="act-name">Staffing model &amp; TUPE analysis</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Staffing model with TUPE schedule</div>
+      <div class="l2">
+        <div class="l2-name">L2: Transition &amp; Transformation Planning <span class="l2-src">← Playbook P3</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Develop transition/mobilisation plan including TUPE, asset transfer and phasing</td><td class="raci raci-r">Delivery/Transformation Director</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">HR / Legal</td><td class="raci raci-i">Commercial Lead</td><td>Contract scope, workforce data, client incumbent info</td><td>Transition plan v1, TUPE schedule, risk log</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Product splits staffing/TUPE (SOL-06) from transition planning (SOL-07) — playbook combines them. The split is right for the product but L3 tasks need to be separated accordingly. Additional staffing-specific tasks likely needed.</div>
+    </div>
+  </div>
+
+  <!-- SOL-07 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-07</div>
+      <div class="act-name">Transition &amp; mobilisation approach</div>
+      <div class="act-src src-partial">PARTIAL</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Transition plan</div>
+      <div class="l2">
+        <div class="l2-name">L2: Transition Planning <span class="l2-src">← Playbook P3 (shared with SOL-06)</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Playbook task shared with SOL-06. Separate transition-specific L3 needed:</td><td colspan="7"></td></tr>
+          <tr><td>Design mobilisation programme with phasing and milestones</td><td class="raci raci-r">Delivery Director</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">Bid Manager / Commercial</td><td class="raci raci-i">Partner</td><td>Service delivery model, staffing model, TUPE schedule</td><td>Mobilisation programme, phase plan</td><td>High</td><td>Sequential</td></tr>
+          <tr><td>Identify transition risks and develop mitigation strategies</td><td class="raci raci-r">Delivery Director</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">Legal / Commercial</td><td class="raci raci-i">Bid Director</td><td>Transition plan, risk register</td><td>Transition risk register, mitigation actions</td><td>Medium</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOL-08 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-08</div>
+      <div class="act-name">Innovation &amp; continuous improvement</div>
+      <div class="act-src src-product">PRODUCT ONLY</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Innovation roadmap</div>
+      <div class="l2">
+        <div class="l2-name">L2: Innovation Strategy <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Common in government bids — social value and innovation frequently scored.</td><td colspan="7"></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOL-09 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-09</div>
+      <div class="act-name">Social value proposition</div>
+      <div class="act-src src-product">PRODUCT ONLY</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Social value plan</div>
+      <div class="l2">
+        <div class="l2-name">L2: Social Value Design <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Social value is mandatory scoring in UK public sector (PPN 06/20).</td><td colspan="7"></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOL-10 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-10</div>
+      <div class="act-name">Evidence strategy &amp; case study identification</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Evidence requirements matrix</div>
+      <div class="l2">
+        <div class="l2-name">L2: Content Library Management <span class="l2-src">← Playbook P5</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Retrieve and adapt approved boilerplate and evidence from content library</td><td class="raci raci-r">Bid Coordinator</td><td class="raci raci-a">Bid Manager</td><td class="raci raci-c">SMEs</td><td class="raci raci-i">Writers</td><td>Content library / knowledge base</td><td>Adapted reuse content, flagged gaps</td><td>Low</td><td>Parallel</td></tr>
+          <tr><td>Commission new case studies and evidence where library gaps identified</td><td class="raci raci-r">Bid Coordinator</td><td class="raci raci-a">Bid Manager</td><td class="raci raci-c">SMEs / Account Managers</td><td class="raci raci-i">Partner</td><td>Gap analysis, approved evidence requests</td><td>New case studies, reference letters, CVs</td><td>Medium</td><td>Parallel</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOL-11 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-11</div>
+      <div class="act-name">Solution design lock</div>
+      <div class="act-src src-partial">PARTIAL</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Solution design pack (locked &amp; assured)</div>
+      <div class="l2">
+        <div class="l2-name">L2: Solution Lock &amp; Assurance <span class="l2-src">← Playbook P3 storyboard sign-off (partial)</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Create solution storyboards per evaluation section</td><td class="raci raci-r">Technical/Solution Owner</td><td class="raci raci-a">Solution Architect</td><td class="raci raci-c">Bid Writers</td><td class="raci raci-i">Bid Manager</td><td>Win themes, solution design, evaluation criteria</td><td>Section storyboards (one per evaluation lot/question)</td><td>High</td><td>Sequential</td></tr>
+          <tr><td style="color:var(--amb);">⚠ Additional tasks needed for design lock:</td><td colspan="7"></td></tr>
+          <tr><td>Consolidate all solution workstream outputs into locked design pack</td><td class="raci raci-r">Solution Architect</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">All SOL contributors</td><td class="raci raci-i">Bid Director</td><td>All SOL-03 through SOL-09 outputs</td><td>Solution design pack (locked)</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Conduct internal solution assurance review before governance gate</td><td class="raci raci-r">Technical Owner</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Delivery Director / Commercial</td><td class="raci raci-i">Bid Manager</td><td>Solution design pack, risk register</td><td>Solution assurance record, residual issues log</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Per point 5: Completing SOL-11 should fire a "Solution Design Complete" milestone in the key milestones view. Playbook gate: "Storyboard Sign-off Gate" at P3.</div>
+    </div>
+  </div>
+
+  <!-- SOL-12 (NEW) -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">SOL-12</div>
+      <div class="act-name">Solution risk identification &amp; analysis</div>
+      <div class="act-src src-new">NEW — PROPOSED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Solution risk register</div>
+      <div class="l2">
+        <div class="l2-name">L2: Risk &amp; Assurance Planning <span class="l2-src">← Playbook P3</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Identify, assess and mitigate delivery risks for solution</td><td class="raci raci-r">Delivery Director</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">SME / Commercial</td><td class="raci raci-i">Risk Manager</td><td>Solution design, transition plan</td><td>Risk register, risk mitigation plan</td><td>Medium</td><td>Iterative</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Per point 6: New activity requested. Playbook P3 has "Risk &amp; Assurance Planning" as explicit L2. Feeds into BM-13 (bid risk register) and DEL-06 (mitigated risk register). Dependencies: SOL-03, SOL-04.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- COM — Commercial & Pricing -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-com">
+    <div class="ws-code">COM — Commercial &amp; Pricing</div>
+    <div class="ws-name">Commercial &amp; Pricing</div>
+    <div class="ws-desc">6 activities + 1 proposed new (risk). Maps to Proposal P2 (Commercial Strategy) in playbook.</div>
+  </div>
+
+  <!-- COM-01 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-01</div>
+      <div class="act-name">Should-cost model development</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Should-cost model</div>
+      <div class="l2">
+        <div class="l2-name">L2: Commercial Model Development <span class="l2-src">← Playbook P2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Develop commercial model and pricing strategy (budget modelling by workstream)</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Finance / SME Leads</td><td class="raci raci-i">Partner</td><td>Solution concept, partner costs, benchmark data</td><td>Commercial model v1, pricing assumptions register</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COM-02 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-02</div>
+      <div class="act-name">Price-to-win analysis</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Price-to-win assessment</div>
+      <div class="l2">
+        <div class="l2-name">L2: Competitive Pricing Analysis <span class="l2-src">← Playbook P2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Stress test pricing against win price intelligence and competitive benchmarks</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Capture Lead</td><td class="raci raci-i">Finance</td><td>Commercial model, competitive landscape data</td><td>Sensitivity analysis, win price range</td><td>High</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COM-03 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-03</div>
+      <div class="act-name">Subcontractor &amp; supply chain pricing</div>
+      <div class="act-src src-partial">PARTIAL</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Partner pricing schedule</div>
+      <div class="l2">
+        <div class="l2-name">L2: Partner Pricing <span class="l2-src">← Implied in playbook P2 / C3 but not explicit L3</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ No explicit playbook L3. Product has correct granularity — needs authoring.</td><td colspan="7"></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COM-04 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-04</div>
+      <div class="act-name">Commercial model &amp; payment mechanisms</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Commercial model document</div>
+      <div class="l2">
+        <div class="l2-name">L2: T&amp;C Negotiation Planning <span class="l2-src">← Playbook P2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Review client T&amp;Cs, identify risk areas, prepare redline and negotiation strategy</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal</td><td class="raci raci-i">Senior Responsible Exec</td><td>Client draft T&amp;Cs, corporate risk policy</td><td>T&amp;C risk register, redline document, negotiation plan</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COM-05 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-05</div>
+      <div class="act-name">Margin structure &amp; sensitivity analysis</div>
+      <div class="act-src src-partial">PARTIAL</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Margin model with sensitivities</div>
+      <div class="l2">
+        <div class="l2-name">L2: Margin &amp; Sensitivity Modelling <span class="l2-src">← Implied within P2 commercial model tasks</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Not a separate L3 in playbook — folded into commercial model. Product has right granularity. Needs authoring.</td><td colspan="7"></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COM-06 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-06</div>
+      <div class="act-name">Pricing model finalisation</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Pricing model (locked &amp; assured)</div>
+      <div class="l2">
+        <div class="l2-name">L2: Pricing Sign-off <span class="l2-src">← Playbook P2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Present commercial model to Bid Board for formal pricing approval</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director / Partner</td><td class="raci raci-c">Finance / Legal</td><td class="raci raci-i">All Leads</td><td>Commercial model, risk register, sensitivity analysis</td><td>Board-approved pricing mandate</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook gate: "FORMAL PRICING APPROVAL GATE" at P2. Maps to product gate G3 (Commercial / Finance Review).</div>
+    </div>
+  </div>
+
+  <!-- COM-07 (NEW) -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">COM-07</div>
+      <div class="act-name">Commercial risk identification &amp; analysis</div>
+      <div class="act-src src-new">NEW — PROPOSED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Commercial risk register</div>
+      <div class="l2">
+        <div class="l2-name">L2: Commercial Risk Assessment <span class="l2-src">← Playbook P2 (Commercial Risk Gate)</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Suggested tasks:</td><td colspan="7"></td></tr>
+          <tr><td>Identify commercial and pricing risks across all cost elements</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Finance / Legal</td><td class="raci raci-i">Delivery Director</td><td>Commercial model, T&amp;C markup, partner terms</td><td>Commercial risk register</td><td>Medium</td><td>Iterative</td></tr>
+          <tr><td>Develop risk mitigation strategies and quantify contingency requirements</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal / Delivery</td><td class="raci raci-i">Partner</td><td>Risk register, sensitivity analysis</td><td>Mitigation plan, contingency budget</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Per point 6: New activity requested. Playbook has "Commercial Risk Gate" at P2 which implies this work happens. Feeds into BM-13 and DEL-06. Dependencies: COM-01, COM-04, LEG-02.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- LEG — Legal & Contractual -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-leg">
+    <div class="ws-code">LEG — Legal &amp; Contractual</div>
+    <div class="ws-name">Legal &amp; Contractual</div>
+    <div class="ws-desc">6 activities. Playbook covers T&amp;C and risk allocation but product has more granularity (insurance, TUPE, data protection as separate activities).</div>
+  </div>
+
+  <!-- LEG-01 -->
+  <div class="act">
+    <div class="act-hdr">
+      <div class="act-code">LEG-01</div>
+      <div class="act-name">Contract review &amp; markup</div>
+      <div class="act-src src-mapped">MAPPED</div>
+    </div>
+    <div class="act-body">
+      <div class="act-output">Output: Contract markup with positions log</div>
+      <div class="l2">
+        <div class="l2-name">L2: T&amp;C Review <span class="l2-src">← Playbook P2</span></div>
+        <table class="l3-tbl">
+          <tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Review client T&amp;Cs, identify risk areas, prepare redline and negotiation strategy</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal</td><td class="raci raci-i">Senior Responsible Exec</td><td>Client draft T&amp;Cs, corporate risk policy</td><td>T&amp;C risk register, redline document, negotiation plan</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Same playbook L3 as COM-04 — the work spans both workstreams. In practice, Legal leads the markup, Commercial leads the negotiation strategy. RACI should reflect Legal as R for this activity.</div>
+    </div>
+  </div>
+
+  <!-- LEG-02 through LEG-06 abbreviated for space — same pattern -->
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">LEG-02</div><div class="act-name">Risk allocation analysis</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body">
+      <div class="act-output">Output: Risk allocation matrix</div>
+      <div class="l2"><div class="l2-name">L2: Risk &amp; Assurance Planning <span class="l2-src">← Playbook P3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Identify, assess and mitigate delivery risks for solution (legal/contractual risk lens)</td><td class="raci raci-r">Legal</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Commercial / Delivery</td><td class="raci raci-i">Risk Manager</td><td>Contract terms, solution design, transition plan</td><td>Risk allocation matrix</td><td>Medium</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">LEG-03</div><div class="act-name">Insurance &amp; liability review</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body">
+      <div class="act-output">Output: Insurance requirements assessment</div>
+      <div class="l2"><div class="l2-name">L2: Insurance Analysis <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Essential for large government contracts — PI, PL, EL, cyber insurance requirements.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">LEG-04</div><div class="act-name">TUPE obligations assessment</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body">
+      <div class="act-output">Output: TUPE compliance assessment</div>
+      <div class="l2"><div class="l2-name">L2: TUPE Analysis <span class="l2-src">← Playbook P3 (embedded in transition planning)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Playbook bundles TUPE into transition planning. Product correctly separates it as legal activity. Needs dedicated L3 tasks.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">LEG-05</div><div class="act-name">Data protection &amp; security review</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body">
+      <div class="act-output">Output: DPIA / security assessment</div>
+      <div class="l2"><div class="l2-name">L2: Data Protection &amp; Security <span class="l2-src">← No playbook equivalent (playbook has clearance vetting in B3 only)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Critical for defence/justice contracts. DPIA, information security review, data handling assessment.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">LEG-06</div><div class="act-name">Subcontractor terms review</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body">
+      <div class="act-output">Output: Subcontract terms summary</div>
+      <div class="l2"><div class="l2-name">L2: Partner Compliance <span class="l2-src">← Playbook C3 (partner assessment)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Evaluate partner capability, security clearance and compliance status</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal</td><td class="raci raci-i">Partner</td><td>Partner submissions, DD questionnaires</td><td>Partner shortlist, teaming agreement v1</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- DEL — Programme & Delivery -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-del">
+    <div class="ws-code">DEL — Programme &amp; Delivery</div>
+    <div class="ws-name">Programme &amp; Delivery</div>
+    <div class="ws-desc">6 activities. Maps to Playbook P3 (risk/transition) and C2 (resource forecasting).</div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">DEL-01</div><div class="act-name">Delivery risk &amp; assumptions register</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body">
+      <div class="act-output">Output: Delivery risk &amp; assumptions register (living document)</div>
+      <div class="l2"><div class="l2-name">L2: Risk &amp; Assurance Planning <span class="l2-src">← Playbook P3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Identify, assess and mitigate delivery risks for solution</td><td class="raci raci-r">Delivery Director</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">SME / Commercial</td><td class="raci raci-i">Risk Manager</td><td>Solution design, transition plan</td><td>Risk register, risk mitigation plan</td><td>Medium</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">DEL-02</div><div class="act-name">Mobilisation &amp; implementation planning</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Mobilisation plan</div>
+      <div class="l2"><div class="l2-name">L2: Transition &amp; Transformation <span class="l2-src">← Playbook P3 (shared with SOL-07)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ See SOL-07 for shared playbook task. DEL-02 focuses on delivery-side mobilisation planning. Needs dedicated L3 tasks.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">DEL-03</div><div class="act-name">Performance framework &amp; KPIs/SLAs</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: KPI/SLA framework</div>
+      <div class="l2"><div class="l2-name">L2: Performance Framework <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Critical for service contracts — SLA design, KPI framework, performance reporting model.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">DEL-04</div><div class="act-name">Resource &amp; capacity plan</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Resource plan</div>
+      <div class="l2"><div class="l2-name">L2: Resource Forecasting <span class="l2-src">← Playbook C2</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Estimate bid resource requirement (days by role) based on opportunity size/complexity</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Technical Owner / SME</td><td class="raci raci-i">Resource Pool</td><td>Opportunity scoping note, historic bid benchmarks</td><td>Bid resource plan, indicative cost-to-bid estimate</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook C2 resource forecasting is about bid team resources. DEL-04 is about delivery resources (the service team post-award). Different scope — L3 tasks need authoring for the delivery resource perspective.</div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">DEL-05</div><div class="act-name">Business continuity &amp; exit planning</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: BC/exit plan</div>
+      <div class="l2"><div class="l2-name">L2: Business Continuity <span class="l2-src">← No playbook equivalent</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Required in most government contracts — BC/DR plans, exit/handback provisions.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">DEL-06</div><div class="act-name">Risk mitigation &amp; residual acceptance</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Mitigated risk register (assured)</div>
+      <div class="l2"><div class="l2-name">L2: Risk Mitigation <span class="l2-src">← Playbook P3 (continuation of DEL-01)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Playbook combines with DEL-01. Product correctly separates initial identification from formal mitigation/acceptance. Needs dedicated L3 tasks.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SUP — Supply Chain & Partners -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-sup">
+    <div class="ws-code">SUP — Supply Chain &amp; Partners</div>
+    <div class="ws-name">Supply Chain &amp; Partners</div>
+    <div class="ws-desc">6 activities. Maps to Capture C3 (Partnership &amp; Supply Chain Assessment).</div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">SUP-01</div><div class="act-name">Partner identification &amp; selection</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Partner shortlist with rationale</div>
+      <div class="l2"><div class="l2-name">L2: Partnership &amp; Supply Chain Assessment <span class="l2-src">← Playbook C3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Identify and assess potential subcontractors, partners and advisors</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Procurement Lead</td><td class="raci raci-i">Partner Management</td><td>Solution concept, SME requirements map</td><td>Partner long-list, NDA/teaming agreement log</td><td>Medium</td><td>Parallel</td></tr>
+          <tr><td>Evaluate partner capability, security clearance and compliance status</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal</td><td class="raci raci-i">Partner</td><td>Partner submissions, DD questionnaires</td><td>Partner shortlist, teaming agreement v1</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">SUP-02</div><div class="act-name">Partner solution inputs &amp; design contribution</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Partner solution inputs pack</div>
+      <div class="l2"><div class="l2-name">L2: Partner Solution Integration <span class="l2-src">← No explicit playbook L3 (product has right granularity)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Partner solution design inputs, capability statements, approach contributions.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">SUP-03</div><div class="act-name">Teaming agreement negotiation</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Signed teaming agreements</div>
+      <div class="l2"><div class="l2-name">L2: Teaming Agreements <span class="l2-src">← Implied in playbook C3 partner assessment</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs dedicated L3 authoring. NDA, teaming agreement, exclusivity terms, IP provisions.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">SUP-04</div><div class="act-name">Partner pricing</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Partner pricing schedules</div>
+      <div class="l2"><div class="l2-name">L2: Partner Commercial <span class="l2-src">← No playbook L3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Rate cards, cost submissions, margin negotiations with partners.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">SUP-05</div><div class="act-name">Partner credentials &amp; references</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Partner case studies &amp; CVs</div>
+      <div class="l2"><div class="l2-name">L2: Partner Evidence <span class="l2-src">← No playbook L3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Case study collection, CV curation, reference management.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">SUP-06</div><div class="act-name">Back-to-back commercial terms</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Back-to-back terms agreed</div>
+      <div class="l2"><div class="l2-name">L2: Partner Contractual <span class="l2-src">← No playbook L3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Flow-down of prime contract terms to subcontractors.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- BM — Bid Management & Programme Control -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-bm">
+    <div class="ws-code">BM — Bid Management &amp; Programme Control</div>
+    <div class="ws-name">Bid Management &amp; Programme Control</div>
+    <div class="ws-desc">13 activities + 2 moved from SAL (SAL-08/09) + 1 proposed new (resource mobilisation). Maps to Playbook P1, B2, B3, B5, B10.</div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-01</div><div class="act-name">Kickoff planning &amp; execution</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Kickoff pack: strategy summary, RACI, timeline, comms plan</div>
+      <div class="l2"><div class="l2-name">L2: Bid Kick-off Workshop <span class="l2-src">← Playbook P1</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Confirm bid team structure, assign roles and RACI across all workstreams</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Workstream Leads</td><td class="raci raci-i">Bid Board</td><td>Bid Mandate, resource plan, win strategy</td><td>RACI matrix, bid team register, comms plan</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Agree master bid programme with milestones, reviews, and submission date</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Workstream Leads</td><td class="raci raci-i">Commercial Lead</td><td>ITT/ITN timeline, resource plan</td><td>Master bid programme (Gantt), milestone tracker</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook gate: "Programme Baseline Gate" at P1. Not currently a product gate — should it be?</div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-02</div><div class="act-name">Bid management plan production</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Bid management plan (BMP)</div>
+      <div class="l2"><div class="l2-name">L2: Bid Management Plan <span class="l2-src">← Playbook P1</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Produce Bid Management Plan covering scope, governance, quality, and risk</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Leads</td><td class="raci raci-i">Partner / Legal</td><td>Bid Mandate, kick-off outputs</td><td>Bid Management Plan v1</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-03</div><div class="act-name">Document management &amp; version control setup</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Repository structure, naming conventions, platform</div>
+      <div class="l2"><div class="l2-name">L2: Document Management <span class="l2-src">← Playbook P1</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Establish document management, version control and collaboration platform</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">IT / Bid Support</td><td class="raci raci-i">All Team</td><td>Approved tooling/platform (SharePoint, Teams etc.)</td><td>Bid repository structure, naming convention guide</td><td>Low</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-04</div><div class="act-name">Resource management &amp; tracking</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Resource tracker, security clearance log, availability register</div>
+      <div class="l2"><div class="l2-name">L2: Resource Mobilisation <span class="l2-src">← Playbook B3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Confirm and mobilise full bid team (internal + partner + contingency)</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">HR / Resource Pool</td><td class="raci raci-i">Partner</td><td>Bid Mandate, resource plan</td><td>Confirmed team roster, onboarding pack</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Establish security clearance requirements and initiate vetting if required</td><td class="raci raci-r">HR / Security Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal</td><td class="raci raci-i">Team Members</td><td>Contract security schedule, team list</td><td>Vetting status tracker, cleared personnel log</td><td>Medium</td><td>Parallel</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Playbook gate: "Resource Mobilisation Gate" at B3. Product doesn't have this gate. Per your catch — resource mobilisation should be a formal checkpoint. Consider adding as a milestone.</div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-05</div><div class="act-name">Bid cost management</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Cost-to-bid tracker</div>
+      <div class="l2"><div class="l2-name">L2: Cost-to-Bid Tracking <span class="l2-src">← Partially in Playbook C2 resource forecasting</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Ongoing cost tracking, budget vs actual, cost approval for overruns.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-06</div><div class="act-name">Progress reporting</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Weekly progress reports, milestone achievement reports</div>
+      <div class="l2"><div class="l2-name">L2: Progress Reporting <span class="l2-src">← No explicit playbook L3 (implied throughout)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Weekly standups, progress reports, RAG status, milestone tracking.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-07</div><div class="act-name">Quality management approach</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Quality plan: evaluation weighting analysis, page budgets</div>
+      <div class="l2"><div class="l2-name">L2: Compliance &amp; Quality Planning <span class="l2-src">← Playbook P1</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Perform detailed compliance check against all ITT/ITN requirements</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal / Commercial</td><td class="raci raci-i">Solution Owner</td><td>ITT/ITN documentation, compliance checklist template</td><td>Compliance matrix, mandatory requirements register</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-08</div><div class="act-name">Stakeholder &amp; communications management</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Stakeholder comms plan, decision log</div>
+      <div class="l2"><div class="l2-name">L2: Stakeholder Management <span class="l2-src">← No explicit playbook L3</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Comms plan, stakeholder mapping, decision log, escalation procedures.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-09</div><div class="act-name">Competitive dialogue management (if applicable)</div><div class="act-src src-product">PRODUCT ONLY</div></div>
+    <div class="act-body"><div class="act-output">Output: Dialogue prep packs, session records, iteration tracker</div>
+      <div class="l2"><div class="l2-name">L2: Competitive Dialogue <span class="l2-src">← No playbook equivalent (procurement route specific)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Applies to specific procurement routes (competitive dialogue, competitive procedure with negotiation).</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-10</div><div class="act-name">Storyboard development &amp; sign-off</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Approved storyboard — METHODOLOGY GATE</div>
+      <div class="l2"><div class="l2-name">L2: Content Planning <span class="l2-src">← Playbook P4</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Allocate writing responsibilities per section; develop section outlines against evaluation criteria</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Workstream Leads</td><td class="raci raci-i">Bid Writers</td><td>ITT/ITN, evaluation criteria, storyboards</td><td>Section ownership matrix, section outlines</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Brief each writer using storyboard and win themes; confirm word counts and formats</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Technical Owner / Commercial</td><td class="raci raci-i">Writers</td><td>Storyboards, ITT instructions</td><td>Writer briefs (one per section), response format guide</td><td>Low</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-11</div><div class="act-name">Hot debrief (post-submission)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Hot debrief notes, immediate lessons log</div>
+      <div class="l2"><div class="l2-name">L2: Submission Debrief <span class="l2-src">← Playbook B5</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Conduct internal hot debrief within 48 hours of submission</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Leads</td><td class="raci raci-i">—</td><td>Submission record, team feedback</td><td>Hot debrief notes, lessons log v1</td><td>Low</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-12</div><div class="act-name">Lessons learned &amp; knowledge capture</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Lessons report, content library updates, process improvement actions</div>
+      <div class="l2"><div class="l2-name">L2: Win / Loss Debrief <span class="l2-src">← Playbook B10</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Request and attend formal client debrief; capture scoring and feedback</td><td class="raci raci-r">Bid / Pursuit Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Commercial Lead</td><td class="raci raci-i">Bid Manager</td><td>Client debrief invitation, submitted proposal</td><td>Debrief notes, evaluator score card</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Conduct internal lessons learned review with full bid team</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Leads</td><td class="raci raci-i">—</td><td>Debrief notes, bid programme, team feedback</td><td>Lessons learned report, improvement actions</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Update content library with new case studies, evidence and reusable content</td><td class="raci raci-r">Bid Coordinator</td><td class="raci raci-a">Bid Manager</td><td class="raci raci-c">SMEs</td><td class="raci raci-i">All</td><td>Lessons learned report, approved new content</td><td>Updated content library entries</td><td>Low</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-13</div><div class="act-name">Bid risk &amp; assumptions register</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Bid risk register (process risks, scheduling assumptions, resource risks)</div>
+      <div class="l2"><div class="l2-name">L2: Bid Process Risk Management <span class="l2-src">← Implied across playbook</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. This is the bid-level risk register (distinct from delivery risk DEL-01, solution risk SOL-12, commercial risk COM-07). Process risks, scheduling risks, resource risks.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BM-14 (moved from SAL-08) -->
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-14</div><div class="act-name">Clarification submission &amp; response management</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Clarification response log with impact assessment</div>
+      <div class="l2"><div class="l2-name">L2: Clarification Management <span class="l2-src">← Playbook B2</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Submit clarification questions within procurement deadlines and track responses</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Workstream Leads</td><td class="raci raci-i">—</td><td>Approved Q list, procurement portal access</td><td>Submitted Qs, clarification response log</td><td>Low</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Moved from SAL-08 per point 3. Bid management activity, not sales capture.</div>
+    </div>
+  </div>
+
+  <!-- BM-15 (moved from SAL-09) -->
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-15</div><div class="act-name">Clarification impact analysis &amp; workstream updates</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Updated requirements/assumptions across workstreams</div>
+      <div class="l2"><div class="l2-name">L2: Clarification Impact Assessment <span class="l2-src">← Implied in Playbook B2/B7</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Triage clarification responses, assess impact on solution/commercial/delivery, update workstream assumptions.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Moved from SAL-09 per point 3.</div>
+    </div>
+  </div>
+
+  <!-- BM-16 (NEW) -->
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">BM-16</div><div class="act-name">Win strategy refresh (post-ITT)</div><div class="act-src src-new">NEW — PROPOSED</div></div>
+    <div class="act-body"><div class="act-output">Output: Updated win strategy, refreshed PWIN score</div>
+      <div class="l2"><div class="l2-name">L2: Win Strategy Refresh <span class="l2-src">← Playbook B4</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Refresh and validate win strategy, PWIN score and competitive intelligence post-ITT receipt</td><td class="raci raci-r">Bid / Pursuit Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Capture Lead / Commercial</td><td class="raci raci-i">Bid Board</td><td>ITT/ITN, win strategy, PWIN score</td><td>Updated win strategy, refreshed PWIN score</td><td>High</td><td>Sequential</td></tr>
+          <tr><td>Update stakeholder map and adjust client engagement plan post-ITT</td><td class="raci raci-r">Capture Lead / Account Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Bid Manager</td><td class="raci raci-i">—</td><td>Stakeholder map, ITT requirements</td><td>Updated stakeholder plan, revised engagement actions</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>New activity from playbook B4 (Qualification). This is the formal re-check after ITT receipt: is the win strategy still valid? Has anything changed? Playbook gate: "Win Strategy Re-confirmation" (Bid Board).</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- GOV — Internal Governance -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-gov">
+    <div class="ws-code">GOV — Internal Governance</div>
+    <div class="ws-name">Internal Governance</div>
+    <div class="ws-desc">5 activities + 1 proposed new (legal review). Per point 8: missing legal review activity.</div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">GOV-01</div><div class="act-name">Pursuit approval (configurable)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Pursuit approval decision record</div>
+      <div class="l2"><div class="l2-name">L2: Pursuit Governance <span class="l2-src">← Playbook G2/G5</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Gate preparation, review pack assembly, committee briefing, decision capture, action distribution.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">GOV-02</div><div class="act-name">Solution &amp; strategy review (configurable)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Solution review decision record</div>
+      <div class="l2"><div class="l2-name">L2: Solution Governance <span class="l2-src">← Playbook G7 (Storyboard Sign-off implied)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Similar pattern to GOV-01.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">GOV-03</div><div class="act-name">Pricing &amp; risk review (configurable)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Pricing decision record + approved price</div>
+      <div class="l2"><div class="l2-name">L2: Commercial Governance <span class="l2-src">← Playbook G8/G9 (Commercial Risk Gate, Pricing Approval)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOV-04 (NEW - Legal) -->
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">GOV-04</div><div class="act-name">Legal &amp; contractual review (configurable)</div><div class="act-src src-new">NEW — PROPOSED</div></div>
+    <div class="act-body"><div class="act-output">Output: Legal review decision record</div>
+      <div class="l2"><div class="l2-name">L2: Legal Governance <span class="l2-src">← Product gate G4 exists but no GOV activity to prepare for it</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Prepare legal review pack, brief committee, conduct review, capture decision.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+      <div class="note"><div class="note-title">Review Note</div>Per point 8: Product has gate G4 (Legal &amp; Contractual Review) but no corresponding GOV activity. This new activity prepares for and delivers the legal governance review. Links to G4.</div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">GOV-05</div><div class="act-name">Executive approval (configurable — may be multi-tier)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Executive approval decision record(s)</div>
+      <div class="l2"><div class="l2-name">L2: Executive Governance <span class="l2-src">← Playbook G5/G11</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Multi-tier: BU → ExCo → Board depending on TCV thresholds.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">GOV-06</div><div class="act-name">Final submission authority (configurable)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Submission authority confirmation</div>
+      <div class="l2"><div class="l2-name">L2: Submission Authority <span class="l2-src">← Playbook G12/G15</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. Final compliance check, submission authority sign-off, portal submission confirmation.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PRD — Proposal Production -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-prd">
+    <div class="ws-code">PRD — Proposal Production</div>
+    <div class="ws-name">Proposal Production</div>
+    <div class="ws-desc">9 activities. Maps to Playbook P4 (Writing), P6 (Review), P7 (Production).</div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-01</div><div class="act-name">Compliance matrix &amp; requirements mapping</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Compliance matrix (live)</div>
+      <div class="l2"><div class="l2-name">L2: Compliance Checking <span class="l2-src">← Playbook P1</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Perform detailed compliance check against all ITT/ITN requirements</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal / Commercial</td><td class="raci raci-i">Solution Owner</td><td>ITT/ITN documentation, compliance checklist template</td><td>Compliance matrix, mandatory requirements register</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-02</div><div class="act-name">Section drafting &amp; content assembly</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Draft response sections</div>
+      <div class="l2"><div class="l2-name">L2: Draft Writing <span class="l2-src">← Playbook P4</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Produce Executive Summary, Win Narrative, Key Themes</td><td class="raci raci-r">Senior Bid Writer</td><td class="raci raci-a">Bid / Pursuit Lead</td><td class="raci raci-c">Capture Lead / Commercial</td><td class="raci raci-i">Bid Manager</td><td>Writer briefs, storyboards, win themes</td><td>Executive summary draft, section drafts v0.1</td><td>High</td><td>Parallel</td></tr>
+          <tr><td>Produce technical and solution section drafts across all lots/questions</td><td class="raci raci-r">Technical Bid Writer / SME</td><td class="raci raci-a">Technical Owner</td><td class="raci raci-c">Solution Architect</td><td class="raci raci-i">Bid Manager</td><td>RTM, solution design, writer briefs</td><td>Technical section drafts v0.1</td><td>High</td><td>Parallel</td></tr>
+          <tr><td>Produce commercial and pricing schedules</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Finance</td><td class="raci raci-i">Legal</td><td>Approved pricing mandate, T&amp;C redline</td><td>Pricing schedules, commercial response drafts</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-03</div><div class="act-name">Evidence, case studies &amp; CV assembly</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Evidence pack</div>
+      <div class="l2"><div class="l2-name">L2: Content Library Management <span class="l2-src">← Playbook P5 (shared with SOL-10)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td>See SOL-10 for shared L3 tasks. PRD-03 is the assembly/production phase of evidence identified in SOL-10.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-04</div><div class="act-name">Pricing schedules &amp; commercial response</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Pricing response documents</div>
+      <div class="l2"><div class="l2-name">L2: Commercial Response Production <span class="l2-src">← Playbook P4 (third writing task)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Overlap with PRD-02 third task. Consider whether this needs dedicated L3 or rolls into PRD-02.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-05</div><div class="act-name">Pink review (storyboard/outline)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Pink review scorecard &amp; actions</div>
+      <div class="l2"><div class="l2-name">L2: Pink Team Review (30–50% draft) <span class="l2-src">← Playbook P6</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Conduct Pink Team review against evaluation criteria; assess win theme penetration</td><td class="raci raci-r">Independent Reviewer</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Capture Lead / Commercial</td><td class="raci raci-i">All Writers</td><td>Section drafts v0.1, evaluation criteria, win themes</td><td>Pink Team review report, action log</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-06</div><div class="act-name">Red review (full draft)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Red review scorecard &amp; actions resolved</div>
+      <div class="l2"><div class="l2-name">L2: Red Team Review (80–90% draft) <span class="l2-src">← Playbook P6</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Conduct Red Team review — evaluator simulation against scoring criteria</td><td class="raci raci-r">Senior Independent Panel</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Owner / Commercial</td><td class="raci raci-i">Bid Manager</td><td>Near-final drafts, evaluation model</td><td>Red Team scores, gap analysis, priority actions</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-07</div><div class="act-name">Gold review (final/executive)</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Gold review scorecard &amp; sign-off</div>
+      <div class="l2"><div class="l2-name">L2: Gold Team Review (Final) <span class="l2-src">← Playbook P6</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Final executive quality review; confirm compliance, completeness and tone</td><td class="raci raci-r">Bid Board (Partner level)</td><td class="raci raci-a">Senior Responsible Exec</td><td class="raci raci-c">Commercial / Legal</td><td class="raci raci-i">Bid Manager</td><td>Final draft proposal</td><td>Gold Team sign-off, approved final document</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-08</div><div class="act-name">Final QA &amp; formatting</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: QA checklist complete</div>
+      <div class="l2"><div class="l2-name">L2: Document Production &amp; Formatting <span class="l2-src">← Playbook P7</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Apply corporate template, branding, page limits and formatting requirements</td><td class="raci raci-r">Bid Coordinator / DTP</td><td class="raci raci-a">Bid Manager</td><td class="raci raci-c">Brand/Design</td><td class="raci raci-i">Bid Director</td><td>Approved final content, ITT formatting requirements</td><td>Formatted proposal document(s)</td><td>Medium</td><td>Sequential</td></tr>
+          <tr><td>Proof-read, spell-check, and cross-reference all sections</td><td class="raci raci-r">Bid Coordinator</td><td class="raci raci-a">Bid Manager</td><td class="raci raci-c">Senior Bid Writer</td><td class="raci raci-i">—</td><td>Formatted document</td><td>Proof-read final document, error log cleared</td><td>Medium</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">PRD-09</div><div class="act-name">Submission packaging &amp; upload</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Submission confirmation receipt</div>
+      <div class="l2"><div class="l2-name">L2: Final Submission <span class="l2-src">← Playbook P7 + B5</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Conduct final compliance check against all mandatory requirements before submission</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal / Commercial</td><td class="raci raci-i">—</td><td>Compliance matrix, final formatted document</td><td>Compliance sign-off sheet</td><td>High</td><td>Sequential</td></tr>
+          <tr><td>Execute submission plan: upload, portal submission, confirmation receipt</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">IT Support</td><td class="raci raci-i">Commercial Lead</td><td>Gold-approved documents, submission portal credentials</td><td>Submission confirmation, submitted documents archive</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- POST — Post-Submission -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="ws-hdr ws-post">
+    <div class="ws-code">POST — Post-Submission</div>
+    <div class="ws-name">Post-Submission</div>
+    <div class="ws-desc">8 activities. Maps to Playbook B6 (Presentation), B7 (Clarifications), B8 (Negotiations), B9 (Award).</div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-01</div><div class="act-name">Presentation design &amp; development</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Presentation deck, speaker notes, narrative</div>
+      <div class="l2"><div class="l2-name">L2: Presentation Preparation <span class="l2-src">← Playbook B6</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Design and develop bid presentation (slides, narrative, evidence, demos)</td><td class="raci raci-r">Bid / Pursuit Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Solution Owner / Commercial</td><td class="raci raci-i">Bid Manager</td><td>Submitted proposal, evaluation feedback, win themes</td><td>Presentation deck, speaker notes, rehearsal plan</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-02</div><div class="act-name">Presentation rehearsals &amp; coaching</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Rehearsal debrief notes, revised deck, Q&amp;A prep</div>
+      <div class="l2"><div class="l2-name">L2: Rehearsal &amp; Coaching <span class="l2-src">← Playbook B6</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Conduct structured presentation rehearsals and coaching (Boardroom Simulator)</td><td class="raci raci-r">Bid / Pursuit Lead</td><td class="raci raci-a">Senior Responsible Exec</td><td class="raci raci-c">SME / Commercial</td><td class="raci raci-i">Bid Manager</td><td>Presentation deck, evaluator model, coaching plan</td><td>Rehearsal debrief notes, revised deck</td><td>High</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-03</div><div class="act-name">Presentation delivery</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Presentation delivered, Q&amp;A record</div>
+      <div class="l2"><div class="l2-name">L2: Presentation Delivery <span class="l2-src">← Playbook B6</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Deliver bid presentation to evaluation panel; manage Q&amp;A</td><td class="raci raci-r">Bid Director / Senior Exec</td><td class="raci raci-a">Senior Responsible Exec</td><td class="raci raci-c">Commercial / Technical</td><td class="raci raci-i">Bid Manager</td><td>Approved presentation, rehearsal outcomes</td><td>Presentation delivered, Q&amp;A record</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-04</div><div class="act-name">Post-submission clarification management</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Clarification log, submitted responses, updated risk log</div>
+      <div class="l2"><div class="l2-name">L2: Post-Submission Clarification Management <span class="l2-src">← Playbook B7</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Receive, log and triage all post-submission clarification requests from client</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">All Workstream Leads</td><td class="raci raci-i">Commercial Lead</td><td>Client clarification requests</td><td>Clarification log, triage register</td><td>Medium</td><td>Iterative</td></tr>
+          <tr><td>Draft, review and submit clarification responses within deadlines</td><td class="raci raci-r">Technical Owner / Commercial</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal / SME</td><td class="raci raci-i">Bid Manager</td><td>Clarification log, approved response process</td><td>Submitted clarification responses, updated risk log</td><td>High</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-05</div><div class="act-name">BAFO preparation &amp; revised pricing</div><div class="act-src src-partial">PARTIAL</div></div>
+    <div class="act-body"><div class="act-output">Output: Revised pricing model, updated solution elements</div>
+      <div class="l2"><div class="l2-name">L2: BAFO Preparation <span class="l2-src">← Partially in Playbook B8</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>Inputs</th><th>Outputs</th></tr>
+          <tr><td style="color:var(--amb);">⚠ Needs L3 authoring. BAFO strategy, revised pricing, solution adjustments, governance re-approval.</td><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-06</div><div class="act-name">BAFO governance approval</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Board-approved BAFO mandate</div>
+      <div class="l2"><div class="l2-name">L2: BAFO Governance <span class="l2-src">← Playbook B8 (Commercial Escalation Gate)</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Obtain internal approval for any material changes to commercial position</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Partner / Senior Responsible Exec</td><td class="raci raci-c">Legal / Finance</td><td class="raci raci-i">Bid Director</td><td>Negotiation notes, proposed changes</td><td>Board-approved commercial mandate update</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-07</div><div class="act-name">Contract negotiation support</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Negotiated T&amp;C schedule, agreed pricing</div>
+      <div class="l2"><div class="l2-name">L2: Commercial &amp; Contract Negotiation <span class="l2-src">← Playbook B8</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Lead commercial and T&amp;C negotiations with client procurement team</td><td class="raci raci-r">Commercial Lead</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Legal / Senior Exec</td><td class="raci raci-i">Finance</td><td>Preferred bidder notification, client T&amp;Cs, commercial model</td><td>Negotiated T&amp;C schedule, agreed pricing</td><td>High</td><td>Iterative</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="act-hdr"><div class="act-code">POST-08</div><div class="act-name">Award processing &amp; mobilisation handover</div><div class="act-src src-mapped">MAPPED</div></div>
+    <div class="act-body"><div class="act-output">Output: Handover pack, delivery team briefed, PID</div>
+      <div class="l2"><div class="l2-name">L2: Award &amp; Mobilisation Preparation <span class="l2-src">← Playbook B9</span></div>
+        <table class="l3-tbl"><tr><th>L3 Task</th><th>R</th><th>A</th><th>C</th><th>I</th><th>Inputs</th><th>Outputs</th><th>Effort</th><th>Type</th></tr>
+          <tr><td>Receive and process contract award; initiate formal mobilisation workstream</td><td class="raci raci-r">Bid Manager / Programme Director</td><td class="raci raci-a">Senior Responsible Exec</td><td class="raci raci-c">Commercial / Legal</td><td class="raci raci-i">All Leads</td><td>Award letter, signed contract</td><td>Mobilisation plan v1, project initiation document</td><td>High</td><td>Sequential</td></tr>
+          <tr><td>Conduct post-award knowledge transfer to delivery team</td><td class="raci raci-r">Bid Manager</td><td class="raci raci-a">Bid Director</td><td class="raci raci-c">Delivery Director</td><td class="raci raci-i">Programme Manager</td><td>Bid file, commercial model, risk register, RTM</td><td>Handover pack, delivery team briefed</td><td>High</td><td>Sequential</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- DELIVERABLE 2: GAP ANALYSIS -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <div style="margin-top:48px;padding-top:24px;border-top:2px solid var(--gold);">
+  <div class="sl">Deliverable 2 of 2</div>
+  <div class="st">Gap Analysis</div>
+  <div class="sd">Differences between the Bid Lifecycle Playbook and the product activity model. Gaps in both directions — what's in the playbook but not the product, and what's in the product but not the playbook.</div>
+  </div>
+
+  <!-- GAP SECTION 1: Playbook → Product (Missing from product) -->
+  <div class="sh">Playbook content not in product</div>
+  <div class="bt">These are L1 stages, L3 tasks, or gates from the playbook that have no current product equivalent. Each gap includes a recommendation.</div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — B1: RFI Submission</div>
+    <div class="gap-title">RFI Response Management (2 L3 tasks)</div>
+    <div class="gap-desc">Playbook has a formal RFI stage with response planning and drafting. Product assumes ITT/RFP as the starting point.</div>
+    <div class="gap-action">Recommendation: Consider adding as optional/configurable stage. Some procurement routes start with PQQ/RFI before ITT. Could be a BM activity that's deactivated by default.</div>
+  </div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — B2: Pre-Proposal Planning / Procurement Process Mapping</div>
+    <div class="gap-title">Procurement timeline mapping and milestone planning (1 L3 task)</div>
+    <div class="gap-desc">Playbook B2 includes "Map procurement timeline, evaluation stages, and decision milestones." Product captures this in bid setup wizard (submission deadline, procurement route) but doesn't have an explicit activity for mapping the full procurement process.</div>
+    <div class="gap-action">Recommendation: Fold into BM-01 (Kickoff) or BM-02 (BMP) as an L3 task. The procurement timeline mapping is part of kick-off, not a separate activity.</div>
+  </div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — B3: Formal Resource Mobilisation Stage</div>
+    <div class="gap-title">Resource mobilisation as a formal checkpoint (2 L3 tasks + gate)</div>
+    <div class="gap-desc">Playbook has B3 with a "Resource Mobilisation Gate" — full team confirmed, clearances initiated, partners signed. Product has BM-04 (resource tracking) but it's continuous (dur:0), not a gated milestone.</div>
+    <div class="gap-action">Recommendation: Per your review — add Resource Mobilisation as a formal milestone. Consider splitting BM-04 into initial mobilisation (gated) and ongoing tracking (continuous).</div>
+  </div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — B4: Win Strategy Refresh post-ITT</div>
+    <div class="gap-title">Formal re-qualification after ITT receipt (2 L3 tasks + gate)</div>
+    <div class="gap-desc">Playbook B4 has "Win Strategy Re-confirmation" gate — is the win strategy still valid after seeing the full ITT? Product doesn't have this checkpoint.</div>
+    <div class="gap-action">Recommendation: Proposed as BM-16 in the mapping above. Includes "Bid Board Win Strategy Re-confirmation" gate. Important for large bids where ITT may reveal surprises.</div>
+  </div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — P5: Content Library Management as explicit workstream</div>
+    <div class="gap-title">Content library retrieval, adaptation, and gap-filling (2 L3 tasks)</div>
+    <div class="gap-desc">Playbook has P5 as a separate L1 stage. Product distributes this across SOL-10 (evidence strategy) and PRD-03 (evidence assembly).</div>
+    <div class="gap-action">Recommendation: No new activity needed. Product's split (SOL-10 = strategy, PRD-03 = assembly) is the right decomposition. L3 tasks from playbook P5 are already mapped to those activities.</div>
+  </div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — B11: Contract Renewal / Re-bid Strategy</div>
+    <div class="gap-title">Re-bid planning 18–24 months before contract expiry (1 L3 task)</div>
+    <div class="gap-desc">Playbook has B11 as a cycle-restart activity. As you noted — this is the same as "what's our win strategy" whether new or re-bid.</div>
+    <div class="gap-action">Recommendation: No separate activity needed. The re-bid context is handled by SAL-02 (incumbent review, configurable) and the bid setup wizard's incumbency flag. B11 is the trigger to restart the cycle, not a bid-level activity.</div>
+  </div>
+
+  <div class="gap gap-missing">
+    <div class="gap-label">GAP — Procurement Milestones in Gantt</div>
+    <div class="gap-title">Client-driven procurement timeline events</div>
+    <div class="gap-desc">Playbook B2 captures procurement milestones (ITT release, clarification deadline, site visits, evaluation stages). Product has submission deadline but no formal procurement milestone timeline.</div>
+    <div class="gap-action">Recommendation: Per point 7 — rename "Governance Gates" to "Key Milestones" with two groups: (1) Procurement milestones (client-driven, from bid setup), (2) Programme milestones (internally driven, from activity completion).</div>
+  </div>
+
+  <!-- GAP SECTION 2: Product → Playbook (Extra in product) -->
+  <div class="sh">Product content not in playbook</div>
+  <div class="bt">Activities in the product that have no playbook equivalent. These represent domain-specific depth that the playbook doesn't cover — typically correct and should be retained.</div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — SOL-08: Innovation &amp; continuous improvement</div>
+    <div class="gap-desc">Not in playbook. Critical for UK government bids where innovation is a scored criterion. Retain — needs L3 authoring.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — SOL-09: Social value proposition</div>
+    <div class="gap-desc">Not in playbook. Mandatory scoring component in UK public sector (PPN 06/20, 10% minimum weighting). Retain — needs L3 authoring.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — SOL-05: Technology &amp; digital approach</div>
+    <div class="gap-desc">Not separated in playbook (folded into P3 solution architecture). Product correctly separates it for technology-heavy contracts. Retain.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — LEG-03: Insurance &amp; liability review</div>
+    <div class="gap-desc">Not in playbook as separate activity. Essential for large government contracts — PI, PL, EL, cyber insurance. Retain.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — LEG-05: Data protection &amp; security review</div>
+    <div class="gap-desc">Not in playbook (only security clearance vetting in B3). Critical for defence/justice contracts. DPIA, security classification, data handling. Retain.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — DEL-03: Performance framework &amp; KPIs/SLAs</div>
+    <div class="gap-desc">Not in playbook. Essential for service contracts — SLA design underpins delivery model and commercial model. Retain.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — DEL-05: Business continuity &amp; exit planning</div>
+    <div class="gap-desc">Not in playbook. Required in most government contracts — BC/DR plans, exit/handback provisions. Retain.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — BM-09: Competitive dialogue management</div>
+    <div class="gap-desc">Not in playbook. Procurement route specific (CD, CPN). Correctly configurable (dur:0, activatable). Retain.</div>
+  </div>
+
+  <div class="gap gap-extra">
+    <div class="gap-label">PRODUCT EXTENSION — SUP-02 through SUP-06</div>
+    <div class="gap-desc">Playbook has 2 L3 tasks for partner assessment (C3). Product has 6 supply chain activities with much more granularity. Correct for large outsourcing/defence contracts with complex supply chains. Retain.</div>
+  </div>
+
+
+  <!-- GAP SECTION 3: Gate Comparison -->
+  <div class="sh">Gate / Milestone Comparison</div>
+  <div class="bt">The playbook has 19 gates; the product has 10. Many playbook gates map to product gates but with different scope or naming.</div>
+
+  <table class="gate-tbl">
+    <tr><th>Playbook Gate</th><th>Phase</th><th>Product Gate</th><th>Match</th><th>Notes</th></tr>
+    <tr><td>G1 Opportunity Screening</td><td>Capture</td><td>—</td><td class="match-n">No match</td><td>Pre-bid screening. Product starts at ITT receipt. Consider as procurement milestone.</td></tr>
+    <tr><td>G2 Formal Pursue Decision (DQC)</td><td>Capture</td><td>G1 Pursuit Approval</td><td class="match-y">Match</td><td>Same concept. Product G1 = Playbook G2/G5.</td></tr>
+    <tr><td>G3 Buyer Values Sign-off</td><td>Capture</td><td>—</td><td class="match-n">No match</td><td>Capture-phase gate. Not in product. Consider as milestone linked to SAL-01 completion.</td></tr>
+    <tr><td>G4 Win Strategy Gate</td><td>Capture</td><td>—</td><td class="match-p">Partial</td><td>Subsumed into SAL-06 methodology gate (win strategy lock).</td></tr>
+    <tr><td>G5 Bid Board Mandate Approval</td><td>Capture</td><td>G1 Pursuit Approval</td><td class="match-y">Match</td><td>Product G1 combines playbook G2 + G5.</td></tr>
+    <tr><td>G6 Programme Baseline Gate</td><td>Proposal</td><td>—</td><td class="match-n">No match</td><td>Bid programme baselined. Consider as milestone linked to BM-01 completion.</td></tr>
+    <tr><td>G7 Storyboard Sign-off</td><td>Proposal</td><td>G8 Storyboard Sign-off</td><td class="match-y">Match</td><td>Direct match. Per point 1: rename to "Pink Review Complete".</td></tr>
+    <tr><td>G8 Commercial Risk Gate</td><td>Proposal</td><td>G3 Commercial/Finance</td><td class="match-y">Match</td><td>Direct match.</td></tr>
+    <tr><td>G9 Pink Team Gate</td><td>Proposal</td><td>—</td><td class="match-p">Partial</td><td>Product has PRD-05 as activity but no separate gate. Pink review IS the storyboard sign-off (G8/G7).</td></tr>
+    <tr><td>G10 Red Team Gate</td><td>Proposal</td><td>—</td><td class="match-p">Partial</td><td>Product has PRD-06 as activity. Consider adding as milestone — "Red Review Complete".</td></tr>
+    <tr><td>G11 Gold Sign-off Gate</td><td>Proposal</td><td>G9 Final Submission Authority</td><td class="match-p">Partial</td><td>Product G9 is broader (gold + exec approval + QA). Consider separating gold complete as milestone.</td></tr>
+    <tr><td>G12 Final Compliance Gate</td><td>Proposal</td><td>G9 Final Submission Authority</td><td class="match-p">Partial</td><td>Folded into product G9.</td></tr>
+    <tr><td>G13 Resource Mobilisation Gate</td><td>B&amp;P</td><td>—</td><td class="match-n">No match</td><td>Per your review — should be added as milestone.</td></tr>
+    <tr><td>G14 Win Strategy Re-confirmation</td><td>B&amp;P</td><td>—</td><td class="match-n">No match</td><td>Proposed as part of BM-16. Consider as milestone.</td></tr>
+    <tr><td>G15 Submission Confirmation</td><td>B&amp;P</td><td>G9 Final Submission Authority</td><td class="match-y">Match</td><td>Part of product G9.</td></tr>
+    <tr><td>G16 Rehearsal Sign-off</td><td>B&amp;P</td><td>—</td><td class="match-n">No match</td><td>Presentation readiness. Consider as milestone linked to POST-02.</td></tr>
+    <tr><td>G17 Commercial Escalation Gate</td><td>B&amp;P</td><td>G10 BAFO Authority</td><td class="match-y">Match</td><td>Direct match.</td></tr>
+    <tr><td>G18 Contract Award — Transition</td><td>B&amp;P</td><td>—</td><td class="match-n">No match</td><td>Post-award transition gate. Consider as milestone linked to POST-08.</td></tr>
+    <tr><td>G19 Re-bid Decision Gate</td><td>B&amp;P</td><td>—</td><td class="match-n">No match</td><td>Cycle restart. Out of product scope (pre-bid decision).</td></tr>
+  </table>
+
+  <div class="note">
+    <div class="note-title">Gate Summary</div>
+    <strong>Direct matches:</strong> 6 of 19 playbook gates have clear product equivalents.<br>
+    <strong>Partial matches:</strong> 5 gates are partially covered (folded into broader product gates or handled as activities).<br>
+    <strong>No match:</strong> 8 gates have no product equivalent. Most should become milestones under the renamed "Key Milestones" view (per point 7).<br><br>
+    <strong>Key architectural insight:</strong> The playbook has more gates because it treats every quality checkpoint as a gate. The product distinguishes between <em>governance gates</em> (formal approval, configurable, with entry criteria) and <em>milestones</em> (events that happen when activities complete). Per point 7, the product should show both — governance gates AND programme milestones — under a unified "Key Milestones" view.
+  </div>
+
+
+  <!-- SUMMARY STATS -->
+  <div class="sh">Summary Statistics</div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n">83</div><div class="stat-l">Proposed Activity Count</div></div>
+    <div class="stat"><div class="stat-n">+4</div><div class="stat-l">New Activities</div></div>
+    <div class="stat"><div class="stat-n">~35</div><div class="stat-l">Activities Needing L3 Authoring</div></div>
+    <div class="stat"><div class="stat-n">~48</div><div class="stat-l">Activities with Mapped L3</div></div>
+  </div>
+
+  <div class="bt" style="margin-top:12px;">
+    <strong>New activities proposed:</strong> SOL-12 (solution risk), COM-07 (commercial risk), GOV-04 (legal review), BM-16 (win strategy refresh).<br>
+    <strong>Moved activities:</strong> SAL-08 → BM-14, SAL-09 → BM-15.<br>
+    <strong>Activities with full L3 mapping from playbook:</strong> ~48 (have at least one playbook L3 task mapped).<br>
+    <strong>Activities needing L3 authoring:</strong> ~35 (either PRODUCT ONLY with no playbook equivalent, or playbook coverage is too thin).<br>
+    <strong>Renumbering required:</strong> SAL (9→7), BM (13→16), GOV (5→6), SOL (11→12), COM (6→7). Total: 79→83.
+  </div>
+
+</div>
+
+</body>
+</html>

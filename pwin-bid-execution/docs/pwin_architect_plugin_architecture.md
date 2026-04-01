@@ -1,10 +1,10 @@
 # PWIN Architect — Bid Execution Product
 ## AI Plugin Architecture Brief for Claude Code
 
-**Version:** 1.2 | March 2026
+**Version:** 1.3 | April 2026
 **Status:** Authoritative design input for all Claude Code build sessions
-**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, SaaS trajectory
-**Aligned with:** Architecture v6 (Session 8, 2026-03-27)
+**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, cross-product interfaces, SaaS trajectory
+**Aligned with:** Architecture v6 (Session 8, 2026-03-27), Gold Standard Template (Session 11, 2026-04-01)
 
 ---
 
@@ -35,17 +35,19 @@ The platform is composed of discrete products, each addressing a distinct phase 
 |---|---|---|
 | PWIN Coach | Bid/no-bid qualification. 24-question framework, 6 categories, PWIN formula output, Alex Mercer AI persona | Built — HTML prototype |
 | Portfolio Dashboard | Pipeline management. Priority matrix, PWIN benchmarking, trajectory tracking. 12 Serco seed pursuits | Built — HTML prototype |
-| Bid Execution | Full bid lifecycle management. 79 activities, 10 workstreams, governance gates, submissions engine | Architecture complete — build in progress |
+| Bid Execution | Full bid lifecycle management. 80 activities, 10 workstreams, governance gates, submissions engine | Architecture complete — build in progress |
 | PWIN Architect Plugin | AI intelligence layer across all products. MCP-connected. Persona-routed sub-agents | Design complete — build starting |
 | Bid Library | Past proposals, case studies, evidence blocks. Shared data source across all products | Concept — to be built |
 | Competitor Dossiers | Pre-compiled intelligence on frequent competitors. Quarterly refresh cadence | Concept — to be built |
 | Client Profiles | Buyer intelligence, stakeholder maps, procurement history by buyer | Concept — to be built |
+| Win Strategy | AI-driven capture-phase strategy development. 4-phase pipeline: baseline PWIN scoring → guided strategy elicitation → strategy synthesis → adversarial challenge & lock | Design complete — architecture diagram agreed (Session 11) |
 
 ### The Shared Intelligence Layer
 
 A critical architectural principle: the Bid Execution product is **one data source among several**. The plugin reasons across all of them simultaneously:
 
 - **Bid Execution product** — live pursuit data, activity status, response item production progress, compliance coverage, review scores, governance gate status
+- **Win Strategy product** — capture-phase intelligence: win themes, competitive positioning, pricing strategy framework, locked strategy and assumptions (see Section 4.6 for cross-product interface)
 - **Bid Library** — past proposals, case studies, win/loss records, evidence blocks
 - **Competitor Dossiers** — pre-compiled intelligence on Serco, Capita, Mitie, G4S, etc.
 - **Client Profiles** — buyer intelligence, stakeholder maps, procurement history
@@ -64,7 +66,7 @@ A critical architectural principle: the Bid Execution product is **one data sour
 The Bid Execution product manages the full operational bid process from ITT receipt through to submission and post-submission. It is the most sophisticated product in the platform.
 
 Confirmed architecture (from Claude Code build sessions, Architecture v6 — Session 8):
-- **79 activities** across **10 workstreams**
+- **80 activities** across **10 workstreams**
 - **Services archetype** as the default template (new business and rebid)
 - **Governance gates** covering development assurance (solution, commercial, risk reviews) and executive governance (price, risk, margin approval)
 - **Submissions engine** with ResponseSection/ResponseItem split — exam paper separated from answer sheet, 10-stage production lifecycle, per-response quality dimensions
@@ -723,7 +725,7 @@ Risk register◀──    add_risk_flag()             ◀──  With confidence
                                                       And mitigations
 ```
 
-**Context window constraint:** For a bid with 79 activities, Claude must never load all records simultaneously. The MCP server must expose filtered queries. The timeline analysis skill must use `get_activities_due_within()` and `get_critical_path()` rather than loading everything.
+**Context window constraint:** For a bid with 80 activities, Claude must never load all records simultaneously. The MCP server must expose filtered queries. The timeline analysis skill must use `get_activities_due_within()` and `get_critical_path()` rather than loading everything.
 
 ---
 
