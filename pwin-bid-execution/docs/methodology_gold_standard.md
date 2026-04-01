@@ -9760,7 +9760,378 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
+---
+
+## PRD — Proposal Production: Pipeline Note
+
+> **Production pipeline:** Compliance (PRD-01) → Storyboard (BM-10) → **Pink review of storyboard (PRD-05)** → Drafting (PRD-02) + Evidence assembly (PRD-03) + Pricing response (PRD-04) → **Red review of draft (PRD-06)** → Revisions → **Gold review of final (PRD-07)** → QA & formatting (PRD-08) → Submit (PRD-09).
+> All activities managed by the Bid Manager but RACI reflects who does the work: writers write, reviewers review, DTP formats.
+
+---
+
+## PRD-01 — Compliance Matrix & Requirements Mapping
+
+```javascript
+{
+  id: 'PRD-01', name: 'Compliance matrix & requirements mapping', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  output: 'Compliance matrix (live)', dependencies: ['SOL-01'], effortDays: 3, teamSize: 1, parallelisationType: 'S',
+
+  inputs: [
+    { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+    { external: true, artifact: 'ITT documentation — all mandatory and scored requirements' }
+  ],
+
+  subs: [{
+    id: 'PRD-01.1', name: 'Compliance Assurance', description: 'Map every ITT requirement to the response and maintain compliance position throughout the bid',
+    tasks: [
+      { id: 'PRD-01.1.1', name: 'Map every ITT mandatory and scored requirement to the response section that addresses it — identify compliance position per requirement',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Legal / Solution Architect', i: 'Workstream Leads' },
+        inputs: [{ from: 'SOL-01', artifact: 'Requirements interpretation document' }, { external: true, artifact: 'ITT documentation — all mandatory and scored requirements' }],
+        outputs: [{ name: 'Compliance matrix (draft)', format: 'Requirements-to-response mapping', quality: ['Every mandatory requirement mapped to a response section', 'Compliance position per requirement: compliant, partial, non-compliant, not yet assessed', 'Non-compliant items flagged with risk and mitigation approach', 'Matrix structured to match client expected format if specified'] }],
+        effort: 'High', type: 'Sequential' },
+      { id: 'PRD-01.1.2', name: 'Maintain compliance matrix as a living document throughout the bid — update as solution, commercial, and clarification responses evolve',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: null },
+        inputs: [{ from: 'PRD-01.1.1', artifact: 'Compliance matrix (draft)' }],
+        outputs: [{ name: 'Compliance matrix (live — activity primary output)', format: 'Living compliance register', quality: ['Updated at key milestones — post solution lock, post pricing, pre-governance', 'Non-compliant items tracked to resolution', 'Compliance status reported at governance gates', 'Final compliance check feeds PRD-09 (submission)'] }],
+        effort: 'Low', type: 'Iterative' }
+    ]
+  }],
+
+  outputs: [{ name: 'Compliance matrix (live)', format: 'Living requirements-to-response mapping', quality: ['All requirements mapped', 'Compliance position tracked', 'Non-compliance flagged and mitigated'] }],
+  consumers: [
+    { activity: 'PRD-09', consumes: 'Compliance matrix', usage: 'Final compliance check before submission' },
+    { activity: 'GOV-05', consumes: 'Compliance matrix', usage: 'Final submission authority requires compliance confirmation' }
+  ]
+}
+```
+
+---
+
+## PRD-02 — Section Drafting & Content Assembly
+
+```javascript
+{
+  id: 'PRD-02', name: 'Section drafting & content assembly', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  output: 'Draft response sections', dependencies: ['PRD-05', 'SOL-11'], effortDays: 60, teamSize: 4, parallelisationType: 'P',
+  // Note: 60 person-days, team of 4 — the largest production activity.
+  // Writers produce drafts against the pink-reviewed storyboard briefs.
+
+  inputs: [
+    { from: 'PRD-05', artifact: 'Pink review scorecard & actions', note: 'Storyboard approved via pink review — writers build from reviewed plan' },
+    { from: 'BM-10', artifact: 'Approved storyboard', note: 'Per-section storyboard and writer briefs' },
+    { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)', note: 'The authoritative solution to write about' },
+    { from: 'SAL-04', artifact: 'Win theme document', note: 'Win themes and messaging to weave through responses' },
+    { from: 'BM-07', artifact: 'Quality plan', note: 'Page budgets, writing standards, review criteria' }
+  ],
+
+  subs: [{
+    id: 'PRD-02.1', name: 'Response Drafting', description: 'Writers produce section drafts in parallel against storyboard briefs',
+    tasks: [
+      { id: 'PRD-02.1.1', name: 'Produce quality/technical response section drafts — each writer follows their storyboard brief, integrates win themes, cites evidence, stays within page budget',
+        raci: { r: 'Writers / SMEs (per section)', a: 'Workstream Leads', c: 'Solution Architect', i: 'Bid Manager' },
+        inputs: [{ from: 'BM-10', artifact: 'Approved storyboard' }, { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)' }, { from: 'SAL-04', artifact: 'Win theme document' }],
+        outputs: [{ name: 'Quality/technical section drafts', format: 'Per-section draft documents', quality: ['Each section follows its storyboard structure and brief', 'Win themes integrated per the integration map', 'Evidence and credentials cited where specified', 'Within page/word budget per BM-07 quality plan', 'Written to score — addresses evaluation criteria, not just answers the question'] }],
+        effort: 'High', type: 'Parallel' },
+      { id: 'PRD-02.1.2', name: 'Produce executive summary and overarching narrative — ties the response together, leads with win strategy',
+        raci: { r: 'Senior Bid Writer', a: 'Bid Director', c: 'Capture Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'SAL-04', artifact: 'Win theme document' }, { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)' }],
+        outputs: [{ name: 'Executive summary draft', format: 'Draft document', quality: ['Leads with win strategy and key differentiators', 'Tells the story of why we should win — not a summary of what follows', 'Aligned to buyer values and evaluation priorities'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'PRD-02.1.3', name: 'Bid Manager tracks drafting progress, manages writer issues, ensures programme adherence',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Writers', i: null },
+        inputs: [{ from: 'BM-07', artifact: 'Quality plan' }],
+        outputs: [{ name: 'Draft response sections (activity primary output)', format: 'Complete set of draft sections', quality: ['All sections drafted to at least first-draft standard', 'Progress tracked against programme — no sections missing deadline without escalation', 'Sections ready for red review (PRD-06)'] }],
+        effort: 'Low', type: 'Iterative' }
+    ]
+  }],
+
+  outputs: [{ name: 'Draft response sections', format: 'Complete draft response', quality: ['All sections drafted against storyboard', 'Win themes integrated', 'Evidence cited', 'Page budgets met', 'Ready for red review'] }],
+  consumers: [
+    { activity: 'PRD-06', consumes: 'Draft response sections', usage: 'Red review evaluates the near-complete drafts' }
+  ]
+}
+```
+
+---
+
+## PRD-03 — Evidence, Case Studies & CV Assembly
+
+```javascript
+{
+  id: 'PRD-03', name: 'Evidence, case studies & CV assembly', workstream: 'PRD', phase: 'PROD', role: 'Bid Coordinator',
+  output: 'Evidence pack', dependencies: ['SUP-05', 'SOL-10'], effortDays: 16, teamSize: 2, parallelisationType: 'P',
+
+  inputs: [
+    { from: 'SOL-10', artifact: 'Evidence requirements matrix', note: 'What evidence is needed per section' },
+    { from: 'SOL-10.2.1', artifact: 'Adapted evidence pack (existing)', note: 'Evidence already sourced and adapted' },
+    { from: 'SOL-10.2.2', artifact: 'Evidence commission register', note: 'New evidence being produced — track delivery' },
+    { from: 'SUP-05', artifact: 'Partner case studies & CVs', note: 'Partner evidence' },
+    { external: true, artifact: 'ITT documentation — evidence format requirements, CV templates, case study templates' }
+  ],
+
+  subs: [{
+    id: 'PRD-03.1', name: 'Evidence Assembly', description: 'Compile, format, and quality-assure the complete evidence pack for submission',
+    tasks: [
+      { id: 'PRD-03.1.1', name: 'Compile all evidence items — case studies, CVs, credentials, certifications, reference letters — from SOL-10 sourcing and SUP-05 partner evidence',
+        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'SMEs / Partner Leads', i: 'Writers' },
+        inputs: [{ from: 'SOL-10.2.1', artifact: 'Adapted evidence pack (existing)' }, { from: 'SUP-05', artifact: 'Partner case studies & CVs' }, { from: 'SOL-10.2.2', artifact: 'Evidence commission register' }],
+        outputs: [{ name: 'Compiled evidence items', format: 'Per-item evidence documents', quality: ['All items from SOL-10 evidence matrix accounted for — sourced, commissioned, or gap documented', 'Commissioned evidence that has been delivered collected and reviewed', 'Outstanding items tracked with delivery date'] }],
+        effort: 'Medium', type: 'Parallel' },
+      { id: 'PRD-03.1.2', name: 'Format evidence to ITT requirements and quality-assure — consistent style, correct templates, word limits, anonymisation where required',
+        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'DTP', i: null },
+        inputs: [{ from: 'PRD-03.1.1', artifact: 'Compiled evidence items' }, { external: true, artifact: 'ITT documentation — evidence format requirements' }],
+        outputs: [{ name: 'Evidence pack (activity primary output)', format: 'Submission-ready evidence pack', quality: ['All evidence formatted to ITT requirements — correct templates, within word limits', 'Client-sensitive information anonymised where required', 'Evidence cross-referenced to response sections — reviewers can trace claims to evidence', 'Evidence pack complete and ready for red review alongside response drafts'] }],
+        effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Evidence pack', format: 'Submission-ready evidence documents', quality: ['All evidence compiled, formatted, and quality-assured', 'Gaps documented', 'Cross-referenced to response sections'] }],
+  consumers: [{ activity: 'PRD-06', consumes: 'Evidence pack', usage: 'Red review includes evidence alongside response drafts' }]
+}
+```
+
+---
+
+## PRD-04 — Pricing Schedules & Commercial Response
+
+```javascript
+{
+  id: 'PRD-04', name: 'Pricing schedules & commercial response', workstream: 'PRD', phase: 'PROD', role: 'Commercial Lead',
+  output: 'Pricing response documents', dependencies: ['COM-06'], effortDays: 5, teamSize: 1, parallelisationType: 'S',
+  // Note: COM-06 locks the pricing model and populates schedules.
+  // PRD-04 packages them for submission — formatting, compliance check, assembly with the rest of the response.
+
+  inputs: [
+    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'The locked pricing schedules' },
+    { from: 'COM-04', artifact: 'Commercial model document', note: 'Commercial narrative to accompany pricing' },
+    { external: true, artifact: 'ITT documentation — pricing submission format, required supporting narrative' }
+  ],
+
+  subs: [{
+    id: 'PRD-04.1', name: 'Pricing Response Production', description: 'Package the locked pricing for submission',
+    tasks: [
+      { id: 'PRD-04.1.1', name: 'Produce commercial response narrative — explain the pricing approach, payment mechanism, value proposition in the format the ITT requires',
+        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Bid Manager', i: 'Legal' },
+        inputs: [{ from: 'COM-04', artifact: 'Commercial model document' }, { external: true, artifact: 'ITT documentation — pricing submission format' }],
+        outputs: [{ name: 'Commercial response narrative', format: 'Written commercial response sections', quality: ['Explains the pricing approach clearly for evaluators', 'Value-for-money argument articulated', 'Payment mechanism and commercial terms described in evaluator-friendly language'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'PRD-04.1.2', name: 'Assemble and format pricing response documents — schedules, narrative, supporting documents packaged for submission',
+        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'Commercial Lead', i: null },
+        inputs: [{ from: 'COM-06', artifact: 'Pricing model (locked & assured)' }, { from: 'PRD-04.1.1', artifact: 'Commercial response narrative' }],
+        outputs: [{ name: 'Pricing response documents (activity primary output)', format: 'Submission-ready pricing pack', quality: ['Pricing schedules formatted per ITT requirements', 'Commercial narrative assembled with pricing', 'Cross-references between narrative and schedules confirmed', 'Ready for red/gold review alongside quality response'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Pricing response documents', format: 'Submission-ready pricing pack', quality: ['Pricing schedules formatted', 'Commercial narrative written', 'Ready for review'] }],
+  consumers: [{ activity: 'PRD-06', consumes: 'Pricing response documents', usage: 'Red review includes pricing alongside quality response' }]
+}
+```
+
+---
+
+## PRD-05 — Pink Review (Storyboard Review)
+
+```javascript
+{
+  id: 'PRD-05', name: 'Pink review (storyboard/outline)', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  output: 'Pink review scorecard & actions', dependencies: ['BM-10'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
+  // Note: the pink review is a review of the STORYBOARD — the plan for what will be
+  // written. It validates the response structure, key messages, win theme placement,
+  // and evidence strategy BEFORE writers invest time drafting.
+  // This is NOT a review of early drafts.
+
+  inputs: [
+    { from: 'BM-10', artifact: 'Approved storyboard', note: 'The storyboards to review' },
+    { from: 'SAL-05.2.3', artifact: 'Per-section scoring strategy', note: 'What each section must demonstrate to score' },
+    { from: 'SAL-04', artifact: 'Win theme document', note: 'Win themes that must be integrated' },
+    { from: 'BM-07', artifact: 'Quality plan', note: 'Review criteria' }
+  ],
+
+  subs: [
+    {
+      id: 'PRD-05.1', name: 'Pink Team Review', description: 'Independent review of storyboards against evaluation criteria and win strategy',
+      tasks: [{
+        id: 'PRD-05.1.1', name: 'Conduct pink team review of storyboards — assess response structure, key messages, win theme integration, evidence placement, and scoring potential per section',
+        raci: { r: 'Independent Reviewers', a: 'Bid Director', c: 'Capture Lead', i: 'Writers' },
+        inputs: [{ from: 'BM-10', artifact: 'Approved storyboard' }, { from: 'SAL-05.2.3', artifact: 'Per-section scoring strategy' }, { from: 'SAL-04', artifact: 'Win theme document' }],
+        outputs: [{ name: 'Pink review scorecard', format: 'Per-section review assessment', quality: ['Every storyboard section reviewed against evaluation criteria', 'Win theme integration assessed — are differentiators placed where marks are?', 'Response structure assessed — will this structure score or is it missing key elements?', 'Evidence placement assessed — is the right evidence planned for the right sections?', 'Actions raised per section — what must change before writers start drafting'] }],
+        effort: 'High', type: 'Sequential'
+      }]
+    },
+    {
+      id: 'PRD-05.2', name: 'Pink Action Resolution', description: 'Resolve pink review actions before drafting begins',
+      tasks: [{
+        id: 'PRD-05.2.1', name: 'Resolve pink review actions — update storyboards, adjust structure, reallocate evidence, brief writers on changes',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Writers / Solution Architect', i: null },
+        inputs: [{ from: 'PRD-05.1.1', artifact: 'Pink review scorecard' }],
+        outputs: [{ name: 'Pink review scorecard & actions (resolved — activity primary output)', format: 'Updated storyboards with action resolution record', quality: ['All critical and major actions resolved before drafting begins', 'Updated storyboards issued to writers as revised briefs', 'Minor actions communicated to writers for incorporation during drafting', 'Pink review closure recorded — methodology checkpoint passed'] }],
+        effort: 'Medium', type: 'Sequential'
+      }]
+    }
+  ],
+
+  outputs: [{ name: 'Pink review scorecard & actions', format: 'Review record with resolved actions', quality: ['Storyboards reviewed by independent panel', 'Actions resolved before drafting', 'Writers briefed on any changes'] }],
+  consumers: [{ activity: 'PRD-02', consumes: 'Pink-reviewed storyboards', usage: 'Writers draft against the pink-reviewed and updated storyboards' }]
+}
+```
+
+---
+
+## PRD-06 — Red Review (Full Draft)
+
+```javascript
+{
+  id: 'PRD-06', name: 'Red review (full draft)', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  output: 'Red review scorecard & actions resolved', dependencies: ['PRD-02', 'PRD-03', 'PRD-04'], effortDays: 5, teamSize: 1, parallelisationType: 'C',
+  // Note: the red review is an EVALUATOR SIMULATION — reviewers score the near-complete
+  // draft as if they were the client evaluation panel.
+
+  inputs: [
+    { from: 'PRD-02', artifact: 'Draft response sections', note: 'Near-complete drafts (80-90%)' },
+    { from: 'PRD-03', artifact: 'Evidence pack', note: 'Evidence reviewed alongside responses' },
+    { from: 'PRD-04', artifact: 'Pricing response documents', note: 'Commercial response included in red review' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Scoring criteria reviewers assess against' },
+    { from: 'BM-07', artifact: 'Quality plan', note: 'Review criteria and scoring methodology' }
+  ],
+
+  subs: [
+    {
+      id: 'PRD-06.1', name: 'Red Team Review', description: 'Evaluator simulation — independent panel scores the draft as the client would',
+      tasks: [{
+        id: 'PRD-06.1.1', name: 'Conduct red team review — evaluator simulation scoring each section against evaluation criteria, assessing win theme penetration, evidence strength, and compliance',
+        raci: { r: 'Senior Independent Review Panel', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'PRD-02', artifact: 'Draft response sections' }, { from: 'PRD-03', artifact: 'Evidence pack' }, { from: 'PRD-04', artifact: 'Pricing response documents' }, { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' }],
+        outputs: [{ name: 'Red review scorecard', format: 'Per-section scored assessment', quality: ['Every section scored against evaluation criteria — predicted client score', 'Win theme integration assessed — are differentiators landing?', 'Evidence strength assessed — are claims substantiated?', 'Compliance confirmed per section — any non-compliance flagged as critical', 'Actions raised with severity: critical (must fix), major (should fix), minor (improve if time)'] }],
+        effort: 'High', type: 'Sequential'
+      }]
+    },
+    {
+      id: 'PRD-06.2', name: 'Red Action Resolution', description: 'Resolve red review actions — critical actions must be resolved before gold review',
+      tasks: [{
+        id: 'PRD-06.2.1', name: 'Resolve red review actions — writers revise sections, bid manager tracks to closure, critical actions must be resolved before gold review',
+        raci: { r: 'Writers (per section)', a: 'Bid Manager', c: 'Reviewers', i: 'Bid Director' },
+        inputs: [{ from: 'PRD-06.1.1', artifact: 'Red review scorecard' }],
+        outputs: [{ name: 'Red review scorecard & actions resolved (activity primary output)', format: 'Action resolution record with revised drafts', quality: ['All critical actions resolved — no unaddressed critical issues at gold review', 'Major actions resolved or accepted with rationale', 'Revised sections demonstrate score improvement vs red review assessment', 'Red review closure recorded — ready for gold review'] }],
+        effort: 'High', type: 'Sequential'
+      }]
+    }
+  ],
+
+  outputs: [{ name: 'Red review scorecard & actions resolved', format: 'Scored review with resolved actions', quality: ['Evaluator simulation scores per section', 'Critical/major actions resolved', 'Score improvement demonstrated', 'Ready for gold review'] }],
+  consumers: [{ activity: 'PRD-07', consumes: 'Red-reviewed response', usage: 'Gold review assesses the final revised response' }]
+}
+```
+
+---
+
+## PRD-07 — Gold Review (Final/Executive)
+
+```javascript
+{
+  id: 'PRD-07', name: 'Gold review (final/executive)', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  output: 'Gold review scorecard & sign-off', dependencies: ['PRD-06', 'COM-06'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'PRD-06', artifact: 'Red review scorecard & actions resolved', note: 'Red-reviewed and revised response' },
+    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'Final pricing confirmed' }
+  ],
+
+  subs: [{
+    id: 'PRD-07.1', name: 'Gold Team Review', description: 'Final executive quality and compliance review — the last check before formatting and submission',
+    tasks: [{
+      id: 'PRD-07.1.1', name: 'Conduct gold team review — executive quality check: compliance, completeness, tone, win strategy coherence, and final sign-off to proceed to submission',
+      raci: { r: 'Bid Board / Partner level', a: 'Senior Responsible Executive', c: 'Commercial Lead / Legal Lead', i: 'Bid Manager' },
+      inputs: [{ from: 'PRD-06', artifact: 'Red review scorecard & actions resolved' }, { from: 'COM-06', artifact: 'Pricing model (locked & assured)' }],
+      outputs: [{ name: 'Gold review scorecard & sign-off (activity primary output)', format: 'Executive review with sign-off', quality: ['Compliance confirmed — all mandatory requirements addressed', 'Completeness confirmed — no missing sections or annexes', 'Tone and quality confirmed — executive-level presentation standard', 'Win strategy coherence confirmed — the response tells a winning story', 'Gold review sign-off recorded — approved for formatting and submission', 'Any final actions are minor only — no material changes at this stage'] }],
+      effort: 'High', type: 'Sequential'
+    }]
+  }],
+
+  outputs: [{ name: 'Gold review scorecard & sign-off', format: 'Executive sign-off record', quality: ['Compliance, completeness, tone, strategy confirmed', 'Executive sign-off recorded', 'Approved for formatting and submission'] }],
+  consumers: [{ activity: 'PRD-08', consumes: 'Gold-reviewed response', usage: 'Final QA and formatting of approved response' }]
+}
+```
+
+---
+
+## PRD-08 — Final QA & Formatting
+
+```javascript
+{
+  id: 'PRD-08', name: 'Final QA & formatting', workstream: 'PRD', phase: 'PROD', role: 'Bid Coordinator',
+  output: 'QA checklist complete', dependencies: ['PRD-07'], effortDays: 3, teamSize: 1, parallelisationType: 'S',
+
+  inputs: [
+    { from: 'PRD-07', artifact: 'Gold review scorecard & sign-off', note: 'Gold-approved content' },
+    { external: true, artifact: 'ITT documentation — formatting requirements, branding guidelines, page limits, file format requirements' },
+    { external: true, artifact: 'Corporate branding templates and style guide' }
+  ],
+
+  subs: [{
+    id: 'PRD-08.1', name: 'Document Production', description: 'Format, proof-read, and quality-assure the final submission documents',
+    tasks: [
+      { id: 'PRD-08.1.1', name: 'Apply formatting, branding, and layout — corporate template, page limits, headers/footers, table of contents, cross-references, graphics',
+        raci: { r: 'Bid Coordinator / DTP', a: 'Bid Manager', c: 'Brand/Design', i: 'Bid Director' },
+        inputs: [{ from: 'PRD-07', artifact: 'Gold review scorecard & sign-off' }, { external: true, artifact: 'Corporate branding templates and style guide' }],
+        outputs: [{ name: 'Formatted proposal documents', format: 'Submission-ready documents', quality: ['Corporate branding applied consistently', 'Page/word limits met per section', 'Table of contents, cross-references, and figure numbering correct', 'Graphics and diagrams formatted to print quality'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'PRD-08.1.2', name: 'Proof-read, spell-check, and cross-reference — final quality assurance pass before submission',
+        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'Senior Bid Writer', i: null },
+        inputs: [{ from: 'PRD-08.1.1', artifact: 'Formatted proposal documents' }],
+        outputs: [{ name: 'QA checklist complete (activity primary output)', format: 'QA sign-off with error-free documents', quality: ['Proof-read complete — spelling, grammar, punctuation', 'Cross-references verified — all internal references correct', 'Page/word counts confirmed within limits', 'Print test completed — formatting survives PDF conversion', 'QA checklist signed off — documents are submission-ready'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'QA checklist complete', format: 'QA sign-off with formatted documents', quality: ['Formatted, proof-read, cross-referenced, print-tested', 'QA checklist signed off'] }],
+  consumers: [{ activity: 'PRD-09', consumes: 'Formatted documents', usage: 'Submission packaging uses the QA-approved documents' }]
+}
+```
+
+---
+
+## PRD-09 — Submission Packaging & Upload
+
+```javascript
+{
+  id: 'PRD-09', name: 'Submission packaging & upload', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  output: 'Submission confirmation receipt', dependencies: ['PRD-08', 'GOV-05'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'PRD-08', artifact: 'QA checklist complete', note: 'Formatted, QA-approved documents' },
+    { from: 'PRD-01', artifact: 'Compliance matrix (live)', note: 'Final compliance check' },
+    { from: 'GOV-05', artifact: 'Submission authority confirmation', note: 'Formal authority to submit' },
+    { external: true, artifact: 'Procurement portal access, credentials, and submission instructions' }
+  ],
+
+  subs: [{
+    id: 'PRD-09.1', name: 'Final Submission', description: 'Final compliance check, package, upload, and confirm',
+    tasks: [
+      { id: 'PRD-09.1.1', name: 'Conduct final compliance check — verify all mandatory requirements addressed, all documents present, all formats correct',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Legal / Commercial Lead', i: null },
+        inputs: [{ from: 'PRD-01', artifact: 'Compliance matrix (live)' }, { from: 'PRD-08', artifact: 'QA checklist complete' }],
+        outputs: [{ name: 'Final compliance sign-off', format: 'Compliance confirmation', quality: ['Every mandatory requirement confirmed as addressed', 'All required documents present and in correct format', 'File sizes within portal limits', 'Compliance sign-off recorded'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'PRD-09.1.2', name: 'Package and upload submission — portal upload, confirmation receipt obtained, submission archived',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'IT Support', i: 'All Workstream Leads' },
+        inputs: [{ from: 'PRD-09.1.1', artifact: 'Final compliance sign-off' }, { from: 'GOV-05', artifact: 'Submission authority confirmation' }, { external: true, artifact: 'Procurement portal access and submission instructions' }],
+        outputs: [{ name: 'Submission confirmation receipt (activity primary output)', format: 'Portal confirmation with archive', quality: ['Submission uploaded to portal before deadline — with contingency time', 'Portal confirmation receipt obtained and recorded', 'Complete submission archived — all documents, pricing, evidence, supporting materials', 'Bid team notified of successful submission', 'BM-11 (hot debrief) triggered'] }],
+        effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Submission confirmation receipt', format: 'Portal confirmation with submission archive', quality: ['Submitted before deadline', 'Confirmation receipt obtained', 'Complete archive created', 'Hot debrief triggered'] }],
+  consumers: [
+    { activity: 'BM-11', consumes: 'Submission confirmation', usage: 'Hot debrief triggered within 48 hours' },
+    { activity: 'POST-01', consumes: 'Submitted proposal', usage: 'Presentation preparation references the submitted response' }
+  ]
+}
+```
+
+---
+
 *Gold standard established from SAL-03 — Session 11, 2026-04-01*
-*SAL, SOL, COM, LEG, DEL, SUP workstreams complete — Session 12, 2026-04-01*
-*BM workstream complete — Session 12, 2026-04-01*
+*SAL, SOL, COM, LEG, DEL, SUP, BM workstreams complete — Session 12, 2026-04-01*
+*PRD workstream complete — Session 12, 2026-04-01*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*

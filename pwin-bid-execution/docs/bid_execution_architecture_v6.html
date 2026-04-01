@@ -234,7 +234,7 @@ const WS=[
   ]},
   {id:'PRD',name:'Proposal Production',cls:'production',ph:'PRD',acts:[
     {id:'PRD-01',n:'Compliance matrix & requirements mapping',o:'Compliance matrix (live)',d:['SOL-01'],dur:3,ts:1,pt:'S'},
-    {id:'PRD-02',n:'Section drafting & content assembly',o:'Draft response sections',d:['BM-10','SOL-11'],dur:60,ts:4,pt:'P'},
+    {id:'PRD-02',n:'Section drafting & content assembly',o:'Draft response sections',d:['PRD-05','SOL-11'],dur:60,ts:4,pt:'P'},
     {id:'PRD-03',n:'Evidence, case studies & CV assembly',o:'Evidence pack',d:['SUP-05','SOL-10'],dur:16,ts:2,pt:'P'},
     {id:'PRD-04',n:'Pricing schedules & commercial response',o:'Pricing response documents',d:['COM-06'],dur:5,ts:1,pt:'S'},
     {id:'PRD-05',n:'Pink review (storyboard/outline)',o:'Pink review scorecard & actions',d:['BM-10'],dur:3,ts:1,pt:'C'},
@@ -528,7 +528,7 @@ R.deps=()=>`
   <div class="sh">Critical Paths</div>
   ${[
     {l:'Solution → Price → Governance → Submit (primary)',ch:'SAL-06 → SOL-01 → SOL-03 → SOL-04 → COM-01 → COM-06 → GOV-03 → GOV-05 → PRD-09',r:'The longest chain. ~75 working days. Any delay in solution cascades through pricing and governance.'},
-    {l:'Win Strategy → Storyboard → Production',ch:'SAL-06 → BM-10 → PRD-02 → PRD-06 → PRD-07 → PRD-08 → PRD-09',r:'Win strategy lock must precede storyboard, which must precede drafting. Two methodology gates in sequence.'},
+    {l:'Win Strategy → Storyboard → Pink Review → Production',ch:'SAL-06 → BM-10 → PRD-05 → PRD-02 → PRD-06 → PRD-07 → PRD-08 → PRD-09',r:'Win strategy lock must precede storyboard. Storyboard must pass pink review before drafting begins. Two methodology gates in sequence.'},
     {l:'Partners → Solution → Production',ch:'SUP-01 → SUP-02 → SOL-05 → SOL-11 → PRD-02',r:'Partner delays in solution inputs block technology design, solution lock, and drafting.'},
     {l:'Clarification cascade',ch:'SAL-07 → BM-14 → BM-15 → (impacts SOL/COM/LEG/DEL)',r:'Clarification responses can reshape requirements, invalidate assumptions, and force rework across workstreams.'},
     {l:'Risk premium chain',ch:'SOL-04 → DEL-01 → DEL-06 → COM-06 → GOV-03',r:'Unmitigated risks or unvalidated assumptions force contingency loading at governance.'},
