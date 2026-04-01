@@ -5102,7 +5102,512 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
+---
+
+## COM-01 — Should-cost Model Development
+
+```javascript
+{
+  id: 'COM-01',
+  name: 'Should-cost model development',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Should-cost model',
+  dependencies: ['SOL-04', 'SOL-06'],
+  effortDays: 8,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires commercial and financial modelling expertise
+  // Note: this is the BOTTOM-UP costing activity — what does our solution actually cost
+  // to deliver? Built from first principles using solution workstream outputs.
+  // This is the "truth" that gets presented to executives at gate reviews.
+  // Executives then determine the profit margin based on risk appetite.
+  //
+  // The top-down price-to-win (COM-02) runs in parallel — the tension between
+  // bottom-up cost and top-down win price is where the real commercial strategy lives.
+  // If bottom-up exceeds top-down, something gives: solution, margin, or bid decision.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Processes, resource model, capacity — what to cost' },
+    { from: 'SOL-04.1.2', artifact: 'Resource and capacity model', note: 'FTEs, roles, grades per service line' },
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Licensing, development, hosting, support costs' },
+    { from: 'SOL-05.1.2', artifact: 'Build/buy/reuse assessment', note: 'COTS licensing vs build costs' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'Workforce costs — salaries, pensions, NI, benefits, TUPE cost impact' },
+    { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis', note: 'Recruitment, redundancy, training costs' },
+    { from: 'SOL-07', artifact: 'Transition plan', note: 'Mobilisation and one-off transition costs' },
+    { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model', note: 'Year-on-year cost trajectory as AI/automation reduce headcount' },
+    { from: 'SOL-09', artifact: 'Social value plan', note: 'Cost of delivering social value commitments' },
+    { from: 'SOL-12', artifact: 'Solution risk register', note: 'Risk mitigation costs and contingency requirements' },
+    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Commercial framework and payment mechanism context from capture plan' },
+    { external: true, artifact: 'Corporate rate cards, salary benchmarks, overhead rates, standard cost assumptions' },
+    { external: true, artifact: 'ITT documentation — pricing schedule structure, cost categories, indexation provisions' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-01.1',
+      name: 'Cost Build-Up',
+      description: 'Build the should-cost model from first principles — workforce, non-workforce, transition, and partner costs — aligned to the locked solution design',
+
+      tasks: [
+        {
+          id: 'COM-01.1.1',
+          name: 'Build workforce cost model — people costs from SOL-06 staffing model: salaries, pensions, employer NI, benefits, training, recruitment costs per role per year',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'HR Lead / Finance', i: 'Solution Architect' },
+          inputs: [
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis' },
+            { external: true, artifact: 'Corporate rate cards, salary benchmarks, overhead rates' }
+          ],
+          outputs: [
+            {
+              name: 'Workforce cost model',
+              format: 'Structured cost model (per role, per year)',
+              quality: [
+                'Every role costed — salary/day rate, employer NI, pension contribution, benefits, overhead',
+                'TUPE-transferring workforce costed at their actual terms — not our standard rates',
+                'Gap resolution costs included — recruitment fees, redundancy provisions, interim/agency costs',
+                'Training and upskilling costs included per the workforce gap analysis',
+                'Year-on-year workforce cost profile — not flat, reflects planned changes across contract term'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-01.1.2',
+          name: 'Build non-workforce cost model — technology, facilities, consumables, travel, insurance, management overhead, third-party services',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Technical Lead / Delivery Director', i: 'Finance' },
+          inputs: [
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { from: 'SOL-05.1.2', artifact: 'Build/buy/reuse assessment' },
+            { from: 'SOL-09', artifact: 'Social value plan' },
+            { external: true, artifact: 'Corporate cost assumptions, standard overhead rates' }
+          ],
+          outputs: [
+            {
+              name: 'Non-workforce cost model',
+              format: 'Structured cost model (per category, per year)',
+              quality: [
+                'Technology costs itemised — licensing, hosting, development, support, maintenance per year',
+                'Facilities and property costs included where applicable — rent, utilities, equipment',
+                'Social value delivery costs quantified per commitment',
+                'Management overhead and corporate charges applied appropriately',
+                'Year-on-year non-workforce profile modelled — technology costs may reduce as development completes'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'COM-01.1.3',
+          name: 'Build transition and mobilisation cost model — one-off costs from SOL-07: dual running, recruitment, technology migration, training, mobilisation team',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Delivery Director', i: 'Finance' },
+          inputs: [
+            { from: 'SOL-07', artifact: 'Transition plan' }
+          ],
+          outputs: [
+            {
+              name: 'Transition cost model',
+              format: 'Structured one-off cost model',
+              quality: [
+                'All one-off transition costs quantified — mobilisation team, dual running period, parallel systems',
+                'Recruitment and onboarding costs for gap roles included',
+                'Technology migration costs included — data migration, system deployment, parallel running',
+                'Training and induction costs for transferring and new workforce included',
+                'Clear distinction between one-off transition costs and recurring steady-state costs'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'COM-01.1.4',
+          name: 'Incorporate partner and supply chain cost placeholder — to be updated when COM-03 confirms partner pricing',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Supply Chain Lead', i: 'Partner Leads' },
+          inputs: [
+            { external: true, artifact: 'Indicative partner cost estimates (pre-COM-03)' }
+          ],
+          outputs: [
+            {
+              name: 'Partner cost placeholder',
+              format: 'Estimated partner cost line items',
+              quality: [
+                'All known partner and subcontractor cost elements identified with indicative values',
+                'Placeholder marked for update when COM-03 (partner pricing) confirms actual costs',
+                'Risk range noted — what is the variance between indicative and likely final partner costs?'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'COM-01.2',
+      name: 'Cost Modelling & Assumptions',
+      description: 'Model the full cost trajectory across the contract term, document every assumption, and validate the should-cost model as the basis for pricing',
+
+      tasks: [
+        {
+          id: 'COM-01.2.1',
+          name: 'Model cost trajectory across the contract term — year-on-year cost profile incorporating innovation productivity curve and planned changes',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Solution Architect / Finance', i: 'Delivery Director' },
+          inputs: [
+            { from: 'COM-01.1.1', artifact: 'Workforce cost model' },
+            { from: 'COM-01.1.2', artifact: 'Non-workforce cost model' },
+            { from: 'COM-01.1.3', artifact: 'Transition cost model' },
+            { from: 'COM-01.1.4', artifact: 'Partner cost placeholder' },
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model' }
+          ],
+          outputs: [
+            {
+              name: 'Contract-term cost model',
+              format: 'Year-on-year cost projection',
+              quality: [
+                'Full contract term modelled year by year — not a flat annual cost extrapolated',
+                'Innovation productivity curve incorporated — headcount and cost reductions phased per SOL-08 roadmap',
+                'Transition costs profiled in year 0/1 — clear distinction from steady-state recurring costs',
+                'Indexation and inflation assumptions applied where applicable',
+                'Total cost of service and total cost of ownership both calculated'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-01.2.2',
+          name: 'Document all cost assumptions — inflation, attrition, utilisation, volume, demand variability, rate card basis, contingency approach',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance', i: 'Solution Architect' },
+          inputs: [
+            { from: 'COM-01.2.1', artifact: 'Contract-term cost model' },
+            { from: 'SOL-12', artifact: 'Solution risk register', note: 'Risk-driven contingency requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Cost assumptions register',
+              format: 'Structured assumptions register',
+              quality: [
+                'Every material cost assumption documented — basis, source, confidence level',
+                'Key assumptions identified — the ones that, if wrong, materially change the cost',
+                'Contingency approach documented — how risk is priced (explicit contingency line, risk premium, or absorbed in margin)',
+                'Assumptions register feeds directly into COM-05 (sensitivity analysis) — each assumption is a sensitivity variable'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-01.2.3',
+          name: 'Validate should-cost model — confirm it reflects the locked solution, is internally consistent, and provides a credible basis for pricing',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Solution Architect', i: 'Bid Manager' },
+          inputs: [
+            { from: 'COM-01.2.1', artifact: 'Contract-term cost model' },
+            { from: 'COM-01.2.2', artifact: 'Cost assumptions register' }
+          ],
+          outputs: [
+            {
+              name: 'Should-cost model (validated — activity primary output)',
+              format: 'Comprehensive cost model with assumptions',
+              quality: [
+                'Cost model reconciles to the locked solution — every SOL output is costed',
+                'Bottom-up total is internally consistent — workforce + non-workforce + transition + partner = total',
+                'Year-on-year cost trajectory is credible — reflects planned innovation and workforce changes',
+                'All assumptions documented and flagged for sensitivity testing',
+                'Model is structured for executive presentation — clear, auditable, defensible',
+                'Ready for comparison against top-down price-to-win (COM-02)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Should-cost model',
+      format: 'Comprehensive cost model with assumptions',
+      quality: [
+        'Workforce costs built from staffing model — per role, per year, TUPE terms reflected',
+        'Non-workforce costs built — technology, facilities, social value, overhead',
+        'Transition costs profiled — one-off mobilisation and migration costs',
+        'Partner costs included (indicative pending COM-03)',
+        'Year-on-year cost trajectory modelled — innovation productivity curve incorporated',
+        'All assumptions documented with confidence levels',
+        'Validated as reflective of locked solution, internally consistent, and executive-presentable'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-02', consumes: 'Should-cost model', usage: 'Price-to-win analysis compares bottom-up cost against top-down win price' },
+    { activity: 'COM-05', consumes: 'Should-cost model + cost assumptions register', usage: 'Sensitivity analysis stress-tests key assumptions' },
+    { activity: 'COM-06', consumes: 'Should-cost model', usage: 'Pricing finalisation builds price from validated cost base plus margin' },
+    { activity: 'GOV-03', consumes: 'Should-cost model', usage: 'Pricing & risk governance review examines the cost base' }
+  ]
+}
+```
+
+---
+
+---
+
+## COM-02 — Price-to-Win Analysis
+
+```javascript
+{
+  id: 'COM-02',
+  name: 'Price-to-win analysis',
+  workstream: 'COM',
+  phase: 'DEV',
+  role: 'Commercial Lead',
+  output: 'Price-to-win assessment',
+  dependencies: ['SAL-03', 'COM-01'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires commercial intelligence and pricing strategy expertise
+  // Note: this is the TOP-DOWN pricing activity — starts from the market and works
+  // backward. What's the current contract value? What do competitors bid? Where must
+  // we land to win? Then compare against the bottom-up cost (COM-01).
+  //
+  // The tension between bottom-up cost and top-down win price is where the real
+  // commercial strategy lives. If bottom-up exceeds top-down, something gives:
+  // solution, margin, or bid decision.
+  //
+  // PROCUREMENT ACT 2023 context: replaces old MEAT (Most Economically Advantageous
+  // Tender) with MAT (Most Advantageous Tender). The word "economically" is dropped —
+  // quality, social value, and strategic factors can be weighted more heavily.
+  // New assessment mechanisms and transparency requirements. The quality/price
+  // interaction is now potentially more quality-dominant, which changes the price-to-win
+  // calculus — a higher price may be viable if quality score is sufficiently strong.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'COM-01', artifact: 'Should-cost model', note: 'Bottom-up cost to compare against top-down price envelope' },
+    { from: 'SAL-03', artifact: 'Competitive landscape assessment', note: 'Competitor profiles and likely price positioning' },
+    { from: 'SAL-02.2.1', artifact: 'Incumbent price position assessment', note: 'Current contract value and incumbent cost base' },
+    { from: 'SAL-01.2.1', artifact: 'Buyer values register', note: 'Client budget signals and affordability context' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Quality/price split and scoring model — determines how much price matters vs quality' },
+    { from: 'SAL-05.2.2', artifact: 'Score gap analysis', note: 'Our likely quality score position — can we win on quality at a higher price?' },
+    { from: 'SOL-08.3.2', artifact: 'Innovation value sharing and investment framework', note: 'How innovation investment changes the price trajectory' },
+    { external: true, artifact: 'Contracts Finder / FTS award data — current and historical contract values for this requirement' },
+    { external: true, artifact: 'Industry benchmarking data — unit costs, service rates, commodity pricing (Gartner, ISG, NelsonHall, RICS, or sector-specific benchmarks)' },
+    { external: true, artifact: 'Procurement Act 2023 assessment framework — MAT criteria, transparency requirements, new evaluation mechanisms' },
+    { external: true, artifact: 'ITT documentation — pricing evaluation methodology, price/quality weighting, affordability cap (if any)' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'COM-02.1',
+      name: 'Market Price Intelligence',
+      description: 'Build the top-down price picture from all available intelligence — current contract, competitors, benchmarks, client budget, and the regulatory framework that governs how price is evaluated',
+
+      tasks: [
+        {
+          id: 'COM-02.1.1',
+          name: 'Establish the current cost baseline — existing contract value, historical award data, and industry benchmarking for comparable services or commodities',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Capture Lead / Market Intelligence', i: 'Solution Architect' },
+          inputs: [
+            { from: 'SAL-02.2.1', artifact: 'Incumbent price position assessment' },
+            { external: true, artifact: 'Contracts Finder / FTS award data — current and historical contract values' },
+            { external: true, artifact: 'Industry benchmarking data — unit costs, service rates, commodity pricing' }
+          ],
+          outputs: [
+            {
+              name: 'Market price baseline',
+              format: 'Structured price intelligence',
+              quality: [
+                'Current contract value documented with source — known award value, extensions, amendments',
+                'Historical price trajectory noted — has the contract value grown, shrunk, or remained stable?',
+                'Industry benchmarks applied where available — unit costs for commodity elements (e.g., cost per endpoint, cost per FTE managed, cost per transaction)',
+                'Benchmark sources cited — Gartner, ISG, NelsonHall, RICS, or sector-specific — with publication date and relevance assessment',
+                'Where no benchmarks exist, comparable contract values used as proxy with confidence assessment'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-02.1.2',
+          name: 'Assess competitor price positioning — what are credible competitors likely to bid based on their cost base, strategy, and market behaviour?',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Capture Lead', i: 'Partner Lead' },
+          inputs: [
+            { from: 'SAL-03', artifact: 'Competitive landscape assessment' },
+            { from: 'COM-02.1.1', artifact: 'Market price baseline' }
+          ],
+          outputs: [
+            {
+              name: 'Competitor price position assessment',
+              format: 'Per-competitor estimated price range',
+              quality: [
+                'Each credible competitor assessed for likely price range — low/mid/high with rationale',
+                'Assessment based on known cost structures, market behaviour, strategic intent (buying the contract, defending margin, disrupting)',
+                'Incumbent price advantage or disadvantage quantified — are they likely to bid below current value?',
+                'Confidence level stated per assessment — known, inferred, or assumed'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-02.1.3',
+          name: 'Assess client budget and affordability — what can the client afford, what signals have they given, and how does the Procurement Act MAT framework affect price evaluation?',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Capture Lead / Account Manager', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SAL-01.2.1', artifact: 'Buyer values register' },
+            { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' },
+            { external: true, artifact: 'ITT documentation — pricing evaluation methodology, price/quality weighting, affordability cap (if any)' },
+            { external: true, artifact: 'Procurement Act 2023 assessment framework — MAT criteria, new evaluation mechanisms' }
+          ],
+          outputs: [
+            {
+              name: 'Client affordability and evaluation context assessment',
+              format: 'Structured assessment',
+              quality: [
+                'Client budget signals documented — affordability cap, spending review constraints, value-for-money expectations',
+                'Price/quality weighting analysed — under Procurement Act MAT framework, how much does price actually drive the outcome?',
+                'Assessment of whether quality-dominant evaluation enables a premium price position — can we win at a higher price with a superior quality score?',
+                'New Procurement Act mechanisms assessed — direct award thresholds, competitive flexible procedure, dynamic markets (if relevant to this procurement)',
+                'Affordability risk assessed — is there a price ceiling above which the client simply cannot award, regardless of quality?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'COM-02.2',
+      name: 'Price-to-Win Modelling',
+      description: 'Synthesise all intelligence into a price envelope, compare against bottom-up cost, and determine where to position — factoring in quality/price interaction under the new Procurement Act MAT framework',
+
+      tasks: [
+        {
+          id: 'COM-02.2.1',
+          name: 'Model the price envelope — floor, competitive midpoint, and ceiling — incorporating quality/price interaction and Procurement Act MAT assessment framework',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Capture Lead / Finance', i: 'Solution Architect' },
+          inputs: [
+            { from: 'COM-02.1.1', artifact: 'Market price baseline' },
+            { from: 'COM-02.1.2', artifact: 'Competitor price position assessment' },
+            { from: 'COM-02.1.3', artifact: 'Client affordability and evaluation context assessment' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis', note: 'Our likely quality score position' }
+          ],
+          outputs: [
+            {
+              name: 'Price-to-win envelope',
+              format: 'Structured price range with rationale',
+              quality: [
+                'Three price points defined: floor (minimum viable margin), competitive midpoint (likely winning range), ceiling (maximum the market will bear)',
+                'Quality/price interaction modelled — at our expected quality score, what price range wins? Under MAT, quality advantage may justify price premium',
+                'Each price point has a rationale — not arbitrary numbers but evidence-based from market intelligence',
+                'Industry benchmarks used as validation — does our envelope align with market rates for comparable services?',
+                'Scenario analysis: what happens if our quality score is higher or lower than expected?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-02.2.2',
+          name: 'Compare bottom-up cost against top-down price envelope — is the gap bridgeable? What are the options if it is not?',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Solution Architect / Finance', i: 'Partner' },
+          inputs: [
+            { from: 'COM-02.2.1', artifact: 'Price-to-win envelope' },
+            { from: 'COM-01', artifact: 'Should-cost model' }
+          ],
+          outputs: [
+            {
+              name: 'Bottom-up vs top-down gap analysis',
+              format: 'Structured gap assessment with options',
+              quality: [
+                'Gap between bottom-up cost and top-down win price quantified — total and per year',
+                'Gap characterised: positive (margin available), neutral (break-even), or negative (cost exceeds win price)',
+                'If negative: options identified and quantified — solution descope, innovation acceleration, margin reduction, partner renegotiation, or walk away',
+                'If positive: margin range identified — what profit is available at each price point in the envelope?',
+                'Commercial strategy recommendation stated — where in the envelope should we land, and why?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'COM-02.2.3',
+          name: 'Validate price-to-win assessment — confirm the recommended price position and escalate if bottom-up exceeds top-down',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Partner', i: 'Bid Manager' },
+          inputs: [
+            { from: 'COM-02.2.1', artifact: 'Price-to-win envelope' },
+            { from: 'COM-02.2.2', artifact: 'Bottom-up vs top-down gap analysis' }
+          ],
+          outputs: [
+            {
+              name: 'Price-to-win assessment (validated — activity primary output)',
+              format: 'Executive pricing intelligence document',
+              quality: [
+                'Recommended price position stated with rationale — where in the envelope and why',
+                'Market intelligence summarised — current value, competitor positioning, benchmarks, client affordability',
+                'Quality/price interaction under MAT framework assessed — does our quality advantage justify our price position?',
+                'Bottom-up vs top-down gap clearly stated — margin available or gap to close',
+                'If gap exists: options presented with recommendation for executive decision',
+                'Assessment ready for executive presentation at pricing governance gate'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Price-to-win assessment',
+      format: 'Executive pricing intelligence document',
+      quality: [
+        'Market price baseline established — current contract value, historical data, industry benchmarks',
+        'Competitor price positioning assessed per credible competitor',
+        'Client affordability and budget context assessed',
+        'Procurement Act MAT framework implications analysed — quality/price interaction',
+        'Price envelope modelled — floor, midpoint, ceiling with evidence-based rationale',
+        'Bottom-up vs top-down gap quantified with options if negative',
+        'Recommended price position stated for executive decision'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-05', consumes: 'Price-to-win assessment', usage: 'Sensitivity analysis tests the price position against key assumptions' },
+    { activity: 'COM-06', consumes: 'Price-to-win assessment', usage: 'Pricing finalisation lands the actual price within the validated envelope' },
+    { activity: 'GOV-03', consumes: 'Price-to-win assessment', usage: 'Pricing governance review uses market intelligence to assess proposed price' }
+  ]
+}
+```
+
+---
+
 *Gold standard established from SAL-03 — Session 11, 2026-04-01*
 *SAL workstream complete — Session 12, 2026-04-01*
 *SOL workstream complete — Session 12, 2026-04-01*
+*COM workstream started — Session 12, 2026-04-01*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*
