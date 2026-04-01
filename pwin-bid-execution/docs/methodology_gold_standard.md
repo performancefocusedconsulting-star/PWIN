@@ -8435,10 +8435,713 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
+---
+
+## SUP-01 — Partner Identification & Selection
+
+```javascript
+{
+  id: 'SUP-01',
+  name: 'Partner identification & selection',
+  workstream: 'SUP',
+  phase: 'DEV',
+  role: 'Supply Chain Lead',
+  output: 'Partner shortlist with rationale',
+  dependencies: ['SOL-01'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: SAL-06 L2.3 defined the consortium strategy, partner capability requirements,
+  // and work breakdown. SUP-01 EXECUTES against that brief — sourcing, assessing, and
+  // selecting the specific firms. It does not re-identify what we need.
+
+  inputs: [
+    { from: 'SAL-06.3.1', artifact: 'Consortium strategy', note: 'The strategic framework — prime/sub, JV, SPV' },
+    { from: 'SAL-06.3.2', artifact: 'Partner capability requirements', note: 'What capabilities we need and why — the brief to source against' },
+    { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown', note: 'Who owns what scope' },
+    { from: 'SAL-05.2.2', artifact: 'Score gap analysis', note: 'Where partner credentials close scoring gaps' },
+    { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'Technical requirements that partners must address' },
+    { external: true, artifact: 'Market intelligence — known firms, framework incumbents, specialist providers' },
+    { external: true, artifact: 'Corporate preferred supplier list and partner relationship history' }
+  ],
+
+  subs: [
+    {
+      id: 'SUP-01.1',
+      name: 'Partner Search & Assessment',
+      description: 'Source candidate partners against the SAL-06 brief, conduct due diligence, and select the shortlist',
+
+      tasks: [
+        {
+          id: 'SUP-01.1.1',
+          name: 'Source candidate partners against SAL-06 capability requirements — develop a long-list of firms that match each partner requirement',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Capture Lead / Solution Architect', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SAL-06.3.2', artifact: 'Partner capability requirements' },
+            { external: true, artifact: 'Market intelligence — known firms, framework incumbents, specialist providers' },
+            { external: true, artifact: 'Corporate preferred supplier list and partner relationship history' }
+          ],
+          outputs: [
+            {
+              name: 'Partner long-list',
+              format: 'Structured register per capability requirement',
+              quality: [
+                'At least 2-3 candidates identified per capability requirement — not single-sourced',
+                'Each candidate has rationale for inclusion — why they match the requirement',
+                'Existing relationships and prior experience noted per candidate',
+                'Initial market availability confirmed — are they likely to be available and interested?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SUP-01.1.2',
+          name: 'Conduct due diligence on shortlisted partners — capability, capacity, security clearance, financial standing, cultural fit, conflict of interest',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Legal / Commercial Lead', i: 'Finance' },
+          inputs: [
+            { from: 'SUP-01.1.1', artifact: 'Partner long-list' },
+            { from: 'SAL-06.3.1', artifact: 'Consortium strategy' }
+          ],
+          outputs: [
+            {
+              name: 'Partner due diligence assessments',
+              format: 'Per-partner structured assessment',
+              quality: [
+                'Capability assessed against specific requirement — can they deliver the scope?',
+                'Capacity assessed — are they available, or are they committed on competing bids?',
+                'Security clearance status confirmed — do they hold the required clearances or can they obtain them?',
+                'Financial standing assessed — are they stable enough for a multi-year subcontract?',
+                'Conflict of interest checked — are they bidding with a competitor?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'
+        },
+        {
+          id: 'SUP-01.1.3',
+          name: 'Select and confirm partner shortlist — recommended partners per capability requirement with rationale',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Capture Lead' },
+          inputs: [
+            { from: 'SUP-01.1.2', artifact: 'Partner due diligence assessments' }
+          ],
+          outputs: [
+            {
+              name: 'Partner shortlist with rationale (activity primary output)',
+              format: 'Recommended partner register',
+              quality: [
+                'Recommended partner per capability requirement — with rationale and backup option',
+                'Due diligence summary per selected partner — capability, clearance, financial, conflict status',
+                'Any conditions or risks per partner noted — "subject to clearance", "capacity concern"',
+                'Shortlist feeds SUP-02 (solution inputs), SUP-03 (teaming), SUP-05 (credentials)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Partner shortlist with rationale',
+      format: 'Recommended partner register with due diligence',
+      quality: [
+        'Partners sourced against SAL-06 capability requirements — not re-identified, executed',
+        'Due diligence conducted — capability, capacity, clearance, financial, conflict',
+        'Recommended partner per requirement with rationale and backup'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'SUP-02', consumes: 'Partner shortlist', usage: 'Selected partners briefed for solution design contribution' },
+    { activity: 'SUP-03', consumes: 'Partner shortlist', usage: 'Teaming agreement negotiation initiated with selected partners' },
+    { activity: 'SUP-05', consumes: 'Partner shortlist', usage: 'Evidence requirements issued to selected partners' },
+    { activity: 'GOV-02', consumes: 'Partner shortlist', usage: 'Solution & strategy review examines partner selection' }
+  ]
+}
+```
+
+---
+
+## SUP-02 — Partner Solution Inputs & Design Contribution
+
+```javascript
+{
+  id: 'SUP-02',
+  name: 'Partner solution inputs & design contribution',
+  workstream: 'SUP',
+  phase: 'DEV',
+  role: 'Supply Chain Lead',
+  output: 'Partner solution inputs pack',
+  dependencies: ['SUP-01', 'SOL-03'],
+  effortDays: 10,
+  teamSize: 2,
+  parallelisationType: 'P',
+
+  inputs: [
+    { from: 'SUP-01', artifact: 'Partner shortlist with rationale' },
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'The solution framework partners must contribute to' },
+    { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown', note: 'What scope each partner owns' },
+    { external: true, artifact: 'Partner briefing packs — scope, requirements, design contribution expectations, timelines' }
+  ],
+
+  subs: [
+    {
+      id: 'SUP-02.1',
+      name: 'Partner Solution Integration',
+      description: 'Brief partners, collect their solution inputs, and integrate into the overall solution design',
+
+      tasks: [
+        {
+          id: 'SUP-02.1.1',
+          name: 'Brief partners on solution scope and design contribution requirements — what we need from them, in what format, by when',
+          raci: { r: 'Supply Chain Lead', a: 'Solution Architect', c: 'Bid Manager', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SUP-01', artifact: 'Partner shortlist with rationale' },
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SAL-06.3.3', artifact: 'Consortium delivery model and work breakdown' }
+          ],
+          outputs: [
+            {
+              name: 'Partner design contribution briefs',
+              format: 'Per-partner structured brief',
+              quality: [
+                'Each partner has a clear brief — scope, deliverables, format, timeline',
+                'Design constraints and integration points specified — how their contribution fits the overall solution',
+                'Quality expectations set — what a good partner solution input looks like'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SUP-02.1.2',
+          name: 'Collect and review partner solution inputs — approach, capability statements, technical contributions, key personnel CVs',
+          raci: { r: 'Supply Chain Lead', a: 'Solution Architect', c: 'Technical Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SUP-02.1.1', artifact: 'Partner design contribution briefs' }
+          ],
+          outputs: [
+            {
+              name: 'Partner solution submissions (reviewed)',
+              format: 'Per-partner solution input pack',
+              quality: [
+                'Each partner submission reviewed for completeness against the brief',
+                'Technical quality assessed — is the contribution credible and aligned?',
+                'Gaps and issues documented — what needs rework or clarification',
+                'Key personnel CVs reviewed for relevance and quality'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'
+        },
+        {
+          id: 'SUP-02.1.3',
+          name: 'Integrate partner inputs into the solution design — confirm alignment with overall TOM and service delivery model',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Supply Chain Lead / Technical Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SUP-02.1.2', artifact: 'Partner solution submissions (reviewed)' },
+            { from: 'SOL-03', artifact: 'Target operating model' }
+          ],
+          outputs: [
+            {
+              name: 'Partner solution inputs pack (validated — activity primary output)',
+              format: 'Integrated partner contribution document',
+              quality: [
+                'All partner contributions integrated into the solution design — no orphan inputs',
+                'Integration points confirmed — partner contributions align at boundaries with our solution',
+                'Consistency checked — partner approaches do not contradict the overall TOM',
+                'Gaps resolved or flagged — any outstanding partner design contributions tracked'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Partner solution inputs pack',
+      format: 'Integrated partner contribution document',
+      quality: [
+        'All partners briefed and submissions collected',
+        'Contributions reviewed for quality and completeness',
+        'Integrated into overall solution design without conflicts'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'SOL-05', consumes: 'Partner solution inputs pack', usage: 'Technology approach includes partner technology contributions' },
+    { activity: 'SOL-11', consumes: 'Partner solution inputs pack', usage: 'Solution design lock includes partner contributions' },
+    { activity: 'SUP-04', consumes: 'Partner solution inputs pack', usage: 'Partner pricing based on confirmed scope from their design contribution' }
+  ]
+}
+```
+
+---
+
+## SUP-03 — Teaming Agreement Negotiation
+
+```javascript
+{
+  id: 'SUP-03',
+  name: 'Teaming agreement negotiation',
+  workstream: 'SUP',
+  phase: 'DEV',
+  role: 'Supply Chain Lead',
+  output: 'Signed teaming agreements',
+  dependencies: ['SUP-01'],
+  effortDays: 15,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { from: 'SUP-01', artifact: 'Partner shortlist with rationale' },
+    { from: 'SAL-06.3.1', artifact: 'Consortium strategy', note: 'Legal structure — prime/sub, JV, SPV' },
+    { external: true, artifact: 'Corporate teaming agreement templates and standard terms' },
+    { external: true, artifact: 'Legal advice on teaming structure and IP provisions' }
+  ],
+
+  subs: [
+    {
+      id: 'SUP-03.1',
+      name: 'Teaming & Legal Framework',
+      description: 'Negotiate and execute teaming agreements with all selected partners',
+
+      tasks: [
+        {
+          id: 'SUP-03.1.1',
+          name: 'Issue NDAs and initiate teaming discussions — establish confidentiality and exclusivity framework with each partner',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Legal Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SUP-01', artifact: 'Partner shortlist with rationale' },
+            { external: true, artifact: 'Corporate teaming agreement templates and standard terms' }
+          ],
+          outputs: [
+            {
+              name: 'Executed NDAs and teaming discussion framework',
+              format: 'Signed NDAs per partner',
+              quality: [
+                'NDAs executed with all shortlisted partners before any confidential information shared',
+                'Exclusivity terms agreed where required — partner committed to our bid, not competing',
+                'Teaming discussion scope and timeline agreed — what will be negotiated and by when'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SUP-03.1.2',
+          name: 'Negotiate and execute teaming agreements — scope, obligations, exclusivity, IP, confidentiality, termination, dispute resolution',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Legal Lead / Commercial Lead', i: 'Partner Leads' },
+          inputs: [
+            { from: 'SUP-03.1.1', artifact: 'Executed NDAs' },
+            { from: 'SAL-06.3.1', artifact: 'Consortium strategy' },
+            { external: true, artifact: 'Legal advice on teaming structure and IP provisions' }
+          ],
+          outputs: [
+            {
+              name: 'Signed teaming agreements',
+              format: 'Executed agreements per partner',
+              quality: [
+                'Teaming agreement covers: scope, obligations, exclusivity, IP ownership, confidentiality, termination, dispute resolution',
+                'IP provisions clear — who owns what, especially jointly developed IP',
+                'Termination provisions protect us — can exit a partner who underperforms or breaches',
+                'Agreement is consistent with the consortium strategy from SAL-06'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SUP-03.1.3',
+          name: 'Confirm teaming status for all partners — signed, in progress, or at risk — feeds LEG-06 for legal review',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Legal Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SUP-03.1.2', artifact: 'Signed teaming agreements' }
+          ],
+          outputs: [
+            {
+              name: 'Teaming status register (activity primary output complement)',
+              format: 'Status tracker',
+              quality: [
+                'Every partner has a teaming status — signed, in negotiation, at risk, or failed',
+                'At-risk partners have mitigation plan — backup partner identified or fallback scope approach',
+                'All signed agreements available for LEG-06 legal review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Signed teaming agreements',
+      format: 'Executed agreements per partner with status register',
+      quality: [
+        'NDAs executed before confidential information shared',
+        'Teaming agreements cover all essential terms',
+        'All partners have confirmed teaming status',
+        'At-risk partners have mitigation plans'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'LEG-06', consumes: 'Signed teaming agreements', usage: 'Subcontractor terms review assesses legal provisions' },
+    { activity: 'SUP-06', consumes: 'Signed teaming agreements', usage: 'Back-to-back terms build on teaming agreement framework' },
+    { activity: 'COM-03', consumes: 'Signed teaming agreements', usage: 'Commercial structure requires confirmed teaming before pricing requests' }
+  ]
+}
+```
+
+---
+
+## SUP-04 — Partner Pricing
+
+```javascript
+{
+  id: 'SUP-04',
+  name: 'Partner pricing',
+  workstream: 'SUP',
+  phase: 'DEV',
+  role: 'Supply Chain Lead',
+  output: 'Partner pricing schedules',
+  dependencies: ['SUP-02', 'SOL-04'],
+  effortDays: 8,
+  teamSize: 1,
+  parallelisationType: 'S',
+  // Note: SUP-04 manages the partner side of the pricing process.
+  // COM-03 manages the commercial side (structure, negotiation, integration).
+  // SUP-04 ensures partners submit on time, in format, and resolves issues.
+
+  inputs: [
+    { from: 'SUP-02', artifact: 'Partner solution inputs pack', note: 'Confirmed partner scope — what they are pricing' },
+    { from: 'COM-03.1.2', artifact: 'Partner pricing request packs', note: 'The structured pricing requests issued by COM-03' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Delivery context for partner pricing' }
+  ],
+
+  subs: [
+    {
+      id: 'SUP-04.1',
+      name: 'Partner Pricing Management',
+      description: 'Manage the partner pricing submission process — ensure timely, complete, and aligned submissions',
+
+      tasks: [
+        {
+          id: 'SUP-04.1.1',
+          name: 'Manage partner pricing submission process — ensure partners respond to COM-03 pricing requests on time and in the required format',
+          raci: { r: 'Supply Chain Lead', a: 'Commercial Lead', c: 'Bid Manager', i: 'Partner Leads' },
+          inputs: [
+            { from: 'COM-03.1.2', artifact: 'Partner pricing request packs' },
+            { from: 'SUP-02', artifact: 'Partner solution inputs pack' }
+          ],
+          outputs: [
+            {
+              name: 'Partner pricing submissions',
+              format: 'Per-partner pricing schedules',
+              quality: [
+                'All partners have submitted pricing by the deadline',
+                'Submissions are in the required format — aligned to our pricing structure',
+                'Late or non-compliant submissions flagged and escalated immediately'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SUP-04.1.2',
+          name: 'Facilitate pricing clarification and iteration — resolve gaps, align assumptions between partners and our commercial model',
+          raci: { r: 'Supply Chain Lead', a: 'Commercial Lead', c: 'Finance / Solution Architect', i: 'Partner Leads' },
+          inputs: [
+            { from: 'SUP-04.1.1', artifact: 'Partner pricing submissions' },
+            { from: 'COM-03.2.1', artifact: 'Partner pricing validation assessment', note: 'Issues identified by COM-03 review' }
+          ],
+          outputs: [
+            {
+              name: 'Partner pricing schedules (clarified — activity primary output)',
+              format: 'Final partner pricing submissions',
+              quality: [
+                'All pricing queries resolved — gaps closed, assumptions aligned',
+                'Partner pricing ready for COM-03 negotiation and integration',
+                'Any outstanding issues or caveats documented for COM-03'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Partner pricing schedules',
+      format: 'Per-partner pricing submissions (clarified)',
+      quality: [
+        'All partners have submitted complete pricing on time',
+        'Queries resolved and assumptions aligned',
+        'Ready for COM-03 negotiation and integration'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'COM-03', consumes: 'Partner pricing schedules', usage: 'Commercial structure and pricing integration' }
+  ]
+}
+```
+
+---
+
+## SUP-05 — Partner Credentials & References
+
+```javascript
+{
+  id: 'SUP-05',
+  name: 'Partner credentials & references',
+  workstream: 'SUP',
+  phase: 'DEV',
+  role: 'Supply Chain Lead',
+  output: 'Partner case studies & CVs',
+  dependencies: ['SUP-01'],
+  effortDays: 5,
+  teamSize: 2,
+  parallelisationType: 'P',
+
+  inputs: [
+    { from: 'SUP-01', artifact: 'Partner shortlist with rationale' },
+    { from: 'SOL-10', artifact: 'Evidence requirements matrix', note: 'What evidence is needed from partners — case studies, CVs, credentials' },
+    { from: 'SOL-10.1.3', artifact: 'Prioritised evidence gap register', note: 'Which gaps require partner evidence to close' },
+    { external: true, artifact: 'ITT documentation — evidence requirements, CV format, case study format' }
+  ],
+
+  subs: [
+    {
+      id: 'SUP-05.1',
+      name: 'Partner Evidence Collection',
+      description: 'Collect, review, and prepare partner evidence for the bid',
+
+      tasks: [
+        {
+          id: 'SUP-05.1.1',
+          name: 'Issue evidence requirements to partners — case studies, CVs, credentials, certifications required per SOL-10 evidence matrix',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Manager', c: 'Bid Coordinator', i: 'Partner Leads' },
+          inputs: [
+            { from: 'SOL-10', artifact: 'Evidence requirements matrix' },
+            { from: 'SOL-10.1.3', artifact: 'Prioritised evidence gap register' },
+            { external: true, artifact: 'ITT documentation — evidence requirements, CV format, case study format' }
+          ],
+          outputs: [
+            {
+              name: 'Partner evidence briefs',
+              format: 'Per-partner evidence request',
+              quality: [
+                'Each partner has a clear brief — what evidence, in what format, by when',
+                'Priority evidence flagged — items that close scoring gaps are urgent',
+                'Format requirements specified — aligned to ITT submission requirements'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'SUP-05.1.2',
+          name: 'Collect, review, and adapt partner evidence — quality, relevance, format aligned to ITT requirements',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Manager', c: 'Bid Coordinator', i: 'Partner Leads' },
+          inputs: [
+            { from: 'SUP-05.1.1', artifact: 'Partner evidence briefs' }
+          ],
+          outputs: [
+            {
+              name: 'Partner case studies & CVs (validated — activity primary output)',
+              format: 'Per-partner evidence pack',
+              quality: [
+                'All partner evidence collected and reviewed for quality and relevance',
+                'Case studies adapted for this bid context — not generic partner marketing material',
+                'CVs aligned to ITT format and relevant to the roles partners will fill',
+                'Evidence gaps that partners could not fill documented — feeds back to SOL-10',
+                'Evidence pack ready for PRD-03 (evidence assembly)'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Partner case studies & CVs',
+      format: 'Per-partner evidence pack (reviewed and adapted)',
+      quality: [
+        'All required partner evidence collected',
+        'Quality and relevance reviewed — adapted for this bid',
+        'Format aligned to ITT requirements',
+        'Ready for PRD-03 evidence assembly'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'PRD-03', consumes: 'Partner case studies & CVs', usage: 'Evidence assembly includes partner evidence in the submission pack' },
+    { activity: 'SOL-10', consumes: 'Partner case studies & CVs', usage: 'Evidence matrix updated with confirmed partner evidence (feedback loop)' }
+  ]
+}
+```
+
+---
+
+## SUP-06 — Back-to-back Commercial Terms
+
+```javascript
+{
+  id: 'SUP-06',
+  name: 'Back-to-back commercial terms',
+  workstream: 'SUP',
+  phase: 'DEV',
+  role: 'Supply Chain Lead',
+  output: 'Back-to-back terms agreed',
+  dependencies: ['SUP-03', 'LEG-06', 'COM-04'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+
+  inputs: [
+    { from: 'SUP-03', artifact: 'Signed teaming agreements', note: 'The teaming framework to build on' },
+    { from: 'LEG-06', artifact: 'Subcontract terms summary', note: 'Legal review of back-to-back alignment' },
+    { from: 'COM-04', artifact: 'Commercial model document', note: 'Prime contract commercial terms to flow down' },
+    { from: 'COM-03.1.1', artifact: 'Inter-party commercial framework', note: 'Agreed commercial framework between parties' },
+    { from: 'COM-03.2.2', artifact: 'Negotiated partner pricing', note: 'Agreed partner commercial terms' }
+  ],
+
+  subs: [
+    {
+      id: 'SUP-06.1',
+      name: 'Back-to-back Formalisation',
+      description: 'Develop, negotiate, and agree back-to-back subcontract terms flowing down from the prime contract',
+
+      tasks: [
+        {
+          id: 'SUP-06.1.1',
+          name: 'Develop back-to-back subcontract terms flowing down from prime contract — using LEG-06 review and COM-03 commercial framework',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Legal Lead / Commercial Lead', i: 'Finance' },
+          inputs: [
+            { from: 'LEG-06', artifact: 'Subcontract terms summary' },
+            { from: 'COM-04', artifact: 'Commercial model document' },
+            { from: 'COM-03.1.1', artifact: 'Inter-party commercial framework' }
+          ],
+          outputs: [
+            {
+              name: 'Draft back-to-back subcontract terms',
+              format: 'Per-partner draft subcontract',
+              quality: [
+                'Prime contract obligations appropriately flowed down to subcontractors',
+                'Risk allocation between prime and sub is clear — aligned to LEG-06 assessment',
+                'Commercial terms flow through — payment, indexation, service credits, gain share',
+                'Terms are fair and proportionate — partners will accept them'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SUP-06.1.2',
+          name: 'Negotiate and agree back-to-back terms with each partner',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Legal Lead / Commercial Lead', i: 'Partner Leads' },
+          inputs: [
+            { from: 'SUP-06.1.1', artifact: 'Draft back-to-back subcontract terms' },
+            { from: 'COM-03.2.2', artifact: 'Negotiated partner pricing' }
+          ],
+          outputs: [
+            {
+              name: 'Agreed back-to-back terms per partner',
+              format: 'Agreed subcontract terms (heads of terms or full subcontract)',
+              quality: [
+                'Terms agreed with each partner — signed or documented heads of terms',
+                'No material gaps in flow-down — risk coverage is complete',
+                'Partner acceptance confirmed — they will contract on these terms post-award'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SUP-06.1.3',
+          name: 'Confirm all partner commercial terms are agreed — feeds GOV-03 (pricing governance)',
+          raci: { r: 'Supply Chain Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SUP-06.1.2', artifact: 'Agreed back-to-back terms per partner' }
+          ],
+          outputs: [
+            {
+              name: 'Back-to-back terms agreed (activity primary output)',
+              format: 'Comprehensive partner commercial status',
+              quality: [
+                'All partners have agreed commercial terms — no outstanding negotiations',
+                'Flow-down coverage confirmed — prime contract risk is not stranded with us',
+                'Status ready for GOV-03 pricing governance review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  outputs: [
+    {
+      name: 'Back-to-back terms agreed',
+      format: 'Agreed subcontract terms per partner',
+      quality: [
+        'Prime contract terms flowed down appropriately',
+        'Terms negotiated and agreed with each partner',
+        'Risk coverage complete — no gaps in flow-down',
+        'Ready for governance review'
+      ]
+    }
+  ],
+
+  consumers: [
+    { activity: 'GOV-03', consumes: 'Back-to-back terms agreed', usage: 'Pricing governance review confirms subcontractor terms are agreed' }
+  ]
+}
+```
+
+---
+
 *Gold standard established from SAL-03 — Session 11, 2026-04-01*
 *SAL workstream complete — Session 12, 2026-04-01*
 *SOL workstream complete — Session 12, 2026-04-01*
 *COM workstream complete — Session 12, 2026-04-01*
 *LEG workstream complete — Session 12, 2026-04-01*
 *DEL workstream complete — Session 12, 2026-04-01*
+*SUP workstream complete — Session 12, 2026-04-01*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*
