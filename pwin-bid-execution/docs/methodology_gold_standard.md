@@ -10131,7 +10131,498 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
-*Gold standard established from SAL-03 — Session 11, 2026-04-01*
-*SAL, SOL, COM, LEG, DEL, SUP, BM workstreams complete — Session 12, 2026-04-01*
-*PRD workstream complete — Session 12, 2026-04-01*
+---
+
+## GOV — Internal Governance: Pattern Note
+
+> **All governance activities follow the same pattern:** (1) Prepare the gate review pack from upstream inputs, (2) Conduct the review, capture the decision, distribute actions/conditions. Every gate is configurable — activated or deactivated at bid setup based on contract value, complexity, and organisational policy.
+
+---
+
+## GOV-01 — Pursuit Approval (configurable)
+
+```javascript
+{
+  id: 'GOV-01', name: 'Pursuit approval (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Bid Director',
+  output: 'Pursuit approval decision record', dependencies: ['SAL-06'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'The full capture plan and bid mandate' },
+    { from: 'SAL-06.4.2', artifact: 'Bid Mandate document', note: 'Go/no-go recommendation, budget, resource ask' },
+    { from: 'SAL-06.2.3', artifact: 'PWIN score and rationale', note: 'Probability of win for the governance panel' }
+  ],
+
+  subs: [{
+    id: 'GOV-01.1', name: 'Pursuit Governance', description: 'Prepare and conduct the pursuit approval gate',
+    tasks: [
+      { id: 'GOV-01.1.1', name: 'Prepare pursuit approval review pack — capture plan summary, bid mandate, PWIN score, resource ask, key risks, go/no-go recommendation',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: null },
+        inputs: [{ from: 'SAL-06', artifact: 'Capture plan (locked)' }, { from: 'SAL-06.4.2', artifact: 'Bid Mandate document' }],
+        outputs: [{ name: 'Pursuit approval review pack', format: 'Executive summary for governance panel', quality: ['One-page executive summary plus supporting detail', 'PWIN score, key risks, resource ask, and recommendation clearly presented', 'Pack distributed to governance panel with adequate read-ahead time'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'GOV-01.1.2', name: 'Conduct pursuit approval review — present to governance panel, debate, capture decision (approve / approve with conditions / reject)',
+        raci: { r: 'Bid Director', a: 'Senior Responsible Executive / Bid Board', c: 'Capture Lead / Commercial Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'GOV-01.1.1', artifact: 'Pursuit approval review pack' }],
+        outputs: [{ name: 'Pursuit approval decision record (activity primary output)', format: 'Decision record with conditions', quality: ['Decision recorded: approved, approved with conditions, or rejected', 'Conditions documented with owners and deadlines if conditional approval', 'Budget and resource commitment confirmed', 'Decision communicated to bid team'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Pursuit approval decision record', format: 'Governance decision record', quality: ['Decision recorded', 'Conditions captured', 'Commitment confirmed'] }],
+  consumers: [{ activity: 'BM-01', consumes: 'Pursuit approval', usage: 'Kickoff proceeds on approval — conditions tracked' }]
+}
+```
+
+---
+
+## GOV-02 — Solution & Strategy Review (configurable)
+
+```javascript
+{
+  id: 'GOV-02', name: 'Solution & strategy review (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Bid Director',
+  output: 'Solution review decision record', dependencies: ['SAL-06', 'SOL-03', 'DEL-01', 'SUP-01'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)', note: 'The locked solution for governance review' },
+    { from: 'SOL-12', artifact: 'Solution risk register', note: 'Solution risk position' },
+    { from: 'DEL-01', artifact: 'Delivery risk & assumptions register', note: 'Delivery risk position' },
+    { from: 'BM-13', artifact: 'Bid risk register', note: 'Consolidated bid risk position' },
+    { from: 'SUP-01', artifact: 'Partner shortlist with rationale', note: 'Partner selection for governance review' }
+  ],
+
+  subs: [{
+    id: 'GOV-02.1', name: 'Solution Governance', description: 'Prepare and conduct the solution & strategy review gate',
+    tasks: [
+      { id: 'GOV-02.1.1', name: 'Prepare solution review pack — solution summary, risk position, win strategy alignment, partner strategy, delivery readiness',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Solution Architect / Delivery Director', i: null },
+        inputs: [{ from: 'SOL-11', artifact: 'Solution design pack (locked & assured)' }, { from: 'SOL-12', artifact: 'Solution risk register' }, { from: 'BM-13', artifact: 'Bid risk register' }],
+        outputs: [{ name: 'Solution review pack', format: 'Executive summary for governance panel', quality: ['Solution summarised at executive level — TOM, delivery model, transition, innovation', 'Risk position presented — top risks with mitigations', 'Win strategy alignment confirmed — solution delivers the competitive narrative', 'Pack distributed with adequate read-ahead time'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'GOV-02.1.2', name: 'Conduct solution & strategy review — present, debate, capture decision',
+        raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Solution Architect / Delivery Director / Commercial Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'GOV-02.1.1', artifact: 'Solution review pack' }],
+        outputs: [{ name: 'Solution review decision record (activity primary output)', format: 'Decision record with conditions', quality: ['Decision recorded: approved, approved with conditions, or requires rework', 'Conditions documented with owners and deadlines', 'Solution baseline confirmed or rework scope defined', 'Decision communicated to bid team'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Solution review decision record', format: 'Governance decision record', quality: ['Decision recorded', 'Conditions captured', 'Solution baseline confirmed or rework defined'] }],
+  consumers: [{ activity: 'COM-01', consumes: 'Solution review decision', usage: 'Costing proceeds on approved solution — any conditions may affect cost model' }]
+}
+```
+
+---
+
+## GOV-03 — Pricing & Risk Review (configurable)
+
+```javascript
+{
+  id: 'GOV-03', name: 'Pricing & risk review (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Bid Director',
+  output: 'Pricing decision record + approved price', dependencies: ['COM-06', 'DEL-06', 'LEG-02', 'SUP-06'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'The locked price for approval' },
+    { from: 'COM-05', artifact: 'Margin model with sensitivities', note: 'Margin, sensitivities, risk-adjusted view' },
+    { from: 'COM-07', artifact: 'Commercial risk register', note: 'Commercial risk position' },
+    { from: 'DEL-06', artifact: 'Mitigated risk register (assured)', note: 'Delivery risk position' },
+    { from: 'LEG-02', artifact: 'Risk allocation matrix', note: 'Contractual risk position' },
+    { from: 'SUP-06', artifact: 'Back-to-back terms agreed', note: 'Partner commercial terms confirmed' },
+    { from: 'BM-13', artifact: 'Bid risk register', note: 'Consolidated risk position' }
+  ],
+
+  subs: [{
+    id: 'GOV-03.1', name: 'Commercial Governance', description: 'Prepare and conduct the pricing & risk review gate — the executive pricing approval',
+    tasks: [
+      { id: 'GOV-03.1.1', name: 'Prepare pricing review pack — price position, margin, sensitivities, risk, partner terms, contract terms, recommendation',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Commercial Lead / Finance', i: null },
+        inputs: [{ from: 'COM-06', artifact: 'Pricing model (locked & assured)' }, { from: 'COM-05', artifact: 'Margin model with sensitivities' }, { from: 'COM-07', artifact: 'Commercial risk register' }, { from: 'DEL-06', artifact: 'Mitigated risk register (assured)' }],
+        outputs: [{ name: 'Pricing review pack', format: 'Executive pricing decision paper', quality: ['Price, margin, sensitivities presented clearly for executive decision', 'Risk position summarised — top commercial, delivery, and contractual risks', 'Partner terms status confirmed', 'Recommendation stated — proceed at this price, or adjust'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'GOV-03.1.2', name: 'Conduct pricing & risk review — present to governance panel, debate pricing position, capture pricing approval',
+        raci: { r: 'Bid Director', a: 'Senior Responsible Executive / Finance Director', c: 'Commercial Lead / Legal Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'GOV-03.1.1', artifact: 'Pricing review pack' }],
+        outputs: [{ name: 'Pricing decision record + approved price (activity primary output)', format: 'Pricing approval with decision record', quality: ['Price approved at specific level — or adjusted with rationale', 'Margin accepted at the approved price — executive commitment', 'Risk appetite confirmed — residual risks accepted by governance', 'Any pricing conditions documented — e.g. "hold price subject to partner confirmation"', 'Approved price is the authoritative figure for submission'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Pricing decision record + approved price', format: 'Governance pricing approval', quality: ['Price approved', 'Margin accepted', 'Risk appetite confirmed', 'Authoritative figure for submission'] }],
+  consumers: [{ activity: 'GOV-04', consumes: 'Pricing approval', usage: 'Executive approval builds on pricing decision' }]
+}
+```
+
+---
+
+## GOV-04 — Executive Approval (configurable — may be multi-tier)
+
+```javascript
+{
+  id: 'GOV-04', name: 'Executive approval (configurable — may be multi-tier)', workstream: 'GOV', phase: 'PROD', role: 'Bid Director',
+  output: 'Executive approval decision record(s)', dependencies: ['GOV-03', 'PRD-06', 'PRD-07'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+  // Note: may be multi-tier — BU → ExCo → Board depending on TCV thresholds.
+  // Each tier is a separate review with escalating authority.
+
+  inputs: [
+    { from: 'GOV-03', artifact: 'Pricing decision record + approved price' },
+    { from: 'PRD-07', artifact: 'Gold review scorecard & sign-off', note: 'Quality of the response confirmed' },
+    { from: 'BM-13', artifact: 'Bid risk register', note: 'Final risk position' }
+  ],
+
+  subs: [{
+    id: 'GOV-04.1', name: 'Executive Governance', description: 'Multi-tier executive approval — escalates by TCV threshold',
+    tasks: [
+      { id: 'GOV-04.1.1', name: 'Prepare executive approval pack — bid summary, price, margin, risk, quality assessment, recommendation to submit',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Commercial Lead', i: null },
+        inputs: [{ from: 'GOV-03', artifact: 'Pricing decision record + approved price' }, { from: 'PRD-07', artifact: 'Gold review scorecard & sign-off' }, { from: 'BM-13', artifact: 'Bid risk register' }],
+        outputs: [{ name: 'Executive approval pack', format: 'Board-level decision paper', quality: ['One-page executive summary — bid, price, margin, PWIN, key risks, recommendation', 'Supporting detail available if requested', 'Tailored to each governance tier if multi-tier'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'GOV-04.1.2', name: 'Obtain executive approval — present at each required tier (BU / ExCo / Board), capture approval to submit',
+        raci: { r: 'Bid Director', a: 'Senior Responsible Executive / Board', c: 'Commercial Lead / Finance Director', i: 'Bid Manager' },
+        inputs: [{ from: 'GOV-04.1.1', artifact: 'Executive approval pack' }],
+        outputs: [{ name: 'Executive approval decision record(s) (activity primary output)', format: 'Per-tier approval records', quality: ['Approval obtained at every required tier', 'Any conditions from each tier documented and resolved', 'Authority to submit confirmed — the organisation commits to this bid', 'Approval records archived for audit trail'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Executive approval decision record(s)', format: 'Multi-tier approval records', quality: ['All required tiers approved', 'Conditions resolved', 'Authority to submit confirmed'] }],
+  consumers: [{ activity: 'GOV-05', consumes: 'Executive approval', usage: 'Final submission authority requires executive approval' }]
+}
+```
+
+---
+
+## GOV-05 — Final Submission Authority (configurable)
+
+```javascript
+{
+  id: 'GOV-05', name: 'Final submission authority (configurable)', workstream: 'GOV', phase: 'PROD', role: 'Bid Director',
+  output: 'Submission authority confirmation', dependencies: ['GOV-04', 'PRD-08'], effortDays: 1, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'GOV-04', artifact: 'Executive approval decision record(s)', note: 'All executive approvals obtained' },
+    { from: 'PRD-08', artifact: 'QA checklist complete', note: 'Documents are formatted and QA-approved' },
+    { from: 'PRD-01', artifact: 'Compliance matrix (live)', note: 'Final compliance confirmed' }
+  ],
+
+  subs: [{
+    id: 'GOV-05.1', name: 'Submission Authority', description: 'The final gate — authority to press submit',
+    tasks: [{
+      id: 'GOV-05.1.1', name: 'Confirm final submission authority — all approvals obtained, documents QA-complete, compliance confirmed, authority to submit granted',
+      raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Bid Manager', i: null },
+      inputs: [{ from: 'GOV-04', artifact: 'Executive approval decision record(s)' }, { from: 'PRD-08', artifact: 'QA checklist complete' }, { from: 'PRD-01', artifact: 'Compliance matrix (live)' }],
+      outputs: [{ name: 'Submission authority confirmation (activity primary output)', format: 'Formal submission authority', quality: ['All governance approvals confirmed — pursuit, solution, pricing, executive, legal', 'Documents confirmed as QA-complete and compliant', 'Submission authority formally granted — the bid may be submitted', 'Authority recorded with timestamp for audit trail'] }],
+      effort: 'Low', type: 'Sequential'
+    }]
+  }],
+
+  outputs: [{ name: 'Submission authority confirmation', format: 'Formal authority record', quality: ['All approvals confirmed', 'Documents QA-complete', 'Authority granted'] }],
+  consumers: [{ activity: 'PRD-09', consumes: 'Submission authority', usage: 'Submission can proceed — portal upload authorised' }]
+}
+```
+
+---
+
+## GOV-06 — Legal & Contractual Review (configurable)
+
+```javascript
+{
+  id: 'GOV-06', name: 'Legal & contractual review (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Legal Lead',
+  output: 'Legal review decision record', dependencies: ['LEG-01', 'LEG-02', 'LEG-04'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+  // Note: proposed in Session 10 — product has gate G4 (Legal & Contractual Review)
+  // but no corresponding GOV activity to prepare for it. This fills the gap.
+
+  inputs: [
+    { from: 'LEG-01', artifact: 'Contract markup with positions log' },
+    { from: 'LEG-02', artifact: 'Risk allocation matrix' },
+    { from: 'LEG-04', artifact: 'TUPE compliance assessment' },
+    { from: 'LEG-05', artifact: 'DPIA / security assessment' },
+    { from: 'LEG-06', artifact: 'Subcontract terms summary' }
+  ],
+
+  subs: [{
+    id: 'GOV-06.1', name: 'Legal Governance', description: 'Prepare and conduct the legal & contractual review gate',
+    tasks: [
+      { id: 'GOV-06.1.1', name: 'Prepare legal review pack — contract positions, risk allocation, TUPE, data protection, subcontractor terms summary',
+        raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'LEG-01', artifact: 'Contract markup with positions log' }, { from: 'LEG-02', artifact: 'Risk allocation matrix' }, { from: 'LEG-04', artifact: 'TUPE compliance assessment' }, { from: 'LEG-05', artifact: 'DPIA / security assessment' }, { from: 'LEG-06', artifact: 'Subcontract terms summary' }],
+        outputs: [{ name: 'Legal review pack', format: 'Executive legal summary for governance', quality: ['Contract positions summarised — red lines, key risks, negotiation strategy', 'Risk allocation presented with acceptability assessment', 'TUPE and data protection compliance confirmed or risks flagged', 'Subcontractor terms status confirmed'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'GOV-06.1.2', name: 'Conduct legal & contractual review — present to governance panel, capture decision on contract positions and risk acceptance',
+        raci: { r: 'Legal Lead', a: 'Bid Director / Senior Responsible Executive', c: 'Commercial Lead', i: 'Bid Manager' },
+        inputs: [{ from: 'GOV-06.1.1', artifact: 'Legal review pack' }],
+        outputs: [{ name: 'Legal review decision record (activity primary output)', format: 'Decision record', quality: ['Contract positions approved or adjusted', 'Risk allocation accepted or further mitigation required', 'Red lines confirmed — what we will not accept in negotiation', 'Decision communicated to bid team and LEG workstream'] }],
+        effort: 'Medium', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Legal review decision record', format: 'Governance decision record', quality: ['Contract positions approved', 'Risk allocation accepted', 'Red lines confirmed'] }],
+  consumers: [{ activity: 'GOV-03', consumes: 'Legal review decision', usage: 'Pricing & risk review incorporates approved legal position' }]
+}
+```
+
+---
+
+## POST — Post-Submission: Context Note
+
+> **Post-submission activities have client-imposed deadlines.** Not all apply to every bid — presentation, BAFO, and negotiation are activated during setup based on procurement type. The system monitors post-submission health on the practice portfolio the same way it monitors pre-submission readiness.
+
+---
+
+## POST-01 — Presentation Design & Development
+
+```javascript
+{
+  id: 'POST-01', name: 'Presentation design & development', workstream: 'POST', phase: 'POST', role: 'Bid Director',
+  output: 'Presentation deck, speaker notes, narrative', dependencies: ['PRD-09'], effortDays: 10, teamSize: 2, parallelisationType: 'P',
+
+  inputs: [
+    { from: 'PRD-09', artifact: 'Submission confirmation receipt', note: 'The submitted proposal — the presentation must be consistent with what was submitted' },
+    { from: 'SAL-04', artifact: 'Win theme document', note: 'Win themes drive the presentation narrative' },
+    { from: 'SAL-10', artifact: 'Stakeholder relationship map & engagement plan', note: 'Who is on the evaluation panel — tailor the presentation' },
+    { external: true, artifact: 'Client invitation to present — format, duration, panel composition, topic guidance' }
+  ],
+
+  subs: [{
+    id: 'POST-01.1', name: 'Presentation Preparation', description: 'Design and develop the bid presentation',
+    tasks: [
+      { id: 'POST-01.1.1', name: 'Design presentation narrative and structure — aligned to win themes, tailored to evaluation panel, consistent with submitted proposal',
+        raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Capture Lead / Solution Architect', i: 'Bid Manager' },
+        inputs: [{ from: 'SAL-04', artifact: 'Win theme document' }, { from: 'SAL-10', artifact: 'Stakeholder relationship map & engagement plan' }, { external: true, artifact: 'Client invitation to present' }],
+        outputs: [{ name: 'Presentation narrative and structure', format: 'Presentation outline', quality: ['Narrative leads with win strategy — why we should win', 'Tailored to known panel members and their priorities', 'Consistent with submitted proposal — no contradictions', 'Structured to the client\'s format and time constraints'] }],
+        effort: 'High', type: 'Sequential' },
+      { id: 'POST-01.1.2', name: 'Develop presentation materials — slides, speaker notes, Q&A preparation, supporting visuals and demos',
+        raci: { r: 'Bid Manager / Presentation Coach', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'DTP' },
+        inputs: [{ from: 'POST-01.1.1', artifact: 'Presentation narrative and structure' }],
+        outputs: [{ name: 'Presentation deck, speaker notes, narrative (activity primary output)', format: 'Complete presentation pack', quality: ['Professional presentation materials — not a proposal re-read', 'Speaker notes per slide — what to say, not what to show', 'Q&A preparation — anticipated tough questions with agreed answers', 'Supporting visuals or demos prepared if applicable'] }],
+        effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Presentation deck, speaker notes, narrative', format: 'Complete presentation pack', quality: ['Win-strategy-led narrative', 'Tailored to panel', 'Q&A prepared'] }],
+  consumers: [{ activity: 'POST-02', consumes: 'Presentation materials', usage: 'Rehearsals use the presentation pack' }]
+}
+```
+
+---
+
+## POST-02 — Presentation Rehearsals & Coaching
+
+```javascript
+{
+  id: 'POST-02', name: 'Presentation rehearsals & coaching', workstream: 'POST', phase: 'POST', role: 'Bid Director',
+  output: 'Rehearsal debrief notes, revised deck, Q&A prep', dependencies: ['POST-01'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [{ from: 'POST-01', artifact: 'Presentation deck, speaker notes, narrative' }],
+
+  subs: [{
+    id: 'POST-02.1', name: 'Rehearsal & Coaching', description: 'Structured rehearsals with feedback and iteration',
+    tasks: [{
+      id: 'POST-02.1.1', name: 'Conduct structured presentation rehearsals — simulate the evaluation panel, provide feedback, iterate the presentation and Q&A responses',
+      raci: { r: 'Presenting Team', a: 'Senior Responsible Executive', c: 'Presentation Coach / SMEs', i: 'Bid Manager' },
+      inputs: [{ from: 'POST-01', artifact: 'Presentation deck, speaker notes, narrative' }],
+      outputs: [{ name: 'Rehearsal debrief notes, revised deck, Q&A prep (activity primary output)', format: 'Iterated presentation pack', quality: ['At least 2 full rehearsals conducted — with debrief after each', 'Panel simulation included — mock questions from evaluator perspective', 'Presentation refined based on feedback — not just practiced but improved', 'Q&A responses refined and pressure-tested', 'Presenting team confident and aligned'] }],
+      effort: 'High', type: 'Iterative' }
+    ]
+  }],
+
+  outputs: [{ name: 'Rehearsal debrief notes, revised deck, Q&A prep', format: 'Rehearsed presentation pack', quality: ['Multiple rehearsals conducted', 'Presentation iterated', 'Team confident'] }],
+  consumers: [{ activity: 'POST-03', consumes: 'Rehearsed presentation', usage: 'Delivery uses the rehearsed materials' }]
+}
+```
+
+---
+
+## POST-03 — Presentation Delivery
+
+```javascript
+{
+  id: 'POST-03', name: 'Presentation delivery', workstream: 'POST', phase: 'POST', role: 'Bid Director',
+  output: 'Presentation delivered, Q&A record', dependencies: ['POST-02'], effortDays: 1, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [{ from: 'POST-02', artifact: 'Rehearsal debrief notes, revised deck, Q&A prep' }],
+
+  subs: [{
+    id: 'POST-03.1', name: 'Presentation Delivery', description: 'Deliver the presentation and manage Q&A',
+    tasks: [{
+      id: 'POST-03.1.1', name: 'Deliver bid presentation to evaluation panel — present, manage Q&A, capture panel reactions and follow-up questions',
+      raci: { r: 'Bid Director / Senior Executive / Presenting Team', a: 'Senior Responsible Executive', c: 'Commercial Lead / Solution Architect', i: 'Bid Manager' },
+      inputs: [{ from: 'POST-02', artifact: 'Rehearsal debrief notes, revised deck, Q&A prep' }],
+      outputs: [{ name: 'Presentation delivered, Q&A record (activity primary output)', format: 'Delivery record', quality: ['Presentation delivered within time allocation', 'Q&A managed — all questions answered or follow-up committed', 'Panel reactions noted — informal intelligence on how it landed', 'Any follow-up commitments documented and assigned'] }],
+      effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Presentation delivered, Q&A record', format: 'Delivery record', quality: ['Delivered on time', 'Q&A managed', 'Follow-ups captured'] }],
+  consumers: [{ activity: 'BM-12', consumes: 'Presentation record', usage: 'Lessons learned includes presentation performance' }]
+}
+```
+
+---
+
+## POST-04 — Post-submission Clarification Management
+
+```javascript
+{
+  id: 'POST-04', name: 'Post-submission clarification management', workstream: 'POST', phase: 'POST', role: 'Bid Manager',
+  output: 'Clarification log, submitted responses, updated risk log', dependencies: ['PRD-09'], effortDays: 5, teamSize: 2, parallelisationType: 'P',
+
+  inputs: [{ from: 'PRD-09', artifact: 'Submission confirmation receipt', note: 'The submitted proposal — clarifications reference it' }, { external: true, artifact: 'Client post-submission clarification requests' }],
+
+  subs: [{
+    id: 'POST-04.1', name: 'Post-Submission Clarification', description: 'Manage client clarification requests received after submission',
+    tasks: [
+      { id: 'POST-04.1.1', name: 'Receive, log, and triage post-submission clarification requests from client — assess impact and assign to workstream leads',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: 'Commercial Lead' },
+        inputs: [{ external: true, artifact: 'Client post-submission clarification requests' }],
+        outputs: [{ name: 'Clarification triage log', format: 'Tracking register', quality: ['Every request logged with date, topic, urgency, and assigned owner', 'Impact assessed — does this change our position or just need explanation?'] }],
+        effort: 'Medium', type: 'Iterative' },
+      { id: 'POST-04.1.2', name: 'Draft, review, and submit clarification responses within client deadlines — ensuring consistency with submitted proposal',
+        raci: { r: 'Workstream Leads (per topic)', a: 'Bid Director', c: 'Legal / Commercial', i: 'Bid Manager' },
+        inputs: [{ from: 'POST-04.1.1', artifact: 'Clarification triage log' }],
+        outputs: [{ name: 'Clarification log, submitted responses (activity primary output)', format: 'Response log with submitted answers', quality: ['All responses submitted within client deadlines', 'Responses consistent with submitted proposal — no contradictions', 'Responses reviewed by Bid Director before submission', 'Any responses that change our risk position flagged and risk log updated'] }],
+        effort: 'High', type: 'Iterative' }
+    ]
+  }],
+
+  outputs: [{ name: 'Clarification log, submitted responses, updated risk log', format: 'Response tracker', quality: ['All requests answered on time', 'Consistency with submission maintained', 'Risk log updated'] }],
+  consumers: [{ activity: 'POST-05', consumes: 'Clarification responses', usage: 'BAFO preparation considers any positions changed through clarification' }]
+}
+```
+
+---
+
+## POST-05 — BAFO Preparation & Revised Pricing
+
+```javascript
+{
+  id: 'POST-05', name: 'BAFO preparation & revised pricing', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
+  output: 'Revised pricing model, updated solution elements', dependencies: ['POST-04'], effortDays: 10, teamSize: 2, parallelisationType: 'P',
+
+  inputs: [
+    { from: 'POST-04', artifact: 'Clarification log', note: 'Positions clarified that may affect BAFO' },
+    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'The original pricing to revise' },
+    { from: 'COM-05', artifact: 'Margin model with sensitivities', note: 'Sensitivity analysis informs how far we can move' },
+    { external: true, artifact: 'Client BAFO invitation — scope of changes permitted, timeline, format' }
+  ],
+
+  subs: [{
+    id: 'POST-05.1', name: 'BAFO Preparation', description: 'Develop the BAFO strategy and revised pricing',
+    tasks: [
+      { id: 'POST-05.1.1', name: 'Develop BAFO strategy — what to change, what to hold, how far to move on price, any solution adjustments',
+        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Capture Lead / Solution Architect', i: 'Finance' },
+        inputs: [{ from: 'COM-05', artifact: 'Margin model with sensitivities' }, { external: true, artifact: 'Client BAFO invitation' }],
+        outputs: [{ name: 'BAFO strategy', format: 'Strategy paper', quality: ['Clear rationale for what to change and what to hold', 'Price movement informed by sensitivity analysis — know the margin impact', 'Solution adjustments (if any) are consistent with submitted approach', 'Competitive intelligence considered — what might competitors do in BAFO?'] }],
+        effort: 'High', type: 'Sequential' },
+      { id: 'POST-05.1.2', name: 'Prepare revised pricing and any updated solution elements — ready for BAFO governance approval',
+        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Solution Architect / Finance', i: 'Bid Manager' },
+        inputs: [{ from: 'POST-05.1.1', artifact: 'BAFO strategy' }, { from: 'COM-06', artifact: 'Pricing model (locked & assured)' }],
+        outputs: [{ name: 'Revised pricing model, updated solution elements (activity primary output)', format: 'BAFO pricing and solution pack', quality: ['Revised pricing model complete — changes clearly tracked against original', 'Margin at revised price confirmed — still meets minimum threshold', 'Solution adjustments documented — what changed and why', 'Ready for POST-06 (BAFO governance approval)'] }],
+        effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Revised pricing model, updated solution elements', format: 'BAFO submission pack', quality: ['Changes tracked against original', 'Margin confirmed', 'Ready for governance'] }],
+  consumers: [{ activity: 'POST-06', consumes: 'Revised pricing', usage: 'BAFO governance approves the revised position' }]
+}
+```
+
+---
+
+## POST-06 — BAFO Governance Approval
+
+```javascript
+{
+  id: 'POST-06', name: 'BAFO governance approval', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
+  output: 'Board-approved BAFO mandate', dependencies: ['POST-05'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [{ from: 'POST-05', artifact: 'Revised pricing model, updated solution elements' }],
+
+  subs: [{
+    id: 'POST-06.1', name: 'BAFO Governance', description: 'Obtain governance approval for the revised commercial position',
+    tasks: [{
+      id: 'POST-06.1.1', name: 'Obtain governance approval for BAFO — any material change to price or commercial position requires fresh executive approval',
+      raci: { r: 'Commercial Lead', a: 'Senior Responsible Executive / Board', c: 'Bid Director / Finance Director', i: 'Bid Manager' },
+      inputs: [{ from: 'POST-05', artifact: 'Revised pricing model, updated solution elements' }],
+      outputs: [{ name: 'Board-approved BAFO mandate (activity primary output)', format: 'Governance approval record', quality: ['BAFO position approved — revised price and any solution changes authorised', 'Margin at revised price accepted by governance', 'Authority to submit BAFO confirmed', 'Conditions documented if conditional approval'] }],
+      effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Board-approved BAFO mandate', format: 'Governance approval', quality: ['Revised position approved', 'Authority to submit confirmed'] }],
+  consumers: [{ activity: 'POST-07', consumes: 'BAFO mandate', usage: 'Contract negotiation proceeds with approved BAFO position' }]
+}
+```
+
+---
+
+## POST-07 — Contract Negotiation Support
+
+```javascript
+{
+  id: 'POST-07', name: 'Contract negotiation support', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
+  output: 'Negotiated T&C schedule, agreed pricing', dependencies: ['PRD-09'], effortDays: 5, teamSize: 1, parallelisationType: 'S',
+
+  inputs: [
+    { from: 'LEG-01', artifact: 'Contract markup with positions log', note: 'Negotiation positions and fallbacks' },
+    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'Pricing position for negotiation' },
+    { from: 'POST-06', artifact: 'Board-approved BAFO mandate', note: 'Revised position if BAFO occurred' },
+    { external: true, artifact: 'Client preferred bidder notification and negotiation invitation' }
+  ],
+
+  subs: [{
+    id: 'POST-07.1', name: 'Contract Negotiation', description: 'Support commercial and contractual negotiation with the client',
+    tasks: [
+      { id: 'POST-07.1.1', name: 'Lead commercial and contractual negotiations with client — using approved positions, manage trade-offs, escalate when authority limits reached',
+        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal Lead / Senior Executive', i: 'Finance' },
+        inputs: [{ from: 'LEG-01', artifact: 'Contract markup with positions log' }, { from: 'COM-06', artifact: 'Pricing model (locked & assured)' }, { external: true, artifact: 'Client negotiation invitation' }],
+        outputs: [{ name: 'Negotiated T&C schedule, agreed pricing (activity primary output)', format: 'Agreed contract terms', quality: ['Terms negotiated within approved positions — no unauthorised concessions', 'Trade-offs managed — concessions in one area balanced by gains in another', 'Any positions outside approved authority escalated to governance for fresh approval', 'Agreed terms documented and ready for contract signature'] }],
+        effort: 'High', type: 'Iterative' }
+    ]
+  }],
+
+  outputs: [{ name: 'Negotiated T&C schedule, agreed pricing', format: 'Agreed contract terms', quality: ['Negotiated within approved positions', 'Documented and ready for signature'] }],
+  consumers: [{ activity: 'POST-08', consumes: 'Agreed terms', usage: 'Award processing proceeds on agreed contract' }]
+}
+```
+
+---
+
+## POST-08 — Award Processing & Mobilisation Handover
+
+```javascript
+{
+  id: 'POST-08', name: 'Award processing & mobilisation handover', workstream: 'POST', phase: 'POST', role: 'Bid Manager',
+  output: 'Handover pack, delivery team briefed, PID', dependencies: ['POST-07'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
+
+  inputs: [
+    { from: 'POST-07', artifact: 'Negotiated T&C schedule, agreed pricing' },
+    { from: 'DEL-02', artifact: 'Mobilisation plan', note: 'The mobilisation plan to hand over to delivery' },
+    { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)', note: 'The solution to be delivered' }
+  ],
+
+  subs: [{
+    id: 'POST-08.1', name: 'Award & Handover', description: 'Process the award and hand over from bid team to delivery team',
+    tasks: [
+      { id: 'POST-08.1.1', name: 'Process contract award — receive confirmation, execute contract, establish commercial baseline',
+        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal Lead / Finance', i: 'Bid Manager' },
+        inputs: [{ from: 'POST-07', artifact: 'Negotiated T&C schedule, agreed pricing' }],
+        outputs: [{ name: 'Executed contract', format: 'Signed contract', quality: ['Contract executed on agreed terms', 'Commercial baseline established — this is what we committed to deliver at what price', 'Contract stored and accessible to delivery team'] }],
+        effort: 'Medium', type: 'Sequential' },
+      { id: 'POST-08.1.2', name: 'Hand over from bid team to delivery team — solution, mobilisation plan, risk register, assumptions, key relationships, lessons learned',
+        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Delivery Director', i: 'All Workstream Leads' },
+        inputs: [{ from: 'SOL-11', artifact: 'Solution design pack (locked & assured)' }, { from: 'DEL-02', artifact: 'Mobilisation plan' }],
+        outputs: [{ name: 'Handover pack, delivery team briefed, PID (activity primary output)', format: 'Comprehensive handover package', quality: ['Solution design, mobilisation plan, and risk register handed over — not just documents but knowledge', 'Delivery team briefed on win strategy, client relationships, key commitments, and known risks', 'Project Initiation Document (PID) prepared — the delivery team\'s starting point', 'Bid team formally stood down — bid costs closed out', 'Key relationships transitioned — client contacts introduced to delivery leadership'] }],
+        effort: 'High', type: 'Sequential' }
+    ]
+  }],
+
+  outputs: [{ name: 'Handover pack, delivery team briefed, PID', format: 'Delivery handover package', quality: ['Knowledge transferred not just documents', 'Delivery team briefed', 'PID prepared', 'Bid team stood down'] }],
+  consumers: [{ activity: 'Delivery (post-bid)', consumes: 'Handover pack', usage: 'Delivery team begins mobilisation from the handover' }]
+}
+```
+
+---
+
+*Gold standard methodology mapping complete — Session 12, 2026-04-01*
+*All 10 workstreams mapped: SAL, SOL, COM, LEG, DEL, SUP, BM, PRD, GOV, POST*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*

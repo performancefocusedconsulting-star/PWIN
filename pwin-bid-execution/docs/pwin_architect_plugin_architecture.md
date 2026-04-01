@@ -35,7 +35,7 @@ The platform is composed of discrete products, each addressing a distinct phase 
 |---|---|---|
 | PWIN Coach | Bid/no-bid qualification. 24-question framework, 6 categories, PWIN formula output, Alex Mercer AI persona | Built — HTML prototype |
 | Portfolio Dashboard | Pipeline management. Priority matrix, PWIN benchmarking, trajectory tracking. 12 Serco seed pursuits | Built — HTML prototype |
-| Bid Execution | Full bid lifecycle management. 83 activities, 10 workstreams, governance gates, submissions engine | Architecture complete — build in progress |
+| Bid Execution | Full bid lifecycle management. 84 activities, 10 workstreams, governance gates, submissions engine | Architecture complete — build in progress |
 | PWIN Architect Plugin | AI intelligence layer across all products. MCP-connected. Persona-routed sub-agents | Design complete — build starting |
 | Bid Library | Past proposals, case studies, evidence blocks. Shared data source across all products | Concept — to be built |
 | Competitor Dossiers | Pre-compiled intelligence on frequent competitors. Quarterly refresh cadence | Concept — to be built |
@@ -66,7 +66,7 @@ A critical architectural principle: the Bid Execution product is **one data sour
 The Bid Execution product manages the full operational bid process from ITT receipt through to submission and post-submission. It is the most sophisticated product in the platform.
 
 Confirmed architecture (from Claude Code build sessions, Architecture v6 — Session 8):
-- **83 activities** across **10 workstreams**
+- **84 activities** across **10 workstreams**
 - **Services archetype** as the default template (new business and rebid)
 - **Governance gates** covering development assurance (solution, commercial, risk reviews) and executive governance (price, risk, margin approval)
 - **Submissions engine** with ResponseSection/ResponseItem split — exam paper separated from answer sheet, 10-stage production lifecycle, per-response quality dimensions
@@ -725,7 +725,7 @@ Risk register◀──    add_risk_flag()             ◀──  With confidence
                                                       And mitigations
 ```
 
-**Context window constraint:** For a bid with 83 activities, Claude must never load all records simultaneously. The MCP server must expose filtered queries. The timeline analysis skill must use `get_activities_due_within()` and `get_critical_path()` rather than loading everything.
+**Context window constraint:** For a bid with 84 activities, Claude must never load all records simultaneously. The MCP server must expose filtered queries. The timeline analysis skill must use `get_activities_due_within()` and `get_critical_path()` rather than loading everything.
 
 ---
 
