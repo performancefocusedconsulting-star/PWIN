@@ -2207,6 +2207,2902 @@ Use this checklist before marking any activity as mapping-complete:
 
 ---
 
+---
+
+## SOL-01 — Requirements Analysis & Interpretation
+
+```javascript
+{
+  id: 'SOL-01',
+  name: 'Requirements analysis & interpretation',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Requirements interpretation document',
+  dependencies: ['SAL-06'],
+  effortDays: 5,
+  teamSize: 2,
+  parallelisationType: 'P',               // Parallelisable — multiple workstream leads can analyse requirements concurrently
+  // Note: this is the first activity after capture plan lock. SAL-06.1.2 did a rapid
+  // ITT analysis for go/no-go; SOL-01 goes much deeper — decomposing, categorising,
+  // interpreting, and aligning requirements to our solution capability.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Strategic baseline — win strategy, buyer values, competitive position inform interpretation' },
+    { from: 'SAL-06.1.2', artifact: 'ITT documentation analysis summary', note: 'Rapid analysis from go/no-go — starting point, not a substitute for deep analysis' },
+    { from: 'SAL-01.2.1', artifact: 'Buyer values register', note: 'Understanding WHY the client is asking helps interpret WHAT they mean' },
+    { from: 'SAL-01.2.2', artifact: 'Client problem statement', note: 'The underlying problem drives unstated requirements' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'How requirements will be scored shapes interpretation priorities' },
+    { external: true, artifact: 'ITT documentation pack — specification, schedules, annexes, contract, evaluation methodology' },
+    { external: true, artifact: 'Industry standards, regulatory requirements, and good practice frameworks relevant to the requirement' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-01.1',
+      name: 'ITT Decomposition & Requirements Extraction',
+      description: 'Break down the ITT documentation into a structured set of requirements — functional, technical, performance, contractual, compliance, and format — before interpretation begins',
+
+      tasks: [
+        {
+          id: 'SOL-01.1.1',
+          name: 'Decompose ITT documentation into structured requirements — extract every requirement from specification, schedules, annexes, and contract',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Manager / Workstream Leads', i: 'Commercial Lead' },
+          inputs: [
+            { external: true, artifact: 'ITT documentation pack — specification, schedules, annexes, contract, evaluation methodology' }
+          ],
+          outputs: [
+            {
+              name: 'Structured requirements register',
+              format: 'Structured register',
+              quality: [
+                'Every requirement extracted — not just the obvious specification items but also contract obligations, performance standards, and compliance conditions',
+                'Requirements sourced and referenced — ITT section, clause, and page for each',
+                'Requirements from different documents cross-referenced — specification requirement linked to corresponding contract clause and evaluation criterion',
+                'Hidden requirements identified — obligations embedded in contract schedules, annexes, or evaluation criteria that are not obvious from the specification alone'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-01.1.2',
+          name: 'Categorise requirements by type and priority — mandatory vs desirable, scored vs pass/fail, explicit vs implied',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Manager', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-01.1.1', artifact: 'Structured requirements register' },
+            { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' }
+          ],
+          outputs: [
+            {
+              name: 'Categorised requirements register',
+              format: 'Structured register (enriched)',
+              quality: [
+                'Each requirement categorised by type: functional, technical, performance, contractual, compliance, format/submission',
+                'Priority categorised: mandatory (must comply), desirable (scored if exceeded), pass/fail (threshold)',
+                'Explicit vs implied distinction noted — explicit requirements stated in the ITT, implied requirements inferred from context, industry standards, or regulatory obligations',
+                'Scoring linkage noted — which evaluation criterion and marks value each requirement contributes to'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-01.1.3',
+          name: 'Identify ambiguities, contradictions, gaps, and unstated requirements — what is missing, unclear, or inconsistent in the documentation?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads (SOL/COM/LEG/DEL)', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-01.1.2', artifact: 'Categorised requirements register' },
+            { external: true, artifact: 'Industry standards, regulatory requirements, and good practice frameworks relevant to the requirement' }
+          ],
+          outputs: [
+            {
+              name: 'Requirements issues log',
+              format: 'Structured log',
+              quality: [
+                'Ambiguities identified — requirements that can be interpreted in more than one way',
+                'Contradictions identified — requirements in different documents that conflict',
+                'Gaps identified — areas where requirements are expected but absent',
+                'Unstated requirements identified — things the client clearly needs but hasn\'t explicitly asked for (informed by buyer values and client problem statement)',
+                'Each issue assessed for impact — does this block solution design, affect scoring, or create delivery risk?',
+                'Issues flagged for clarification fed forward to SAL-07'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'          // Different workstream leads can identify issues in their domain simultaneously
+        }
+      ]
+    },
+    {
+      id: 'SOL-01.2',
+      name: 'Requirements Interpretation & Solution Alignment',
+      description: 'Interpret what the client really means — informed by buyer values and strategic context — and assess our solution alignment per requirement area',
+
+      tasks: [
+        {
+          id: 'SOL-01.2.1',
+          name: 'Interpret requirements against buyer values and client strategic context — what does the client really mean, and what is driving each requirement?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Capture Lead / Account Manager', i: 'Workstream Leads' },
+          inputs: [
+            { from: 'SOL-01.1.2', artifact: 'Categorised requirements register' },
+            { from: 'SAL-01.2.1', artifact: 'Buyer values register' },
+            { from: 'SAL-01.2.2', artifact: 'Client problem statement' },
+            { from: 'SAL-06', artifact: 'Capture plan (locked)' }
+          ],
+          outputs: [
+            {
+              name: 'Requirements interpretation notes',
+              format: 'Per-requirement structured annotation',
+              quality: [
+                'Key requirements annotated with interpretation — what the client wrote vs what they likely mean',
+                'Buyer value linkage documented — which buyer values drive which requirements',
+                'Strategic intent behind requirements identified where possible — why is the client asking for this?',
+                'Interpretation distinguishes between confident reading and assumptions to be tested'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-01.2.2',
+          name: 'Assess our solution alignment per requirement area — where are we strong, where do we need to develop, where do we have gaps?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads (SOL/COM/LEG/DEL)', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-01.2.1', artifact: 'Requirements interpretation notes' },
+            { from: 'SOL-01.1.3', artifact: 'Requirements issues log' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis' }
+          ],
+          outputs: [
+            {
+              name: 'Solution alignment assessment',
+              format: 'Structured assessment per requirement area',
+              quality: [
+                'Each requirement area assessed: strong alignment (can respond confidently), partial (need to develop), gap (no current capability or approach)',
+                'Gaps linked to score gap analysis from SAL-05 — consistency between scoring gaps and solution gaps',
+                'Areas requiring partner or supply chain capability identified (feeds SUP-01)',
+                'Priority areas for solution design effort identified — where to focus SOL-03 onwards'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'          // Different workstream leads assess alignment in their domain
+        },
+        {
+          id: 'SOL-01.2.3',
+          name: 'Synthesise requirements interpretation document — the consolidated output consumed by solution design and clarification strategy',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: null, i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-01.1.1', artifact: 'Structured requirements register' },
+            { from: 'SOL-01.1.2', artifact: 'Categorised requirements register' },
+            { from: 'SOL-01.1.3', artifact: 'Requirements issues log' },
+            { from: 'SOL-01.2.1', artifact: 'Requirements interpretation notes' },
+            { from: 'SOL-01.2.2', artifact: 'Solution alignment assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Requirements interpretation document (activity primary output)',
+              format: 'Document / structured register with interpretation',
+              quality: [
+                'All requirements extracted, categorised, and interpreted in a single authoritative document',
+                'Solution alignment per requirement area documented — strengths, development needs, gaps',
+                'Issues log consolidated — ambiguities, contradictions, gaps with impact and clarification referral',
+                'Priority areas for solution design effort clearly identified',
+                'Reviewed by Bid Director — not single-author interpretation',
+                'Usable by SOL-03 (target operating model), SAL-07 (clarification strategy), and all solution workstream activities without further analysis'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Requirements interpretation document',
+      format: 'Document / structured register with interpretation',
+      quality: [
+        'Every requirement extracted from ITT documentation — specification, contract, schedules, annexes',
+        'Requirements categorised by type, priority, and scoring linkage',
+        'Ambiguities, contradictions, gaps, and unstated requirements identified with impact assessment',
+        'Requirements interpreted against buyer values and client strategic context',
+        'Solution alignment assessed per requirement area — strengths, gaps, development needs',
+        'Validated by Bid Director — not single-author interpretation'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-03', consumes: 'Requirements interpretation document', usage: 'Target operating model designed against interpreted requirements and solution alignment' },
+    { activity: 'SAL-07', consumes: 'Requirements issues log', usage: 'Ambiguities and gaps become clarification questions' },
+    { activity: 'SOL-04', consumes: 'Requirements interpretation document', usage: 'Service delivery model addresses functional and performance requirements' },
+    { activity: 'SOL-05', consumes: 'Requirements interpretation document', usage: 'Technology approach addresses technical requirements' },
+    { activity: 'SOL-06', consumes: 'Requirements interpretation document', usage: 'Staffing model informed by workforce requirements' },
+    { activity: 'SUP-01', consumes: 'Solution alignment assessment', usage: 'Supply chain strategy addresses gaps requiring partner capability' },
+    { activity: 'LEG-01', consumes: 'Requirements interpretation document', usage: 'Contract review informed by contractual requirements extracted' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-02 — Current Operating Model Assessment
+
+```javascript
+{
+  id: 'SOL-02',
+  name: 'Current operating model assessment',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'As-is operating model assessment',
+  dependencies: [],                        // Day-1 start — can run in parallel with SAL activities
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires delivery and operational expertise
+  // Note: 9 times out of 10 in government this is a re-compete for an existing service,
+  // not a greenfield site. This activity is the default for all bids.
+  // Greenfield bids skip or significantly reduce this activity — toggle at bid setup via
+  // incumbency/rebid flag. When greenfield: focus on understanding what infrastructure,
+  // contracts, or context exists, not a full operating model assessment.
+  //
+  // Distinct from SAL-02 (competitive intelligence — how sticky is the incumbent?).
+  // SOL-02 answers: "What am I inheriting on day one, and what do I need to transition
+  // into the future service?"
+  //
+  // Previously named "Current service model review (rebid)" — renamed to reflect the
+  // full scope: organisation, people, performance, systems, and operating model.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SAL-02', artifact: 'Incumbent performance assessment', note: 'Competitive view of incumbent — SAL-02 looks at stickiness, SOL-02 looks at operational detail' },
+    { from: 'SAL-01', artifact: 'Customer intelligence briefing', note: 'Client strategic context informs what aspects of the operating model matter most' },
+    { external: true, artifact: 'ITT documentation — service specification, schedules, performance framework' },
+    { external: true, artifact: 'Current contract documentation (if available) — scope, service levels, performance reports' },
+    { external: true, artifact: 'TUPE and workforce data (if disclosed by client or incumbent)' },
+    { external: true, artifact: 'Published organisational and operational data — annual reports, committee papers, audit reports' },
+    { external: true, artifact: 'Internal delivery knowledge (if we are the incumbent)' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-02.1',
+      name: 'Current Operating Model Discovery',
+      description: 'Map the as-is state across all operating dimensions — organisation, people, systems, tools, and data — to understand what exists today and what we are taking on from day one',
+
+      tasks: [
+        {
+          id: 'SOL-02.1.1',
+          name: 'Map current organisational structure — departments, sub-departments, reporting lines, governance framework, interfaces with client organisation',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Account Manager', i: 'HR Lead' },
+          inputs: [
+            { external: true, artifact: 'Published organisational and operational data — annual reports, committee papers, audit reports' },
+            { external: true, artifact: 'ITT documentation — service specification, schedules, performance framework' },
+            { external: true, artifact: 'Internal delivery knowledge (if we are the incumbent)' }
+          ],
+          outputs: [
+            {
+              name: 'Current organisational structure map',
+              format: 'Structured assessment with org chart',
+              quality: [
+                'Organisational structure documented — departments, sub-departments, teams, reporting lines',
+                'Governance framework mapped — decision-making, escalation, client interface points',
+                'Key management roles and responsibilities identified',
+                'Interfaces between supplier organisation and client organisation documented',
+                'Gaps in knowledge flagged — what we can\'t determine from available information'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-02.1.2',
+          name: 'Assess current workforce — headcount, roles, grades, management structure, TUPE-relevant employment terms and conditions',
+          raci: { r: 'HR Lead / Solution Architect', a: 'Bid Director', c: 'Commercial Lead / Legal', i: 'Delivery Director' },
+          inputs: [
+            { external: true, artifact: 'TUPE and workforce data (if disclosed by client or incumbent)' },
+            { from: 'SOL-02.1.1', artifact: 'Current organisational structure map' },
+            { external: true, artifact: 'Internal delivery knowledge (if we are the incumbent)' }
+          ],
+          outputs: [
+            {
+              name: 'Current workforce assessment',
+              format: 'Structured register with analysis',
+              quality: [
+                'Workforce headcount and profile documented — roles, grades, locations, employment type (permanent, contractor, agency)',
+                'Management structure and people governance documented — how the workforce is managed today',
+                'TUPE-relevant terms assessed where data available — pension, benefits, collective agreements',
+                'Skills and capability profile assessed at team/function level — what capability exists in the workforce?',
+                'Data gaps explicitly flagged — what TUPE and workforce data is missing and when it might be disclosed'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SOL-02.1.3',
+          name: 'Review current systems, tools, and data landscape — technology stack, legacy systems, data flows, integration points, licensing',
+          raci: { r: 'Technical Lead / Solution Architect', a: 'Bid Director', c: 'Technology SME', i: 'Commercial Lead' },
+          inputs: [
+            { external: true, artifact: 'ITT documentation — service specification, schedules, performance framework' },
+            { external: true, artifact: 'Published organisational and operational data — annual reports, committee papers, audit reports' },
+            { external: true, artifact: 'Internal delivery knowledge (if we are the incumbent)' }
+          ],
+          outputs: [
+            {
+              name: 'Current technology and data landscape assessment',
+              format: 'Structured assessment',
+              quality: [
+                'Systems and tools supporting service delivery identified — including legacy, bespoke, and COTS platforms',
+                'Data landscape documented — key data sets, data flows, integration points between systems',
+                'Ownership and licensing documented — which systems transfer, which are client-owned, which are incumbent IP?',
+                'Technology risks identified — end-of-life systems, unsupported platforms, security vulnerabilities',
+                'Data migration and system transition implications identified at a strategic level'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'SOL-02.2',
+      name: 'Current Performance & Service Baseline',
+      description: 'Understand how the service is performing today, document the operating model as a whole, and identify what we are inheriting on day one — the transition baseline',
+
+      tasks: [
+        {
+          id: 'SOL-02.2.1',
+          name: 'Assess current service performance against existing KPIs and SLA framework — what is the performance baseline we are inheriting or competing against?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director', i: 'Commercial Lead' },
+          inputs: [
+            { external: true, artifact: 'Current contract documentation (if available) — scope, service levels, performance reports' },
+            { from: 'SAL-02.1.1', artifact: 'Incumbent performance summary', note: 'Competitive view of performance from SAL-02 — SOL-02 goes deeper into operational detail' }
+          ],
+          outputs: [
+            {
+              name: 'Current performance baseline',
+              format: 'Structured performance assessment',
+              quality: [
+                'Existing KPIs and SLA framework documented — what is being measured and how?',
+                'Performance against each KPI/SLA assessed where data available — meeting, exceeding, or failing',
+                'Performance trends identified — improving, stable, or declining areas',
+                'Performance gaps and pain points linked to operating model root causes where identifiable',
+                'Baseline established for comparison with our proposed service improvement'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-02.2.2',
+          name: 'Document the current operating model — how organisation, people, systems, and processes combine to deliver the service today',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Technical Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-02.1.1', artifact: 'Current organisational structure map' },
+            { from: 'SOL-02.1.2', artifact: 'Current workforce assessment' },
+            { from: 'SOL-02.1.3', artifact: 'Current technology and data landscape assessment' },
+            { from: 'SOL-02.2.1', artifact: 'Current performance baseline' }
+          ],
+          outputs: [
+            {
+              name: 'Current operating model document',
+              format: 'Structured operating model assessment',
+              quality: [
+                'Operating model documented as an integrated view — not just individual components in isolation',
+                'How organisation, people, systems, processes, and governance work together described',
+                'Key dependencies and interdependencies between components identified',
+                'Strengths of the current model identified — what works well and should be retained or built upon',
+                'Weaknesses and structural issues identified — what drives the performance gaps?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-02.2.3',
+          name: 'Identify what we are inheriting on day one and key transition implications — the handover baseline that feeds transition planning',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Commercial Lead / Legal', i: 'HR Lead' },
+          inputs: [
+            { from: 'SOL-02.2.2', artifact: 'Current operating model document' },
+            { from: 'SOL-02.1.2', artifact: 'Current workforce assessment' },
+            { from: 'SOL-02.1.3', artifact: 'Current technology and data landscape assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Day-one inheritance and transition implications (activity primary output complement)',
+              format: 'Structured assessment',
+              quality: [
+                'Day-one inheritance clearly defined — what transfers to us: people, systems, assets, data, contracts, obligations',
+                'What remains with the client or outgoing supplier identified — boundaries of transfer',
+                'Key transition risks identified at a strategic level — feeds SOL-07 (transition planning)',
+                'Service continuity requirements identified — what must not be disrupted during handover',
+                'Implications for our target operating model design articulated — what constraints does the as-is place on our future model?'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'As-is operating model assessment',
+      format: 'Document / structured assessment',
+      quality: [
+        'Current organisational structure mapped — departments, reporting lines, governance, client interfaces',
+        'Current workforce assessed — headcount, roles, management, TUPE-relevant terms',
+        'Current systems, tools, and data landscape documented — technology stack, legacy, integration, licensing',
+        'Current service performance baselined against existing KPIs and SLAs',
+        'Integrated operating model documented — how components work together to deliver the service',
+        'Day-one inheritance defined — what transfers, what stays, transition implications',
+        'Gaps in available information explicitly flagged'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-03', consumes: 'As-is operating model assessment', usage: 'Target operating model designed as transformation from the as-is baseline' },
+    { activity: 'SOL-04', consumes: 'As-is operating model assessment', usage: 'Service delivery model understands what exists to build upon or replace' },
+    { activity: 'SOL-05', consumes: 'Current technology and data landscape assessment', usage: 'Technology approach addresses legacy migration, system replacement, and integration' },
+    { activity: 'SOL-06', consumes: 'Current workforce assessment', usage: 'Staffing model and TUPE analysis built on workforce baseline' },
+    { activity: 'SOL-07', consumes: 'Day-one inheritance and transition implications', usage: 'Transition plan built on what we are inheriting and continuity requirements' },
+    { activity: 'COM-01', consumes: 'As-is operating model assessment', usage: 'Should-cost model informed by current operating costs and workforce profile' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-03 — Target Operating Model Design
+
+```javascript
+{
+  id: 'SOL-03',
+  name: 'Target operating model design',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Target operating model',
+  dependencies: ['SOL-01', 'SOL-02'],
+  effortDays: 45,
+  teamSize: 3,
+  parallelisationType: 'P',               // Parallelisable — service lines can be designed concurrently
+  // Note: this is the longest activity in the product (45 days) and the heart of the bid.
+  // Almost every downstream SOL activity depends on it.
+  //
+  // SOL-03 is the ARCHITECTURE — the "what and why."
+  // SOL-04 through SOL-09 are the DETAILED DESIGN — the "how exactly."
+  // SOL-03 sets the strategic-level operating model framework; subsequent activities
+  // fill in service delivery detail, technology, staffing, transition, innovation, social value.
+  //
+  // For a services re-compete, the TOM is the transformation story:
+  // As-is (SOL-02) → Future state (SOL-03) → How we get there (SOL-07)
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+    { from: 'SOL-02', artifact: 'As-is operating model assessment' },
+    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Win strategy and competitive positioning shape solution design' },
+    { from: 'SAL-06.2.4', artifact: 'Win strategy narrative', note: 'Solution must deliver the win themes and differentiators' },
+    { from: 'SAL-04', artifact: 'Win theme document', note: 'Messaging and theme integration points for the solution' },
+    { from: 'SAL-02.3.1', artifact: 'Transformational opportunity register', note: 'Innovation and disruption opportunities to incorporate where evaluation-aligned' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Solution design prioritised by where the marks are' },
+    { from: 'SAL-01.2.1', artifact: 'Buyer values register', note: 'Solution must address what the client strategically cares about' },
+    { external: true, artifact: 'ITT documentation — service specification, output requirements, performance framework' },
+    { external: true, artifact: 'Industry good practice, reference architectures, and regulatory frameworks' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-03.1',
+      name: 'Solution Vision & Design Principles',
+      description: 'Make the foundational solution positioning decision — where on the spectrum between low-capex compliance and high-capex transformation does this solution sit? Then establish the design principles that flow from that choice.',
+
+      tasks: [
+        {
+          id: 'SOL-03.1.1',
+          name: 'Determine solution positioning — where on the spectrum between low-capex/compliant and high-capex/transformational does this solution land, and why?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Commercial Lead / Capture Lead / Delivery Director', i: 'Partner' },
+          inputs: [
+            { from: 'SAL-06.2.4', artifact: 'Win strategy narrative' },
+            { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' },
+            { from: 'SAL-02', artifact: 'Incumbent performance assessment', note: 'Can we beat them on price or must we differentiate through transformation?' },
+            { from: 'SAL-02.3.1', artifact: 'Transformational opportunity register' },
+            { from: 'SAL-01.2.1', artifact: 'Buyer values register' },
+            { external: true, artifact: 'ITT documentation — service specification, output requirements, performance framework' }
+          ],
+          outputs: [
+            {
+              name: 'Solution positioning decision',
+              format: 'Structured decision paper',
+              quality: [
+                'Position on the compliance-to-transformation spectrum explicitly stated with rationale',
+                'Key factors driving the positioning documented — evaluation framework, buyer appetite, commercial strategy, competitive landscape, incumbent stickiness',
+                'Investment appetite defined — what level of upfront capex is the organisation willing to commit?',
+                'Lifetime value argument articulated — if high capex, what is the payback through lower operating cost or better outcomes?',
+                'Trade-offs acknowledged — what do we gain and what do we sacrifice at this positioning?',
+                'Alignment to win strategy confirmed — does this positioning deliver our win themes?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-03.1.2',
+          name: 'Establish solution design principles — the rules that guide all downstream design decisions, flowing from the positioning choice',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Technical Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-03.1.1', artifact: 'Solution positioning decision' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+            { from: 'SAL-04', artifact: 'Win theme document' }
+          ],
+          outputs: [
+            {
+              name: 'Solution design principles',
+              format: 'Structured principles document',
+              quality: [
+                'Design principles are specific to this bid — not generic "best practice" statements',
+                'Each principle flows from the positioning decision or a key requirement — traceable rationale',
+                'Principles are actionable — a solution designer can use them to make trade-off decisions',
+                'Principles address: service philosophy, technology strategy, people approach, governance model, commercial alignment',
+                'Principles are testable — the final TOM can be assessed against them'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-03.1.3',
+          name: 'Define solution scope and boundary — what is in, what is out, where our service interfaces with the client and third parties',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Commercial Lead / Delivery Director', i: 'Legal' },
+          inputs: [
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+            { from: 'SOL-02', artifact: 'As-is operating model assessment' },
+            { external: true, artifact: 'ITT documentation — service specification, output requirements, performance framework' }
+          ],
+          outputs: [
+            {
+              name: 'Solution scope and boundary definition',
+              format: 'Structured scope document',
+              quality: [
+                'Service boundary clearly defined — what we deliver vs what the client retains vs what third parties provide',
+                'Interface points identified — where our service meets client operations, other suppliers, regulatory bodies',
+                'Scope assumptions documented — areas where the ITT is ambiguous and we have assumed in or out',
+                'Exclusions explicitly stated with rationale — what we are deliberately not proposing and why',
+                'Dependencies on client or third parties identified — what must others provide for our model to work?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-03.2',
+      name: 'Operating Model Architecture',
+      description: 'Design the high-level operating model — service lines, governance, organisation concept — that subsequent activities (SOL-04 through SOL-09) will detail',
+
+      tasks: [
+        {
+          id: 'SOL-03.2.1',
+          name: 'Design the high-level operating model framework — service lines, how they relate, how they map to requirements and deliver against the specification',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Workstream Leads', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-03.1.1', artifact: 'Solution positioning decision' },
+            { from: 'SOL-03.1.2', artifact: 'Solution design principles' },
+            { from: 'SOL-03.1.3', artifact: 'Solution scope and boundary definition' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+            { from: 'SOL-02', artifact: 'As-is operating model assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Operating model framework',
+              format: 'Operating model canvas / architecture diagram with narrative',
+              quality: [
+                'Service lines defined — each with clear purpose, scope, and relationship to requirements',
+                'How service lines integrate and interact documented — dependencies, shared services, escalation paths',
+                'Transformation story articulated — how the future model improves on the as-is (from SOL-02)',
+                'Framework is at architecture level — sufficient for downstream activities to detail, not so detailed it constrains them',
+                'Requirements coverage demonstrated — every key requirement area has a home in the model'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-03.2.2',
+          name: 'Design the governance and management model — how the service will be managed, client interface, decision-making, escalation, performance reporting',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Account Manager', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' },
+            { from: 'SOL-02.1.1', artifact: 'Current organisational structure map', note: 'Understand current governance to design appropriate future model' },
+            { external: true, artifact: 'ITT documentation — governance and reporting requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Governance and management model',
+              format: 'Structured governance design',
+              quality: [
+                'Management tiers defined — strategic, operational, tactical — with purpose and cadence',
+                'Client interface model designed — joint governance, reporting, escalation, relationship management',
+                'Decision-making framework documented — who decides what, at which level, with what authority',
+                'Performance reporting structure designed — what gets reported, to whom, at what frequency',
+                'Continuous improvement and contract management mechanisms included'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SOL-03.2.3',
+          name: 'Design the organisational concept — future structure, key roles, capability requirements at a strategic level (detail in SOL-06)',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'HR Lead / Delivery Director', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' },
+            { from: 'SOL-02.1.2', artifact: 'Current workforce assessment', note: 'What workforce exists vs what the future model needs' },
+            { from: 'SOL-02.1.1', artifact: 'Current organisational structure map' }
+          ],
+          outputs: [
+            {
+              name: 'Organisational concept',
+              format: 'High-level org design with narrative',
+              quality: [
+                'Future organisational structure designed at strategic level — functions, teams, reporting lines',
+                'Key leadership and specialist roles identified with capability requirements',
+                'Relationship to current workforce indicated — what broadly transfers, what changes, what is new',
+                'Organisational design principles stated — spans of control, empowerment, flexibility',
+                'Sufficient for SOL-06 to detail staffing model and TUPE analysis — not so detailed it pre-empts that work'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'SOL-03.3',
+      name: 'Solution Integration & Narrative',
+      description: 'Ensure the TOM is coherent, addresses all requirements, delivers the win themes, and is validated as the baseline for all detailed design',
+
+      tasks: [
+        {
+          id: 'SOL-03.3.1',
+          name: 'Map solution to requirements — demonstrate how the TOM addresses every key requirement area from SOL-01',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' }
+          ],
+          outputs: [
+            {
+              name: 'Requirements-to-solution mapping',
+              format: 'Traceability matrix',
+              quality: [
+                'Every key requirement area mapped to the solution component that addresses it',
+                'Coverage gaps identified — requirements not yet addressed by the TOM',
+                'Strength of response per requirement area assessed — strong, adequate, needs development',
+                'Gaps assigned to downstream detailed design activities for resolution'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-03.3.2',
+          name: 'Map solution to win themes — demonstrate how the TOM delivers our differentiators and competitive messaging',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Capture Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' },
+            { from: 'SAL-04', artifact: 'Win theme document' },
+            { from: 'SAL-05.2.4', artifact: 'Win theme integration map' }
+          ],
+          outputs: [
+            {
+              name: 'Win theme-to-solution mapping',
+              format: 'Structured mapping',
+              quality: [
+                'Every win theme mapped to the solution features and design choices that deliver it',
+                'Win themes that are strongly supported by the TOM identified — these become headline solution messages',
+                'Win themes that are weakly supported flagged — solution must be strengthened or theme reconsidered',
+                'Solution features that don\'t connect to any win theme questioned — are they necessary or scope creep?'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-03.3.3',
+          name: 'Validate TOM with bid team — confirm as the baseline for detailed design activities (SOL-04 onwards) and identify risks and dependencies',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' },
+            { from: 'SOL-03.2.2', artifact: 'Governance and management model' },
+            { from: 'SOL-03.2.3', artifact: 'Organisational concept' },
+            { from: 'SOL-03.3.1', artifact: 'Requirements-to-solution mapping' },
+            { from: 'SOL-03.3.2', artifact: 'Win theme-to-solution mapping' }
+          ],
+          outputs: [
+            {
+              name: 'Target operating model (validated — activity primary output)',
+              format: 'Comprehensive TOM document',
+              quality: [
+                'Bid team has reviewed and challenged — not single-author design',
+                'Solution positioning confirmed — team understands and supports the compliance/transformation balance',
+                'Requirements coverage confirmed — all key areas addressed or assigned to downstream activities',
+                'Win theme delivery confirmed — solution supports the competitive narrative',
+                'Risks and open issues documented — what could go wrong and what needs resolving in detailed design',
+                'Downstream activities briefed — SOL-04 through SOL-09 understand their design envelope',
+                'TOM baselined as the reference point — changes require formal review'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Target operating model',
+      format: 'Comprehensive TOM document',
+      quality: [
+        'Solution positioning decision made and documented — compliance/transformation spectrum with rationale',
+        'Design principles established — specific, actionable, traceable to positioning and requirements',
+        'Scope and boundary defined — what is in, what is out, interfaces with client and third parties',
+        'Operating model framework designed — service lines, integration, transformation story from as-is',
+        'Governance and management model designed — tiers, client interface, decision-making, reporting',
+        'Organisational concept designed — future structure, key roles, capability requirements',
+        'Requirements coverage demonstrated — every key area mapped to solution component',
+        'Win theme delivery demonstrated — solution supports competitive narrative',
+        'Validated by bid team and baselined for detailed design'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-04', consumes: 'Target operating model', usage: 'Service delivery model details how each service line operates within the TOM framework' },
+    { activity: 'SOL-05', consumes: 'Target operating model', usage: 'Technology approach designed to enable the operating model' },
+    { activity: 'SOL-06', consumes: 'Organisational concept', usage: 'Staffing model and TUPE analysis details the workforce within the org design' },
+    { activity: 'SOL-07', consumes: 'Target operating model', usage: 'Transition plan bridges from as-is (SOL-02) to future state (SOL-03)' },
+    { activity: 'SOL-08', consumes: 'Target operating model', usage: 'Innovation roadmap builds on the TOM\'s transformation story' },
+    { activity: 'SOL-09', consumes: 'Target operating model', usage: 'Social value proposition embedded within the operating model' },
+    { activity: 'SOL-11', consumes: 'Target operating model', usage: 'Solution design lock consolidates TOM with all detailed design outputs' },
+    { activity: 'COM-01', consumes: 'Target operating model', usage: 'Should-cost model built from the operating model framework and organisational concept' },
+    { activity: 'DEL-01', consumes: 'Target operating model', usage: 'Implementation plan designed around the TOM structure' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-04 — Service Delivery Model Design
+
+```javascript
+{
+  id: 'SOL-04',
+  name: 'Service delivery model design',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Service delivery model',
+  dependencies: ['SOL-03'],
+  effortDays: 30,
+  teamSize: 3,
+  parallelisationType: 'P',               // Parallelisable — different service lines designed concurrently
+  // Note: SOL-03 defined the architecture (what service lines exist and why).
+  // SOL-04 details how each one actually operates — processes, workflows, resources,
+  // service levels, interfaces. This is the "how exactly" layer.
+  // The output must be sufficiently detailed for COM-01 to build a should-cost model.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model' },
+    { from: 'SOL-03.2.1', artifact: 'Operating model framework', note: 'Service line definitions and integration points' },
+    { from: 'SOL-03.2.2', artifact: 'Governance and management model', note: 'Management structure the delivery model operates within' },
+    { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'Functional and performance requirements each service line must address' },
+    { from: 'SOL-02', artifact: 'As-is operating model assessment', note: 'Current service processes to build upon or replace' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Where the marks are — prioritise design effort accordingly' },
+    { external: true, artifact: 'ITT documentation — service specification, output requirements, performance framework, SLAs' },
+    { external: true, artifact: 'Industry good practice, reference delivery models, and regulatory requirements' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-04.1',
+      name: 'Service Line Design',
+      description: 'Detail how each service line operates — processes, workflows, resource model, capacity, and interfaces between service lines',
+
+      tasks: [
+        {
+          id: 'SOL-04.1.1',
+          name: 'Design service delivery processes per service line — workflows, activities, handoffs, triggers, volumes, and operating procedures',
+          raci: { r: 'Solution Architect / Service Line Leads', a: 'Bid Director', c: 'Delivery Director / SMEs', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+            { from: 'SOL-02', artifact: 'As-is operating model assessment' },
+            { external: true, artifact: 'ITT documentation — service specification, output requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Service delivery process designs',
+              format: 'Per-service-line process documentation',
+              quality: [
+                'Each service line has documented delivery processes — not just what is delivered but how',
+                'Workflows define activities, roles, handoffs, triggers, and decision points',
+                'Volume assumptions documented — what throughput the process is designed to handle',
+                'Process improvements over the as-is model identified — what changes and what the improvement delivers',
+                'Processes are specific enough to cost — resource types, effort, and frequency identifiable'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'          // Different service lines designed concurrently by different team members
+        },
+        {
+          id: 'SOL-04.1.2',
+          name: 'Design resource and capacity model per service line — what resources deliver this service, at what capacity, with what scalability?',
+          raci: { r: 'Solution Architect / Service Line Leads', a: 'Bid Director', c: 'Delivery Director / HR Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-04.1.1', artifact: 'Service delivery process designs' },
+            { from: 'SOL-03.2.3', artifact: 'Organisational concept' },
+            { external: true, artifact: 'ITT documentation — volume projections, demand variability, growth expectations' }
+          ],
+          outputs: [
+            {
+              name: 'Resource and capacity model',
+              format: 'Per-service-line resource model',
+              quality: [
+                'Resource types and quantities defined per service line — roles, FTEs, skills, location',
+                'Capacity designed against expected volumes — with headroom assumptions stated',
+                'Scalability mechanisms defined — how does capacity flex with demand (up and down)?',
+                'Peak and trough scenarios considered — not just average steady-state',
+                'Resource model is directly costable — feeds COM-01 should-cost model'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'
+        },
+        {
+          id: 'SOL-04.1.3',
+          name: 'Design interfaces and dependencies between service lines — how work flows across boundaries, shared services, escalation paths',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Service Line Leads', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-04.1.1', artifact: 'Service delivery process designs' },
+            { from: 'SOL-03.2.1', artifact: 'Operating model framework' }
+          ],
+          outputs: [
+            {
+              name: 'Service line interface and dependency map',
+              format: 'Interface matrix with process documentation',
+              quality: [
+                'All interfaces between service lines identified and documented — triggers, handoffs, data flows',
+                'Shared services and common capabilities identified — what is centralised vs distributed',
+                'Escalation paths across service line boundaries defined',
+                'Dependencies that create bottleneck or single-point-of-failure risk identified',
+                'End-to-end service journeys traced across service lines — does the integrated model work for the end user?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'        // Requires all service line designs to integrate
+        }
+      ]
+    },
+    {
+      id: 'SOL-04.2',
+      name: 'Performance & Assurance Framework',
+      description: 'Connect the delivery model to the performance framework — which components deliver which outcomes, how we assure quality, and how we continuously improve',
+
+      tasks: [
+        {
+          id: 'SOL-04.2.1',
+          name: 'Map SLA/KPI commitments to delivery components — which parts of the delivery model are responsible for which performance outcomes?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-04.1.1', artifact: 'Service delivery process designs' },
+            { from: 'SOL-04.1.3', artifact: 'Service line interface and dependency map' },
+            { external: true, artifact: 'ITT documentation — performance framework, SLAs, KPIs, service credits' }
+          ],
+          outputs: [
+            {
+              name: 'SLA/KPI-to-delivery commitment matrix',
+              format: 'Structured matrix',
+              quality: [
+                'Every SLA and KPI mapped to the service line and process component responsible for delivering it',
+                'Where multiple service lines contribute to a single KPI, the contribution model is defined',
+                'Commitments are achievable within the resource and capacity model — not aspirational',
+                'Service credit and penalty exposure assessed per commitment — what is the financial risk?',
+                'Monitoring mechanism identified per KPI — how will we know if we are meeting the commitment?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-04.2.2',
+          name: 'Design quality assurance and continuous improvement mechanisms — how we monitor, measure, and improve service delivery over the contract term',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Quality Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-04.2.1', artifact: 'SLA/KPI-to-delivery commitment matrix' },
+            { from: 'SOL-03.2.2', artifact: 'Governance and management model' }
+          ],
+          outputs: [
+            {
+              name: 'Quality assurance and continuous improvement framework',
+              format: 'Structured framework document',
+              quality: [
+                'Quality assurance mechanisms defined — inspection, audit, review, self-assessment cadence',
+                'Performance monitoring and reporting mechanisms designed — dashboards, alerts, thresholds',
+                'Continuous improvement process defined — how improvements are identified, assessed, approved, and implemented',
+                'Lessons learned and knowledge management mechanisms included',
+                'Framework is proportionate to contract value and complexity — not over-engineered'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-04.2.3',
+          name: 'Validate service delivery model — confirm it delivers against requirements, is costable for COM-01, and is deliverable within the organisational concept',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-04.1.1', artifact: 'Service delivery process designs' },
+            { from: 'SOL-04.1.2', artifact: 'Resource and capacity model' },
+            { from: 'SOL-04.1.3', artifact: 'Service line interface and dependency map' },
+            { from: 'SOL-04.2.1', artifact: 'SLA/KPI-to-delivery commitment matrix' },
+            { from: 'SOL-04.2.2', artifact: 'Quality assurance and continuous improvement framework' }
+          ],
+          outputs: [
+            {
+              name: 'Service delivery model (validated — activity primary output)',
+              format: 'Comprehensive delivery model document',
+              quality: [
+                'Bid team has reviewed and challenged — not single-author design',
+                'Requirements coverage confirmed — every functional and performance requirement addressed',
+                'Commercial readiness confirmed — resource model, capacity model, and process designs are sufficiently detailed for costing',
+                'Deliverability confirmed — the delivery team believes this model can be mobilised and operated',
+                'Risks and assumptions documented — what could go wrong and what has been assumed',
+                'Baselined for downstream consumption — SOL-06 (staffing), SOL-07 (transition), COM-01 (costing)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Service delivery model',
+      format: 'Comprehensive delivery model document',
+      quality: [
+        'Service delivery processes designed per service line — workflows, activities, volumes, operating procedures',
+        'Resource and capacity model defined per service line — roles, FTEs, scalability mechanisms',
+        'Service line interfaces and dependencies mapped — handoffs, shared services, escalation',
+        'SLA/KPI commitments mapped to delivery components with monitoring mechanisms',
+        'Quality assurance and continuous improvement framework designed',
+        'Model validated as deliverable, costable, and requirements-compliant'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-06', consumes: 'Resource and capacity model', usage: 'Staffing model details workforce within the resource model' },
+    { activity: 'SOL-07', consumes: 'Service delivery model', usage: 'Transition plan designs how to mobilise and stand up each service line' },
+    { activity: 'SOL-09', consumes: 'Service delivery model', usage: 'Social value embedded within service delivery processes' },
+    { activity: 'SOL-10', consumes: 'Service delivery model', usage: 'Evidence strategy identifies case studies for each service line capability' },
+    { activity: 'SOL-11', consumes: 'Service delivery model', usage: 'Solution design lock consolidates delivery model with all other solution outputs' },
+    { activity: 'COM-01', consumes: 'Service delivery model', usage: 'Should-cost model built from resource model, capacity model, and process designs' },
+    { activity: 'DEL-03', consumes: 'SLA/KPI-to-delivery commitment matrix', usage: 'KPI/SLA framework details the performance commitments' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-05 — Technology & Digital Approach
+
+```javascript
+{
+  id: 'SOL-05',
+  name: 'Technology & digital approach',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Technical Lead',
+  output: 'Technology solution design',
+  dependencies: ['SOL-03', 'SUP-02'],
+  effortDays: 20,
+  teamSize: 2,
+  parallelisationType: 'P',               // Parallelisable — architecture and data streams can run concurrently
+  // Note: this is the technology enablement layer for the operating model.
+  // SOL-03 defined what the service looks like, SOL-04 defined how it delivers,
+  // SOL-05 defines what technology makes it work.
+  // The dependency on SUP-02 (partner technology assessment) ensures partner platforms
+  // and COTS products are evaluated before committing to the architecture.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Processes and workflows that technology must enable' },
+    { from: 'SOL-02.1.3', artifact: 'Current technology and data landscape assessment', note: 'What exists today — legacy, platforms, data, licensing' },
+    { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'Technical requirements' },
+    { from: 'SAL-02.3.1', artifact: 'Transformational opportunity register', note: 'Technology disruption opportunities identified during capture' },
+    { from: 'SUP-02', artifact: 'Partner technology assessment', note: 'Partner platforms, COTS products, third-party technology options' },
+    { external: true, artifact: 'ITT documentation — technical requirements, security standards, data handling requirements' },
+    { external: true, artifact: 'Government security and information assurance frameworks (e.g., Cyber Essentials, ISO 27001, OFFICIAL/SECRET classifications)' },
+    { external: true, artifact: 'Our technology portfolio — platforms, IP, development capability, hosting infrastructure' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-05.1',
+      name: 'Technology Architecture & Platform Design',
+      description: 'Design the target technology architecture — platforms, infrastructure, applications, security — and the build/buy/reuse decisions that underpin it',
+
+      tasks: [
+        {
+          id: 'SOL-05.1.1',
+          name: 'Design target technology architecture — platforms, infrastructure, applications, and how they support the service delivery model',
+          raci: { r: 'Technical Lead', a: 'Solution Architect', c: 'Delivery Director / Technology SMEs', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+            { from: 'SAL-02.3.1', artifact: 'Transformational opportunity register' },
+            { external: true, artifact: 'ITT documentation — technical requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Target technology architecture',
+              format: 'Architecture document with diagrams',
+              quality: [
+                'Technology architecture covers all layers — infrastructure, platform, application, user interface',
+                'Each technology component mapped to the service delivery process it enables',
+                'Transformational technology opportunities from SAL-02 L2.3 incorporated where evaluation-aligned',
+                'Architecture principles stated — cloud strategy, scalability approach, resilience, maintainability',
+                'Technology roadmap across contract term outlined — what is delivered at mobilisation vs phased in'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-05.1.2',
+          name: 'Assess build vs buy vs reuse decisions — what do we develop bespoke, what COTS/partner platforms do we adopt, what existing systems do we retain and enhance?',
+          raci: { r: 'Technical Lead', a: 'Solution Architect', c: 'Commercial Lead / Partner Lead', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-05.1.1', artifact: 'Target technology architecture' },
+            { from: 'SOL-02.1.3', artifact: 'Current technology and data landscape assessment' },
+            { from: 'SUP-02', artifact: 'Partner technology assessment' },
+            { external: true, artifact: 'Our technology portfolio — platforms, IP, development capability, hosting infrastructure' }
+          ],
+          outputs: [
+            {
+              name: 'Build/buy/reuse assessment',
+              format: 'Structured decision register per component',
+              quality: [
+                'Every significant technology component assessed: build bespoke, buy COTS/SaaS, reuse existing, or partner-provided',
+                'Decision rationale documented per component — cost, capability, risk, time-to-deploy, lock-in',
+                'Partner and COTS dependencies identified with licensing and commercial implications',
+                'Legacy systems to be retained have a lifecycle and risk assessment — supportability, end-of-life, migration path',
+                'Decisions are commercially viable — feeds directly into COM-01 technology cost model'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-05.1.3',
+          name: 'Design cyber security and information assurance approach — security architecture, data classification, accreditation requirements',
+          raci: { r: 'Security Architect / Technical Lead', a: 'Solution Architect', c: 'Client Security (if available) / Legal', i: 'Bid Director' },
+          inputs: [
+            { from: 'SOL-05.1.1', artifact: 'Target technology architecture' },
+            { external: true, artifact: 'ITT documentation — security standards, data handling requirements' },
+            { external: true, artifact: 'Government security and information assurance frameworks (e.g., Cyber Essentials, ISO 27001, OFFICIAL/SECRET classifications)' }
+          ],
+          outputs: [
+            {
+              name: 'Security and information assurance design',
+              format: 'Security architecture document',
+              quality: [
+                'Security architecture designed — access control, encryption, network security, endpoint protection',
+                'Data classification and handling requirements addressed — what data at what classification, storage, transmission, retention',
+                'Accreditation requirements identified — what certifications and assurance processes are needed and timeline',
+                'Security compliance with ITT requirements and government frameworks demonstrated',
+                'Security risks identified and mitigated — residual risk accepted or escalated'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'SOL-05.2',
+      name: 'Data & Integration Design',
+      description: 'Design how data flows through the solution and how systems integrate — migration from legacy, integration with client and third parties, and data management',
+
+      tasks: [
+        {
+          id: 'SOL-05.2.1',
+          name: 'Design data architecture and migration approach — data model, data flows, migration from legacy systems, data quality strategy',
+          raci: { r: 'Technical Lead / Data Architect', a: 'Solution Architect', c: 'Technology SMEs', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-05.1.1', artifact: 'Target technology architecture' },
+            { from: 'SOL-02.1.3', artifact: 'Current technology and data landscape assessment' },
+            { from: 'SOL-05.1.2', artifact: 'Build/buy/reuse assessment' }
+          ],
+          outputs: [
+            {
+              name: 'Data architecture and migration design',
+              format: 'Structured design document',
+              quality: [
+                'Target data model designed — key data entities, relationships, ownership, lifecycle',
+                'Data flows mapped — how data moves between systems, services, and external parties',
+                'Data migration approach defined — what migrates, from where, transformation rules, validation approach',
+                'Data quality strategy defined — cleansing, validation, ongoing quality management',
+                'Data migration risks identified — volume, complexity, quality, downtime implications'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-05.2.2',
+          name: 'Design integration architecture — how systems connect, APIs, interfaces with client systems and third-party platforms',
+          raci: { r: 'Technical Lead', a: 'Solution Architect', c: 'Technology SMEs / Partner Technical Leads', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-05.1.1', artifact: 'Target technology architecture' },
+            { from: 'SOL-05.1.2', artifact: 'Build/buy/reuse assessment' },
+            { from: 'SOL-04.1.3', artifact: 'Service line interface and dependency map' }
+          ],
+          outputs: [
+            {
+              name: 'Integration architecture',
+              format: 'Integration design document',
+              quality: [
+                'All system-to-system interfaces identified and designed — internal, client, and third-party',
+                'Integration patterns defined — APIs, messaging, batch, real-time, file transfer',
+                'Client system integration requirements addressed — what we connect to, protocol, frequency, ownership',
+                'Third-party and partner system integration designed — dependencies, SLAs, fallback',
+                'Integration testing approach outlined — how we validate interfaces work end-to-end'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SOL-05.2.3',
+          name: 'Validate technology solution — confirm it enables the delivery model, is costable, is deliverable, and meets security requirements',
+          raci: { r: 'Technical Lead', a: 'Solution Architect', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-05.1.1', artifact: 'Target technology architecture' },
+            { from: 'SOL-05.1.2', artifact: 'Build/buy/reuse assessment' },
+            { from: 'SOL-05.1.3', artifact: 'Security and information assurance design' },
+            { from: 'SOL-05.2.1', artifact: 'Data architecture and migration design' },
+            { from: 'SOL-05.2.2', artifact: 'Integration architecture' }
+          ],
+          outputs: [
+            {
+              name: 'Technology solution design (validated — activity primary output)',
+              format: 'Comprehensive technology design document',
+              quality: [
+                'Technology architecture, data architecture, and integration architecture consolidated',
+                'Build/buy/reuse decisions confirmed with commercial implications quantified',
+                'Security and IA approach confirmed as compliant with requirements and government frameworks',
+                'Technology solution validated as enabling the service delivery model — no gaps',
+                'Costable for COM-01 — licensing, development, hosting, support costs identifiable',
+                'Deliverable within transition timeline — technology readiness mapped to mobilisation phases',
+                'Risks and assumptions documented — technology risk feeds SOL-12'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Technology solution design',
+      format: 'Comprehensive technology design document',
+      quality: [
+        'Target technology architecture designed — infrastructure, platform, application, user interface',
+        'Build/buy/reuse decisions made per component with rationale and commercial implications',
+        'Cyber security and information assurance approach designed and compliance demonstrated',
+        'Data architecture and migration approach designed — model, flows, migration, quality',
+        'Integration architecture designed — internal, client, and third-party interfaces',
+        'Solution validated as enabling delivery model, costable, deliverable, and security-compliant'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-07', consumes: 'Technology solution design', usage: 'Transition plan includes technology migration and deployment' },
+    { activity: 'SOL-11', consumes: 'Technology solution design', usage: 'Solution design lock consolidates technology design with all solution outputs' },
+    { activity: 'COM-01', consumes: 'Technology solution design', usage: 'Should-cost model includes technology costs — licensing, development, hosting, support' },
+    { activity: 'SOL-12', consumes: 'Technology solution design', usage: 'Solution risk register includes technology and migration risks' },
+    { activity: 'DEL-01', consumes: 'Technology solution design', usage: 'Implementation plan includes technology deployment phases' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-06 — Staffing Model & TUPE Analysis
+
+```javascript
+{
+  id: 'SOL-06',
+  name: 'Staffing model & TUPE analysis',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'HR Lead / Solution Architect',
+  output: 'Staffing model with TUPE schedule',
+  dependencies: ['SOL-04'],
+  effortDays: 8,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires HR/TUPE expertise
+  // Note: this is the people dimension of the solution. TUPE is the dominant complexity
+  // in government re-competes — the transferring workforce brings terms, conditions,
+  // pensions, and legal obligations that fundamentally shape the cost model.
+  // People costs are typically 60-80% of a services contract cost base.
+  //
+  // Distinct from SOL-07 (transition planning) — SOL-06 is about the target workforce
+  // and TUPE obligations; SOL-07 is about how we get from as-is to future state.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03.2.3', artifact: 'Organisational concept', note: 'Strategic-level future structure and key roles' },
+    { from: 'SOL-04.1.2', artifact: 'Resource and capacity model', note: 'What the service delivery model needs — roles, FTEs, skills' },
+    { from: 'SOL-02.1.2', artifact: 'Current workforce assessment', note: 'What workforce exists today — headcount, roles, terms, TUPE data' },
+    { from: 'SOL-02.1.1', artifact: 'Current organisational structure map', note: 'How the workforce is currently organised' },
+    { external: true, artifact: 'TUPE and workforce data (as disclosed by client or incumbent)' },
+    { external: true, artifact: 'ITT documentation — workforce requirements, TUPE provisions, pension requirements' },
+    { external: true, artifact: 'TUPE legislation and case law guidance — Transfer of Undertakings (Protection of Employment) Regulations' },
+    { external: true, artifact: 'Pension scheme documentation (if applicable) — LGPS, NHSPS, or other public sector pension obligations' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-06.1',
+      name: 'Target Staffing Model Design',
+      description: 'Design the future workforce — roles, grades, FTEs, structure — mapped to the service delivery model and organisational concept',
+
+      tasks: [
+        {
+          id: 'SOL-06.1.1',
+          name: 'Design target workforce structure — roles, grades, FTEs, reporting lines, mapped to service lines and organisational concept',
+          raci: { r: 'HR Lead / Solution Architect', a: 'Bid Director', c: 'Delivery Director / Service Line Leads', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-03.2.3', artifact: 'Organisational concept' },
+            { from: 'SOL-04.1.2', artifact: 'Resource and capacity model' },
+            { external: true, artifact: 'ITT documentation — workforce requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Target staffing model',
+              format: 'Structured workforce model',
+              quality: [
+                'Every role defined — title, grade, function, service line, reporting line, location',
+                'FTE count per role with rationale — linked to service delivery process and volume assumptions',
+                'Management structure defined — spans of control, team sizes, supervisory ratios',
+                'Shift patterns and working arrangements documented where applicable',
+                'Model is directly costable — grade, rate, hours identifiable per role for COM-01'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-06.1.2',
+          name: 'Define skills and capability requirements per role — what competencies, qualifications, clearances, and experience does the future workforce need?',
+          raci: { r: 'HR Lead / Solution Architect', a: 'Bid Director', c: 'Service Line Leads / SMEs', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-06.1.1', artifact: 'Target staffing model' },
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { external: true, artifact: 'ITT documentation — workforce requirements, security clearance requirements' }
+          ],
+          outputs: [
+            {
+              name: 'Skills and capability requirements matrix',
+              format: 'Per-role competency framework',
+              quality: [
+                'Each role has defined competency requirements — skills, qualifications, experience, clearances',
+                'Mandatory vs desirable competencies distinguished',
+                'Security clearance requirements mapped per role — SC, DV, BPSS, CTC as applicable',
+                'Specialist or scarce skills identified — roles that will be difficult to fill',
+                'Training and development needs anticipated — what upskilling will the workforce need?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-06.2',
+      name: 'TUPE & Workforce Transition Analysis',
+      description: 'Analyse the TUPE-transferring workforce, identify the gap between what transfers and what the target model needs, and validate the overall staffing model',
+
+      tasks: [
+        {
+          id: 'SOL-06.2.1',
+          name: 'Analyse TUPE-transferring workforce — headcount, terms and conditions, pensions, collective agreements, protected rights, and legal obligations',
+          raci: { r: 'HR Lead', a: 'Bid Director', c: 'Legal / Commercial Lead', i: 'Solution Architect' },
+          inputs: [
+            { from: 'SOL-02.1.2', artifact: 'Current workforce assessment' },
+            { external: true, artifact: 'TUPE and workforce data (as disclosed by client or incumbent)' },
+            { external: true, artifact: 'TUPE legislation and case law guidance' },
+            { external: true, artifact: 'Pension scheme documentation (if applicable)' }
+          ],
+          outputs: [
+            {
+              name: 'TUPE analysis and schedule',
+              format: 'Structured TUPE register with analysis',
+              quality: [
+                'Transferring workforce profiled — headcount, roles, grades, locations, employment type',
+                'Terms and conditions analysed — pay, benefits, hours, leave, notice periods, collective agreements',
+                'Pension obligations assessed — scheme type (LGPS, NHSPS, private), employer contribution rates, Fair Deal/New Fair Deal implications',
+                'Protected rights identified — what cannot be changed post-transfer and for how long',
+                'TUPE cost impact quantified — what does the transferring workforce cost vs our target model assumptions?',
+                'TUPE data gaps flagged — what information is still missing and the risk of the unknown'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-06.2.2',
+          name: 'Conduct workforce gap analysis — delta between transferring workforce and target staffing model: recruit, redeploy, upskill, or restructure',
+          raci: { r: 'HR Lead / Solution Architect', a: 'Bid Director', c: 'Delivery Director / Legal', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-06.1.1', artifact: 'Target staffing model' },
+            { from: 'SOL-06.1.2', artifact: 'Skills and capability requirements matrix' },
+            { from: 'SOL-06.2.1', artifact: 'TUPE analysis and schedule' }
+          ],
+          outputs: [
+            {
+              name: 'Workforce gap analysis',
+              format: 'Structured gap register with resolution strategy',
+              quality: [
+                'Role-by-role comparison: transferring workforce mapped to target staffing model',
+                'Gaps identified by type: new roles to recruit, surplus roles to redeploy/exit, skills gaps to upskill',
+                'Resolution strategy per gap — recruitment, redeployment, training, restructuring, agency/contractor',
+                'Timeline for resolution — what can be done pre-mobilisation vs during transition vs steady-state',
+                'Cost implications quantified — recruitment, redundancy, training, interim resourcing costs for COM-01',
+                'Legal risk assessed — restructuring and redundancy implications under TUPE'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-06.2.3',
+          name: 'Validate staffing model — confirm it delivers the service, is TUPE-compliant, and is costable for COM-01',
+          raci: { r: 'HR Lead / Solution Architect', a: 'Bid Director', c: 'Commercial Lead / Legal', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-06.1.1', artifact: 'Target staffing model' },
+            { from: 'SOL-06.2.1', artifact: 'TUPE analysis and schedule' },
+            { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis' }
+          ],
+          outputs: [
+            {
+              name: 'Staffing model with TUPE schedule (validated — activity primary output)',
+              format: 'Comprehensive workforce model with TUPE register',
+              quality: [
+                'Target staffing model confirmed as sufficient to deliver the service delivery model',
+                'TUPE compliance confirmed — legal obligations met, protected rights respected',
+                'Workforce gap resolution strategy accepted — recruitment, redeployment, and training plans viable',
+                'Total workforce cost quantified — transferring workforce + new hires + gap resolution costs',
+                'Pension and benefits obligations quantified — employer cost fully modelled for COM-01',
+                'Risks documented — TUPE data gaps, restructuring risk, scarce skills, clearance timelines'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Staffing model with TUPE schedule',
+      format: 'Comprehensive workforce model with TUPE register',
+      quality: [
+        'Target workforce structure designed — roles, grades, FTEs, reporting lines per service line',
+        'Skills and capability requirements defined per role including clearance requirements',
+        'TUPE-transferring workforce analysed — terms, pensions, protected rights, cost impact',
+        'Workforce gap analysis complete — gaps identified, resolution strategy per gap, timeline, cost',
+        'Total workforce cost quantified and costable for COM-01',
+        'TUPE-compliant and legally validated'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-07', consumes: 'Staffing model with TUPE schedule', usage: 'Transition plan includes workforce mobilisation, TUPE transfer, and gap resolution timeline' },
+    { activity: 'SOL-11', consumes: 'Staffing model with TUPE schedule', usage: 'Solution design lock consolidates staffing model with all solution outputs' },
+    { activity: 'COM-01', consumes: 'Staffing model with TUPE schedule', usage: 'Should-cost model — people costs typically 60-80% of cost base' },
+    { activity: 'SOL-12', consumes: 'Staffing model with TUPE schedule', usage: 'Solution risk register includes TUPE, pension, and workforce risks' },
+    { activity: 'LEG-02', consumes: 'TUPE analysis and schedule', usage: 'Legal review of TUPE obligations and employment law compliance' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-07 — Transition & Mobilisation Approach
+
+```javascript
+{
+  id: 'SOL-07',
+  name: 'Transition & mobilisation approach',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Delivery Director',
+  output: 'Transition plan',
+  dependencies: ['SOL-04', 'SOL-05', 'SOL-06'],
+  effortDays: 16,
+  teamSize: 2,
+  parallelisationType: 'P',               // Parallelisable — people, technology, and service transition planned concurrently
+  // Note: this is the bridge activity — as-is (SOL-02) → future state (SOL-03) → how
+  // we get there (SOL-07). The overriding constraint is service continuity — the client
+  // cannot tolerate disruption during transition.
+  //
+  // Transition is a major scoring area in government bids. Evaluators want to see that
+  // the bidder has thought through the risk and has a credible, phased plan. This is
+  // often where challengers are most vulnerable vs incumbents.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'The future state we are transitioning to' },
+    { from: 'SOL-02', artifact: 'As-is operating model assessment', note: 'The current state we are transitioning from' },
+    { from: 'SOL-02.2.3', artifact: 'Day-one inheritance and transition implications', note: 'What we inherit and service continuity requirements' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Detailed service delivery that must be stood up during transition' },
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Technology migration, data migration, system deployment' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'TUPE transfer, workforce gap resolution, day-one readiness' },
+    { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis', note: 'Recruitment and upskilling timeline' },
+    { external: true, artifact: 'ITT documentation — transition and mobilisation requirements, timeline, service continuity obligations' },
+    { external: true, artifact: 'Contract documentation — mobilisation period, performance requirements during transition, service credits' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-07.1',
+      name: 'Transition Planning',
+      description: 'Design the transition approach across all dimensions — people, technology, service — with service continuity as the overriding constraint',
+
+      tasks: [
+        {
+          id: 'SOL-07.1.1',
+          name: 'Design the transition approach and phasing — pre-contract, day one, transition period, steady state — with service continuity as the overriding constraint',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-02', artifact: 'As-is operating model assessment' },
+            { from: 'SOL-02.2.3', artifact: 'Day-one inheritance and transition implications' },
+            { external: true, artifact: 'ITT documentation — transition and mobilisation requirements, timeline, service continuity obligations' }
+          ],
+          outputs: [
+            {
+              name: 'Transition approach and phase plan',
+              format: 'Structured phase plan',
+              quality: [
+                'Transition phases defined — pre-contract preparation, day one, transition period (typically 3-6 months), steady state',
+                'Service continuity strategy articulated — how service is maintained at every phase of transition',
+                'Cutover approach defined — big bang, phased, parallel running, or hybrid — with rationale',
+                'Dependencies on client and outgoing supplier explicitly identified — what we need from them and when',
+                'Critical path through transition identified — what must happen in sequence, what can be parallel'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-07.1.2',
+          name: 'Plan people transition — TUPE transfer process, day-one workforce readiness, induction, gap recruitment timeline, training programme',
+          raci: { r: 'HR Lead / Delivery Director', a: 'Bid Director', c: 'Legal / Solution Architect', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-06.2.2', artifact: 'Workforce gap analysis' },
+            { from: 'SOL-07.1.1', artifact: 'Transition approach and phase plan' }
+          ],
+          outputs: [
+            {
+              name: 'People transition plan',
+              format: 'Structured plan with timeline',
+              quality: [
+                'TUPE transfer process designed — consultation timeline, communication plan, day-one logistics',
+                'Day-one workforce readiness defined — who must be in place, with what induction, on what terms',
+                'Recruitment timeline for gap roles — sequenced against transition phases and service need',
+                'Training and upskilling programme designed — what skills, for whom, by when',
+                'Employee engagement and retention approach during transition — managing uncertainty and attrition risk'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'
+        },
+        {
+          id: 'SOL-07.1.3',
+          name: 'Plan technology and data transition — system migration, data migration, new platform deployment, parallel running, legacy decommission',
+          raci: { r: 'Technical Lead', a: 'Solution Architect', c: 'Delivery Director / Technology SMEs', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { from: 'SOL-05.2.1', artifact: 'Data architecture and migration design' },
+            { from: 'SOL-07.1.1', artifact: 'Transition approach and phase plan' }
+          ],
+          outputs: [
+            {
+              name: 'Technology transition plan',
+              format: 'Structured plan with timeline',
+              quality: [
+                'System migration sequence defined — which systems when, dependencies, parallel running periods',
+                'Data migration plan detailed — extraction, transformation, loading, validation, rollback approach',
+                'New platform deployment phased against transition timeline — what is available at day one vs later',
+                'Legacy system decommission planned — when systems are switched off, data archival, licence termination',
+                'Technology transition risks identified — downtime, data loss, integration failure, parallel running cost'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'SOL-07.2',
+      name: 'Mobilisation Programme & Risk',
+      description: 'Design the mobilisation governance, identify and mitigate transition risks, and validate the plan as achievable, costable, and credible',
+
+      tasks: [
+        {
+          id: 'SOL-07.2.1',
+          name: 'Design the mobilisation programme — governance, milestones, dependencies, resource plan, client and outgoing-supplier interface',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / Bid Manager', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-07.1.1', artifact: 'Transition approach and phase plan' },
+            { from: 'SOL-07.1.2', artifact: 'People transition plan' },
+            { from: 'SOL-07.1.3', artifact: 'Technology transition plan' }
+          ],
+          outputs: [
+            {
+              name: 'Mobilisation programme',
+              format: 'Programme plan with governance structure',
+              quality: [
+                'Mobilisation governance designed — programme board, workstream leads, reporting cadence, decision rights',
+                'Milestones defined with acceptance criteria — measurable, not just dates',
+                'Dependencies mapped — between transition workstreams, on client, on outgoing supplier, on third parties',
+                'Mobilisation resource plan defined — who is needed, when, distinct from steady-state team',
+                'Client and outgoing-supplier interface designed — joint working arrangements, information sharing, escalation'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-07.2.2',
+          name: 'Identify transition risks and develop mitigation strategies — what could go wrong during transition and how we prevent or manage it',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Solution Architect / HR Lead / Technical Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-07.2.1', artifact: 'Mobilisation programme' },
+            { from: 'SOL-07.1.2', artifact: 'People transition plan' },
+            { from: 'SOL-07.1.3', artifact: 'Technology transition plan' }
+          ],
+          outputs: [
+            {
+              name: 'Transition risk register',
+              format: 'Structured risk register with mitigations',
+              quality: [
+                'Risks identified across all transition dimensions — people, technology, service, commercial, client dependency',
+                'Each risk assessed for likelihood and impact — particularly impact on service continuity',
+                'Mitigation strategies defined per risk — preventive and contingent actions',
+                'Key dependency risks highlighted — risks we cannot fully mitigate because they depend on client or outgoing supplier action',
+                'Residual risk accepted or escalated — no unaddressed high-impact risks'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-07.2.3',
+          name: 'Validate transition plan — confirm it delivers service continuity, is achievable within timeline, and is costable',
+          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-07.1.1', artifact: 'Transition approach and phase plan' },
+            { from: 'SOL-07.1.2', artifact: 'People transition plan' },
+            { from: 'SOL-07.1.3', artifact: 'Technology transition plan' },
+            { from: 'SOL-07.2.1', artifact: 'Mobilisation programme' },
+            { from: 'SOL-07.2.2', artifact: 'Transition risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Transition plan (validated — activity primary output)',
+              format: 'Comprehensive transition and mobilisation document',
+              quality: [
+                'Bid team has reviewed and challenged — not single-author plan',
+                'Service continuity confirmed — no unacceptable disruption at any phase',
+                'Timeline achievable — critical path fits within contract mobilisation period',
+                'Dependencies on client and outgoing supplier are reasonable and clearly communicated',
+                'Transition costs quantified — mobilisation team, dual running, recruitment, training, technology migration',
+                'Risks documented with mitigations — credible plan for managing what could go wrong',
+                'Plan is compelling for evaluators — demonstrates we have thought this through in detail'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Transition plan',
+      format: 'Comprehensive transition and mobilisation document',
+      quality: [
+        'Transition approach and phasing designed — pre-contract through to steady state',
+        'Service continuity strategy articulated with cutover approach',
+        'People transition planned — TUPE, induction, recruitment, training',
+        'Technology transition planned — migration, deployment, parallel running, decommission',
+        'Mobilisation programme designed — governance, milestones, dependencies, resource plan',
+        'Transition risks identified and mitigated',
+        'Plan validated as achievable, costable, and credible for evaluators'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-11', consumes: 'Transition plan', usage: 'Solution design lock consolidates transition plan with all solution outputs' },
+    { activity: 'SOL-12', consumes: 'Transition risk register', usage: 'Solution risk register incorporates transition risks' },
+    { activity: 'COM-01', consumes: 'Transition plan', usage: 'Should-cost model includes mobilisation and transition costs' },
+    { activity: 'COM-06', consumes: 'Transition plan', usage: 'Commercial model includes transition pricing and investment profile' },
+    { activity: 'DEL-01', consumes: 'Transition plan', usage: 'Implementation plan aligns with transition phasing and milestones' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-08 — Innovation & Continuous Improvement
+
+```javascript
+{
+  id: 'SOL-08',
+  name: 'Innovation & continuous improvement',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Innovation roadmap',
+  dependencies: ['SOL-03'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires innovation strategy and commercial thinking
+  // Note: innovation is increasingly a standalone scored section in UK government bids.
+  // It is not just a nice-to-have — evaluators want a defined strategy, a roadmap with
+  // investment commitment, and measurable outcomes.
+  //
+  // Critically, the innovation roadmap is inseparable from the commercial trajectory.
+  // AI and automation will progressively replace human effort over the contract term,
+  // changing the cost base year on year. The question is: who benefits from that
+  // productivity gain, how is it shared, and how is it governed contractually?
+  // This activity directly informs the commercial workstream (COM-01, COM-06).
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Processes and workflows where innovation can drive productivity' },
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Technology platform that enables innovation' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'Workforce that innovation will progressively transform — TUPE implications of role displacement' },
+    { from: 'SAL-02.3.1', artifact: 'Transformational opportunity register', note: 'Innovation opportunities identified during capture — now built into a roadmap' },
+    { from: 'SAL-02.3.4', artifact: 'Commercial disruption model', note: 'Commercial impact of innovation already modelled at strategic level' },
+    { from: 'SAL-04', artifact: 'Win theme document', note: 'Innovation as a win theme — messaging and differentiation' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'How innovation will be evaluated and scored' },
+    { from: 'SAL-01.2.1', artifact: 'Buyer values register', note: 'Does the client value innovation and investment?' },
+    { external: true, artifact: 'ITT documentation — innovation requirements, continuous improvement obligations, benchmarking provisions' },
+    { external: true, artifact: 'Technology landscape — AI, automation, emerging capabilities relevant to this service domain' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-08.1',
+      name: 'Innovation Strategy & Roadmap',
+      description: 'Define the innovation vision, build a phased roadmap across the contract term, and identify what we bring from day one that changes the game',
+
+      tasks: [
+        {
+          id: 'SOL-08.1.1',
+          name: 'Define innovation strategy — vision, principles, and how innovation aligns to buyer values, win themes, and the evaluation framework',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Capture Lead / Technical Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SAL-04', artifact: 'Win theme document' },
+            { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' },
+            { from: 'SAL-01.2.1', artifact: 'Buyer values register' },
+            { external: true, artifact: 'ITT documentation — innovation requirements, continuous improvement obligations' }
+          ],
+          outputs: [
+            {
+              name: 'Innovation strategy',
+              format: 'Structured strategy document',
+              quality: [
+                'Innovation vision articulated — what does this service look like in 5 years vs today?',
+                'Innovation principles defined — aligned to client values, not innovation for its own sake',
+                'Alignment to evaluation framework demonstrated — how innovation will score',
+                'Innovation ambition calibrated to solution positioning (from SOL-03.1.1) — if compliance play, innovation is measured improvement; if transformation play, innovation is step change'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-08.1.2',
+          name: 'Design innovation roadmap across the contract term — what innovations, when, what investment required, what outcomes delivered',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Technical Lead / Delivery Director', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-08.1.1', artifact: 'Innovation strategy' },
+            { from: 'SAL-02.3.1', artifact: 'Transformational opportunity register' },
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { external: true, artifact: 'Technology landscape — AI, automation, emerging capabilities' }
+          ],
+          outputs: [
+            {
+              name: 'Innovation roadmap',
+              format: 'Phased roadmap with investment and outcomes',
+              quality: [
+                'Innovations phased across contract term — year 1, year 2-3, year 4-5 — not everything at once',
+                'Each innovation has: description, enabling technology, investment required, expected outcome, measurement criteria',
+                'AI and automation opportunities specifically identified — which processes, which roles affected, what productivity gain',
+                'Roadmap is realistic — builds on the technology platform (SOL-05) and delivery model (SOL-04)',
+                'Dependencies identified — what must be in place before each innovation can be delivered'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-08.1.3',
+          name: 'Identify day-one innovations — what we bring from the start that the incumbent does not have and that immediately improves the service',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Technical Lead / Delivery Director', i: 'Capture Lead' },
+          inputs: [
+            { from: 'SOL-08.1.2', artifact: 'Innovation roadmap' },
+            { from: 'SOL-02', artifact: 'As-is operating model assessment', note: 'What the current service lacks' }
+          ],
+          outputs: [
+            {
+              name: 'Day-one innovation register',
+              format: 'Structured register',
+              quality: [
+                'Each day-one innovation identifies what it replaces or improves vs the current service',
+                'Innovations are deliverable from day one — not dependent on transition completion',
+                'Impact is tangible and demonstrable — the client sees the difference immediately',
+                'Credible — we have evidence, track record, or working prototypes to substantiate each claim'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-08.2',
+      name: 'Continuous Improvement Framework',
+      description: 'Design the governance for ongoing improvement and establish the process by which innovations are identified, assessed, approved, funded, and measured throughout the contract',
+
+      tasks: [
+        {
+          id: 'SOL-08.2.1',
+          name: 'Design continuous improvement governance — how improvements are identified, assessed, approved, funded, and measured over the contract term',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Quality Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-08.1.1', artifact: 'Innovation strategy' },
+            { from: 'SOL-03.2.2', artifact: 'Governance and management model' },
+            { external: true, artifact: 'ITT documentation — continuous improvement obligations, benchmarking provisions' }
+          ],
+          outputs: [
+            {
+              name: 'Continuous improvement framework',
+              format: 'Governance and process document',
+              quality: [
+                'Improvement identification process defined — how ideas surface from staff, data, client, technology scanning',
+                'Assessment and prioritisation criteria defined — impact, feasibility, cost, alignment to client priorities',
+                'Approval and funding mechanism designed — who approves, what budget, what governance',
+                'Implementation process defined — how approved improvements get delivered without disrupting service',
+                'Measurement framework — how we track whether improvements actually delivered the expected outcome'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-08.3',
+      name: 'Innovation Commercial Model & Workforce Impact',
+      description: 'Design the commercial wrapper for innovation — how productivity gains are shared, how innovation investment is funded, and how the workforce transforms as AI and automation reduce headcount over the contract term',
+
+      tasks: [
+        {
+          id: 'SOL-08.3.1',
+          name: 'Model the innovation productivity curve — how AI, automation, and process improvement progressively reduce cost base over the contract term',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Commercial Lead / Technical Lead', i: 'Delivery Director' },
+          inputs: [
+            { from: 'SOL-08.1.2', artifact: 'Innovation roadmap' },
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SAL-02.3.4', artifact: 'Commercial disruption model' }
+          ],
+          outputs: [
+            {
+              name: 'Innovation productivity curve model',
+              format: 'Year-on-year cost and productivity model',
+              quality: [
+                'Year-on-year productivity trajectory modelled — not a flat line but a progressive curve',
+                'Headcount impact per innovation quantified — which roles reduce, by how many FTEs, in which year',
+                'Cost reduction quantified per year — total cost base trajectory over contract term',
+                'Assumptions clearly stated — adoption rate, technology maturity, client readiness, change management success',
+                'Sensitivity analysis — what if adoption is slower or faster than assumed?'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-08.3.2',
+          name: 'Design value sharing and investment framework — who benefits from productivity gains, how innovation investment is funded, and how this is contractually governed',
+          raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Solution Architect / Legal', i: 'Partner' },
+          inputs: [
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model' },
+            { from: 'SOL-08.1.2', artifact: 'Innovation roadmap' },
+            { external: true, artifact: 'ITT documentation — innovation requirements, benchmarking provisions, gain share provisions' }
+          ],
+          outputs: [
+            {
+              name: 'Innovation value sharing and investment framework',
+              format: 'Structured commercial framework',
+              quality: [
+                'Value sharing mechanism defined — gain share split, annual price reduction trajectory, or reinvestment commitment',
+                'Investment model defined — where innovation funding comes from: upfront capex, efficiency reinvestment, dedicated fund, or client co-investment',
+                'Investment vs return profile modelled — when does the crossover happen between investment and saving?',
+                'Contractual governance designed — benchmarking, open-book, annual pricing reviews, innovation milestones, performance guarantees',
+                'Client benefit clearly articulated — how the client sees lower cost, better outcomes, or both over the contract term',
+                'Supplier margin impact understood — profitability trajectory as headcount reduces but investment increases'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-08.3.3',
+          name: 'Plan workforce transformation alongside innovation — how roles evolve, redeploy, or reduce as AI and automation are introduced, within TUPE and employment law constraints',
+          raci: { r: 'HR Lead / Solution Architect', a: 'Bid Director', c: 'Legal / Delivery Director', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model' },
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-08.1.2', artifact: 'Innovation roadmap' }
+          ],
+          outputs: [
+            {
+              name: 'Workforce transformation plan',
+              format: 'Phased workforce change plan',
+              quality: [
+                'Role evolution mapped to innovation roadmap — which roles change, when, to what',
+                'Redeployment and reskilling strategy for displaced roles — not just redundancy but career pathways',
+                'TUPE and employment law implications of role displacement addressed — what can and cannot be done within legal constraints',
+                'Natural attrition factored in — headcount reduction through turnover vs active restructuring',
+                'Employee engagement approach — how workforce transformation is communicated and managed without destabilising service delivery'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-08.3.4',
+          name: 'Validate innovation roadmap — credible investment case, measurable outcomes, commercially viable, workforce impact managed, aligned to evaluation criteria',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-08.1.2', artifact: 'Innovation roadmap' },
+            { from: 'SOL-08.1.3', artifact: 'Day-one innovation register' },
+            { from: 'SOL-08.2.1', artifact: 'Continuous improvement framework' },
+            { from: 'SOL-08.3.1', artifact: 'Innovation productivity curve model' },
+            { from: 'SOL-08.3.2', artifact: 'Innovation value sharing and investment framework' },
+            { from: 'SOL-08.3.3', artifact: 'Workforce transformation plan' }
+          ],
+          outputs: [
+            {
+              name: 'Innovation roadmap (validated — activity primary output)',
+              format: 'Comprehensive innovation strategy with commercial model',
+              quality: [
+                'Innovation roadmap validated as realistic and deliverable',
+                'Investment case is credible — funding source identified, return modelled, risk assessed',
+                'Productivity curve accepted by commercial team — feeds directly into pricing model',
+                'Value sharing framework accepted — client benefit and supplier margin impact understood',
+                'Workforce transformation plan is legally compliant and operationally viable',
+                'Day-one innovations are credible and substantiated',
+                'Continuous improvement framework is proportionate and sustainable',
+                'Overall innovation proposition aligned to evaluation criteria and win themes'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Innovation roadmap',
+      format: 'Comprehensive innovation strategy with commercial model',
+      quality: [
+        'Innovation strategy defined — vision, principles, evaluation alignment',
+        'Phased roadmap across contract term — innovations, investment, outcomes, timelines',
+        'Day-one innovations identified — immediate impact vs current service',
+        'Continuous improvement governance framework designed',
+        'Productivity curve modelled — year-on-year cost trajectory as AI/automation reduce headcount',
+        'Value sharing and investment framework designed — who benefits, how funded, contractual governance',
+        'Workforce transformation planned — role evolution, reskilling, TUPE-compliant displacement management',
+        'Validated as commercially viable, deliverable, and evaluation-aligned'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'COM-01', consumes: 'Innovation productivity curve model', usage: 'Should-cost model incorporates year-on-year cost reduction from innovation' },
+    { activity: 'COM-06', consumes: 'Innovation value sharing and investment framework', usage: 'Commercial model designs gain share, pricing trajectory, and innovation investment provisions' },
+    { activity: 'SOL-11', consumes: 'Innovation roadmap', usage: 'Solution design lock consolidates innovation with all solution outputs' },
+    { activity: 'SOL-12', consumes: 'Innovation roadmap', usage: 'Solution risk register includes innovation delivery and adoption risks' },
+    { activity: 'LEG-01', consumes: 'Innovation value sharing and investment framework', usage: 'Contract review incorporates innovation and gain share provisions' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-09 — Social Value Proposition
+
+```javascript
+{
+  id: 'SOL-09',
+  name: 'Social value proposition',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Social value plan',
+  dependencies: ['SOL-04'],
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires social value expertise and local context knowledge
+  // Note: social value is mandatory in UK government procurement (PPN 06/20) with a
+  // minimum 10% weighting (often higher). It is not optional and not a tick-box exercise.
+  // It is a scored section with real marks.
+  //
+  // Social value must be specific, measurable, and embedded in the delivery model — not
+  // bolted on. Evaluators can spot when social value is a separate wish list disconnected
+  // from the actual service. Local context matters enormously.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'Social value must be embedded in the operating model, not bolted on' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Service processes where social value can be delivered' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'Workforce commitments — apprenticeships, local employment, diversity' },
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'How social value will be evaluated and weighted' },
+    { from: 'SAL-01.2.1', artifact: 'Buyer values register', note: 'Client priorities that social value should align to' },
+    { external: true, artifact: 'ITT documentation — social value requirements, evaluation criteria, local priorities' },
+    { external: true, artifact: 'Social Value Model (PPN 06/20) — themes, reporting metrics, TOMs framework' },
+    { external: true, artifact: 'Local area context — demographics, deprivation data, economic priorities, environmental targets, council plans' },
+    { external: true, artifact: 'Supply chain social value commitments (from SUP workstream where available)' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-09.1',
+      name: 'Social Value Strategy & Commitment Design',
+      description: 'Analyse what the client requires and values, then design specific, measurable social value commitments aligned to the Social Value Model themes and local context',
+
+      tasks: [
+        {
+          id: 'SOL-09.1.1',
+          name: 'Analyse social value requirements and evaluation criteria — what the ITT requires, what themes are weighted, what the client\'s local priorities are',
+          raci: { r: 'Solution Architect / Social Value Lead', a: 'Bid Director', c: 'Capture Lead / Bid Manager', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' },
+            { from: 'SAL-01.2.1', artifact: 'Buyer values register' },
+            { external: true, artifact: 'ITT documentation — social value requirements, evaluation criteria, local priorities' },
+            { external: true, artifact: 'Social Value Model (PPN 06/20) — themes, reporting metrics, TOMs framework' },
+            { external: true, artifact: 'Local area context — demographics, deprivation data, economic priorities, environmental targets, council plans' }
+          ],
+          outputs: [
+            {
+              name: 'Social value requirements analysis',
+              format: 'Structured analysis',
+              quality: [
+                'All social value evaluation criteria identified with weightings and marks',
+                'Social Value Model themes mapped to ITT requirements — which themes matter most for this procurement',
+                'Local context analysed — what social value outcomes are most relevant to this geography and community',
+                'Client priorities beyond the formal criteria identified — what resonates with this buyer',
+                'Scoring guidance analysed — what does a top-scoring social value response look like?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-09.1.2',
+          name: 'Design social value commitments — specific, measurable, embedded in delivery model and supply chain, aligned to Social Value Model themes and local priorities',
+          raci: { r: 'Solution Architect / Social Value Lead', a: 'Bid Director', c: 'Delivery Director / HR Lead / Supply Chain Lead', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-09.1.1', artifact: 'Social value requirements analysis' },
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { external: true, artifact: 'Supply chain social value commitments (from SUP workstream where available)' }
+          ],
+          outputs: [
+            {
+              name: 'Social value commitment register',
+              format: 'Structured register with measurable commitments',
+              quality: [
+                'Each commitment is specific and measurable — quantity, location, timeline, target population',
+                'Commitments aligned to Social Value Model themes and TOMs metrics where applicable',
+                'Commitments are embedded in the delivery model — linked to specific service, staffing, or supply chain components',
+                'Supply chain social value commitments included — not just our own but partners and subcontractors',
+                'Commitments are locally relevant — targeted at the geography, demographics, and priorities of the client area',
+                'Commitments are proportionate to contract value and scope — credible, not aspirational'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-09.1.3',
+          name: 'Define monitoring and reporting framework — how social value commitments will be tracked, measured, and reported over the contract term',
+          raci: { r: 'Solution Architect / Social Value Lead', a: 'Bid Director', c: 'Delivery Director / Bid Manager', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-09.1.2', artifact: 'Social value commitment register' },
+            { from: 'SOL-03.2.2', artifact: 'Governance and management model' }
+          ],
+          outputs: [
+            {
+              name: 'Social value monitoring and reporting framework',
+              format: 'Structured framework',
+              quality: [
+                'Each commitment has a defined metric, data source, collection frequency, and reporting mechanism',
+                'Reporting aligned to client requirements — format, frequency, governance forum',
+                'Accountability defined — who is responsible for delivering and reporting each commitment',
+                'Corrective action process defined — what happens if a commitment is behind target',
+                'Framework is sustainable — not so burdensome that reporting overhead undermines delivery'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-09.2',
+      name: 'Social Value Integration & Validation',
+      description: 'Ensure social value is genuinely embedded in the operating model and validate the plan as deliverable, measurable, and scoring-ready',
+
+      tasks: [
+        {
+          id: 'SOL-09.2.1',
+          name: 'Embed social value commitments in the operating model — link each commitment to specific service delivery, staffing, or supply chain components',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / HR Lead / Supply Chain Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-09.1.2', artifact: 'Social value commitment register' },
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-04', artifact: 'Service delivery model' }
+          ],
+          outputs: [
+            {
+              name: 'Social value integration map',
+              format: 'Commitment-to-delivery-component mapping',
+              quality: [
+                'Every commitment mapped to the operating model component that delivers it — not free-standing',
+                'Delivery mechanism for each commitment is explicit — not just "we will" but how exactly',
+                'Resource and cost implications identified per commitment — feeds COM-01',
+                'Commitments that depend on supply chain partners are confirmed with those partners',
+                'No orphan commitments — everything connects to the delivery model'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-09.2.2',
+          name: 'Validate social value plan — commitments are deliverable, measurable, proportionate, and will score against evaluation criteria',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-09.1.2', artifact: 'Social value commitment register' },
+            { from: 'SOL-09.1.3', artifact: 'Social value monitoring and reporting framework' },
+            { from: 'SOL-09.2.1', artifact: 'Social value integration map' }
+          ],
+          outputs: [
+            {
+              name: 'Social value plan (validated — activity primary output)',
+              format: 'Comprehensive social value document',
+              quality: [
+                'Bid team has reviewed and challenged — not single-author plan',
+                'Every commitment confirmed as deliverable within the operating model and resource plan',
+                'Every commitment confirmed as measurable — metrics, data sources, and reporting defined',
+                'Commitments are proportionate — neither underweight (won\'t score) nor overcommitted (can\'t deliver)',
+                'Alignment to evaluation criteria confirmed — plan will score well',
+                'Cost implications quantified and accepted — feeds COM-01',
+                'Plan is compelling for evaluators — demonstrates genuine local impact, not generic promises'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Social value plan',
+      format: 'Comprehensive social value document',
+      quality: [
+        'Social value requirements analysed — themes, weightings, local priorities, scoring guidance',
+        'Commitments designed — specific, measurable, locally relevant, proportionate to contract',
+        'Monitoring and reporting framework defined — metrics, accountability, corrective action',
+        'Commitments embedded in operating model — linked to delivery, staffing, and supply chain',
+        'Supply chain social value included — partner commitments, not just our own',
+        'Validated as deliverable, measurable, and evaluation-aligned'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-11', consumes: 'Social value plan', usage: 'Solution design lock consolidates social value with all solution outputs' },
+    { activity: 'COM-01', consumes: 'Social value plan', usage: 'Should-cost model includes social value delivery costs' },
+    { activity: 'SUP-01', consumes: 'Social value commitment register', usage: 'Supply chain strategy incorporates partner social value commitments' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-12 — Solution Risk Identification & Analysis
+
+```javascript
+{
+  id: 'SOL-12',
+  name: 'Solution risk identification & analysis',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Solution risk register',
+  dependencies: ['SOL-03', 'SOL-04'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires risk management expertise across solution dimensions
+  // Note: this is a consolidation and synthesis activity. By this point, risks have been
+  // identified across multiple upstream activities (technology, staffing, transition, innovation).
+  // SOL-12 brings them together, identifies gaps, prioritises, and ensures mitigations are assigned.
+  // Feeds BM-13 (bid risk register) and governance gates.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'Architectural risks, design assumptions' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Delivery and performance risks' },
+    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Technology, migration, and security risks' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'TUPE, pension, workforce, and scarce skills risks' },
+    { from: 'SOL-07.2.2', artifact: 'Transition risk register', note: 'Transition-specific risks already identified' },
+    { from: 'SOL-08', artifact: 'Innovation roadmap', note: 'Innovation delivery and adoption risks' },
+    { from: 'SOL-09', artifact: 'Social value plan', note: 'Social value commitment delivery risks' },
+    { from: 'SOL-01.1.3', artifact: 'Requirements issues log', note: 'Unresolved ambiguities and gaps that create risk' },
+    { from: 'SAL-05.2.2', artifact: 'Score gap analysis', note: 'Scoring risks from capability or evidence gaps' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-12.1',
+      name: 'Solution Risk Consolidation',
+      description: 'Harvest all solution-related risks from upstream activities and identify any gaps — delivery risks, compliance risks, and assumption risks not yet captured',
+
+      tasks: [
+        {
+          id: 'SOL-12.1.1',
+          name: 'Harvest solution risks from all upstream SOL activities — consolidate technology, staffing, transition, innovation, and social value risks into a single register',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads (SOL/COM/DEL)', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-07.2.2', artifact: 'Transition risk register' },
+            { from: 'SOL-08', artifact: 'Innovation roadmap' },
+            { from: 'SOL-09', artifact: 'Social value plan' }
+          ],
+          outputs: [
+            {
+              name: 'Consolidated solution risk register (draft)',
+              format: 'Structured risk register',
+              quality: [
+                'All risks from upstream SOL activities harvested into a single register',
+                'Duplicates consolidated — same risk identified by multiple activities merged',
+                'Risk categorisation applied — delivery, technology, workforce, transition, compliance, commercial, innovation',
+                'Source activity referenced for each risk — traceability to where it was identified'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-12.1.2',
+          name: 'Identify additional delivery and compliance risks not captured upstream — gaps, dependencies, assumptions that could fail, integration risks across solution components',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads (SOL/COM/DEL)', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-12.1.1', artifact: 'Consolidated solution risk register (draft)' },
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { from: 'SOL-01.1.3', artifact: 'Requirements issues log' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis' }
+          ],
+          outputs: [
+            {
+              name: 'Complete solution risk register (draft)',
+              format: 'Structured risk register (enriched)',
+              quality: [
+                'Cross-cutting risks identified — risks that arise from the interaction between solution components, not within any single one',
+                'Assumption risks captured — key design assumptions that, if wrong, invalidate part of the solution',
+                'Compliance risks identified — where the solution is non-compliant or partially compliant with requirements',
+                'Dependency risks captured — risks that depend on client, outgoing supplier, or partner action',
+                'Scoring risks from SAL-05 gap analysis cross-referenced — capability gaps that create delivery risk as well as scoring risk'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-12.2',
+      name: 'Risk Assessment & Mitigation',
+      description: 'Assess, prioritise, and mitigate all consolidated risks — produce the authoritative solution risk register for governance',
+
+      tasks: [
+        {
+          id: 'SOL-12.2.1',
+          name: 'Assess and prioritise consolidated risks — likelihood, impact, proximity, and assign risk owner for each',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-12.1.2', artifact: 'Complete solution risk register (draft)' }
+          ],
+          outputs: [
+            {
+              name: 'Prioritised solution risk register',
+              format: 'Structured risk register with assessments',
+              quality: [
+                'Every risk assessed for likelihood (high/medium/low), impact (high/medium/low), and proximity (when could it materialise)',
+                'Risk priority derived — critical, significant, moderate, low',
+                'Risk owner assigned for every risk — named role, not "team"',
+                'Top 10 risks identified — the risks that could fundamentally threaten solution delivery or bid success'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-12.2.2',
+          name: 'Develop mitigation strategies for high-priority risks and confirm residual risk position',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Risk Owners / Workstream Leads', i: 'Commercial Lead' },
+          inputs: [
+            { from: 'SOL-12.2.1', artifact: 'Prioritised solution risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Mitigated solution risk register',
+              format: 'Structured risk register with mitigations',
+              quality: [
+                'Every high and significant risk has a defined mitigation strategy — preventive and contingent actions',
+                'Mitigation owner and timeline assigned — who does what by when',
+                'Residual risk assessed post-mitigation — what risk remains after mitigations are applied?',
+                'Risks that cannot be mitigated to acceptable levels flagged for escalation — these may affect go/no-go or require commercial provisions (e.g., risk pricing)',
+                'Cost of mitigation identified where significant — feeds COM-01'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-12.2.3',
+          name: 'Validate solution risk register — confirm it is complete, mitigations are credible, and the register is ready for governance gates and BM-13',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Bid Team (collective)', i: null },
+          inputs: [
+            { from: 'SOL-12.2.2', artifact: 'Mitigated solution risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Solution risk register (validated — activity primary output)',
+              format: 'Authoritative risk register',
+              quality: [
+                'Bid team has reviewed and challenged — not single-author risk assessment',
+                'All solution dimensions covered — no blind spots across technology, workforce, transition, innovation, compliance',
+                'Top risks are understood and accepted by Bid Director — residual risk position is clear',
+                'Mitigations are credible and resourced — not aspirational',
+                'Register is ready for governance gates (GOV-02) and consolidation into BM-13',
+                'Risk position informs whether solution design can be locked (SOL-11)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Solution risk register',
+      format: 'Authoritative risk register',
+      quality: [
+        'All solution risks consolidated from upstream activities',
+        'Cross-cutting, assumption, compliance, and dependency risks identified',
+        'Every risk assessed for likelihood, impact, proximity with named owner',
+        'High-priority risks mitigated with credible strategies and assigned owners',
+        'Residual risk position confirmed — accepted by Bid Director',
+        'Register validated by bid team and ready for governance'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'SOL-11', consumes: 'Solution risk register', usage: 'Solution design lock considers risk position before baselining the solution' },
+    { activity: 'BM-13', consumes: 'Solution risk register', usage: 'Bid risk register consolidates solution risks with commercial, legal, and programme risks' },
+    { activity: 'GOV-02', consumes: 'Solution risk register', usage: 'Solution & strategy governance review assesses solution risk position' },
+    { activity: 'DEL-06', consumes: 'Solution risk register', usage: 'Mitigated risk register for delivery planning' },
+    { activity: 'COM-01', consumes: 'Solution risk register', usage: 'Should-cost model includes risk mitigation costs and risk-priced contingency' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-10 — Evidence Strategy & Case Study Identification
+
+```javascript
+{
+  id: 'SOL-10',
+  name: 'Evidence strategy & case study identification',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Evidence requirements matrix',
+  dependencies: ['SOL-04', 'SAL-05'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',               // Specialist — requires knowledge of evidence library and bid content strategy
+  // Note: this activity bridges SAL-05 (scoring strategy) and PRD-03 (evidence assembly).
+  // SAL-05 tells us where the marks are and where our gaps are.
+  // SOL-10 identifies what evidence we need to close those gaps and score.
+  // PRD-03 actually assembles and formats the evidence pack.
+  //
+  // Evidence is not just case studies — it includes credentials, CVs, reference letters,
+  // certifications, accreditations, awards, client testimonials, and performance data.
+  // Supply chain evidence matters too — if we rely on a partner for capability, we need
+  // their evidence (SUP-05).
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  inputs: [
+    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Where the marks are and what evidence evaluators expect' },
+    { from: 'SAL-05.2.2', artifact: 'Score gap analysis', note: 'Evidence gaps that create scoring risk — highest priority' },
+    { from: 'SAL-04.1.4', artifact: 'Evidence substantiation assessment per theme', note: 'Which win themes have evidence gaps' },
+    { from: 'SOL-04', artifact: 'Service delivery model', note: 'What capabilities we need to evidence' },
+    { from: 'SOL-03', artifact: 'Target operating model', note: 'Solution components that need credibility evidence' },
+    { external: true, artifact: 'Existing evidence library — case studies, CVs, credentials, certifications, reference letters' },
+    { external: true, artifact: 'ITT documentation — evidence requirements, format specifications, submission instructions' },
+    { crossProduct: 'PWIN-BIDLIB', artifact: 'Bid Library content', optional: true,
+      note: 'From Bid Library product if available — searchable repository of past evidence' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-10.1',
+      name: 'Evidence Requirements Analysis',
+      description: 'Determine what evidence is needed, where it matters most for scoring, what we already have, and where the gaps are',
+
+      tasks: [
+        {
+          id: 'SOL-10.1.1',
+          name: 'Map evidence requirements to evaluation sections — what type of evidence does each scored section need to achieve maximum marks?',
+          raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead / Solution Architect', i: 'Writers' },
+          inputs: [
+            { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis' },
+            { external: true, artifact: 'ITT documentation — evidence requirements, format specifications' }
+          ],
+          outputs: [
+            {
+              name: 'Evidence requirements map',
+              format: 'Matrix (evaluation sections × evidence types needed)',
+              quality: [
+                'Every scored section assessed for evidence requirements — case studies, CVs, credentials, certifications, data, references',
+                'Evidence type specified per section — what would a top-scoring response cite?',
+                'Priority aligned to marks concentration — high-value sections get priority evidence sourcing',
+                'Format requirements noted — some procurements specify case study format, word limits, templates'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-10.1.2',
+          name: 'Assess current evidence availability — search existing library, identify what is reusable, what is outdated, and where the gaps are',
+          raci: { r: 'Bid Coordinator / Bid Manager', a: 'Bid Director', c: 'SMEs / Account Managers', i: 'Writers' },
+          inputs: [
+            { from: 'SOL-10.1.1', artifact: 'Evidence requirements map' },
+            { external: true, artifact: 'Existing evidence library — case studies, CVs, credentials, certifications, reference letters' },
+            { crossProduct: 'PWIN-BIDLIB', artifact: 'Bid Library content', optional: true }
+          ],
+          outputs: [
+            {
+              name: 'Evidence availability assessment',
+              format: 'Structured gap analysis',
+              quality: [
+                'Every evidence requirement assessed: available (ready to use), adaptable (needs updating), gap (does not exist)',
+                'Available evidence assessed for currency — is it recent enough to be credible?',
+                'Available evidence assessed for relevance — does it relate to this sector, scale, and service type?',
+                'Gaps clearly identified with impact — which gaps affect high-value scoring sections?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-10.1.3',
+          name: 'Cross-reference evidence gaps with score gap analysis — where evidence gaps create scoring risk, prioritise accordingly',
+          raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: 'Solution Architect' },
+          inputs: [
+            { from: 'SOL-10.1.2', artifact: 'Evidence availability assessment' },
+            { from: 'SAL-05.2.2', artifact: 'Score gap analysis' },
+            { from: 'SAL-04.1.4', artifact: 'Evidence substantiation assessment per theme' }
+          ],
+          outputs: [
+            {
+              name: 'Prioritised evidence gap register',
+              format: 'Structured register with priority ranking',
+              quality: [
+                'Evidence gaps ranked by scoring impact — which gaps cost us the most marks?',
+                'Gaps that overlap with SAL-05 score gaps highlighted — double jeopardy (capability gap AND evidence gap)',
+                'Win theme evidence gaps cross-referenced — themes we cannot substantiate',
+                'Resolution approach identified per gap — commission new, source from partner, adapt existing, accept deficit'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-10.2',
+      name: 'Evidence Sourcing & Commission',
+      description: 'Retrieve existing evidence, adapt it for this bid, and commission new evidence where gaps exist — ensuring all high-priority evidence is in hand or in progress',
+
+      tasks: [
+        {
+          id: 'SOL-10.2.1',
+          name: 'Retrieve and adapt existing evidence from content library — case studies, CVs, credentials, certifications, reference letters',
+          raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'SMEs / Account Managers', i: 'Writers' },
+          inputs: [
+            { from: 'SOL-10.1.2', artifact: 'Evidence availability assessment' },
+            { external: true, artifact: 'Existing evidence library' }
+          ],
+          outputs: [
+            {
+              name: 'Adapted evidence pack (existing)',
+              format: 'Collection of adapted evidence items',
+              quality: [
+                'Each evidence item adapted for this bid — sector, scale, and service context aligned',
+                'Currency confirmed — dates, data, and outcomes are recent and verifiable',
+                'Format aligned to ITT requirements — word limits, templates, structure',
+                'Client permission confirmed where required — reference letters, testimonials, named clients'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'          // Multiple evidence items can be adapted concurrently
+        },
+        {
+          id: 'SOL-10.2.2',
+          name: 'Commission new evidence where gaps identified — new case studies, reference letters, updated CVs, partner credentials, performance data',
+          raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'SMEs / Account Managers / Partner Leads', i: 'Bid Director' },
+          inputs: [
+            { from: 'SOL-10.1.3', artifact: 'Prioritised evidence gap register' }
+          ],
+          outputs: [
+            {
+              name: 'Evidence commission register',
+              format: 'Structured register with status tracking',
+              quality: [
+                'Every high-priority gap has a commission action — who is producing what by when',
+                'Partner evidence requirements communicated to SUP-05 — case studies, CVs, credentials from partners',
+                'New case studies commissioned with clear brief — what to cover, what outcomes to highlight, what format',
+                'CV updates commissioned for key personnel — aligned to role requirements in staffing model',
+                'Timeline realistic — evidence will be available before PRD-03 (evidence assembly) needs it'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'SOL-10.2.3',
+          name: 'Validate evidence requirements matrix — all high-priority evidence either sourced or commissioned, feeds PRD-03 for assembly',
+          raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: null },
+          inputs: [
+            { from: 'SOL-10.1.1', artifact: 'Evidence requirements map' },
+            { from: 'SOL-10.1.3', artifact: 'Prioritised evidence gap register' },
+            { from: 'SOL-10.2.1', artifact: 'Adapted evidence pack (existing)' },
+            { from: 'SOL-10.2.2', artifact: 'Evidence commission register' }
+          ],
+          outputs: [
+            {
+              name: 'Evidence requirements matrix (validated — activity primary output)',
+              format: 'Comprehensive evidence matrix with sourcing status',
+              quality: [
+                'Every evaluation section has evidence identified or commissioned',
+                'High-priority gaps closed or actively being resolved — no unaddressed critical evidence gaps',
+                'Evidence sourcing status tracked — available, in adaptation, commissioned, outstanding',
+                'Residual evidence gaps documented with impact and mitigation — what we cannot evidence and the scoring cost',
+                'Handover to PRD-03 confirmed — evidence assembly team knows what they are working with'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Evidence requirements matrix',
+      format: 'Comprehensive evidence matrix with sourcing status',
+      quality: [
+        'Evidence requirements mapped to every evaluation section by type',
+        'Current evidence availability assessed — reusable, adaptable, gap',
+        'Evidence gaps prioritised by scoring impact and cross-referenced with score gap analysis',
+        'Existing evidence retrieved and adapted for this bid',
+        'New evidence commissioned with clear briefs and timelines',
+        'All high-priority evidence sourced or in progress — no unaddressed critical gaps'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'PRD-03', consumes: 'Evidence requirements matrix + adapted evidence pack', usage: 'Evidence assembly uses the matrix and sourced evidence to compile the final evidence pack' },
+    { activity: 'SUP-05', consumes: 'Partner evidence requirements', usage: 'Partner credentials and references activity responds to evidence gaps requiring partner input' },
+    { activity: 'SOL-11', consumes: 'Evidence requirements matrix', usage: 'Solution design lock confirms evidence position alongside solution outputs' },
+    { activity: 'BM-10', consumes: 'Evidence requirements matrix', usage: 'Storyboard development incorporates evidence placement per response section' }
+  ]
+}
+```
+
+---
+
+---
+
+## SOL-11 — Solution Design Lock
+
+```javascript
+{
+  id: 'SOL-11',
+  name: 'Solution design lock',
+  workstream: 'SOL',
+  phase: 'DEV',
+  role: 'Solution Architect',
+  output: 'Solution design pack (locked & assured)',
+  dependencies: ['SOL-03', 'SOL-04', 'SOL-05', 'SOL-06', 'SOL-07', 'SOL-08', 'SOL-09', 'SOL-10', 'SOL-12'],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'C',               // Coordination — bringing everything together, not parallel work
+  // Note: this is a consolidation and lock activity, not a design activity.
+  // All design work is done in SOL-01 through SOL-12. SOL-11 brings it together,
+  // assures it, and baselines it.
+  //
+  // Once locked, solution changes require formal review. This is the handover point
+  // from solution design to proposal production. Everything downstream (pricing,
+  // storyboard, drafting) builds on what is locked here.
+  //
+  // Fires "Solution Design Complete" milestone in the key milestones view.
+  // Feeds GOV-02 (Solution & Strategy Review) governance gate.
+
+  // ── Structured inputs ──────────────────────────────────────────────
+  // Every SOL activity output feeds into this consolidation
+  inputs: [
+    { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+    { from: 'SOL-02', artifact: 'As-is operating model assessment' },
+    { from: 'SOL-03', artifact: 'Target operating model' },
+    { from: 'SOL-04', artifact: 'Service delivery model' },
+    { from: 'SOL-05', artifact: 'Technology solution design' },
+    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+    { from: 'SOL-07', artifact: 'Transition plan' },
+    { from: 'SOL-08', artifact: 'Innovation roadmap' },
+    { from: 'SOL-09', artifact: 'Social value plan' },
+    { from: 'SOL-10', artifact: 'Evidence requirements matrix' },
+    { from: 'SOL-12', artifact: 'Solution risk register' },
+    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Win strategy baseline — is the solution still aligned?' }
+  ],
+
+  // ── L2 sub-processes ──────────────────────────────────────────────
+  subs: [
+    {
+      id: 'SOL-11.1',
+      name: 'Solution Consolidation',
+      description: 'Bring all solution workstream outputs together into a single design pack and confirm they are complete, consistent, and coherent as an integrated solution',
+
+      tasks: [
+        {
+          id: 'SOL-11.1.1',
+          name: 'Consolidate all solution workstream outputs into a single design pack — TOM, service delivery, technology, staffing, transition, innovation, social value, evidence, risk',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-03', artifact: 'Target operating model' },
+            { from: 'SOL-04', artifact: 'Service delivery model' },
+            { from: 'SOL-05', artifact: 'Technology solution design' },
+            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
+            { from: 'SOL-07', artifact: 'Transition plan' },
+            { from: 'SOL-08', artifact: 'Innovation roadmap' },
+            { from: 'SOL-09', artifact: 'Social value plan' },
+            { from: 'SOL-10', artifact: 'Evidence requirements matrix' },
+            { from: 'SOL-12', artifact: 'Solution risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Consolidated solution design pack (draft)',
+              format: 'Comprehensive solution document',
+              quality: [
+                'All solution components present — no missing workstream outputs',
+                'Document structure is navigable — clear sections, cross-references, summary',
+                'Version control applied — each component at its validated/final version'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-11.1.2',
+          name: 'Conduct completeness and coherence check — are all components present, consistent with each other, and aligned to the win strategy?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Workstream Leads', i: 'Capture Lead' },
+          inputs: [
+            { from: 'SOL-11.1.1', artifact: 'Consolidated solution design pack (draft)' },
+            { from: 'SOL-01', artifact: 'Requirements interpretation document' },
+            { from: 'SAL-06', artifact: 'Capture plan (locked)' }
+          ],
+          outputs: [
+            {
+              name: 'Solution coherence assessment',
+              format: 'Structured review checklist with findings',
+              quality: [
+                'Consistency checked across components — staffing model matches service delivery, technology enables the operating model, transition delivers the future state',
+                'Requirements coverage confirmed — cross-reference against SOL-01 requirements interpretation',
+                'Win strategy alignment confirmed — solution still delivers the win themes and competitive positioning from SAL-06',
+                'Contradictions or gaps between components identified and resolved',
+                'Open issues documented — anything unresolved that governance must accept'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SOL-11.2',
+      name: 'Solution Assurance & Lock',
+      description: 'Assure the solution is deliverable, costable, compliant, and competitive — then baseline and lock for downstream consumption',
+
+      tasks: [
+        {
+          id: 'SOL-11.2.1',
+          name: 'Conduct internal solution assurance review — is the solution deliverable, costable, compliant, and competitive?',
+          raci: { r: 'Solution Architect', a: 'Bid Director', c: 'Delivery Director / Commercial Lead / Technical Lead', i: 'Bid Manager' },
+          inputs: [
+            { from: 'SOL-11.1.1', artifact: 'Consolidated solution design pack (draft)' },
+            { from: 'SOL-11.1.2', artifact: 'Solution coherence assessment' },
+            { from: 'SOL-12', artifact: 'Solution risk register' }
+          ],
+          outputs: [
+            {
+              name: 'Solution assurance record',
+              format: 'Structured assurance review output',
+              quality: [
+                'Deliverability confirmed — the delivery team believes this solution can be mobilised and operated',
+                'Costability confirmed — commercial team can build a should-cost model from this design',
+                'Compliance confirmed — solution addresses all mandatory requirements and scored criteria',
+                'Competitiveness assessed — solution delivers the win themes and creates differentiation',
+                'Risk position accepted — solution risk register reviewed, residual risks acknowledged',
+                'Residual issues documented — anything that must be resolved during production or accepted as risk'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'SOL-11.2.2',
+          name: 'Baseline and lock solution design pack — formal sign-off, "Solution Design Complete" milestone fires, feeds GOV-02',
+          raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Solution Architect', i: 'Bid Team (collective)' },
+          inputs: [
+            { from: 'SOL-11.1.1', artifact: 'Consolidated solution design pack (draft)' },
+            { from: 'SOL-11.2.1', artifact: 'Solution assurance record' }
+          ],
+          outputs: [
+            {
+              name: 'Solution design pack (locked & assured — activity primary output)',
+              format: 'Baselined solution document with formal sign-off',
+              quality: [
+                'Solution design pack formally baselined — this is the authoritative solution reference for the bid',
+                'Bid Director sign-off recorded — accountability for the solution accepted',
+                '"Solution Design Complete" milestone fires in the product',
+                'Changes after lock require formal change review — not ad hoc modification',
+                'Downstream activities briefed — COM-01 (costing), BM-10 (storyboard), PRD-02 (drafting) all build from this baseline',
+                'GOV-02 (Solution & Strategy Review) can now proceed with formal governance assurance'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+
+  // ── Activity-level output ─────────────────────────────────────────
+  outputs: [
+    {
+      name: 'Solution design pack (locked & assured)',
+      format: 'Baselined solution document with formal sign-off',
+      quality: [
+        'All solution workstream outputs consolidated into single authoritative pack',
+        'Completeness and coherence confirmed — components are consistent and integrated',
+        'Requirements coverage confirmed against SOL-01',
+        'Win strategy alignment confirmed against SAL-06',
+        'Solution assured as deliverable, costable, compliant, and competitive',
+        'Risk position accepted — solution risk register acknowledged',
+        'Formally baselined with Bid Director sign-off — changes require formal review'
+      ]
+    }
+  ],
+
+  // ── Downstream consumers ──────────────────────────────────────────
+  consumers: [
+    { activity: 'GOV-02', consumes: 'Solution design pack (locked & assured)', usage: 'Solution & Strategy Review governance gate — formal organisational assurance of the solution' },
+    { activity: 'COM-01', consumes: 'Solution design pack (locked & assured)', usage: 'Should-cost model built from the locked solution — staffing, technology, transition, innovation costs' },
+    { activity: 'BM-10', consumes: 'Solution design pack (locked & assured)', usage: 'Storyboard development structures the response around the locked solution' },
+    { activity: 'PRD-02', consumes: 'Solution design pack (locked & assured)', usage: 'Section drafting references the locked solution as the authoritative source' }
+  ]
+}
+```
+
+---
+
 *Gold standard established from SAL-03 — Session 11, 2026-04-01*
-*SAL-10 added — Session 12, 2026-04-01*
+*SAL workstream complete — Session 12, 2026-04-01*
+*SOL workstream complete — Session 12, 2026-04-01*
 *Aligned with: Architecture v6, Plugin Architecture v1.2, Methodology Data Model (Session 10)*

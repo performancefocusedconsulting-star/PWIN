@@ -162,7 +162,7 @@ const WS=[
   ]},
   {id:'SOL',name:'Solution Design',cls:'solution',ph:'DEV',acts:[
     {id:'SOL-01',n:'Requirements analysis & interpretation',o:'Requirements interpretation document',d:['SAL-06'],dur:5,ts:2,pt:'P'},
-    {id:'SOL-02',n:'Current service model review (rebid)',o:'As-is service model assessment',d:[],dur:5,ts:1,pt:'S'},
+    {id:'SOL-02',n:'Current operating model assessment',o:'As-is operating model assessment',d:[],dur:5,ts:1,pt:'S'},
     {id:'SOL-03',n:'Target operating model design',o:'Target operating model',d:['SOL-01','SOL-02'],dur:45,ts:3,pt:'P'},
     {id:'SOL-04',n:'Service delivery model design',o:'Service delivery model',d:['SOL-03'],dur:30,ts:3,pt:'P'},
     {id:'SOL-05',n:'Technology & digital approach',o:'Technology solution design',d:['SOL-03','SUP-02'],dur:20,ts:2,pt:'P'},
@@ -171,7 +171,8 @@ const WS=[
     {id:'SOL-08',n:'Innovation & continuous improvement',o:'Innovation roadmap',d:['SOL-03'],dur:5,ts:1,pt:'S'},
     {id:'SOL-09',n:'Social value proposition',o:'Social value plan',d:['SOL-04'],dur:5,ts:1,pt:'S'},
     {id:'SOL-10',n:'Evidence strategy & case study identification',o:'Evidence requirements matrix',d:['SOL-04','SAL-05'],dur:3,ts:1,pt:'S'},
-    {id:'SOL-11',n:'Solution design lock',o:'Solution design pack (locked & assured)',d:['SOL-03','SOL-04','SOL-05','SOL-06','SOL-07','SOL-08','SOL-09','SOL-10'],dur:3,ts:1,pt:'C'},
+    {id:'SOL-12',n:'Solution risk identification & analysis',o:'Solution risk register',d:['SOL-03','SOL-04'],dur:3,ts:1,pt:'S'},
+    {id:'SOL-11',n:'Solution design lock',o:'Solution design pack (locked & assured)',d:['SOL-03','SOL-04','SOL-05','SOL-06','SOL-07','SOL-08','SOL-09','SOL-10','SOL-12'],dur:3,ts:1,pt:'C'},
   ]},
   {id:'COM',name:'Commercial & Pricing',cls:'commercial',ph:'DEV',acts:[
     {id:'COM-01',n:'Should-cost model development',o:'Should-cost model',d:['SOL-04','SOL-06'],dur:8,ts:1,pt:'S'},
@@ -470,7 +471,7 @@ R.archetype=()=>`
 
   <div class="sh">Zero-Dependency Activities (Start Day One)</div>
   <div class="cg c4">
-    ${['SAL-01: Customer intel','SAL-02: Incumbent review','SOL-02: Current service model','LEG-01: Contract review','LEG-03: Insurance review','DEL-03: KPI/SLA framework','DEL-05: BC/exit planning','BM-13: Bid risk register'].map(a=>`<div class="cd a-grn" style="padding:8px;"><div class="cd-b" style="font-family:'DM Mono',monospace;font-size:10px;">${a}</div></div>`).join('')}
+    ${['SAL-01: Customer intel','SAL-02: Incumbent review','SOL-02: Operating model assessment','LEG-01: Contract review','LEG-03: Insurance review','DEL-03: KPI/SLA framework','DEL-05: BC/exit planning','BM-13: Bid risk register'].map(a=>`<div class="cd a-grn" style="padding:8px;"><div class="cd-b" style="font-family:'DM Mono',monospace;font-size:10px;">${a}</div></div>`).join('')}
   </div>
 
   <div class="sh">Activity Parallelisation Types</div>
