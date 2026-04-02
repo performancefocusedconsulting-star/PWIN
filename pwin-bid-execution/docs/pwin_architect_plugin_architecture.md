@@ -1,10 +1,10 @@
 # PWIN Architect — Bid Execution Product
 ## AI Plugin Architecture Brief for Claude Code
 
-**Version:** 1.3 | April 2026
+**Version:** 1.4 | April 2026
 **Status:** Authoritative design input for all Claude Code build sessions
-**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, cross-product interfaces, SaaS trajectory
-**Aligned with:** Architecture v6 (Session 8, 2026-03-27), Gold Standard Template (Session 11, 2026-04-01)
+**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, 20 AI intelligence use cases, cross-product interfaces, SaaS trajectory
+**Aligned with:** Architecture v6 (Session 13, 2026-04-02), Gold Standard Template (Session 11, 2026-04-01), AI Use Cases Reference v1.0, AI Suitability Assessment (295 L3 tasks)
 
 ---
 
@@ -80,18 +80,19 @@ Confirmed architecture (from Claude Code build sessions, Architecture v6 — Ses
 
 ### 3.2 The 10 Workstreams
 
-| Code | Workstream | Phase | Activity Count |
-|---|---|---|---|
-| SAL | Sales & Customer Intelligence | Development | ~10 |
-| SOL | Solution Design | Development | ~10 |
-| COM | Commercial & Pricing | Development | ~6 |
-| LEG | Legal & Contractual | Development | ~6 |
-| DEL | Programme & Delivery | Development | ~6 |
-| SUP | Supply Chain & Partners | Development | ~6 |
-| BM | Bid Management & Programme Control | Continuous | ~12 |
-| GOV | Internal Governance | Continuous | ~5 |
-| PRD | Proposal Production | Production | ~9 |
-| POST | Post-Submission | Post-Submission | ~8 |
+| Code | Workstream | Phase | Activities | L2s | L3 Tasks |
+|---|---|---|---|---|---|
+| SAL | Sales & Customer Intelligence | Development | 10 | 22 | 56 |
+| SOL | Solution Design | Development | 12 | 26 | 72 |
+| COM | Commercial & Pricing | Development | 7 | 15 | 39 |
+| LEG | Legal & Contractual | Development | 6 | — | 19 |
+| DEL | Programme & Delivery | Development | 6 | — | 17 |
+| SUP | Supply Chain & Partners | Development | 6 | — | 16 |
+| BM | Bid Management & Programme Control | Continuous | 16 | — | 29 |
+| GOV | Internal Governance | Continuous | 6 | — | 12 |
+| PRD | Proposal Production | Production | 9 | — | 18 |
+| POST | Post-Submission | Post-Submission | 8 | — | 12 |
+| **Total** | | | **84** | **~123** | **~295** |
 
 ### 3.3 The Data Model — 24 Entities (Architecture v6 — Session 8)
 
@@ -450,16 +451,60 @@ get_gate_preparation(bidId, gateName)
   → Preparation actions for named gate with completion status
 ```
 
+**Standup & Actions (new — required by UC3, UC18):**
+```
+get_standup_actions(bidId, filters?)
+  → StandupAction records with owner, dueDate, status, source, dates
+  → Filters: status, owner, parentActivityCode, parentGateId, overdue_only
+  → Required by UC3 (prioritisation) and UC18 (velocity analysis)
+
+get_deferred_actions(bidId)
+  → StandupActions with deferred_count >= 2
+  → Pre-filtered for bid manager decision (complete/cancel/escalate)
+```
+
+**Calendar & Scheduling (new — required by UC1, UC2):**
+```
+get_bid_calendar(bidId)
+  → BidCalendar with publicHolidays, teamUnavailability, weekendWorking
+  → Required for working-day gap calculations in UC1, UC2
+```
+
+**Commercial & Engagement (new — required by UC10, UC11):**
+```
+get_engagement(bidId)
+  → Engagement record: costToBid, winFeeValue, feeModel, healthStatus, interventions[]
+  → Required by UC10 (risk/pricing), UC11 (spend forecast)
+
+get_rate_card(bidId)
+  → RateCard records: roleName, standardDayRate
+  → Required by UC2 (resource conflict), UC11 (spend forecast)
+```
+
+**Review Calibration (new — required by UC8/UC17):**
+```
+get_reviewer_history(bidId, reviewerName)
+  → All ReviewScorecard records for a specific reviewer across all cycles
+  → Includes scores, predictedClientScore, averageScore per cycle
+  → Required by UC8 (calibration/bias detection)
+```
+
 **Supporting:**
 ```
-get_risks(bidId)
+get_risks(bidId, filters?)
   → Open RiskAssumptions in both registers (delivery + bid)
+  → Filters: registerType, status, probability, impact
+  → Required by UC10 (risk pattern detection)
 
 get_stakeholders(bidId)
   → All stakeholder records with type and linked gates
 
 get_team_summary(bidId)
   → TeamMembers with workstream assignments, availability, spend forecast
+
+get_team_member(bidId, memberName)
+  → Full TeamMember record with workstreams, rate, clearance
+  → Required by UC2, UC12, UC16, UC19, UC20
 
 get_rules(bidId)
   → All embedded rules applicable to this bid archetype
@@ -503,6 +548,61 @@ update_bid_insight(bidId, insight: BidAIInsight)
 
 log_gate_recommendation(bidId, gateName, recommendation: GateRecommendation)
   → Writes AI gate readiness assessment before review meeting
+```
+
+**Gate-Level Insights (new — required by UC9):**
+```
+create_gate_readiness_report(bidId, gateId, report: GateReadinessAIInsight)
+  → Writes gate readiness assessment: per-criterion pass/fail/at-risk,
+    process integrity concerns, recovery assessment
+  → APPEND-ONLY
+  → Auto-generates StandupActions for recoverable amber criteria
+```
+
+**Compliance & Coverage Insights (new — required by UC4, UC5, UC6):**
+```
+create_compliance_coverage_insight(bidId, insight: ComplianceCoverageAIInsight)
+  → Weighted coverage risk matrix per ResponseSection
+  → Compliance gap register with disqualification risk flags
+  → APPEND-ONLY
+
+update_win_theme_coverage_score(bidId, responseSectionReference, score: number)
+  → AI-owned field on ResponseSection: win theme coverage score
+  → Written by UC5 (win theme audit)
+
+create_effort_allocation_insight(bidId, insight: EffortAllocationAIInsight)
+  → Effort efficiency scores, ranked reallocation table, recommended transfers
+  → Written by UC6 (marks allocation)
+  → APPEND-ONLY
+```
+
+**Standup & Action Generation (new — required by UC3, UC9, UC13):**
+```
+create_standup_action(bidId, action: StandupActionInput)
+  → Creates StandupAction with source: ai_generated
+  → Used by UC3 (mitigation accepted), UC9 (gate prep), UC13 (clarification impact)
+
+update_standup_action_deferred(bidId, actionId, data: { deferred_count, escalation_recommended, recommended_decision })
+  → Writes AI-owned fields on existing StandupAction
+  → Used by UC3 (carry-forward flagging), UC18 (velocity analysis)
+```
+
+**Response Section Amendment (new — required by UC13, UC14):**
+```
+flag_response_section_amended(bidId, reference, reason: string)
+  → Sets ResponseSection.lastAmended to current timestamp
+  → AI-writable field — records that a clarification or amendment affected this section
+  → Used by UC13 (clarification impact), UC14 (ITT amendment)
+```
+
+**Team Performance Insights (new — required by UC16-20, V2/V3):**
+```
+create_team_member_insight(bidId, memberName, insight: TeamMemberAIInsight)
+  → Quality profile, coaching brief, strength profile
+  → APPEND-ONLY
+  → Framing: coaching and resourcing intelligence only
+  → Access restricted to bid manager and bid director roles
+  → [V2/V3 — requires multi-bid data for meaningful signal]
 ```
 
 **Ingestion (Role 3) — V1:**
@@ -666,19 +766,154 @@ GateReadiness {
 }
 ```
 
-### 6.4 The Ownership Boundary
+### 6.4 Gate Readiness AIInsight (new — UC9)
+
+```
+GateReadinessAIInsight {
+  id:                   UUID
+  gateId:               FK → GovernanceGate
+  bidId:                FK → Bid
+  overall_status:       'GREEN' | 'AMBER' | 'RED'
+  criteria_assessments: CriterionAssessment[]
+  process_integrity:    ProcessIntegrityFlag[]
+  governance_gaps:      GovernanceGap[]
+  recovery_assessment:  string                       — can amber criteria be recovered in time?
+  ai_narrative:         string                       — max 4 sentences
+  generated_at:         ISO datetime
+  model_version:        string
+}
+
+CriterionAssessment {
+  criterion:            string                       — entry criterion description
+  status:               'PASS' | 'FAIL' | 'AT_RISK'
+  linked_activity:      string | null                — activity code if applicable
+  recovery_days:        integer | null               — working days to recover, null if pass
+  recommended_action:   string | null
+}
+
+ProcessIntegrityFlag {
+  activity_code:        string
+  concern:              string                       — e.g. 'reviewer and owner are the same person'
+  severity:             'HIGH' | 'MEDIUM'
+}
+
+GovernanceGap {
+  gate_id:              string
+  gap_type:             'NO_APPROVER' | 'INACTIVE_APPROVER' | 'NO_REVIEWER'
+  description:          string
+}
+```
+
+### 6.5 Compliance Coverage AIInsight (new — UC4)
+
+```
+ComplianceCoverageAIInsight {
+  id:                   UUID
+  bidId:                FK → Bid
+  section_risks:        SectionRisk[]
+  compliance_gaps:      ComplianceGap[]
+  disqualification_risks: string[]                   — ResponseSection references at disqualification risk
+  ai_narrative:         string
+  generated_at:         ISO datetime
+  model_version:        string
+}
+
+SectionRisk {
+  response_section_ref: string
+  marks_at_risk:        number
+  days_to_submission:   integer
+  coverage_status:      string
+  recommended_action:   string
+  risk_severity:        'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
+}
+
+ComplianceGap {
+  requirement_text:     string
+  classification:       string
+  compliance_status:    string
+  risk_label:           'DISQUALIFICATION' | 'SCORE_LOSS' | 'MINOR'
+}
+```
+
+### 6.6 Effort Allocation AIInsight (new — UC6)
+
+```
+EffortAllocationAIInsight {
+  id:                   UUID
+  bidId:                FK → Bid
+  section_efficiency:   SectionEfficiency[]
+  recommended_transfers: EffortTransfer[]
+  hurdle_exceptions:    string[]                     — sections exempt from efficiency calc
+  ai_narrative:         string
+  generated_at:         ISO datetime
+  model_version:        string
+}
+
+SectionEfficiency {
+  response_section_ref: string
+  marks_available:      number
+  effort_days:          number
+  marks_per_day:        number
+  classification:       'OVER_INVESTED' | 'UNDER_INVESTED' | 'BALANCED' | 'HURDLE_EXEMPT'
+}
+
+EffortTransfer {
+  from_section:         string
+  to_section:           string
+  person_days:          number
+  marks_impact:         string                       — e.g. 'releases 2 days from 5-mark section to 25-mark section'
+}
+```
+
+### 6.7 Team Member AIInsight (new — UC16-20, V2/V3)
+
+> **NOTE:** These schemas require multi-bid data for meaningful signal. Build data collection in V1, surface intelligence in V2/V3. All ai_narrative fields must be framed as coaching and resourcing intelligence, not performance evaluation.
+
+```
+TeamMemberAIInsight {
+  id:                   UUID
+  teamMemberName:       string
+  bidId:                FK → Bid
+  recurring_weaknesses: RecurringWeakness[]
+  improvement_trajectory: 'IMPROVING' | 'PLATEAUING' | 'DECLINING'
+  strength_profile:     StrengthDimension[]
+  coaching_brief:       string                       — specific, actionable, non-evaluative
+  disputed_action_rate: number | null                — % of actions disputed
+  ai_narrative:         string                       — coaching framing only
+  generated_at:         ISO datetime
+  model_version:        string
+}
+
+RecurringWeakness {
+  criterion:            string                       — quality dimension name
+  action_count:         integer
+  avg_severity:         string
+  pattern:              string                       — description of recurring pattern
+}
+
+StrengthDimension {
+  criterion:            string
+  above_team_avg_by:    number                       — points above team average
+  recommendation:       string                       — e.g. 'deploy on highest-mark questions in this dimension'
+}
+```
+
+### 6.8 The Ownership Boundary
 
 **Claude never writes to bid manager-owned fields. This must be enforced at the MCP server API layer — not just as a convention.**
 
 | Bid Manager Owns (Claude must never write) | Claude Owns (bid manager must never edit) | AI Can Create (Role 3 ingestion) |
 |---|---|---|
-| Activity: owner, status, plannedStart/End, actualStart/End, notes, dependencies[], outputAssurance | AIInsight: rag_status, gap_working_days, cascade_risk, downstream_impact[], ai_narrative, mitigation_options[], rule_violations[], confidence | — |
-| ResponseItem: status (10-stage), all quality dimension fields, owner, dueDate, notes | ResponseItemAIInsight: all fields (future) | — |
-| ComplianceRequirement: complianceStatus, complianceExplanation, solutionAlignment | — | — |
-| ReviewAction: status, resolutionNotes (these are reviewer-owned, also not AI-writable) | — | — |
-| GovernanceGate: decision, conditions, riskPremiumPct | GateRecommendation (AI advisory) | — |
-| WinTheme: statement, rationale, status | — | — |
-| — | — | ResponseSection: all fields (ingested data — exam paper) |
+| Activity: owner, status, plannedStart/End, actualStart/End, notes, dependencies[], outputAssurance | ActivityAIInsight: rag_status, gap_working_days, cascade_risk, downstream_impact[], ai_narrative, mitigation_options[], rule_violations[], confidence. Activity.forecastEnd (AI-owned, separate from plannedEnd — UC2) | — |
+| ResponseItem: status (10-stage), all quality dimension fields, owner, dueDate, notes | ResponseItemAIInsight: all fields (future). ResponseItem.effortAllocationEfficiency (AI-owned — UC6) | — |
+| ResponseSection: questionText, evaluationCriteria, evaluationMaxScore, hurdleScore, wordLimit | ResponseSection.winThemeCoverageScore (AI-owned — UC5). ResponseSection.lastAmended (AI-writable for clarification/amendment flagging — UC13, UC14) | ResponseSection: all fields (ingested data — exam paper) |
+| ComplianceRequirement: complianceStatus, complianceExplanation, solutionAlignment | ComplianceRequirement.impactedByClarification (AI-writable — UC13). ComplianceCoverageAIInsight: all fields (UC4) | — |
+| ReviewAction: status, resolutionNotes (reviewer-owned) | — | — |
+| GovernanceGate: decision, conditions, riskPremiumPct | GateReadinessAIInsight: all fields (UC9). GateRecommendation (AI advisory) | — |
+| WinTheme: statement, rationale, status | WinTheme.portfolioSaturationRating (AI-owned — UC5) | — |
+| StandupAction: owner, dueDate, status (for existing actions) | StandupAction.deferred_count, escalation_recommended, recommended_decision (AI-owned — UC3, UC18) | StandupAction: new records with source: ai_generated (UC3, UC9, UC13) |
+| TeamMember: all core fields | TeamMemberAIInsight: all fields (V2/V3 — UC16-20). Coaching framing only. | — |
+| Engagement: all fields | EffortAllocationAIInsight: all fields (UC6). BidAIInsight.budget_forecast (UC11) | — |
 | — | — | EvaluationFramework: all fields (ingested data) |
 | — | — | ITTDocument: all fields (ingested data) |
 | — | — | Bid: procurement context fields only (procurementRoute, portalPlatform, etc.) |
@@ -729,6 +964,40 @@ Risk register◀──    add_risk_flag()             ◀──  With confidence
 
 ---
 
+## 7a. The 20 AI Intelligence Use Cases (Session 13)
+
+The timeline analysis use case (Section 7) is the first of 20 intelligence use cases designed in Session 13. These use cases define the complete Layer 3 (AI Intelligence) capability — what the product surfaces from data the bid manager already enters.
+
+**Full specification:** `ai_use_cases_reference.html` in the docs folder.
+
+**Key design decisions:**
+- All 24 data entities are covered. No data is collected but unanalysed.
+- Every use case specifies: entities and fields consumed, what Claude reasons over, what is written back and where, and the UX design implication.
+- UC8 and UC17 are duplicates — consolidated to single implementation.
+- Theme E (UC16-20) requires multi-bid data — V2/V3 capability.
+- All use cases launch as on-demand in V1. Scheduled triggers are V2.
+
+**Build priority (intelligence use cases only):**
+
+| Priority | Use Case(s) | Rationale |
+|---|---|---|
+| 1 | UC1 (Timeline) + UC4 (Compliance) | MCP foundation, highest value |
+| 2 | UC3 (Standup) + UC9 (Gate Readiness) | Daily operational + governance value |
+| 3 | UC6 (Marks Allocation) | Direct score improvement |
+| 4 | UC5, UC7, UC13 | Proposal quality + clarification chain |
+| 5 | UC10, UC11 | Commercial intelligence |
+| 6 | UC14, UC15 | Amendment detection, presentation intelligence |
+| 7 | UC2, UC8, UC12 | Secondary intelligence layer |
+| 8 | UC16-20 | Team performance (requires multi-bid data) |
+
+**Relationship to AI suitability assessment:**
+- The suitability assessment (295 L3 tasks) defines Layer 2: what AI can DO (productivity skills).
+- The 20 use cases define Layer 3: what AI can SEE (supervisory intelligence).
+- Both share the MCP server as infrastructure.
+- Combined implementation roadmap interleaves both — see Section 9.1.
+
+---
+
 ## 8. SaaS Trajectory
 
 ### 8.1 Current State
@@ -763,17 +1032,27 @@ Self-contained HTML applications with local data storage. Intentional — proves
 
 ### 9.1 Phasing — Data Targets Before Skills, Skills Before Plugin
 
-The plugin architecture is a forward-looking design document. Build priority follows a clear dependency chain: data targets → skills → plugin intelligence layer.
+The plugin architecture is a forward-looking design document. Build priority follows a clear dependency chain: data targets → MCP server → intelligence use cases → skills → expanded intelligence.
 
 **Phase 1a (current — Sprint 1a):** ITT ingestion data layer — ResponseSection, EvaluationFramework, ITTDocument entities. ResponseItem migration. CSV import. Auto-migration of existing data.
 
 **Phase 1 (in progress):** Complete core Bid Execution modules — Submissions (10-stage lifecycle, quality dimensions, win themes, client scoring, ResponseSection/ResponseItem joined view), Reviews (dual scorecard), Governance (development reviews absorbed), Workspace, Activity Tracker, Readiness Dashboard.
 
-**Phase 2 (after core):** Data visualisation pass — dashboard design, cross-module views. ITT ingestion skills (itt-intelligence, itt-ingestion V1 scope) — these can be built once Sprint 1a data targets exist.
+**Phase 2 — MCP Server (critical path):** Shared infrastructure for both AI skills (Layer 2) and AI intelligence (Layer 3). Data access layer with filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight entity schemas and append-only write capability. This is the foundation everything else depends on.
 
-**Phase 3 (after visualisation):** Plugin intelligence layer — AIInsight entities, MCP server, timeline analysis skill, write-back capability.
+**Phase 3 — First Intelligence Use Cases:** UC1 (Preventative Timeline Analysis) + UC4 (Compliance Coverage Intelligence). These prove the MCP architecture, establish the AIInsight pattern, and deliver the two highest-value intelligence use cases. UX conventions established: RAG flags on Gantt, heat maps on Response Register, mitigation cards, persistent banners.
 
-**Phase 4 (V2):** Requirement and ClarificationItem entities. Requirements Register and Traceability Matrix views. itt-ingestion extended scope (specification extraction). clarification-qa skill. Full requirements traceability.
+**Phase 4 — First AI Skills:** Phase 1 skills from AI suitability assessment — Document Intelligence. ITT extraction, compliance mapping, contract analysis (itt-intelligence, itt-ingestion V1 scope). Highest-impact productivity use cases, transforming the first 2 weeks of bid.
+
+**Phase 5 — Second Intelligence Wave:** UC3 (Standup Prioritisation) + UC9 (Gate Readiness) + UC6 (Marks Allocation). Daily operational value, governance value, and direct score improvement. Builds on proven MCP infrastructure from Phase 3.
+
+**Phase 6 — Second AI Skills:** Phase 2 skills from AI suitability assessment — Content Generation. Response drafting, storyboard generation. Writers refine AI drafts instead of writing from scratch.
+
+**Phase 7 — Expansion:** Remaining intelligence use cases (UC5, UC7, UC10-15) and skills (research, financial modelling, risk consolidation), interleaved based on customer demand.
+
+**Phase 8 (V2):** Requirement and ClarificationItem entities. Requirements Register and Traceability Matrix views. itt-ingestion extended scope (specification extraction). clarification-qa skill. Full requirements traceability. Theme E team performance intelligence (UC16-20) — requires multi-bid data.
+
+> **THREE-LAYER ARCHITECTURE (Session 13):** Layer 1 = Bid Execution App (data + UI). Layer 2 = AI Skills (productivity — Plugin Roles 2 & 3, from AI suitability assessment). Layer 3 = AI Intelligence (supervisory — Plugin Role 1, these 20 use cases). The MCP server is the shared infrastructure between Layers 2 and 3. See ai_use_cases_reference.html for the complete three-layer diagram.
 
 ### 9.2 Plugin Build Sequence — When the Time Comes
 
@@ -870,5 +1149,5 @@ The plugin architecture is a forward-looking design document. Build priority fol
 
 ---
 
-*PWIN Architect — AI Plugin Architecture Brief | v1.2 | March 2026 | BIP Management Consulting | Confidential*
-*Aligned with Architecture v6, Session 8 (2026-03-27)*
+*PWIN Architect — AI Plugin Architecture Brief | v1.4 | April 2026 | BIP Management Consulting | Confidential*
+*Aligned with Architecture v6, Session 13 (2026-04-02). Incorporates 20 AI intelligence use cases and AI suitability assessment (295 L3 tasks).*

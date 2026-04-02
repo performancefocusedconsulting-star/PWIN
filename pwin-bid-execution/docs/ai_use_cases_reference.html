@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Bid Execution AI Use Cases Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;
+  --bdr:#253551;--bdr-s:#1A2844;
+  --gold:#C49438;--gold-d:rgba(196,148,56,.12);--gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;
+  --grn:#34D399;--grn-d:rgba(52,211,153,.10);
+  --red:#F87171;--red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24;--amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA;--blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA;--pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);
+  --pink:#F472B6;--pink-d:rgba(244,114,182,.10);
+  --lime:#A3E635;--lime-d:rgba(163,230,53,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;padding:28px;max-width:1200px;margin:0 auto;}
+.hdr{padding:16px 0 20px;border-bottom:1px solid var(--bdr-s);margin-bottom:24px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-top:4px;}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:780px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:28px 0 10px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:18px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+.cg{display:grid;gap:10px;margin-bottom:18px;}
+.c2{grid-template-columns:repeat(2,1fr);}.c3{grid-template-columns:repeat(3,1fr);}.c4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:1100px){.c4{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.c2,.c3,.c4{grid-template-columns:1fr;}}
+.cd{background:var(--bg2);border:1px solid var(--bdr);padding:14px;position:relative;overflow:hidden;transition:all .15s;}
+.cd:hover{background:var(--bg3);border-color:var(--gold);}
+.cd::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.cd.a-gold::before{background:var(--gold)}.cd.a-grn::before{background:var(--grn)}.cd.a-blu::before{background:var(--blu)}.cd.a-pur::before{background:var(--pur)}.cd.a-red::before{background:var(--red)}.cd.a-amb::before{background:var(--amb)}.cd.a-cyn::before{background:var(--cyn)}.cd.a-pink::before{background:var(--pink)}.cd.a-lime::before{background:var(--lime)}
+.cd-n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);opacity:.3;position:absolute;top:8px;right:10px;}
+.cd-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.cd-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.cd-b{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+.tb{width:100%;border-collapse:collapse;margin:10px 0;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.tb td{padding:6px 8px;font-size:11.5px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.tb td:first-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);white-space:nowrap;}
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:2px;display:inline-block;margin:1px 2px;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}.fe-b{color:var(--blu);background:var(--blu-d)}.fe-p{color:var(--pur);background:var(--pur-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}
+.uc{background:var(--bg2);border:1px solid var(--bdr);padding:16px;margin:10px 0;position:relative;overflow:hidden;}
+.uc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.uc.t-a::before{background:var(--blu)}.uc.t-b::before{background:var(--gold)}.uc.t-c::before{background:var(--grn)}.uc.t-d::before{background:var(--pur)}.uc.t-e::before{background:var(--pink)}
+.uc-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;opacity:.2;position:absolute;top:8px;right:12px;}
+.uc.t-a .uc-num{color:var(--blu)}.uc.t-b .uc-num{color:var(--gold)}.uc.t-c .uc-num{color:var(--grn)}.uc.t-d .uc-num{color:var(--pur)}.uc.t-e .uc-num{color:var(--pink)}
+.uc-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px;}
+.uc-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.04em;margin-bottom:8px;}
+.uc-section{margin-top:10px;}
+.uc-section-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.uc-section-body{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.uc-section-body ul{margin:4px 0 4px 16px;}.uc-section-body li{margin-bottom:3px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">PWIN Architect</div>
+  <div class="hdr-sub">Bid Execution &mdash; AI Use Cases Reference &bull; v1.0 &bull; April 2026</div>
+</div>
+
+<div class="sl">Design Reference</div>
+<div class="st">AI Use Cases &mdash; Complete Reference</div>
+<div class="sd">20 use cases derived from the 24-entity, 280-field data model. Every entity is covered. No data is collected but unanalysed. This document is a direct design input to Claude Code for the Bid Execution product and the PWIN Architect Plugin.</div>
+
+<div class="co co-g"><div class="co-l">Key Rule</div><div class="co-t">Claude writes only to AI-owned fields. The MCP server rejects any write to bid manager-owned fields at the API layer. AIInsight records are always append-only &mdash; never updated or deleted. Each analysis run creates a new record with a generated_at timestamp.</div></div>
+
+<div class="co co-r"><div class="co-l">Framing</div><div class="co-t">Use Cases 16&ndash;20 (Theme E) generate individual-level performance data. The ai_narrative field for these use cases must always be framed as coaching and resourcing intelligence, not performance evaluation. These insights are restricted to bid manager and bid director roles only.</div></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- BUILD PRIORITY ORDER                    -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Build Priority Order</div>
+<div class="bt">Implement in this sequence. Earlier use cases provide MCP foundation and data contracts that later use cases depend on.</div>
+
+<table class="tb">
+<tr><th>Priority</th><th>Use Case(s)</th><th>Rationale</th><th>Difficulty</th></tr>
+<tr><td>1</td><td>UC1 &mdash; Timeline Analysis</td><td>Primary intelligence use case, MCP foundation</td><td><span class="fe fe-g">straightforward</span></td></tr>
+<tr><td>2</td><td>UC4 &mdash; Compliance Coverage</td><td>Highest submission risk value</td><td><span class="fe fe-g">straightforward</span></td></tr>
+<tr><td>3</td><td>UC3 &mdash; Standup Prioritisation</td><td>Highest daily operational value</td><td><span class="fe fe-g">straightforward</span></td></tr>
+<tr><td>4</td><td>UC9 &mdash; Gate Readiness</td><td>Governance value, uses existing GovernanceGate data</td><td><span class="fe fe-g">straightforward</span></td></tr>
+<tr><td>5</td><td>UC6 &mdash; Marks Allocation</td><td>Highest direct score improvement value</td><td><span class="fe fe-a">moderate</span></td></tr>
+<tr><td>6</td><td>UC5, UC7, UC13</td><td>Proposal quality and clarification chain</td><td><span class="fe fe-a">moderate</span></td></tr>
+<tr><td>7</td><td>UC11, UC10</td><td>Commercial intelligence</td><td><span class="fe fe-a">moderate</span></td></tr>
+<tr><td>8</td><td>UC16&ndash;20</td><td>Team performance (requires bid history data)</td><td><span class="fe fe-r">requires multi-bid data</span></td></tr>
+<tr><td>9</td><td>UC14, UC15</td><td>Amendment detection and presentation intelligence</td><td><span class="fe fe-r">hard</span></td></tr>
+<tr><td>10</td><td>UC2, UC8, UC12</td><td>Secondary intelligence layer</td><td><span class="fe fe-a">moderate</span></td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THREE-LAYER ARCHITECTURE                -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Three-Layer Product Architecture</div>
+<div class="bt">The AI use cases and AI suitability assessment form two complementary layers on top of the bid execution app.</div>
+
+<div class="cg c3">
+  <div class="cd a-blu"><div class="cd-n">1</div><div class="cd-l">Layer 1</div><div class="cd-t">Bid Execution App</div><div class="cd-b">Data model: 24 entities, ~280 fields. Bid manager enters data through methodology activities. Single self-contained HTML file. localStorage persistence. This is the data layer and UI.</div></div>
+  <div class="cd a-gold"><div class="cd-n">2</div><div class="cd-l">Layer 2</div><div class="cd-t">AI Skills (Productivity)</div><div class="cd-b">Invoked by bid manager: &ldquo;help me draft this response.&rdquo; Reads external data + internal data &rarr; produces content. Plugin Roles 2 &amp; 3. From the AI suitability assessment &mdash; 5-phase implementation roadmap.</div></div>
+  <div class="cd a-grn"><div class="cd-n">3</div><div class="cd-l">Layer 3</div><div class="cd-t">AI Intelligence (Supervisory)</div><div class="cd-b">Runs automatically on schedule or trigger. Reads ONLY internal data already captured. Writes to AI-owned fields + AIInsight records. Plugin Role 1. These 20 use cases. Zero additional data entry burden.</div></div>
+</div>
+
+<div class="co co-v"><div class="co-l">Shared Infrastructure</div><div class="co-t">The MCP server is the shared infrastructure between Layers 2 and 3. It provides data access, filtered query contracts, and field-level permission enforcement (owner: bid_manager | ai) that both skill invocations and scheduled intelligence use.</div></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THEME A                                 -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Theme A &mdash; Schedule and Delivery Intelligence</div>
+<div class="bt">Uses the Activity spine, dependency graph, and workstream structure.</div>
+
+<div class="uc t-a"><div class="uc-num">01</div>
+  <div class="uc-title">UC1 &mdash; Preventative Timeline Analysis</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: Scheduled weekly + on demand via /pwin:timeline-review</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>Activity (plannedStart/End, actualStart/End, status, dependencies[], parallelisationType, effortDays, isCriticalPath, lastUpdated)</li>
+    <li>Workstream (timingHealth)</li>
+    <li>BidCalendar (publicHolidays, teamUnavailability)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Gap in working days (not calendar days) between planned and forecast completion</li>
+    <li>Distinction between late-but-recoverable and past the point of recovery</li>
+    <li>Dependency cascade &mdash; compound slip across the full dependency chain</li>
+    <li>Rule violation detection &mdash; sequencing violations not just date violations</li>
+    <li>Predictive warning &mdash; on-time activities with risk characteristics (insufficient buffer, shared resource, unconfirmed third-party dependencies)</li>
+    <li>Critical path prioritisation &mdash; one day on critical path weighted as more serious than three days on a non-critical workstream</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>ActivityAIInsight: gap_working_days, rag_status, cascade_risk, downstream_impact[], ai_narrative, mitigation_options[], confidence, generated_at</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">RAG flag on Gantt row and activity detail panel. Mitigation options as selectable cards &mdash; accepting one triggers a StandupAction. Context window constraint: use filtered MCP queries only, never load all 79 activities at once.</div></div>
+</div>
+
+<div class="uc t-a"><div class="uc-num">02</div>
+  <div class="uc-title">UC2 &mdash; Effort Reforecasting and Resource Conflict Detection</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: When actualStart/actualEnd diverges from plan on any activity</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>Activity (effortDays, teamSize, parallelisationType, owner, plannedStart/End, actualStart/End)</li>
+    <li>TeamMember (name, workstreams[], individualDayRate, isContractor, startDate, endDate)</li>
+    <li>RateCard (roleName, standardDayRate)</li>
+    <li>BidCalendar (teamUnavailability)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Reforecasts remaining effort as actual dates diverge from plan</li>
+    <li>Identifies concurrent specialist (S-type) activities assigned to the same person &mdash; cannot be parallelised as schedule assumes</li>
+    <li>Calculates compound impact: one activity slipping consumes resource needed for a downstream activity</li>
+    <li>Models implied capacity shortfall from overrun pattern</li>
+    <li>Calculates revised bid cost estimate</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Revised forecast dates per activity (AI-owned field, separate from plannedEnd)</li>
+    <li>Resource conflict register: { person, activities[], overlap_days, severity, recommended_resolution }</li>
+    <li>Revised bid cost estimate to Engagement.healthStatus</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Resource conflict register renders in Team Manager &rarr; Spend Forecast tab. Colour-coded by severity. Recommended resolution is one specific, actionable sentence per conflict.</div></div>
+</div>
+
+<div class="uc t-a"><div class="uc-num">03</div>
+  <div class="uc-title">UC3 &mdash; Intelligent Standup and Action Prioritisation</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: Scheduled daily at 08:00 working days + on demand</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>StandupAction (owner, dueDate, status, source, createdDate, completedDate, parentActivityCode)</li>
+    <li>Activity (status, blockedBy, dependencies[], plannedEnd, isCriticalPath)</li>
+    <li>GovernanceGate (status, sequence, entryCriteria[])</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Not a status report &mdash; a prioritised action list: which actions, if done today, unblock the most downstream work</li>
+    <li>Carry-forward actions deferred more than twice require an explicit bid manager decision (complete / cancel / escalate)</li>
+    <li>Gate proximity weighting: actions linked to a GovernanceGate within 5 days escalated regardless of activity criticality</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Daily brief to BM workstream: max 5 items ranked by impact, each with named owner, specific ask, and due time</li>
+    <li>Carry-forward flags on deferred StandupAction records: deferred_count, escalation_recommended, recommended_decision</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Brief renders on Workspace home screen as a prioritised list above the standup tracker. Bid manager can mark items done from the brief card without navigating to the tracker.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THEME B                                 -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Theme B &mdash; Proposal Quality and Scoring Intelligence</div>
+<div class="bt">Uses ResponseSection, ResponseItem, ReviewCycle, ReviewScorecard, ReviewAction, WinTheme, EvaluationFramework, ClientScoringScheme.</div>
+
+<div class="uc t-b"><div class="uc-num">04</div>
+  <div class="uc-title">UC4 &mdash; Compliance Coverage Intelligence</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: On demand + at each review cycle gate</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ResponseSection (evaluationMaxScore, hurdleScore, evaluationCategory, evaluationCriteria, wordLimit)</li>
+    <li>ResponseItem (status, effortDays, complexityEstimate, qualityAnswersQuestion)</li>
+    <li>EvaluationFramework (qualityWeightPct, priceWeightPct, socialValueWeightPct)</li>
+    <li>ComplianceRequirement (classification, coverageStatus, complianceStatus)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Weighted coverage risk: marks available &times; coverage status &times; days to submission &mdash; not binary covered/not covered</li>
+    <li>A 30% weighted question at draft_in_progress with 8 days to submission is categorically different from a 5% weighted question in the same state</li>
+    <li>Hurdle questions receive disproportionate effort regardless of mark value &mdash; below-hurdle is disqualification</li>
+    <li>Mandatory compliance gaps with complianceStatus: non_compliant are submission-level disqualification risks</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Weighted coverage risk matrix per ResponseSection: marks at risk, days to submission, recommended action</li>
+    <li>Compliance gap register: non-compliant mandatory requirements flagged with disqualification risk label</li>
+    <li>Rendered as heat map overlay on Response Register</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Heat map renders in Submissions module. Colour intensity reflects marks-at-risk severity, not binary coverage. Disqualification risks render as a persistent banner on the module header until resolved.</div></div>
+</div>
+
+<div class="uc t-b"><div class="uc-num">05</div>
+  <div class="uc-title">UC5 &mdash; Win Theme Integration Audit</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: On demand + at storyboard approval (SAL-06 completion)</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>WinTheme (reference, statement, rationale, status, linkedResponseItemIds[])</li>
+    <li>ResponseItem (qualityWinThemeAssessments[], status, owner)</li>
+    <li>ResponseSection (evaluationMaxScore, evaluationWeightPct, evaluationCategory)</li>
+    <li>ReviewScorecard (scores.win_themes per response per cycle)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Win theme penetration across all responses: which themes are landed with substantiation vs. name only</li>
+    <li>High-weighted questions with no win theme &mdash; strategic gap, not drafting gap</li>
+    <li>Theme over-concentration in low-weighted sections where they generate few marks</li>
+    <li>Cross-references integration heatmap against evaluation criteria weighting</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Win theme coverage score per ResponseSection (AI-owned field)</li>
+    <li>Portfolio-level theme saturation rating per WinTheme</li>
+    <li>Ranked list: highest impact sections where theme integration is weakest</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Existing heatmap gains an AI coverage score column. Partial integration cells receive a recommended action tooltip. Ranked priority list renders below the heatmap as a coaching card.</div></div>
+</div>
+
+<div class="uc t-b"><div class="uc-num">06</div>
+  <div class="uc-title">UC6 &mdash; Marks Allocation Strategy Optimisation</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: At ITT ingestion completion or storyboard stage</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ResponseSection (evaluationMaxScore, hurdleScore, evaluationCategory, wordLimit)</li>
+    <li>ResponseItem (effortDays, complexityEstimate, status)</li>
+    <li>EvaluationFramework (category weights)</li>
+    <li>ReviewScorecard (averageScore, predictedClientScore &mdash; current trajectory)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Return on effort per response: marks available &divide; estimated effort days</li>
+    <li>Across 30-40 sections, trade-offs are invisible without AI reasoning across all simultaneously</li>
+    <li>Hurdle questions receive disproportionate effort regardless of return calculation</li>
+    <li>Recommendations are specific: &lsquo;move 2 person-days from Q4.1 (5 marks, 8 days effort) to Q2.3 (25 marks, 4 days effort)&rsquo;</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Effort allocation efficiency score per ResponseItem (marks per effort-day)</li>
+    <li>Ranked reallocation table: over-invested sections, under-invested sections, hurdle exceptions</li>
+    <li>Recommended effort transfer: specific person-day quantities between named sections</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Renders in Submissions module as an &lsquo;Effort Efficiency&rsquo; panel. Actionable &mdash; accepting a recommendation updates ResponseItem.effortDays and triggers a StandupAction to the relevant owner.</div></div>
+</div>
+
+<div class="uc t-b"><div class="uc-num">07</div>
+  <div class="uc-title">UC7 &mdash; Review Quality Trajectory Analysis</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: After each ReviewCycle closes</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ReviewScorecard (reviewer, scores &mdash; all 8 dimensions, averageScore, passesThreshold, predictedClientScore, predictedClientGradeBand, meetsHurdle)</li>
+    <li>ReviewAction (criterion, severity, status, owner, resolutionNotes)</li>
+    <li>ReviewCycle (type, scheduledDate, overallScore)</li>
+    <li>ResponseItem (owner, qualityScoreGap)</li>
+    <li>ClientScoringScheme (gradeBands[])</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Trajectory per response: pink &rarr; red &rarr; gold score movement on each of the 8 quality dimensions</li>
+    <li>Flatlined responses: pink to red improvement &lt; 0.3 points indicates feedback is not landing</li>
+    <li>Critical gap: responses where internal quality score passes threshold but predicted client score does not</li>
+    <li>Grade band proximity: responses one band below &lsquo;Excellent&rsquo; where specific evidence additions would close the gap</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Trajectory assessment per ResponseItem: improving / plateauing / declining per dimension</li>
+    <li>Below-hurdle flags with specific gap-closing recommendation</li>
+    <li>Recovery priority list: responses where targeted intervention yields highest marks improvement</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Trajectory renders in Reviews module on cycle detail view as a comparison chart (pink vs red vs gold per dimension). Below-hurdle flags are persistent alerts on the ResponseItem row in the production pipeline.</div></div>
+</div>
+
+<div class="uc t-b"><div class="uc-num">08</div>
+  <div class="uc-title">UC8 &mdash; Reviewer Calibration and Bias Detection</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: 48 hours before each ReviewCycle &bull; <span class="fe fe-a">consolidate with UC17</span></div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ReviewScorecard (reviewer, scores &mdash; all 8 dimensions, predictedClientScore, averageScore &mdash; all past cycles)</li>
+    <li>ReviewCycle (type, reviewers[])</li>
+    <li>ReviewAction (severity, criterion &mdash; attributed to reviewer)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Systematic dimensional bias: reviewer consistently scoring below team average on specific dimensions regardless of response quality</li>
+    <li>Optimism/pessimism in predictedClientScore: consistently higher or lower than consensus</li>
+    <li>Severity calibration: disproportionately high critical action rates indicate miscalibrated standards</li>
+    <li>Predictive accuracy: whose past predicted scores most closely matched actual evaluator feedback</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Reviewer calibration brief per cycle: individual known tendencies, recommended interpretation adjustments</li>
+    <li>Predictive accuracy ranking: updated post-award when actual scores are available</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Calibration brief renders in Reviews module as a pre-cycle panel visible only to the bid manager. Not surfaced to reviewers. Interpretation aid for the bid manager when dissenting scores appear.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THEME C                                 -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Theme C &mdash; Commercial and Governance Intelligence</div>
+<div class="bt">Uses GovernanceGate, RiskAssumption, Engagement, RateCard, TeamMember.</div>
+
+<div class="uc t-c"><div class="uc-num">09</div>
+  <div class="uc-title">UC9 &mdash; Gate Readiness Pre-Assessment</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: 5-7 working days before each GovernanceGate (scheduled)</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>GovernanceGate (gateType, entryCriteria[], status, riskPremiumPct)</li>
+    <li>Activity (status, outputAssurance, owner &mdash; for activities in entry criteria)</li>
+    <li>ReviewCycle (status, overallScore)</li>
+    <li>ReviewAction (severity, status &mdash; critical open actions)</li>
+    <li>Stakeholder (stakeholderType, linkedGateIds[], isActive)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Per entry criterion: current pass / fail / at-risk status with recovery assessment</li>
+    <li>Criteria failing with insufficient recovery time &mdash; gate deferral or scope narrowing decision required</li>
+    <li>Process integrity: activities showing outputAssurance: assured where reviewer and owner are the same person &mdash; conflict of interest</li>
+    <li>Governance gaps: gates with no linked approver or approver with isActive: false</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Gate readiness report to GovernanceGate record: green (met), amber (at-risk + action), red (failing + escalation), process integrity concerns</li>
+    <li>StandupActions auto-generated for each recoverable amber criterion</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Gate readiness report renders in Governance module as a pre-gate briefing panel, available 5 days before gate date. Exportable as a one-page PDF for the chair.</div></div>
+</div>
+
+<div class="uc t-c"><div class="uc-num">10</div>
+  <div class="uc-title">UC10 &mdash; Risk Register Pattern Detection and Pricing Validation</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: At Gate 3 (commercial/risk review) + on demand</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>RiskAssumption (registerType, probability, impact, status, mitigationOrValidation, impactIfWrong)</li>
+    <li>GovernanceGate (gateType: commercial_review, riskPremiumPct, decision)</li>
+    <li>Engagement (costToBid, winFeeValue, feeModel, healthStatus)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Cross-references risk register against stated risk premium: HIGH probability / HIGH impact risks with status: open at Gate 3 indicate under-priced risk</li>
+    <li>Probability-weighted impact of all open items estimates defensible premium range</li>
+    <li>Assumption validation gaps: assumptions with high impactIfWrong that are unvalidated before Gate 3 are unacknowledged price risk</li>
+    <li>Delivery vs bid risk register divergence may represent unpriced delivery risk</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Risk-to-premium consistency verdict: consistent / inconsistent / insufficient data</li>
+    <li>Defensible premium range: { min_pct, recommended_pct, max_pct } with rationale</li>
+    <li>Unvalidated assumption list requiring resolution before gate can be recommended as approve</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Risk premium analysis renders in Governance module at the commercial review gate. Decision-support panel for the approving body &mdash; data-validated challenge, not a recommendation to override commercial judgment.</div></div>
+</div>
+
+<div class="uc t-c"><div class="uc-num">11</div>
+  <div class="uc-title">UC11 &mdash; Bid Cost and Spend Forecasting Intelligence</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: Weekly + when team composition or activity effort changes</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>TeamMember (individualDayRate, isContractor, workstreams[], startDate, endDate)</li>
+    <li>RateCard (roleName, standardDayRate)</li>
+    <li>Activity (effortDays, teamSize, owner, plannedStart/End, actualStart/End)</li>
+    <li>Engagement (costToBid, winFeeValue, feeModel, healthStatus, interventions[])</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Burn rate against costToBid: at current pace, will the bid investment authorisation be exceeded before submission?</li>
+    <li>Contractor premium risk: where contractor rates exceed the standard card on critical path activities, delay compounds the premium</li>
+    <li>P&amp;L impact of scope expansions: models return impact before a commitment is made</li>
+    <li>Return on bid investment: win fee minus forecast cost at current trajectory</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Budget burn rate forecast: current spend, projected total, variance from costToBid</li>
+    <li>Contractor premium analysis: named individuals, critical path overlap, estimated exposure</li>
+    <li>P&amp;L scenario to Engagement.healthStatus and Engagement.interventions[]</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Renders in Team Manager &rarr; Spend Forecast tab as an AI analysis panel below the existing breakdown. Scenario card allows bid manager to model a proposed change and see P&amp;L impact before committing.</div></div>
+</div>
+
+<div class="uc t-c"><div class="uc-num">12</div>
+  <div class="uc-title">UC12 &mdash; Stakeholder Engagement and Gate Risk Assessment</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: 10 days before each GovernanceGate + weekly scan</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>Stakeholder (stakeholderType, linkedGateIds[], isActive)</li>
+    <li>GovernanceGate (gateType, sequence, status, approvingBody)</li>
+    <li>TeamMember (securityClearance, clearanceStatus, workstreams[])</li>
+    <li>Bid (securityClearanceTier, isRebid, incumbentName)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Gate participation gaps: no linked approver, or only approver has isActive: false &mdash; will delay the gate</li>
+    <li>Clearance mismatches: Bid.securityClearanceTier is SC or DV but TeamMember records show clearanceStatus: in_progress</li>
+    <li>Sponsor disengagement: sponsor not linked to any upcoming gate past bid midpoint &mdash; PWIN risk</li>
+    <li>Rebid complacency: isRebid: true with no new stakeholder relationship-building activity recorded</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Gate participation gap flags per GovernanceGate: missing approver, inactive approver, no reviewer linked</li>
+    <li>Clearance risk register: named individuals, affected workstreams, risk description</li>
+    <li>Sponsor engagement recommendation: StandupAction to BM workstream if disengagement detected</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Gate participation gaps render in Governance module as a pre-gate warning banner. Clearance risks render in Team Manager &rarr; Directory as a flag on the individual row. Sponsor recommendation creates a StandupAction automatically.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THEME D                                 -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Theme D &mdash; Data Ingestion and Enrichment</div>
+<div class="bt">Uses ITTDocument, ResponseSection, ComplianceRequirement, clarification chain.</div>
+
+<div class="uc t-d"><div class="uc-num">13</div>
+  <div class="uc-title">UC13 &mdash; Clarification Impact Propagation</div>
+  <div class="uc-meta">Plugin Role 3 &bull; Trigger: SAL-08 completes | /pwin:clarification-response analyse</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ResponseSection (questionText, evaluationCriteria, hurdleScore, wordLimit, lastAmended)</li>
+    <li>ComplianceRequirement (text, complianceStatus, impactedByClarification)</li>
+    <li>RiskAssumption (description, status, impactIfWrong)</li>
+    <li>Activity (SAL-07 &rarr; SAL-08 &rarr; SAL-09 chain status)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Reads all published Q&amp;A and cross-references against ResponseSection register</li>
+    <li>Identifies every section whose questionText, evaluationCriteria, wordLimit, or hurdleScore is affected</li>
+    <li>Traces which ResponseItems are in progress, which RiskAssumptions are invalidated, which activities need rework</li>
+    <li>Identifies competitor intelligence from questions not submitted by the bidding firm</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>ResponseSection.lastAmended updated for all affected sections</li>
+    <li>New RiskAssumption records for invalidated assumptions</li>
+    <li>ComplianceRequirement.impactedByClarification: true for affected requirements</li>
+    <li>Structured impact assessment to SAL-09 activity output field</li>
+    <li>StandupAction per affected workstream lead with specific instruction</li>
+    <li>Competitor intelligence brief to SAL-03 activity as an AI insight</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Impact assessment renders in Submissions module as a clarification impact banner. Each affected ResponseSection row shows an amber flag linking to the relevant Q&amp;A and recommended update action.</div></div>
+</div>
+
+<div class="uc t-d"><div class="uc-num">14</div>
+  <div class="uc-title">UC14 &mdash; ITT Amendment Detection and Risk Flagging</div>
+  <div class="uc-meta">Plugin Role 3 &bull; Trigger: New ITTDocument added with source: clarification_pack or version increments</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ResponseSection (lastAmended, evaluationMaxScore, hurdleScore, evaluationCriteria, wordLimit, questionText)</li>
+    <li>ITTDocument (version, source, receivedDate, parsedStatus)</li>
+    <li>EvaluationFramework (category weights)</li>
+    <li>ComplianceRequirement (complianceStatus, text)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Cumulative effect of multiple amendments: has the evaluation basis materially changed? If so, the original win strategy requires revisiting</li>
+    <li>Compliance status conflicts: does an amendment make a previously compliant requirement partially_compliant?</li>
+    <li>Amendment clustering: multiple amendments to the same evaluation category signal evaluator concern &mdash; a strategic signal</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Amendment impact summary to BM-01 (bid management activity)</li>
+    <li>Compliance status changes flagged for re-assessment</li>
+    <li>Win strategy review trigger: StandupAction to Bid Manager and Pursuit Director if cumulative impact is material</li>
+    <li>ResponseSection.lastAmended set for all affected sections</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Amendment log renders in ITT Ingestion module as a version history timeline. Material changes trigger a persistent notification on the Workspace home screen until acknowledged.</div></div>
+</div>
+
+<div class="uc t-d"><div class="uc-num">15</div>
+  <div class="uc-title">UC15 &mdash; Post-Submission Presentation Intelligence</div>
+  <div class="uc-meta">Plugin Role 2 &bull; Trigger: POST-01 starts | /pwin:gate-pack post-submission</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ReviewScorecard (predictedClientScore, predictedClientGradeBand, scores &mdash; from gold review)</li>
+    <li>ResponseItem (qualityScoreGap, owner, status)</li>
+    <li>ResponseSection (evaluationCriteria, hurdleScore, evaluationMaxScore)</li>
+    <li>WinTheme (statement, rationale, linkedResponseItemIds[])</li>
+    <li>ReviewAction (criterion, severity, status &mdash; unresolved or accepted at gold)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Identifies 3-5 questions evaluators will most likely probe: those with predicted score in a lower grade band or narrowly above a hurdle</li>
+    <li>For each: drafts most probable evaluator question, recommended answer, evidence to have to hand</li>
+    <li>Win themes underintegrated in the submission could be reinforced verbally &mdash; second opportunity to land them</li>
+    <li>Gold review actions marked accepted (not resolved) are known weaknesses the evaluator may probe</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Presentation preparation brief to POST-01 activity output field: Q&amp;A preparation pack with named evidence references</li>
+    <li>Win theme reinforcement recommendations: which themes to emphasise verbally and where</li>
+    <li>Rehearsal script outline to POST-02 activity as a preparation input</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Presentation brief renders in Post-Submission module linked to POST-01 and POST-02 activity cards. Structured as a rehearsal guide: question / recommended answer / evidence reference. Bid manager can annotate directly.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THEME E                                 -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Theme E &mdash; Team Performance and Quality Output</div>
+<div class="bt">Uses TeamMember, Activity ownership, ResponseItem ownership, ReviewScorecard, ReviewAction, StandupAction. <strong>Framing rule:</strong> ai_narrative must always be coaching and resourcing intelligence, not performance evaluation. Bid manager and bid director only. Requires multi-bid data for meaningful signal.</div>
+
+<div class="uc t-e"><div class="uc-num">16</div>
+  <div class="uc-title">UC16 &mdash; Individual Output Quality Profiling</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: After each ReviewCycle closes + on demand</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>ResponseItem (owner, status, all quality dimension fields)</li>
+    <li>ReviewScorecard (reviewer, scores &mdash; all 8 dimensions, averageScore &mdash; all cycles for responses owned by this person)</li>
+    <li>ReviewAction (owner, criterion, severity, status &mdash; for responses owned by this person)</li>
+    <li>TeamMember (name, role, coreRole, workstreams[])</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Recurring weakness pattern: consistent major/critical actions on the same criterion across multiple responses is systematic</li>
+    <li>Improvement trajectory: pink to gold score movement shows whether the person is responding to feedback or plateauing</li>
+    <li>Disputed action rate: frequent disputed status is a governance risk signal</li>
+    <li>Strength identification: dimensions consistently above team average &mdash; deploy on highest-mark questions in those dimensions</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Quality profile per TeamMember: recurring weakness (criterion, action_count, avg_severity, pattern), improvement trajectory (improving/plateauing/declining), coaching brief (specific and actionable), strength profile</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Profiles render in Team Manager &rarr; Directory as a coaching panel accessible only to bid manager and bid director. Not visible to the team member. Labelled &lsquo;Coaching Intelligence &mdash; for bid manager use.&rsquo;</div></div>
+</div>
+
+<div class="uc t-e"><div class="uc-num">17</div>
+  <div class="uc-title">UC17 &mdash; Reviewer Calibration and Bias Detection</div>
+  <div class="uc-meta">Plugin Role 1 &bull; <span class="fe fe-a">consolidated with UC8 &mdash; single implementation</span></div>
+  <div class="uc-section"><div class="uc-section-label">Implementation Note</div><div class="uc-section-body">This use case is identical to UC8. Single implementation covers both Theme B (proposal quality) and Theme E (team performance) requirements. See UC8 for full specification.</div></div>
+</div>
+
+<div class="uc t-e"><div class="uc-num">18</div>
+  <div class="uc-title">UC18 &mdash; StandupAction Completion Velocity and Behavioural Patterns</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: Weekly (Monday morning) + on demand</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>StandupAction (owner, dueDate, status, source, createdDate, completedDate, parentActivityCode, parentGateId) &mdash; full bid lifecycle history</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Completion velocity by person: average elapsed time between createdDate and completedDate vs. dueDate &mdash; lateness invisible on the Gantt</li>
+    <li>Escalation patterns: who escalates most, which workstreams generate most escalations, whether escalations cluster by activity type</li>
+    <li>Carry-forward patterns: actions deferred more than twice without cancellation require a bid manager decision</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Weekly behavioural pattern summary to BM workstream: completion rate by person (% on time, avg latency), escalation trend by workstream, carry-forward actions requiring decision</li>
+    <li>Deferred StandupAction records gain deferred_count field and ai_generated recommended_decision note</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Weekly summary renders on Workspace home screen as a collapsed intelligence card. Carry-forward items requiring decision render with a &lsquo;Decide&rsquo; action button opening an inline decision capture modal.</div></div>
+</div>
+
+<div class="uc t-e"><div class="uc-num">19</div>
+  <div class="uc-title">UC19 &mdash; Workstream Lead Performance Consistency</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: Weekly + when 3+ activities in a workstream show divergence</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>Workstream (owner, code, type, progressPct, timingHealth)</li>
+    <li>Activity (owner, plannedStart/End, actualStart/End, effortDays, teamSize, parallelisationType, status, outputAssurance)</li>
+    <li>TeamMember (workstreams[], coreRole)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Planned vs actual completion controlled for parallelisation type &mdash; S-type, P-type, and C-type overruns have different causes and different solutions</li>
+    <li>S-type consistently overrunning &gt; 20%: estimates are systematically low or coordination overhead exceeds teamSize assumption</li>
+    <li>C-type slipping while P-type runs on time: the lead is stretched across too many concurrent workstreams</li>
+    <li>Models implied capacity shortfall percentage from the overrun pattern</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>Capacity analysis per workstream lead: overrun pattern (activity_type, avg_overrun_pct, pattern), implied shortfall (%), specific recommendation</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Capacity analysis renders in Activity Tracker &rarr; Workstream view as an AI panel. Accepting a recommendation creates a StandupAction to address the constraint.</div></div>
+</div>
+
+<div class="uc t-e"><div class="uc-num">20</div>
+  <div class="uc-title">UC20 &mdash; SME Engagement Effectiveness</div>
+  <div class="uc-meta">Plugin Role 1 &bull; Trigger: When any SME-dependent activity becomes unblocked</div>
+  <div class="uc-section"><div class="uc-section-label">Data Consumed</div><div class="uc-section-body"><ul>
+    <li>Activity (defaultRole, actualStart/End, plannedStart/End, owner, dependencies[], dependencyThreshold, status)</li>
+    <li>ResponseItem (owner, qualityCredentials, qualityCredentialsRefs &mdash; for responses linked to SME activities)</li>
+    <li>ReviewAction (criterion: evidence | credentials, severity, owner)</li>
+    <li>ReviewScorecard (scores.evidence, scores.credentials &mdash; for responses with SME-provided content)</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">What Claude Reasons Over</div><div class="uc-section-body"><ul>
+    <li>Engagement lag: elapsed time between when an SME-dependent activity becomes unblocked and when actualStart is recorded</li>
+    <li>Contribution quality: evidence and credentials scores on linked ResponseItems reveal whether content meets evidential standard</li>
+    <li>Cross-SME patterns: which SMEs consistently produce usable first-submission content vs which consistently require major review actions</li>
+    <li>Portfolio-level insight: for firms running multiple concurrent bids, identifies SMEs whose patterns argue against assigning them to high-mark questions</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Written Back to Application</div><div class="uc-section-body"><ul>
+    <li>SME engagement report to BM workstream: engagement lag by SME (avg_lag_days, worst_case_days), contribution quality (avg_evidence_score, avg_credentials_score, major_action_count), recommended brief per SME entering next phase</li>
+  </ul></div></div>
+  <div class="uc-section"><div class="uc-section-label">Design Implication</div><div class="uc-section-body">Renders in Team Manager &rarr; Directory as an AI panel beneath each SME&rsquo;s record. Recommended brief is exportable as a one-page briefing note the bid manager can share with the SME directly.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ENTITY COVERAGE                         -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Entity Coverage Summary</div>
+<div class="bt">All 24 entities are covered across the 20 use cases. No data is collected but unanalysed.</div>
+
+<table class="tb">
+<tr><th>Entity</th><th>Use Cases</th><th>Theme(s)</th></tr>
+<tr><td>Activity</td><td>1, 2, 3, 9, 12, 13, 19, 20</td><td>A, C, D, E</td></tr>
+<tr><td>ResponseSection</td><td>4, 5, 6, 7, 13, 14, 15</td><td>B, D</td></tr>
+<tr><td>ResponseItem</td><td>4, 5, 6, 7, 15, 16</td><td>B, E</td></tr>
+<tr><td>ReviewScorecard</td><td>6, 7, 8, 15, 17</td><td>B, D, E</td></tr>
+<tr><td>ReviewAction</td><td>7, 8, 15, 16, 17</td><td>B, D, E</td></tr>
+<tr><td>ReviewCycle</td><td>7, 8, 17</td><td>B, E</td></tr>
+<tr><td>WinTheme</td><td>5, 15</td><td>B, D</td></tr>
+<tr><td>EvaluationFramework</td><td>4, 6, 14</td><td>B, D</td></tr>
+<tr><td>ClientScoringScheme</td><td>7</td><td>B</td></tr>
+<tr><td>GovernanceGate</td><td>9, 10, 12</td><td>C</td></tr>
+<tr><td>RiskAssumption</td><td>10, 13</td><td>C, D</td></tr>
+<tr><td>Engagement</td><td>10, 11</td><td>C</td></tr>
+<tr><td>TeamMember</td><td>2, 11, 12, 16, 17, 19, 20</td><td>A, C, E</td></tr>
+<tr><td>RateCard</td><td>2, 11</td><td>A, C</td></tr>
+<tr><td>Stakeholder</td><td>12</td><td>C</td></tr>
+<tr><td>StandupAction</td><td>3, 9, 13, 18</td><td>A, C, D</td></tr>
+<tr><td>ITTDocument</td><td>14</td><td>D</td></tr>
+<tr><td>ComplianceRequirement</td><td>4, 13, 14</td><td>B, D</td></tr>
+<tr><td>BidCalendar</td><td>1, 2</td><td>A</td></tr>
+<tr><td>Workstream</td><td>2, 19</td><td>A, E</td></tr>
+<tr><td>Bid</td><td>12, 14</td><td>C, D</td></tr>
+<tr><td>AIInsight</td><td>All 20</td><td>Cross-cutting</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- IMPLEMENTATION CHALLENGES               -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Implementation Challenges</div>
+
+<div class="cg c2">
+  <div class="cd a-red"><div class="cd-l">Challenge 1</div><div class="cd-t">Single-file vs Plugin Boundary</div><div class="cd-b">The bid execution HTML app is the data layer and UI. The AI use cases run in a separate plugin/service via MCP. The HTML app must expose its localStorage data to the MCP server &mdash; requires a bridge API or shared persistence layer.</div></div>
+  <div class="cd a-red"><div class="cd-l">Challenge 2</div><div class="cd-t">MCP Query Granularity</div><div class="cd-b">UC1 specifies &ldquo;never load all 79 activities at once.&rdquo; The MCP server needs filtered queries: per-workstream, per-gate, per-cycle, per-response-section. Each use case needs a defined query contract.</div></div>
+  <div class="cd a-amb"><div class="cd-l">Challenge 3</div><div class="cd-t">Scheduled Triggers</div><div class="cd-b">UC1 (weekly), UC3 (daily), UC8 (48h before review), UC12 (10 days before gate). A browser-based app has no scheduler. V1 launches all use cases as on-demand only. Scheduled execution is V2.</div></div>
+  <div class="cd a-amb"><div class="cd-l">Challenge 4</div><div class="cd-t">Context Window Management</div><div class="cd-b">Several use cases need portfolio-level reasoning (30-40 sections simultaneously). Feasible with current models but MCP query design must minimise payload while preserving reasoning completeness.</div></div>
+  <div class="cd a-blu"><div class="cd-l">Challenge 5</div><div class="cd-t">Theme E Data Maturity</div><div class="cd-b">UC16-20 require multi-bid data for reliable signal. Build data collection infrastructure in V1, surface intelligence in V2/V3 when 3+ bids per individual available.</div></div>
+  <div class="cd a-blu"><div class="cd-l">Note</div><div class="cd-t">UC8/UC17 Duplication</div><div class="cd-b">UC8 (Theme B) and UC17 (Theme E) are identical. Consolidated to single implementation under UC8.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- COMBINED ROADMAP                        -->
+<!-- ═══════════════════════════════════════ -->
+
+<div class="sh">Combined Implementation Roadmap</div>
+<div class="bt">Interleaves AI skills (from suitability assessment) with intelligence use cases. MCP server is the shared critical path.</div>
+
+<div class="cg c2">
+  <div class="cd a-gold"><div class="cd-n">1</div><div class="cd-l">Step 1 &mdash; Foundation</div><div class="cd-t">MCP Server</div><div class="cd-b">Shared infrastructure for both Layer 2 (skills) and Layer 3 (intelligence). Data access layer, filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight append-only writes.</div></div>
+  <div class="cd a-gold"><div class="cd-n">2</div><div class="cd-l">Step 2 &mdash; First Intelligence</div><div class="cd-t">UC1 (Timeline) + UC4 (Compliance)</div><div class="cd-b">Prove MCP architecture. Establish AIInsight pattern and UX conventions (RAG flags, heat maps, mitigation cards). Highest-value intelligence use cases.</div></div>
+  <div class="cd a-grn"><div class="cd-n">3</div><div class="cd-l">Step 3 &mdash; First Skills</div><div class="cd-t">Phase 1: Document Intelligence</div><div class="cd-b">ITT extraction, compliance mapping, contract analysis from suitability assessment. Highest-impact productivity use cases. Transforms first 2 weeks of bid.</div></div>
+  <div class="cd a-gold"><div class="cd-n">4</div><div class="cd-l">Step 4 &mdash; Second Intelligence</div><div class="cd-t">UC3 + UC9 + UC6</div><div class="cd-b">Standup prioritisation, gate readiness, marks allocation. Builds on proven MCP infrastructure. Daily operational + governance + scoring value.</div></div>
+  <div class="cd a-grn"><div class="cd-n">5</div><div class="cd-l">Step 5 &mdash; Second Skills</div><div class="cd-t">Phase 2: Content Generation</div><div class="cd-b">Response drafting, storyboard generation. Highest-visibility productivity use cases. Writers refine AI drafts instead of writing from scratch.</div></div>
+  <div class="cd a-blu"><div class="cd-n">6</div><div class="cd-l">Step 6 &mdash; Expansion</div><div class="cd-t">Remaining Intelligence + Skills</div><div class="cd-b">Interleaved based on customer demand and data maturity. Theme E (team performance) deferred until multi-bid data available.</div></div>
+</div>
+
+<div class="co co-g"><div class="co-l">Version</div><div class="co-t">PWIN Architect &mdash; AI Use Cases Reference | v1.0 April 2026 | BIP Management Consulting | Confidential</div></div>
+
+</body>
+</html>

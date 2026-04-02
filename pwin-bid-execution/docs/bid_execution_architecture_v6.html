@@ -1173,6 +1173,107 @@ R.build=()=>`
   <br/>— Full module definition for Evaluation &amp; Win Strategy module during build planning
   <br/>— Renumber modules and update M5 to remove extracted views
   </div></div>
+
+  <div class="co co-b"><div class="co-l">Session 13 — 2026-04-02</div><div class="co-t"><strong>What was decided:</strong>
+  <br/><br/><strong>AI Use Cases — 20 intelligence use cases designed across 5 themes</strong>
+  <br/>1. With the AI suitability assessment complete (Action 3 — 295 L3 tasks rated), the next step was designing the top-down AI use cases: what intelligence the product surfaces from data the bid manager already enters. These are complementary layers: the suitability assessment defines what AI can DO (productivity — Plugin Roles 2 &amp; 3), the use cases define what AI can SEE (intelligence — Plugin Role 1).
+  <br/><br/>2. 20 use cases designed, grouped into 5 themes. All 24 data entities covered. No data is collected but unanalysed. Full reference document saved as <strong>ai_use_cases_reference.html</strong> in the docs folder.
+
+  <br/><br/><strong>Theme A — Schedule and Delivery Intelligence</strong> (Activity spine, dependency graph, workstream structure)
+  <br/>— <strong>UC1: Preventative Timeline Analysis</strong> — Weekly + on demand. Reasons over working-day gaps (not calendar), dependency cascade, rule violations, predictive warnings for at-risk activities, critical path weighting. Writes: ActivityAIInsight with gap_working_days, rag_status, cascade_risk, downstream_impact[], mitigation_options[]. Design: RAG flag on Gantt row, mitigation options as selectable cards triggering StandupActions.
+  <br/>— <strong>UC2: Effort Reforecasting &amp; Resource Conflict Detection</strong> — Triggered when actual diverges from plan. Reforecasts remaining effort, identifies concurrent S-type activities on same person, calculates compound impact and revised bid cost. Writes: revised forecast dates (AI-owned), resource conflict register, revised cost estimate.
+  <br/>— <strong>UC3: Intelligent Standup Prioritisation</strong> — Daily 08:00 + on demand. Not a status report — a ranked action list: which actions unblock the most downstream work. Carry-forward actions deferred &gt;2× require explicit bid manager decision. Gate proximity weighting (5-day window). Writes: max 5 items ranked by impact to BM workstream, carry-forward flags.
+
+  <br/><br/><strong>Theme B — Proposal Quality and Scoring Intelligence</strong> (ResponseSection, ResponseItem, ReviewCycle, ReviewScorecard, WinTheme, EvaluationFramework)
+  <br/>— <strong>UC4: Compliance Coverage Intelligence</strong> — On demand + at each review gate. Weighted coverage risk: marks available × coverage status × days to submission. Hurdle questions receive disproportionate effort regardless of mark value. Non-compliant mandatory requirements flagged as disqualification risk. Writes: weighted risk matrix per ResponseSection, compliance gap register. Design: heat map overlay on Response Register.
+  <br/>— <strong>UC5: Win Theme Integration Audit</strong> — On demand + at SAL-06 completion. Win theme penetration across all responses. High-weighted questions with no theme = strategic gap. Theme over-concentration in low-weighted sections. Writes: coverage score per ResponseSection, portfolio-level saturation per WinTheme, ranked priority list.
+  <br/>— <strong>UC6: Marks Allocation Strategy Optimisation</strong> — At ITT ingestion or storyboard. Return on effort per response: marks available ÷ effort days. Specific recommendations: &apos;move 2 person-days from Q4.1 (5 marks, 8 days) to Q2.3 (25 marks, 4 days)&apos;. Hurdle exceptions override return calculation. Writes: efficiency score per ResponseItem, ranked reallocation table. Design: &apos;Effort Efficiency&apos; panel in Submissions.
+  <br/>— <strong>UC7: Review Quality Trajectory Analysis</strong> — After each ReviewCycle closes. Trajectory per response across pink → red → gold on 8 quality dimensions. Flatlined responses (improvement &lt;0.3 points). Critical gap: internal pass but predicted client score fails. Grade band proximity analysis. Writes: trajectory per ResponseItem, below-hurdle flags, recovery priority list.
+  <br/>— <strong>UC8: Reviewer Calibration &amp; Bias Detection</strong> — 48 hours before each ReviewCycle. Systematic dimensional bias, optimism/pessimism in predicted scores, severity calibration drift, predictive accuracy tracking. Writes: calibration brief per cycle (bid manager only). <em>Note: duplicates UC17 — consolidate to single implementation.</em>
+
+  <br/><br/><strong>Theme C — Commercial and Governance Intelligence</strong> (GovernanceGate, RiskAssumption, Engagement, RateCard, TeamMember)
+  <br/>— <strong>UC9: Gate Readiness Pre-Assessment</strong> — 5-7 working days before each gate (scheduled). Per entry criterion: pass/fail/at-risk with recovery assessment. Process integrity check (reviewer = owner conflict). Governance gaps (missing/inactive approver). Writes: gate readiness report (green/amber/red), auto-generated StandupActions for amber criteria. Design: pre-gate briefing panel, exportable one-page PDF.
+  <br/>— <strong>UC10: Risk Register Pattern Detection &amp; Pricing Validation</strong> — At Gate 3 (commercial review). Cross-references risk register against stated risk premium. Probability-weighted impact estimates defensible premium range. Unvalidated high-impact assumptions flagged. Writes: risk-to-premium consistency verdict, defensible premium range {min_pct, recommended_pct, max_pct}.
+  <br/>— <strong>UC11: Bid Cost &amp; Spend Forecasting</strong> — Weekly + on team/effort change. Burn rate against costToBid, contractor premium risk on critical path, P&amp;L impact of scope expansions, return on bid investment. Writes: budget burn forecast, contractor premium analysis, P&amp;L scenario.
+  <br/>— <strong>UC12: Stakeholder Engagement &amp; Gate Risk</strong> — 10 days before each gate + weekly. Gate participation gaps, clearance mismatches, sponsor disengagement past bid midpoint, rebid complacency. Writes: gate participation gap flags, clearance risk register, sponsor engagement StandupAction.
+
+  <br/><br/><strong>Theme D — Data Ingestion and Enrichment</strong> (ITTDocument, ResponseSection, ComplianceRequirement, clarification chain)
+  <br/>— <strong>UC13: Clarification Impact Propagation</strong> — On SAL-08 completion. Reads all published Q&amp;A, cross-references against ResponseSection register, traces affected ResponseItems, invalidated RiskAssumptions, rework activities. Identifies competitor intelligence from questions not submitted by the bidding firm. Writes: lastAmended on affected sections, new RiskAssumption records, compliance impact flags, StandupAction per affected workstream lead.
+  <br/>— <strong>UC14: ITT Amendment Detection &amp; Risk Flagging</strong> — On new ITTDocument version. Cumulative amendment effect analysis, compliance status conflict detection, amendment clustering as strategic signal. Writes: amendment impact summary, compliance status changes, win strategy review trigger if cumulative impact is material.
+  <br/>— <strong>UC15: Post-Submission Presentation Intelligence</strong> — On POST-01 start. Identifies 3-5 questions evaluators will most likely probe (lower grade band or narrowly above hurdle). Drafts probable evaluator question, recommended answer, evidence to have to hand. Gold review accepted-not-resolved actions flagged. Writes: Q&amp;A preparation pack, win theme reinforcement recommendations, rehearsal script outline.
+
+  <br/><br/><strong>Theme E — Team Performance and Quality Output</strong> (TeamMember, Activity/ResponseItem ownership, ReviewScorecard, ReviewAction, StandupAction)
+  <br/>— <strong>UC16: Individual Output Quality Profiling</strong> — After each ReviewCycle. Recurring weakness patterns, improvement trajectory, disputed action rate, strength identification. Writes: quality profile per TeamMember (coaching brief, strength profile). Design: coaching panel in Team Manager → Directory, bid manager/director only.
+  <br/>— <strong>UC17: Reviewer Calibration</strong> — Consolidated with UC8 (single implementation).
+  <br/>— <strong>UC18: StandupAction Completion Velocity</strong> — Weekly Monday. Completion velocity by person, escalation patterns, carry-forward patterns. Writes: weekly behavioural summary to BM workstream, deferred_count and recommended_decision on deferred actions.
+  <br/>— <strong>UC19: Workstream Lead Performance Consistency</strong> — Weekly + on divergence trigger. Planned vs actual controlled for parallelisation type (S/P/C-type have different causes). Models implied capacity shortfall. Writes: capacity analysis per workstream lead.
+  <br/>— <strong>UC20: SME Engagement Effectiveness</strong> — On SME-dependent activity unblocked. Engagement lag, contribution quality (evidence/credentials scores), cross-SME patterns. Writes: SME engagement report with recommended briefing note.
+
+  <br/><br/><em>Theme E framing rule: ai_narrative field for UC16-20 must always be framed as coaching and resourcing intelligence, not performance evaluation. Restricted to bid manager and bid director roles only. Meaningful signal requires data across 3+ bids per individual — V2/V3 capability, not launch feature.</em>
+
+  <br/><br/><strong>Key design rule</strong>
+  <br/>3. Claude writes only to AI-owned fields. The MCP server rejects any write to bid manager-owned fields at the API layer. AIInsight records are always append-only — never updated or deleted. Each analysis run creates a new record with a generated_at timestamp. Field-level permission model: every field in the data model tagged as owner: bid_manager or owner: ai, enforced at MCP schema level.
+
+  <br/><br/><strong>Three-layer product architecture</strong>
+  <br/>4. The AI use cases revealed a clear three-layer architecture that separates concerns:
+  <br/><br/><strong>Layer 1: Bid Execution App (HTML)</strong> — Data model (24 entities, ~280 fields). Bid manager enters data through methodology activities. Single self-contained HTML file. localStorage persistence.
+  <br/><strong>Layer 2: AI Skills (from suitability assessment)</strong> — Invoked by bid manager: &quot;help me draft this response.&quot; Reads external data + internal data → produces content. Plugin Roles 2 (output generation) &amp; 3 (data extraction/ingestion bridge). 5-phase implementation roadmap (document intelligence → content generation → research → financial modelling → risk consolidation).
+  <br/><strong>Layer 3: AI Intelligence (these 20 use cases)</strong> — Runs automatically on schedule or trigger. Reads ONLY internal data (already captured by bid manager). Writes to AI-owned fields + AIInsight records. Plugin Role 1 (in-application intelligence). Zero additional data entry burden — extracts intelligence from existing data.
+  <br/><br/>The MCP server is the shared infrastructure between Layers 2 and 3 — it provides the data access, query filtering, and field-level permission enforcement that both skill invocations and scheduled intelligence use.
+
+  <br/><br/><strong>Build priority order (intelligence use cases)</strong>
+  <br/>5. Implementation sequence based on value, data availability, and architectural dependency:
+  <br/><br/><em>Priority 1:</em> <strong>UC1 (Timeline Analysis) + UC4 (Compliance Coverage)</strong> — Highest-value use cases. Prove the MCP architecture, establish AIInsight write pattern. UC1 provides the MCP foundation all other use cases depend on.
+  <br/><em>Priority 2:</em> <strong>UC3 (Standup Prioritisation) + UC9 (Gate Readiness)</strong> — Highest daily operational value and governance value. Use existing data contracts from Priority 1.
+  <br/><em>Priority 3:</em> <strong>UC6 (Marks Allocation)</strong> — Highest direct score improvement value. Cross-entity reasoning across ResponseSection + ResponseItem + EvaluationFramework.
+  <br/><em>Priority 4:</em> <strong>UC5, UC7, UC13</strong> — Proposal quality and clarification chain. Moderate cross-entity complexity.
+  <br/><em>Priority 5:</em> <strong>UC10, UC11</strong> — Commercial intelligence. Requires Engagement and RateCard data populated.
+  <br/><em>Priority 6:</em> <strong>UC14, UC15</strong> — Amendment detection and presentation intelligence. Document diff/comparison, content generation — harder implementation.
+  <br/><em>Priority 7:</em> <strong>UC2, UC8, UC12</strong> — Secondary intelligence layer.
+  <br/><em>Priority 8:</em> <strong>UC16-20</strong> — Team performance. Requires bid history data across multiple bids for meaningful signal. V2/V3 capability.
+
+  <br/><br/><strong>Implementation challenges identified</strong>
+  <br/>6. Five challenges to resolve during MCP server design:
+  <br/><br/>(a) <strong>Single-file vs plugin boundary:</strong> The bid execution HTML app is the data layer and UI. The AI use cases run in a separate plugin/service that reads and writes to that data via MCP. These are different products sharing a data model. The HTML app must expose its localStorage data to the MCP server — this requires either a bridge API or a shared persistence layer.
+  <br/><br/>(b) <strong>MCP query granularity:</strong> UC1 specifies &quot;never load all 79 activities at once.&quot; The MCP server needs filtered queries: per-workstream, per-gate, per-cycle, per-response-section. Query design determines context window efficiency. Each use case needs a defined query contract — which entities, which filters, which fields.
+  <br/><br/>(c) <strong>Scheduled triggers require a runtime:</strong> UC1 (weekly), UC3 (daily 08:00), UC8 (48 hours before review), UC12 (10 days before gate). A single HTML file in a browser has no scheduler. Options: desktop agent, server-side scheduler, or user-triggered with recommended cadence. Scheduled execution is a V2 capability — V1 launches all use cases as on-demand only.
+  <br/><br/>(d) <strong>Context window management:</strong> Several use cases need portfolio-level reasoning (UC4 needs all ResponseSections + EvaluationFramework + ComplianceRequirements simultaneously; UC6 needs all sections + effort data). With 30-40 response sections plus evaluation criteria, the context is substantial but feasible with current models. MCP query design must minimise payload while preserving reasoning completeness.
+  <br/><br/>(e) <strong>Theme E data maturity:</strong> UC16-20 generate individual-level performance data. On a single bid, sample size is too small for reliable signal. These use cases should not be surfaced until the product has data from 3+ bids per individual. Build the data collection infrastructure in V1, surface the intelligence in V2/V3.
+
+  <br/><br/><strong>Combined implementation roadmap (skills + intelligence)</strong>
+  <br/>7. Interleaved build sequence combining AI suitability assessment phases with intelligence use case priorities:
+  <br/><br/><em>Step 1: MCP Server</em> — Shared infrastructure for both Layer 2 (skills) and Layer 3 (intelligence). Data access layer, filtered queries, field-level permission model, AIInsight append-only writes.
+  <br/><em>Step 2: UC1 (Timeline) + UC4 (Compliance)</em> — First intelligence use cases. Prove MCP architecture. Establish AIInsight pattern and UX conventions (RAG flags, heat maps, mitigation cards).
+  <br/><em>Step 3: Phase 1 AI Skills (Document Intelligence)</em> — ITT extraction, compliance mapping, contract analysis from suitability assessment. Highest-impact productivity use cases.
+  <br/><em>Step 4: UC3 (Standup) + UC9 (Gate Readiness) + UC6 (Marks Allocation)</em> — Second wave intelligence. Builds on proven MCP infrastructure.
+  <br/><em>Step 5: Phase 2 AI Skills (Content Generation)</em> — Response drafting, storyboard generation. Highest-visibility productivity use cases.
+  <br/><em>Step 6: Remaining intelligence + skills</em> — Interleaved based on customer demand and data maturity.
+
+  <br/><br/><strong>AI suitability assessment — completed (Action 3)</strong>
+  <br/>8. Full assessment completed across all 295 L3 tasks. Results: High suitability 80 tasks (27%), Medium 138 tasks (47%), Low 78 tasks (26%). AI could reduce bid elapsed time by 30-40% and bid cost by 25-35%. Top applications: ITT requirements extraction (60-70% time saving), AI-assisted response drafting (40-50%), evaluation criteria extraction (60-80%), automated compliance mapping (60-70%). 5-phase skills implementation roadmap defined. Full details in ai_suitability_assessment.md and ai_suitability_assessment.xlsx.
+
+  <br/><br/><strong>What happens next:</strong>
+  <br/><br/><strong>AI effort reduction — computed bottom-up</strong>
+  <br/>9. Rebuilt the AI suitability assessment Excel with actual effort data from the gold standard methodology. Every activity&apos;s effortDays mapped to its L3 tasks. Task-level AI time reduction % applied to task effort share to compute actual person-days saved. New &quot;Effort Reduction Summary&quot; sheet added to the Excel workbook.
+  <br/><br/>Results: 505 total person-days (methodology baseline) → 172.3 AI days saved → <strong>34.1% overall effort reduction</strong>. Highest-impact workstreams: SAL (43.1%), PRD (41.8%), BM (39.3%). This validates the original qualitative estimate of 25-35%.
+  <br/><br/>Key methodological note: 505 days is methodology effort (productive task time). Real-world bid cost for a complex services opportunity is ~2,000 person-days (4× multiplier) due to team reservation model — people are costed by timeline, not by task.
+
+  <br/><br/><strong>Four-layer AI value proposition</strong>
+  <br/>10. The AI value case has four distinct layers, each with different economics. Full positioning document saved as <strong>ai_value_proposition.md</strong> in the docs folder.
+  <br/><br/><em>Layer 1 — Task Efficiency:</em> 34% less person-day effort per bid. 172 of 505 days saved. Computed bottom-up from 295 L3 task assessments against activity effort allocations. This is the weakest layer commercially — it understates real economics because it measures productive task time, not bid cost.
+  <br/><br/><em>Layer 2 — Timeline Compression:</em> AI compresses the critical path, releasing the reserved bid team earlier. Real bid cost is team size × duration × day rates, not sum of task effort. If AI compresses a 10-week bid by 2-3 weeks, that eliminates 150-225 person-days of reservation cost per bid (£90k-180k). This is the correct unit of measurement for bid economics.
+  <br/><br/><em>Layer 3 — Team Fungibility:</em> AI as institutional memory reduces key-person dependency. New team members onboard in days not weeks. Specialists can work across 2-3 concurrent bids because AI maintains context between sessions. Mid-bid team changes become managed transitions, not crises. For firms with large pursuit portfolios, the same pool of specialists covers 30% more concurrent bids.
+  <br/><br/><em>Layer 4 — Decision Velocity (highest value):</em> AI brings informed pursuit decisions from month 3 to week 1. Today, go/no-go gates happen with incomplete information — the team hasn&apos;t yet analysed requirements, contract terms, competitive positioning, or solution feasibility. Everything passes because &quot;we need to get up to speed first.&quot; With AI, Gate 1 has: full ITT analysis, compliance matrix, contract review, competitive landscape, win strategy draft, cost envelope, and solution feasibility signals. Bad pursuits are killed in week 1, not month 3. Cost avoidance: 400-600 person-days per early kill (£240k-480k). A firm killing 3-5 pursuits early per year saves £720k-2.4m annually. <strong>This dwarfs all other value layers.</strong>
+
+  <br/><br/><strong>What happens next:</strong>
+  <br/>— MCP server architecture design: data access patterns, query contracts per use case, field-level permission model, AIInsight entity schema, bridge from localStorage to MCP
+  <br/>— Action 2: Build role-based agent personas from RACI data (builds on completed Action 3)
+  <br/>— Validate AI suitability assessment: 295 L3 task ratings and effort allocations per activity
+  <br/>— Full module definition for Evaluation &amp; Win Strategy module during build planning
+  <br/>— Renumber modules and update M5 to remove extracted views
+  <br/>— Action 4: Competitive dialogue methodology — multi-round iterative activation mode
+  <br/>— Action 5: Selection Questionnaire (SQ) stage methodology
+  </div></div>
 `;
 
 render();
