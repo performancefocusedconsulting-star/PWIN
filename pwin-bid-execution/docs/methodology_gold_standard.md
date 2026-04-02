@@ -551,6 +551,11 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SAL',
   phase: 'DEV',
   role: 'Capture Lead',
+  // ARCHETYPE NOTES:
+  // Technology/Digital: Minor — incumbent is a technology provider, not a service operator.
+  //   L2.3 transformational disruption may emphasise different technologies. Same structure.
+  // Consulting/Advisory: Minor — incumbent may be another consultancy. Stickiness is about
+  //   relationships and knowledge, not TUPE/assets. Same structure, different emphasis.
   output: 'Incumbent performance assessment',
   dependencies: [],                        // Day-1 start — can run in parallel with SAL-01
   effortDays: 5,
@@ -1149,6 +1154,11 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SAL',
   phase: 'DEV',
   role: 'Bid Manager',                     // Shifts from Capture Lead — this is bid mechanics, not sales intelligence
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED emphasis — evaluation is typically 60-70% team quality
+  //   (CVs, experience, credentials). Score gap analysis shifts from solution capability gaps
+  //   to team credential gaps. L2.2 scoring strategy must reflect CV-weighted evaluation.
+  //   Guidance text should note: "For consulting, the team IS the primary scoring dimension."
   output: 'Evaluation criteria matrix with scoring approach',
   dependencies: ['SAL-04'],
   effortDays: 3,
@@ -1421,6 +1431,12 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SAL',
   phase: 'DEV',
   role: 'Bid Director',                    // Elevated — this is the strategic go/no-go, not operational
+  // ARCHETYPE NOTES:
+  // Technology/Digital: Minor — L2.3 consortium strategy may be sole bidder or tech partner,
+  //   not subcontractor consortium. Work breakdown is simpler.
+  // Consulting/Advisory: Minor — L2.3 consortium uses associate networks, not formal
+  //   subcontracting. Partnership model is lighter. Work breakdown focuses on team
+  //   composition, not scope allocation between organisations.
   output: 'Capture plan (locked) — METHODOLOGY GATE',
   dependencies: ['SAL-04', 'SAL-05', 'SAL-10'],
   effortDays: 3,
@@ -7071,6 +7087,9 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'LEG',
   phase: 'DEV',
   role: 'Legal Lead',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: Minor — insurance requirements typically lighter (PI dominant,
+  //   no PL/EL for service delivery). Same process, reduced scope.
   output: 'Insurance requirements assessment',
   dependencies: [],                        // Day-1 start
   effortDays: 3,
@@ -7191,6 +7210,9 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'LEG',
   phase: 'DEV',
   role: 'Legal Lead',
+  // ARCHETYPE NOTES:
+  // Technology/Digital: DEACTIVATED — no TUPE in technology delivery.
+  // Consulting/Advisory: DEACTIVATED — no TUPE in consulting engagements.
   output: 'TUPE compliance assessment',
   dependencies: ['SOL-06'],
   effortDays: 5,
@@ -7318,6 +7340,9 @@ Use this checklist before marking any activity as mapping-complete:
 {
   id: 'LEG-05',
   name: 'Data protection & security review',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: Minor — typically lighter data protection scope. Advisory doesn't
+  //   usually process large volumes of personal data. Still relevant for some engagements.
   workstream: 'LEG',
   phase: 'DEV',
   role: 'Legal Lead',
@@ -7454,6 +7479,9 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'LEG',
   phase: 'DEV',
   role: 'Legal Lead',
+  // ARCHETYPE NOTES:
+  // Technology/Digital: Minor — may include technology licensing agreements alongside subcontracts.
+  // Consulting/Advisory: Minor — associate agreements, not formal subcontracts. Lighter review.
   output: 'Subcontract terms summary',
   dependencies: ['SUP-03', 'LEG-01'],
   effortDays: 5,
@@ -8446,6 +8474,11 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SUP',
   phase: 'DEV',
   role: 'Supply Chain Lead',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — partner model is associate network (individual consultants
+  //   or small specialist firms), not large subcontractors. Due diligence is lighter.
+  //   Selection criteria shift to individual expertise, not organisational capability.
+  //   Guidance: "For consulting, partners are associates — assess individual expertise and availability."
   output: 'Partner shortlist with rationale',
   dependencies: ['SOL-01'],
   effortDays: 5,
@@ -8578,6 +8611,9 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SUP',
   phase: 'DEV',
   role: 'Supply Chain Lead',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — associates contribute CVs and methodology input, not
+  //   solution design components. Briefing is lighter. Integration is about team composition.
   output: 'Partner solution inputs pack',
   dependencies: ['SUP-01', 'SOL-03'],
   effortDays: 10,
@@ -8701,6 +8737,10 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SUP',
   phase: 'DEV',
   role: 'Supply Chain Lead',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — associate agreements, not teaming agreements. Much simpler
+  //   terms: day rate, availability, expenses, IP (usually straightforward). No exclusivity
+  //   typically. Much lighter legal complexity than formal subcontracting.
   output: 'Signed teaming agreements',
   dependencies: ['SUP-01'],
   effortDays: 15,
@@ -9024,6 +9064,9 @@ Use this checklist before marking any activity as mapping-complete:
   workstream: 'SUP',
   phase: 'DEV',
   role: 'Supply Chain Lead',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — associate terms, not back-to-back subcontracts. Flow-down
+  //   is much simpler. May not need formal back-to-back — a simple associate engagement letter.
   output: 'Back-to-back terms agreed',
   dependencies: ['SUP-03', 'LEG-06', 'COM-04'],
   effortDays: 5,
@@ -9393,6 +9436,11 @@ Use this checklist before marking any activity as mapping-complete:
 {
   id: 'BM-07', name: 'Quality management approach', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
   output: 'Quality plan: evaluation weighting analysis, page budgets, scoring strategy', dependencies: ['SAL-05', 'BM-01'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED emphasis — quality plan shifts. Evaluation emphasis is on
+  //   team quality, methodology credibility, and past performance rather than solution depth.
+  //   Review criteria should assess CV quality, methodology clarity, and evidence relevance.
+  //   Page budgets may allocate more space to team credentials sections.
 
   inputs: [
     { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Where the marks are — drives page budgets and quality focus' },
@@ -9501,6 +9549,11 @@ Use this checklist before marking any activity as mapping-complete:
   id: 'BM-10', name: 'Storyboard development & sign-off', workstream: 'BM', phase: 'PROD', role: 'Bid Manager',
   output: 'Approved storyboard — METHODOLOGY GATE', dependencies: ['SAL-06', 'SAL-05', 'SOL-11'], effortDays: 5, teamSize: 2, parallelisationType: 'P',
   // METHODOLOGY GATE — storyboard must be approved before section drafting (PRD-02) begins.
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — storyboard structure is fundamentally different.
+  //   CV-led sections, methodology-led sections, not solution-narrative sections.
+  //   Writer briefs focus on team credentials and methodology description, not solution depth.
+  //   Guidance: "For consulting, storyboard around: team, methodology, case studies, approach."
 
   inputs: [
     { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)', note: 'The locked solution to structure the response around' },
@@ -9812,6 +9865,11 @@ Use this checklist before marking any activity as mapping-complete:
 ```javascript
 {
   id: 'PRD-02', name: 'Section drafting & content assembly', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — writing shifts from solution narrative to methodology
+  //   description, team credentials, case studies. Executive summary is approach-led.
+  //   Writers produce different types of content — less technical depth, more methodology
+  //   credibility and team evidence.
   output: 'Draft response sections', dependencies: ['PRD-05', 'SOL-11'], effortDays: 60, teamSize: 4, parallelisationType: 'P',
   // Note: 60 person-days, team of 4 — the largest production activity.
   // Writers produce drafts against the pink-reviewed storyboard briefs.
@@ -9859,6 +9917,10 @@ Use this checklist before marking any activity as mapping-complete:
 ```javascript
 {
   id: 'PRD-03', name: 'Evidence, case studies & CV assembly', workstream: 'PRD', phase: 'PROD', role: 'Bid Coordinator',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — evidence pack is CV-dominated. Case studies focus on
+  //   advisory outcomes, not service delivery. The assembly task is fundamentally "package
+  //   the CVs and case studies" — the team IS the evidence.
   output: 'Evidence pack', dependencies: ['SUP-05', 'SOL-10'], effortDays: 16, teamSize: 2, parallelisationType: 'P',
 
   inputs: [
@@ -9897,6 +9959,10 @@ Use this checklist before marking any activity as mapping-complete:
 ```javascript
 {
   id: 'PRD-04', name: 'Pricing schedules & commercial response', workstream: 'PRD', phase: 'PROD', role: 'Commercial Lead',
+  // ARCHETYPE NOTES:
+  // Technology/Digital: MODIFIED — milestone-based pricing schedules, not annual service charge.
+  // Consulting/Advisory: MODIFIED — rate card / day-rate schedules, much simpler pricing documents.
+  //   Commercial narrative is lighter — "here are our rates" not complex pricing explanation.
   output: 'Pricing response documents', dependencies: ['COM-06'], effortDays: 5, teamSize: 1, parallelisationType: 'S',
   // Note: COM-06 locks the pricing model and populates schedules.
   // PRD-04 packages them for submission — formatting, compliance check, assembly with the rest of the response.
@@ -10496,6 +10562,9 @@ Use this checklist before marking any activity as mapping-complete:
 ```javascript
 {
   id: 'POST-05', name: 'BAFO preparation & revised pricing', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
+  // ARCHETYPE NOTES:
+  // Consulting/Advisory: MODIFIED — BAFO is typically "reduce your day rates." Very simple.
+  //   No solution rework. Strategy is: how far can we reduce rates while maintaining margin?
   output: 'Revised pricing model, updated solution elements', dependencies: ['POST-04'], effortDays: 10, teamSize: 2, parallelisationType: 'P',
 
   inputs: [
