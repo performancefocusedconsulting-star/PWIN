@@ -71,12 +71,15 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 
 <div class="hdr">
   <div class="hdr-brand">PWIN Architect</div>
-  <div class="hdr-sub">Bid Execution &mdash; AI Use Cases Reference &bull; v1.0 &bull; April 2026</div>
+  <div class="hdr-sub">Bid Execution &mdash; AI Use Cases Reference &bull; v1.1 &bull; April 2026</div>
 </div>
 
 <div class="sl">Design Reference</div>
 <div class="st">AI Use Cases &mdash; Complete Reference</div>
-<div class="sd">20 use cases derived from the 24-entity, 280-field data model. Every entity is covered. No data is collected but unanalysed. This document is a direct design input to Claude Code for the Bid Execution product and the PWIN Architect Plugin.</div>
+<div class="sd">20 use cases derived from the 24-entity, 280-field data model. Every entity is covered. No data is collected but unanalysed. This document is the authoritative specification for what each insight skill reasons over, what it writes back, and its UX implications.</div>
+
+<div class="co co-b"><div class="co-l">Architecture Note &mdash; Session 14 (2026-04-02)</div><div class="co-t"><strong>Unified Skill Model:</strong> These 20 use cases are implemented as <strong>insight skills within capability-based agents</strong>, not as a separate &ldquo;intelligence layer.&rdquo; Each use case is a skill &mdash; a Claude API call with a specific prompt, MCP tool access, and AIInsight output schema &mdash; identical in implementation to the productivity skills (ITT extraction, response drafting, etc.) derived from the AI suitability assessment. The difference is trigger type (on-demand/scheduled vs human-invoked) and data direction (reads internal data only vs reads uploaded documents). See <code>pwin_architect_plugin_architecture.md</code> Section 7 for the full rationale.
+<br/><br/><strong>Agent mapping:</strong> UC1-7, UC9, UC12 &rarr; Agent 3 (Strategy &amp; Scoring). UC10-11 &rarr; Agent 4 (Commercial &amp; Financial). UC13-14 &rarr; Agent 1 (Document Intelligence). UC15 &rarr; Agent 5 (Content &amp; Response Drafting). UC8 &rarr; Agent 6 (Solution &amp; Delivery). UC16-20 &rarr; Deferred (V2/V3, requires multi-bid data).</div></div>
 
 <div class="co co-g"><div class="co-l">Key Rule</div><div class="co-t">Claude writes only to AI-owned fields. The MCP server rejects any write to bid manager-owned fields at the API layer. AIInsight records are always append-only &mdash; never updated or deleted. Each analysis run creates a new record with a generated_at timestamp.</div></div>
 
@@ -104,19 +107,19 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 </table>
 
 <!-- ═══════════════════════════════════════ -->
-<!-- THREE-LAYER ARCHITECTURE                -->
+<!-- UNIFIED ARCHITECTURE                    -->
 <!-- ═══════════════════════════════════════ -->
 
-<div class="sh">Three-Layer Product Architecture</div>
-<div class="bt">The AI use cases and AI suitability assessment form two complementary layers on top of the bid execution app.</div>
+<div class="sh">Product Architecture &mdash; Unified Skill Model</div>
+<div class="bt">All AI capabilities &mdash; whether extracting documents, drafting responses, or analysing timeline risk &mdash; are implemented as skills within six capability-based agents. The difference between skill types is configuration, not infrastructure.</div>
 
 <div class="cg c3">
-  <div class="cd a-blu"><div class="cd-n">1</div><div class="cd-l">Layer 1</div><div class="cd-t">Bid Execution App</div><div class="cd-b">Data model: 24 entities, ~280 fields. Bid manager enters data through methodology activities. Single self-contained HTML file. localStorage persistence. This is the data layer and UI.</div></div>
-  <div class="cd a-gold"><div class="cd-n">2</div><div class="cd-l">Layer 2</div><div class="cd-t">AI Skills (Productivity)</div><div class="cd-b">Invoked by bid manager: &ldquo;help me draft this response.&rdquo; Reads external data + internal data &rarr; produces content. Plugin Roles 2 &amp; 3. From the AI suitability assessment &mdash; 5-phase implementation roadmap.</div></div>
-  <div class="cd a-grn"><div class="cd-n">3</div><div class="cd-l">Layer 3</div><div class="cd-t">AI Intelligence (Supervisory)</div><div class="cd-b">Runs automatically on schedule or trigger. Reads ONLY internal data already captured. Writes to AI-owned fields + AIInsight records. Plugin Role 1. These 20 use cases. Zero additional data entry burden.</div></div>
+  <div class="cd a-blu"><div class="cd-n">1</div><div class="cd-l">Bid Execution App</div><div class="cd-t">Data &amp; UI Layer</div><div class="cd-b">Data model: 24 entities, ~280 fields. Bid manager enters data through methodology activities. Single self-contained HTML file. localStorage persistence. The data source for all skills.</div></div>
+  <div class="cd a-gold"><div class="cd-n">2</div><div class="cd-l">Six Agents &mdash; ~40 Skills</div><div class="cd-t">Productivity + Insight Skills</div><div class="cd-b">Six capability-based agents, each owning a library of skills. Productivity skills (human-invoked, produce deliverables) and insight skills (on-demand/scheduled, write AIInsight records) share the same implementation pattern: prompt + MCP tools + Claude API call.</div></div>
+  <div class="cd a-grn"><div class="cd-n">3</div><div class="cd-l">MCP Server</div><div class="cd-t">Shared Infrastructure</div><div class="cd-b">Data access layer with filtered queries. Field-level permission enforcement (owner: bid_manager | ai). AIInsight append-only writes. Serves all agents and all skill types identically.</div></div>
 </div>
 
-<div class="co co-v"><div class="co-l">Shared Infrastructure</div><div class="co-t">The MCP server is the shared infrastructure between Layers 2 and 3. It provides data access, filtered query contracts, and field-level permission enforcement (owner: bid_manager | ai) that both skill invocations and scheduled intelligence use.</div></div>
+<div class="co co-v"><div class="co-l">Unified Skill Model</div><div class="co-t">The 20 insight skills in this document and the ~25 productivity skills from the AI suitability assessment are implemented identically. Both use the same MCP server, the same Claude API, and the same agent configurations. The distinction is product design (who triggers it, what it reads, what it produces), not engineering. See <code>pwin_architect_plugin_architecture.md</code> Section 7 for the full rationale.</div></div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- THEME A                                 -->
@@ -635,19 +638,19 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 <!-- COMBINED ROADMAP                        -->
 <!-- ═══════════════════════════════════════ -->
 
-<div class="sh">Combined Implementation Roadmap</div>
-<div class="bt">Interleaves AI skills (from suitability assessment) with intelligence use cases. MCP server is the shared critical path.</div>
+<div class="sh">Implementation Roadmap &mdash; By Agent</div>
+<div class="bt">All skills (productivity + insight) are built within their parent agent. MCP server is the shared critical path. Each phase delivers both productivity and insight skills together.</div>
 
 <div class="cg c2">
-  <div class="cd a-gold"><div class="cd-n">1</div><div class="cd-l">Step 1 &mdash; Foundation</div><div class="cd-t">MCP Server</div><div class="cd-b">Shared infrastructure for both Layer 2 (skills) and Layer 3 (intelligence). Data access layer, filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight append-only writes.</div></div>
-  <div class="cd a-gold"><div class="cd-n">2</div><div class="cd-l">Step 2 &mdash; First Intelligence</div><div class="cd-t">UC1 (Timeline) + UC4 (Compliance)</div><div class="cd-b">Prove MCP architecture. Establish AIInsight pattern and UX conventions (RAG flags, heat maps, mitigation cards). Highest-value intelligence use cases.</div></div>
-  <div class="cd a-grn"><div class="cd-n">3</div><div class="cd-l">Step 3 &mdash; First Skills</div><div class="cd-t">Phase 1: Document Intelligence</div><div class="cd-b">ITT extraction, compliance mapping, contract analysis from suitability assessment. Highest-impact productivity use cases. Transforms first 2 weeks of bid.</div></div>
-  <div class="cd a-gold"><div class="cd-n">4</div><div class="cd-l">Step 4 &mdash; Second Intelligence</div><div class="cd-t">UC3 + UC9 + UC6</div><div class="cd-b">Standup prioritisation, gate readiness, marks allocation. Builds on proven MCP infrastructure. Daily operational + governance + scoring value.</div></div>
-  <div class="cd a-grn"><div class="cd-n">5</div><div class="cd-l">Step 5 &mdash; Second Skills</div><div class="cd-t">Phase 2: Content Generation</div><div class="cd-b">Response drafting, storyboard generation. Highest-visibility productivity use cases. Writers refine AI drafts instead of writing from scratch.</div></div>
-  <div class="cd a-blu"><div class="cd-n">6</div><div class="cd-l">Step 6 &mdash; Expansion</div><div class="cd-t">Remaining Intelligence + Skills</div><div class="cd-b">Interleaved based on customer demand and data maturity. Theme E (team performance) deferred until multi-bid data available.</div></div>
+  <div class="cd a-gold"><div class="cd-n">1</div><div class="cd-l">Phase 2 &mdash; Foundation</div><div class="cd-t">MCP Server</div><div class="cd-b">Shared infrastructure for all six agents. Data access layer, filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight append-only writes.</div></div>
+  <div class="cd a-grn"><div class="cd-n">2</div><div class="cd-l">Phase 3 &mdash; Agents 1 + 3</div><div class="cd-t">Document Intelligence + First Insight Skills</div><div class="cd-b">Agent 1: ITT extraction, compliance mapping, contract analysis. Agent 3: UC1 (Timeline) + UC4 (Compliance). Proves both skill types end-to-end. Establishes AIInsight pattern and UX conventions.</div></div>
+  <div class="cd a-gold"><div class="cd-n">3</div><div class="cd-l">Phase 4 &mdash; Agents 3 + 5</div><div class="cd-t">Expanded Insight + Content Drafting</div><div class="cd-b">Agent 3: UC3 (Standup) + UC9 (Gate Readiness) + UC6 (Marks Allocation). Agent 5: Response drafting, storyboard generation, evidence compilation, UC15 (Presentation).</div></div>
+  <div class="cd a-grn"><div class="cd-n">4</div><div class="cd-l">Phase 5 &mdash; Agents 2 + 4</div><div class="cd-t">Market Intelligence + Commercial</div><div class="cd-b">Agent 2: Client profiling, competitor analysis, incumbent assessment. Agent 4: Cost modelling, pricing, UC10 (Risk/Pricing) + UC11 (Bid Cost). Includes recurring scheduled operation for Agent 2.</div></div>
+  <div class="cd a-blu"><div class="cd-n">5</div><div class="cd-l">Phase 6 &mdash; Agent 6 + Remaining</div><div class="cd-t">Solution &amp; Delivery + Expansion</div><div class="cd-b">Agent 6: Operating model, staffing, transition, UC8 (Reviewer Calibration). Remaining insight skills: UC5, UC7, UC2, UC12, UC13, UC14. Interleaved based on demand.</div></div>
+  <div class="cd a-amb"><div class="cd-n">6</div><div class="cd-l">V2/V3 &mdash; Deferred</div><div class="cd-t">Team Performance (UC16&ndash;20)</div><div class="cd-b">Requires multi-bid data for meaningful signal. Build data collection in V1, surface insight skills when 3+ bids per individual available.</div></div>
 </div>
 
-<div class="co co-g"><div class="co-l">Version</div><div class="co-t">PWIN Architect &mdash; AI Use Cases Reference | v1.0 April 2026 | BIP Management Consulting | Confidential</div></div>
+<div class="co co-g"><div class="co-l">Version</div><div class="co-t">PWIN Architect &mdash; AI Use Cases Reference | v1.1 April 2026 | BIP Management Consulting | Confidential | Updated Session 14: unified skill model, agent mapping, revised roadmap</div></div>
 
 </body>
 </html>

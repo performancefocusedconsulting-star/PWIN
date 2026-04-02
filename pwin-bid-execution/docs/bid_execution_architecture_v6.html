@@ -1274,6 +1274,72 @@ R.build=()=>`
   <br/>— Action 4: Competitive dialogue methodology — multi-round iterative activation mode
   <br/>— Action 5: Selection Questionnaire (SQ) stage methodology
   </div></div>
+
+  <div class="co co-b"><div class="co-l">Session 14 — 2026-04-02</div><div class="co-t"><strong>What was decided:</strong>
+
+  <br/><br/><strong>AI Suitability Assessment — practitioner validated</strong>
+  <br/>1. Practitioner reviewed all 296 L3 task AI ratings in the assessment Excel. 24 tasks received detailed notes describing how the AI would actually work in practice — the real-world workflow, not the theoretical capability. Ratings broadly confirmed. Key insight: the dominant execution pattern across all high-value tasks is Agent + Skill + Proforma/Template — AI agent with defined instructions ingests documents, synthesises output into a pre-designed template, delivers to bid library for human review.
+
+  <br/><br/><strong>Capability-based agent architecture replaces persona-based agents</strong>
+  <br/>2. Bottom-up analysis of 296 tasks revealed that agents should cluster by <strong>what the AI does</strong> (extraction, research, analysis, modelling, drafting, design) not by <strong>who uses the output</strong> (bid manager, pursuit director, etc.). The v1.4 five persona-routed agents (bid-manager, pursuit-director, proposal-author, commercial, stakeholder) are retired. Replaced by six capability-based agents:
+  <br/><br/>— <strong>Agent 1: Document Intelligence</strong> — ITT extraction, compliance mapping, contract analysis. 22 tasks, 17 High, 63% avg reduction. Phase 1 — foundation agent.
+  <br/>— <strong>Agent 2: Market &amp; Competitive Intelligence</strong> — client profiling, competitors, incumbent analysis. 31 tasks, 18 High, 72% avg reduction. Phase 3. Design note: runs on recurring schedule outside individual bids.
+  <br/>— <strong>Agent 3: Strategy &amp; Scoring Analyst</strong> — evaluation frameworks, marks concentration, win themes, PWIN. 20 tasks, 12 High, 58% avg reduction. Phase 1.
+  <br/>— <strong>Agent 4: Commercial &amp; Financial Modelling</strong> — cost models, pricing scenarios, risk premium. 31 tasks, 10 High, 43% avg reduction. Phase 4-5.
+  <br/>— <strong>Agent 5: Content &amp; Response Drafting</strong> — response drafts, storyboards, evidence, governance packs. 56 tasks, 4 High, 40% avg reduction. Phase 2.
+  <br/>— <strong>Agent 6: Solution &amp; Delivery Design</strong> — operating model, staffing, transition, technology. 86 tasks, 20 High, 35% avg reduction. Phase 3-5.
+
+  <br/><br/><strong>Why capability-based, not persona-based</strong>
+  <br/>3. An &quot;agent&quot; is a saved configuration (system prompt, tool access, knowledge scope, output format) applied to the same Claude model. There is no separate infrastructure per agent. A single capability (e.g., document extraction) serves multiple human roles. Persona routing added complexity without benefit. The six agents have a clear dependency chain: Agent 1 (extraction) feeds Agents 2+3, which feed Agent 4, which feeds Agents 5+6.
+
+  <br/><br/><strong>Key practitioner insights from assessment review</strong>
+  <br/>4. Three design-shaping observations from the practitioner notes:
+  <br/>(a) <strong>Document upload is the primary input</strong> — not API integration. The bid manager downloads from the portal, uploads to bid folder, then uploads to AI. No necessity to scrape government portals.
+  <br/>(b) <strong>Some agents operate outside individual bids</strong> — Agent 2 (market intelligence) should run on monthly/quarterly schedule as a BidEquity operational cost, building persistent client intelligence across pursuits.
+  <br/>(c) <strong>Several &quot;What AI Does&quot; descriptions understate actual capability</strong> — practitioner notes reveal more AI potential than originally assessed (e.g., SAL-06.3.1 consortium strategy, SAL-06.3.3 work breakdown structure).
+
+  <br/><br/><strong>Plugin architecture updated to v1.5</strong>
+  <br/>5. pwin_architect_plugin_architecture.md updated: new Section 4.2a (capability-based agent architecture with full specification), updated folder structure (agents/skills/templates/intelligence/reference/commands), updated build sequence, version bumped to 1.5.
+
+  <br/><br/><strong>Strategic moat discussion</strong>
+  <br/>6. Confirmed that the AI platform technology (Claude API, orchestration, document store) is commodity — anyone can replicate the infrastructure. The defensible IP is: (a) the 84-activity methodology encoded as skill definitions, (b) the proforma/template library, (c) the quality criteria and workflow logic, (d) the practitioner-validated AI suitability assessment mapping 296 tasks. The product is methodology-as-a-service delivered through an AI platform, not a technology product.
+
+  <br/><br/><strong>Unified skill model — no separate intelligence layer (Session 14 continued)</strong>
+  <br/>7. The 20 AI use cases (Session 13) and the ~25 productivity skills (from AI suitability assessment) are implemented identically: prompt + MCP tool access + Claude API call = output. The previous architecture described two separate systems (&quot;Layer 2 — AI Skills&quot; and &quot;Layer 3 — AI Intelligence&quot;). In practice, both are the same implementation pattern. The only differences are trigger type (human-invoked vs on-demand/scheduled) and data direction (reads uploaded documents vs reads internal data only). Maintaining two separate systems for the same pattern adds complexity without benefit.
+  <br/><br/>All 20 use cases are now implemented as <strong>insight skills within their parent agent</strong>:
+  <br/>— Agent 3 (Strategy &amp; Scoring): UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC9, UC12 — the largest group, all reasoning over activity spine, response quality, and scoring data
+  <br/>— Agent 4 (Commercial &amp; Financial): UC10, UC11
+  <br/>— Agent 1 (Document Intelligence): UC13, UC14
+  <br/>— Agent 5 (Content &amp; Response Drafting): UC15
+  <br/>— Agent 6 (Solution &amp; Delivery): UC8
+  <br/>— Deferred V2/V3: UC16-20 (requires multi-bid data)
+  <br/><br/>The ai_use_cases_reference.html remains the authoritative specification for what each insight skill reasons over and writes back. Updated to v1.1 with agent mapping, unified skill model note, and revised roadmap. Plugin architecture updated to v1.5 with consolidated Section 7 (Unified Skill Model), revised Section 4.1 (two skill types, not three roles), revised Section 9.1 (build phasing by agent), and updated folder structure (insight skills nested within parent agent skill folders).
+
+  <br/><br/><strong>Agent 1 (Document Intelligence) — fully specified</strong>
+  <br/>8. Complete agent definition saved as <strong>agent_1_document_intelligence.md</strong> in the docs folder. 7 skills defined end-to-end (5 productivity, 2 insight):
+  <br/>— <strong>Skill 1: ITT Extraction</strong> (build first) — reads uploaded ITT pack, extracts ResponseSections, EvaluationFramework, ITTDocuments, procurement context, client scoring scheme. 4-step process: document registration → evaluation framework → response section extraction → procurement context. Quality criteria: zero tolerance for missed sections, weights must sum, hurdle marks must be identified, source traceability required.
+  <br/>— <strong>Skill 2: Evaluation Criteria Analysis</strong> — marks concentration, scoring guidance extraction, section-to-criteria mapping, win theme alignment matrix. Depends on Skill 1 output.
+  <br/>— <strong>Skill 3: Contract Analysis</strong> — obligation/liability extraction, red line identification, contract markup support. Red/amber/green classification with amendment text and fallback positions.
+  <br/>— <strong>Skill 4: Compliance Matrix Generation</strong> — requirement identification, compliance position mapping, coverage mapping. Flags disqualification risks.
+  <br/>— <strong>Skill 5: Procurement Ingestion (ITT Briefing)</strong> — rapid narrative briefing produced within hours of ITT receipt. Evaluation summary, key risks, competitive signals, clarification priorities.
+  <br/>— <strong>Skill 6: Clarification Impact (UC13)</strong> — insight skill. Cross-references clarification Q&amp;As against ResponseSections, flags affected sections, generates workstream actions, extracts competitor intelligence.
+  <br/>— <strong>Skill 7: Amendment Detection (UC14)</strong> — insight skill. Compares amended documents against extracted data, assesses cumulative impact, triggers win strategy review if material.
+
+  <br/><br/><strong>Agents 2-6 — fully specified (Session 14 continued)</strong>
+  <br/>9. All remaining agent specifications completed. Six design documents saved in the docs folder:
+  <br/>— <strong>agent_2_market_intelligence.md</strong> — 5 skills (client profiling, incumbent assessment, competitor profiling, sector scanning, stakeholder mapping). 27 tasks, 53% avg reduction. Unique recurring scheduled operation outside bids.
+  <br/>— <strong>agent_3_strategy_scoring.md</strong> — 15 skills (4 productivity + 11 insight). Largest by skill count. Owns UC1-7, UC9, UC12 insight skills. 20 productivity tasks, 52% avg reduction.
+  <br/>— <strong>agent_4_commercial_financial.md</strong> — 9 skills (7 productivity + 2 insight). Cost modelling, pricing, scenarios, sensitivity, partner commercial, risk. 39 tasks, 37% avg reduction.
+  <br/>— <strong>agent_5_content_drafting.md</strong> — 7 skills (6 productivity + 1 insight). Response drafting, evidence, governance packs, formatting, compliance verification. 27 tasks, 34% avg reduction.
+  <br/>— <strong>agent_6_solution_delivery.md</strong> — 14 skills (13 productivity + 1 insight). Largest by task count (101 tasks). Solution design, staffing, transition, delivery, supply chain. 35% avg reduction.
+  <br/><br/>Complete platform: <strong>6 agents, 55 skills, ~296 methodology tasks covered</strong>. 5,500 lines of design specification. Each skill defined with: command, trigger, dependencies, process steps, output template, quality criteria, and practitioner notes where available.
+
+  <br/><br/><strong>What happens next:</strong>
+  <br/>— MCP server architecture design — the engineering foundation all skills depend on
+  <br/>— Map the proforma/template library — what documents each agent produces
+  <br/>— Define the document ingestion pipeline — how uploaded documents flow into the system
+  <br/>— Remaining backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
+  </div></div>
 `;
 
 render();

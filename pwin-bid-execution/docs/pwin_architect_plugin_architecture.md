@@ -1,10 +1,10 @@
 # PWIN Architect — Bid Execution Product
 ## AI Plugin Architecture Brief for Claude Code
 
-**Version:** 1.4 | April 2026
+**Version:** 1.5 | April 2026
 **Status:** Authoritative design input for all Claude Code build sessions
-**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, 20 AI intelligence use cases, cross-product interfaces, SaaS trajectory
-**Aligned with:** Architecture v6 (Session 13, 2026-04-02), Gold Standard Template (Session 11, 2026-04-01), AI Use Cases Reference v1.0, AI Suitability Assessment (295 L3 tasks)
+**Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, 20 AI intelligence use cases, capability-based agent architecture, cross-product interfaces, SaaS trajectory
+**Aligned with:** Architecture v6 (Session 13, 2026-04-02), Gold Standard Template (Session 11, 2026-04-01), AI Use Cases Reference v1.0, AI Suitability Assessment (295 L3 tasks, practitioner-validated)
 
 ---
 
@@ -169,59 +169,195 @@ Confirmed architecture (from Claude Code build sessions, Architecture v6 — Ses
 
 ## 4. The Plugin Architecture
 
-### 4.1 Three Distinct Roles
+### 4.1 What the Plugin Does — Two Skill Types
 
-The plugin performs three roles. Each must be explicitly designed for in the MCP tool schema.
+The plugin contains skills across six agents. Every skill follows the same implementation pattern (prompt + MCP tools + Claude API call), but skills fall into two categories based on what they read and what they produce:
 
-**Role 1 — In-Application AI Intelligence Layer** *(primary role)*
-Claude surfaces insight inside the Bid Execution product. The application is both the data source and the display layer. Claude is the reasoning engine.
-
-Examples:
-- Preventative timeline analysis — activities behind schedule, gap calculation, cascade impact, mitigation options
-- Response quality monitoring — identifying responses below hurdle marks, missing win themes, weak credentials (future AI layer)
-- PWIN recalibration based on changed competitive landscape or new intelligence
-- Compliance gap detection before gate reviews
-- Resource conflict detection across activities
-
-**Role 2 — Data-Driven Output Generation**
-The bid manager's live data drives AI-authored deliverables that would otherwise require manual effort.
+**Productivity Skills** — Human-invoked. Read uploaded documents and/or internal bid data. Produce deliverables (reports, drafts, models, structured data records).
 
 Examples:
-- Weekly stakeholder update reports
-- Gate review packs (with entry criteria status pulled from live data)
-- Pipeline health briefings for pursuit directors
-- PWIN portfolio summaries for leadership
-- Lessons learned reports post-submission
+- ITT extraction — reads uploaded ITT pack, writes ResponseSection and EvaluationFramework records (Agent 1)
+- Response drafting — reads win themes + scoring strategy + solution design, produces draft response sections (Agent 5)
+- Client intelligence briefing — reads uploaded client documents + web sources, produces structured intelligence report (Agent 2)
+- Cost modelling — reads solution design + rate cards, produces cost model and pricing scenarios (Agent 4)
+- Gate review pack assembly — reads gate criteria + activity status, produces governance document (Agent 5)
 
-**Role 3 — Data Extraction and Ingestion Bridge**
-Claude reads external content and transforms it into structured records consumable by the application.
+**Insight Skills** — On-demand (V1) or scheduled/event-triggered (V2). Read internal bid data only — no uploaded documents needed. Write AIInsight records back into the application. Zero additional data entry burden.
 
-Three purpose-built skills handle ITT ingestion (see Section 4.4 for full scope):
+Examples:
+- Timeline analysis (UC1) — reads activity dates + dependencies, writes ActivityAIInsight with gap analysis (Agent 3)
+- Compliance coverage (UC4) — reads response sections + evaluation framework, writes ComplianceCoverageAIInsight (Agent 3)
+- Gate readiness (UC9) — reads gate criteria + activity status, writes GateReadinessAIInsight (Agent 3)
+- Bid cost forecasting (UC11) — reads engagement + team + rate card data, writes budget forecast (Agent 4)
 
-| Skill | What it reads | What it writes | V1/V2 |
-|---|---|---|---|
-| **itt-intelligence** | Full ITT pack | Narrative strategic briefing (no data write) | V1 |
-| **itt-ingestion** | ITT volumes | ResponseSection, EvaluationFramework, ITTDocument, Bid procurement context | V1 |
-| **itt-ingestion** (extended) | Specification, contract, SLA annexes | Requirement, ComplianceRequirement linkage, traceability matrix | **V2** |
-| **clarification-qa** | Clarification logs | ClarificationItem, requirement impact flags, competitive intelligence | **V2** |
+> **KEY DESIGN PRINCIPLE:** Both skill types use the same MCP server, the same Claude API, and the same agent configurations. The distinction is product design (who triggers it, what it reads, what it produces), not engineering. See Section 7 for the full rationale.
 
-Other Role 3 examples (future, not in scope):
-- Ingest client strategy document → populate Client Profile fields
-- Read competitor award notice → update Competitor Dossier
+> **MCP TOOL SCHEMA IMPLICATION:** The MCP server must support both read-then-write-insight patterns (insight skills reading internal data) and read-external-then-write-record patterns (productivity skills creating structured data from uploaded documents). Both directions must be handled in the tool schema — see Sections 5.2 and 5.3.
 
-> **KEY DISTINCTION:** Role 1 reads application data and writes AI insight back. Role 3 reads external data and writes structured records into the application. Both write directions are different and must be handled separately in the MCP tool schema.
-
-> **V1/V2 SCOPE BOUNDARY:** V1 builds data targets for ResponseSection, EvaluationFramework, and ITTDocument. V2 adds Requirement and ClarificationItem entities. The skills that write to V2 entities are not built until those entities exist. See Section 9.5 for the full scope boundary.
+> **V1/V2 SCOPE BOUNDARY:** V1 builds data targets for ResponseSection, EvaluationFramework, and ITTDocument. V2 adds Requirement and ClarificationItem entities. Skills that write to V2 entities are not built until those entities exist. See Section 9.5 for the full scope boundary.
 
 ### 4.2 One Plugin — Not Multiple
 
-**Decision: one plugin with persona-routed sub-agents.**
+**Decision: one plugin with capability-based agents.**
 
 Rationale:
 - A bid manager mid-pursuit does not think in workstream silos — they need win themes, timeline analysis, and competitive intelligence in the same session
 - Shared context (pursuit record, rules, bid library) would be duplicated and drift across multiple plugins
 - Sub-agents inside a single plugin provide specialisation without fragmentation
 - Client distribution on Team/Enterprise is one plugin install, not seven
+
+### 4.2a Agent Architecture — Capability-Based, Not Persona-Based (Session 14, 2026-04-02)
+
+**Decision: agents are organised by AI capability domain, not by human role.**
+
+**Why this changed:** The v1.4 architecture defined five persona-routed agents (bid-manager, pursuit-director, proposal-author, commercial, stakeholder) — designed top-down from who uses the output. Bottom-up analysis of all 296 L3 tasks from the practitioner-validated AI suitability assessment revealed that the natural clustering is by what the AI does, not who it does it for. A single agent capability (e.g., document extraction) serves multiple human roles (bid manager, solution architect, capture lead). Persona routing added unnecessary complexity — the same Claude model, the same API, just different prompts and tool access.
+
+**What an "agent" actually is:** An agent is a saved configuration — system prompt, tool access list, knowledge scope, and output format — applied to the same underlying Claude model. There is no separate software, no separate deployment, no separate infrastructure per agent. The specialisation is in the configuration, not the infrastructure.
+
+**The six capability-based agents:**
+
+#### Agent 1: Document Intelligence Agent
+**Capability:** Ingests uploaded documents (ITT packs, contracts, policies), extracts structured data, builds compliance matrices, maps requirements.
+**Tasks served:** ~22 (Extraction + Mapping clusters) | 17 High-rated | Avg reduction 63%
+**Implementation:** Phase 1 — foundation agent, all others depend on its outputs
+**Key skills:**
+- ITT requirements extraction (SOL-01.1.1-3)
+- Evaluation criteria extraction (SAL-05.1.1-3)
+- Contract clause analysis (LEG-01.1.1-2)
+- Compliance matrix generation (PRD-01)
+- Procurement documentation ingestion (SAL-01.1.1)
+**Inputs:** Uploaded PDFs/Word documents. No external APIs needed.
+**Outputs:** Structured data into bid execution app + populated proforma documents.
+**Tools:** PDF/Word reader, structured data writer (MCP create tools), template populator.
+**Human review gate:** Light — verify extracted data completeness and accuracy.
+
+#### Agent 2: Market & Competitive Intelligence Agent
+**Capability:** Researches clients, sectors, competitors, incumbent performance. Builds intelligence briefings from uploaded documents and external sources.
+**Tasks served:** ~31 (Capture Lead domain) | 18 High-rated | Avg reduction 72%
+**Implementation:** Phase 3
+**Key skills:**
+- Client intelligence profiling (SAL-01.1.2-4, SAL-01.2.1-3)
+- Incumbent performance analysis (SAL-02.1.1, 02.1.3, 02.2.1-2, 02.3.1-5)
+- Competitor profiling & battle cards (SAL-03.1.2-3, 03.2.1)
+- Supply chain & stakeholder mapping (SAL-01.1.4, SAL-10.1.1-2)
+**Inputs:** Uploaded client documents + web search + Contracts Finder API + Companies House API.
+**Outputs:** Client intelligence briefing, incumbent assessment, competitor profiles — all into proforma templates.
+**Tools:** Web search, Contracts Finder API, Companies House API, document reader, template populator.
+**Human review gate:** Strategic validation — verify judgements against relationship intelligence.
+**Design note (from practitioner review):** This agent has a life outside individual bids. Client intelligence and competitor profiling should run on a scheduled, recurring basis (monthly or quarterly) as a BidEquity operational cost, not a per-bid activity. The platform needs a client intelligence layer that persists across bids.
+
+#### Agent 3: Strategy & Scoring Analyst Agent
+**Capability:** Analyses evaluation frameworks, marks concentration, win theme coverage, scoring strategy. The "how do we win" reasoning engine.
+**Tasks served:** ~20 (Bid Manager analytical tasks) | 12 High-rated | Avg reduction 58%
+**Implementation:** Phase 1 (alongside Agent 1 — depends on its evaluation framework output)
+**Key skills:**
+- Marks concentration analysis (SAL-05.2.1)
+- Win theme-to-criteria mapping (SAL-04.1.2, SAL-05.2.4)
+- Scoring strategy per section (SAL-05.2.3)
+- PWIN scoring across all dimensions (SAL-06.2.3)
+- Capture effectiveness assessment (SAL-06.1.1)
+**Inputs:** Evaluation framework (from Agent 1) + win themes + response structure + competitive intelligence.
+**Outputs:** Scoring strategy, marks allocation, win theme coverage matrix, PWIN score.
+**Tools:** MCP read tools (evaluation framework, response sections, win themes), analytical calculator.
+**Human review gate:** Strategic validation — scoring strategy is a human decision informed by AI analysis.
+
+#### Agent 4: Commercial & Financial Modelling Agent
+**Capability:** Cost modelling, pricing analysis, scenario planning, risk-premium calculation, bid cost forecasting.
+**Tasks served:** ~31 (Commercial Lead domain) | 10 High-rated | Avg reduction 43%
+**Implementation:** Phase 4-5
+**Key skills:**
+- Workforce cost modelling (COM-01.1.1)
+- Non-workforce cost modelling (COM-01.1.2)
+- Pricing strategy & scenario analysis (COM-02, COM-03)
+- Risk premium validation (COM-05)
+- Transformation cost-benefit modelling (SAL-02.3.4)
+**Inputs:** Solution design outputs + rate cards + corporate cost data + upstream commercial models.
+**Outputs:** Cost models (Excel), pricing scenarios, risk-adjusted commercial positions, tornado analysis.
+**Tools:** Spreadsheet/calculation tools, MCP read tools (engagement, rate card, team), template populator.
+**Human review gate:** Commercial sign-off — AI builds the framework for the commercial person to validate, test, and complete.
+**Design note (from practitioner review):** Lower AI reduction (43%) reflects genuine need for commercial judgement. The AI builds the analytical framework and runs scenarios; the commercial lead validates assumptions and makes pricing decisions.
+
+#### Agent 5: Content & Response Drafting Agent
+**Capability:** Drafts response sections, executive summaries, governance packs, evidence compilation. The production workhorse.
+**Tasks served:** ~56 (Content Generation cluster) | 4 High-rated (but highest volume) | Avg reduction 40%
+**Implementation:** Phase 2
+**Key skills:**
+- Response section drafting (PRD-02.1.1)
+- Executive summary drafting (PRD-02.1.2)
+- Storyboard generation (PRD-04)
+- Evidence compilation & formatting (PRD-03.1.1-2)
+- Governance pack assembly (GOV-01 through GOV-06)
+**Inputs:** Win themes + scoring strategy + solution design + evaluation criteria + evidence library.
+**Outputs:** Draft response sections, evidence packs, governance documents — for human refinement.
+**Tools:** MCP read tools (all entities), document generator, evidence library search, template populator.
+**Human review gate:** Content refinement — writers and SMEs refine AI drafts, not write from scratch.
+
+#### Agent 6: Solution & Delivery Design Agent
+**Capability:** Supports solution architecture, operating model design, transition planning, staffing models, technology architecture.
+**Tasks served:** ~86 (Solution Architect + Delivery Director + Technical Lead + HR Lead) | 20 High-rated | Avg reduction 35%
+**Implementation:** Phase 3-5
+**Key skills:**
+- Operating model design support (SOL-03, SOL-04)
+- Staffing model design (SOL-06.1.1)
+- Technology architecture support (SOL-05)
+- Transition planning (SOL-07)
+- Service design (SOL-08)
+- Work breakdown structure & consortium scope allocation (SAL-06.3.3)
+**Inputs:** Requirements (from Agent 1) + client intelligence (from Agent 2) + corporate capability data.
+**Outputs:** Design frameworks, staffing models, transition plans, operating model visualisations.
+**Tools:** MCP read tools (requirements, solution entities), document generator, template populator.
+**Human review gate:** Heavy — solution design is where human expertise is most critical. AI accelerates, humans decide.
+**Design note (from practitioner review):** Lowest AI reduction (35%) but highest task count. AI potential is higher than the average suggests — practitioner notes on SAL-06.3.3 describe AI building visual operating models and work breakdown structures with scope allocation across consortium partners.
+
+**Agent dependency chain:**
+
+```
+┌──────────────────────┐
+│ Agent 1: Document     │ ──── Extracts from uploaded ITT docs
+│ Intelligence          │      Foundation for everything else
+└──────────┬───────────┘
+           │
+     ┌─────┴──────┐
+     ▼            ▼
+┌──────────┐ ┌──────────┐
+│ Agent 2   │ │ Agent 3   │
+│ Market    │ │ Strategy  │ ──── Both depend on extracted requirements
+│ Intel     │ │ & Scoring │      and evaluation framework
+└─────┬────┘ └─────┬────┘
+      │            │
+      └──────┬─────┘
+             ▼
+      ┌──────────────┐
+      │ Agent 4       │
+      │ Commercial &  │ ──── Needs solution + strategy + intel
+      │ Financial     │
+      └──────┬───────┘
+             │
+      ┌──────┴───────┐
+      ▼              ▼
+┌──────────┐  ┌───────────┐
+│ Agent 5   │  │ Agent 6    │
+│ Content   │  │ Solution   │ ──── Production and design
+│ Drafting  │  │ & Delivery │      draw on all upstream
+└───────────┘  └────────────┘
+```
+
+**What differs between agents (same Claude model for all):**
+
+| Dimension | Varies by agent |
+|---|---|
+| **System prompt** | Persona, operating rules, quality standards, domain vocabulary |
+| **Tools available** | Web search (Agent 2 only), spreadsheet tools (Agent 4), document generation (Agent 5) |
+| **Knowledge scope** | Which bid data entities to read, which upstream outputs to consume |
+| **Output format** | Structured data (Agent 1), narrative report (Agent 2), draft document (Agent 5), financial model (Agent 4) |
+| **Human review gate** | Light verification (Agent 1), strategic validation (Agent 3), content refinement (Agent 5), commercial sign-off (Agent 4) |
+
+**Supersedes:** The v1.4 persona-based agents (bid-manager-agent, pursuit-director-agent, proposal-author-agent, commercial-agent, stakeholder-agent) are retired. The capabilities they provided are distributed across the six capability-based agents. Persona-specific routing (e.g., pursuit director wants a pipeline summary) is handled by skill selection and output formatting, not by separate agent configurations.
+
+**Relationship to the three plugin roles:**
+- **Role 1 (In-Application Intelligence):** Primarily Agent 3 (scoring analysis) + the 20 intelligence use cases (Section 7a). Agents read bid data via MCP, write AIInsight records back.
+- **Role 2 (Output Generation):** Primarily Agent 5 (content drafting) + Agent 2 (intelligence briefings) + Agent 4 (financial models). Agents produce deliverables for human consumption.
+- **Role 3 (Data Extraction & Ingestion):** Primarily Agent 1 (document intelligence). Agent reads external documents, writes structured records into the application via MCP.
 
 ### 4.3 Plugin Folder Structure
 
@@ -233,39 +369,115 @@ pwin-architect-plugin/
 │
 ├── .mcp.json                          — all connectors declared here
 │
-├── skills/                            — shared methodology, fires automatically
-│   ├── bid-qualification/
-│   │   └── SKILL.md
-│   ├── pipeline-management/
-│   │   └── SKILL.md
-│   ├── gate-governance/
-│   │   └── SKILL.md
-│   ├── win-themes/
-│   │   └── SKILL.md
-│   ├── competitive-intelligence/
-│   │   └── SKILL.md
-│   ├── timeline-analysis/             — PRIMARY SKILL — build first
-│   │   └── SKILL.md
-│   ├── response-quality/              — quality dimension analysis
-│   │   └── SKILL.md
-│   ├── itt-intelligence/              — V1: strategic briefing from ITT pack (narrative output)
-│   │   └── SKILL.md
-│   ├── itt-ingestion/                 — V1: structured data extraction into platform
-│   │   └── SKILL.md
-│   └── clarification-qa/             — V2: Q&A monitoring + competitive intelligence (depends on ClarificationItem entity)
-│       └── SKILL.md
+├── agents/                            — capability-based agent configurations
+│   ├── document-intelligence/
+│   │   └── AGENT.md                  — ITT extraction, compliance mapping, contract analysis
+│   ├── market-intelligence/
+│   │   └── AGENT.md                  — client profiling, competitor analysis, incumbent review
+│   ├── strategy-scoring/
+│   │   └── AGENT.md                  — evaluation analysis, marks allocation, win strategy
+│   ├── commercial-financial/
+│   │   └── AGENT.md                  — cost modelling, pricing, scenario analysis
+│   ├── content-drafting/
+│   │   └── AGENT.md                  — response drafting, evidence compilation, governance packs
+│   └── solution-delivery/
+│       └── AGENT.md                  — operating model, staffing, transition, technology
 │
-├── agents/                            — persona-specific sub-agents
-│   ├── bid-manager-agent/
-│   │   └── AGENT.md                  — activity health, timeline, stakeholder comms
-│   ├── pursuit-director-agent/
-│   │   └── AGENT.md                  — pipeline view, gate decisions, PWIN portfolio
-│   ├── proposal-author-agent/
-│   │   └── AGENT.md                  — response quality, storyboard, compliance, drafting
-│   ├── commercial-agent/
-│   │   └── AGENT.md                  — pricing, P2W, BAFO strategy
-│   └── stakeholder-agent/
-│       └── AGENT.md                  — reports, exec briefings, gate packs
+├── skills/                            — reusable prompt + tool + template configurations per agent
+│   ├── document-intelligence/         — Agent 1 skills
+│   │   ├── itt-extraction/            — PRIMARY SKILL — build first
+│   │   │   └── SKILL.md
+│   │   ├── evaluation-criteria/
+│   │   │   └── SKILL.md
+│   │   ├── contract-analysis/
+│   │   │   └── SKILL.md
+│   │   ├── compliance-matrix/
+│   │   │   └── SKILL.md
+│   │   ├── procurement-ingestion/
+│   │   │   └── SKILL.md
+│   │   ├── clarification-impact/      — UC13 insight skill
+│   │   │   └── SKILL.md
+│   │   └── amendment-detection/       — UC14 insight skill
+│   │       └── SKILL.md
+│   ├── market-intelligence/           — Agent 2 skills
+│   │   ├── client-profiling/
+│   │   │   └── SKILL.md
+│   │   ├── incumbent-assessment/
+│   │   │   └── SKILL.md
+│   │   ├── competitor-profiling/
+│   │   │   └── SKILL.md
+│   │   └── sector-scanning/
+│   │       └── SKILL.md
+│   ├── strategy-scoring/              — Agent 3 skills (largest — includes most insight skills)
+│   │   ├── marks-concentration/
+│   │   │   └── SKILL.md
+│   │   ├── win-theme-mapping/
+│   │   │   └── SKILL.md
+│   │   ├── scoring-strategy/
+│   │   │   └── SKILL.md
+│   │   ├── pwin-scoring/
+│   │   │   └── SKILL.md
+│   │   ├── timeline-analysis/         — UC1 insight skill — BUILD FIRST
+│   │   │   └── SKILL.md
+│   │   ├── compliance-coverage/       — UC4 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── standup-prioritisation/    — UC3 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── gate-readiness/            — UC9 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── marks-allocation/          — UC6 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── win-theme-audit/           — UC5 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── review-trajectory/         — UC7 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── effort-reforecasting/      — UC2 insight skill
+│   │   │   └── SKILL.md
+│   │   └── stakeholder-engagement/    — UC12 insight skill
+│   │       └── SKILL.md
+│   ├── commercial-financial/          — Agent 4 skills
+│   │   ├── cost-modelling/
+│   │   │   └── SKILL.md
+│   │   ├── pricing-scenarios/
+│   │   │   └── SKILL.md
+│   │   ├── risk-premium/
+│   │   │   └── SKILL.md
+│   │   ├── risk-pricing-validation/   — UC10 insight skill
+│   │   │   └── SKILL.md
+│   │   └── bid-cost-forecasting/      — UC11 insight skill
+│   │       └── SKILL.md
+│   ├── content-drafting/              — Agent 5 skills
+│   │   ├── response-drafting/
+│   │   │   └── SKILL.md
+│   │   ├── storyboard-generation/
+│   │   │   └── SKILL.md
+│   │   ├── evidence-compilation/
+│   │   │   └── SKILL.md
+│   │   ├── governance-packs/
+│   │   │   └── SKILL.md
+│   │   └── presentation-intelligence/ — UC15 insight skill
+│   │       └── SKILL.md
+│   └── solution-delivery/             — Agent 6 skills
+│       ├── operating-model/
+│       │   └── SKILL.md
+│       ├── staffing-model/
+│       │   └── SKILL.md
+│       ├── transition-planning/
+│       │   └── SKILL.md
+│       ├── technology-architecture/
+│       │   └── SKILL.md
+│       └── reviewer-calibration/      — UC8 insight skill
+│           └── SKILL.md
+│
+├── templates/                         — output proforma documents per skill
+│   ├── client-intelligence-briefing/
+│   ├── incumbent-assessment/
+│   ├── competitor-battle-card/
+│   ├── scoring-strategy/
+│   ├── response-section-draft/
+│   ├── governance-pack/
+│   ├── cost-model/
+│   └── gate-readiness-report/
 │
 ├── reference/                         — static intelligence (ingested via Role 3)
 │   ├── bid-library/
@@ -273,27 +485,30 @@ pwin-architect-plugin/
 │   ├── client-profiles/
 │   └── framework-guides/
 │
-└── commands/                          — explicit slash commands
-    ├── timeline-review.md             — /pwin:timeline-review — BUILD FIRST
-    ├── pursuit-health.md              — /pwin:pursuit-health
-    ├── stakeholder-update.md          — /pwin:stakeholder-update
-    ├── gate-pack.md                   — /pwin:gate-pack
-    ├── itt-briefing.md                — /pwin:itt-briefing (V1 — narrative strategic briefing from ITT pack)
-    ├── ingest-itt.md                  — /pwin:ingest-itt (V1 — extract ResponseSections, EvaluationFramework, ITTDocuments)
-    ├── ingest-requirements.md         — /pwin:ingest-requirements (V2 — extract Requirements from specification)
-    ├── clarification-monitor.md       — /pwin:clarification-monitor (V2 — process clarification Q&As)
-    ├── response-quality-check.md      — /pwin:response-quality
-    └── competitive-brief.md           — /pwin:competitive-brief
+└── commands/                          — explicit slash commands (map to agent + skill)
+    ├── ingest-itt.md                  — Agent 1 → itt-extraction skill
+    ├── itt-briefing.md                — Agent 1 → procurement-ingestion skill
+    ├── client-brief.md                — Agent 2 → client-profiling skill
+    ├── competitor-brief.md            — Agent 2 → competitor-profiling skill
+    ├── incumbent-review.md            — Agent 2 → incumbent-assessment skill
+    ├── scoring-strategy.md            — Agent 3 → scoring-strategy skill
+    ├── marks-analysis.md              — Agent 3 → marks-concentration skill
+    ├── draft-response.md              — Agent 5 → response-drafting skill
+    ├── gate-pack.md                   — Agent 5 → governance-packs skill
+    ├── timeline-review.md             — Intelligence → UC1
+    ├── compliance-check.md            — Intelligence → UC4
+    └── standup-priorities.md          — Intelligence → UC3
 ```
 
 **Layer responsibilities:**
 
 | Layer | Contains | How used |
 |---|---|---|
-| Skills | Shared bid methodology in Markdown | Fires automatically when Claude encounters relevant context |
-| Agents | Persona-specific reasoning and workflow | Activated by user role or explicit command |
+| Agents | Capability-based configurations (system prompt, tools, knowledge scope) | Selected by command or orchestration layer based on task type |
+| Skills | Reusable prompt + tool + template combinations within each agent. Includes both productivity skills (human-invoked, produce deliverables) and insight skills (on-demand/scheduled, write AIInsight records). Both types are implemented identically. | The atomic unit of work — one skill = one defined task |
+| Templates | Output proforma documents | Define the shape and structure of every deliverable |
 | Reference | Static intelligence documents | Claude draws on during analysis without prompting |
-| Commands | Slash command trigger definitions | User-invoked, launch with structured input forms |
+| Commands | Slash command trigger definitions | User-invoked, each maps to a specific agent + skill combination |
 
 ### 4.4 ITT Ingestion Skills — Scope and Phasing
 
@@ -926,11 +1141,77 @@ AIInsight records are append-only. Each analysis run creates a new record. Previ
 
 ---
 
-## 7. The Timeline Analysis Use Case
+## 7. The Unified Skill Model (Session 14)
 
-This is the primary in-application intelligence use case and the first to build.
+### 7.1 One Implementation Pattern — Not Two Layers
 
-**What it does:** Claude reads all activity data for an active bid, applies the embedded rules and dependency graph, identifies activities that are behind schedule or at risk of slipping, calculates gap and cascade impact, and writes structured AIInsight records back into the application. The user sees AI analysis as native application content — not a chat response.
+**Decision: there is no separate "intelligence layer." Every AI capability — whether it extracts documents, drafts responses, or analyses timeline risk — is implemented as a skill within an agent.**
+
+A skill is a Claude API call with:
+1. A **system prompt** — agent persona, operating rules, quality standards
+2. **MCP tool access** — which read/write tools the skill can use
+3. **Input specification** — what data or documents the skill consumes
+4. **Output specification** — structured data (AIInsight), narrative report, or deliverable document
+5. **Quality criteria** — how to evaluate whether the output is good
+
+The previous architecture (v1.4) described two separate systems: "Layer 2 — AI Skills (productivity)" from the suitability assessment and "Layer 3 — AI Intelligence (supervisory)" from the 20 use cases. In practice, both are implemented identically — prompt + tools + Claude API call = output. The distinction was a product design concept (who triggers it, what it reads) not an engineering distinction. Maintaining two separate systems for the same pattern adds complexity without benefit.
+
+**What differs between skills is configuration, not infrastructure:**
+
+| Dimension | Productivity Skills | Insight Skills |
+|---|---|---|
+| **Triggered by** | Bid manager: "analyse this ITT" | On-demand command (V1) or schedule/event (V2) |
+| **Reads** | Uploaded documents + internal bid data | Internal bid data only |
+| **Produces** | Deliverables (reports, drafts, models, structured data) | AIInsight records written back into the app |
+| **Example** | Agent 1: extract requirements from uploaded PDF | Agent 3: analyse timeline gaps from activity dates |
+| **Human review** | Review and refine output | Review flagged risks and accept/reject mitigations |
+
+Both use the same MCP server, the same Claude API, the same agent configurations.
+
+### 7.2 The 20 Use Cases — Now Skills Within Agents
+
+The 20 AI use cases designed in Session 13 are implemented as insight skills distributed across the six capability-based agents. Each use case becomes a skill within the agent whose data domain it belongs to.
+
+**Full specification:** `ai_use_cases_reference.html` in the docs folder. This remains the authoritative design reference for what each skill reasons over, what it writes back, and its UX implications. The only change is organisational — use cases are no longer a separate system but skills within agents.
+
+**Use case to agent mapping:**
+
+| Agent | Insight Skills (from use cases) | Rationale |
+|---|---|---|
+| **Agent 3: Strategy & Scoring** | UC1 (Timeline Analysis), UC2 (Effort Reforecasting), UC3 (Standup Prioritisation), UC4 (Compliance Coverage), UC5 (Win Theme Audit), UC6 (Marks Allocation), UC7 (Review Trajectory) | All reason over activity spine, response quality, and scoring data — Agent 3's core domain |
+| **Agent 4: Commercial & Financial** | UC10 (Risk/Pricing Validation), UC11 (Bid Cost Forecasting) | Commercial data domain |
+| **Agent 1: Document Intelligence** | UC13 (Clarification Impact), UC14 (ITT Amendment Detection) | Document ingestion and cross-referencing |
+| **Agent 5: Content & Response Drafting** | UC15 (Presentation Intelligence) | Content generation domain |
+| **Agent 3: Strategy & Scoring** | UC9 (Gate Readiness), UC12 (Stakeholder Engagement) | Governance analysis |
+| **Agent 6: Solution & Delivery** | UC8 (Reviewer Calibration) | Team/reviewer data domain |
+| **Deferred (V2/V3)** | UC16-20 (Team Performance) | Requires multi-bid data |
+
+**Key design decisions (unchanged from Session 13):**
+- All 24 data entities are covered. No data is collected but unanalysed.
+- Every use case specifies: entities and fields consumed, what Claude reasons over, what is written back and where, and the UX design implication.
+- UC8 and UC17 are duplicates — consolidated to single implementation.
+- Theme E (UC16-20) requires multi-bid data — V2/V3 capability.
+- All insight skills launch as on-demand in V1. Scheduled triggers are V2.
+
+**Build priority (insight skills):**
+
+| Priority | Skill(s) | Agent | Rationale |
+|---|---|---|---|
+| 1 | UC1 (Timeline) + UC4 (Compliance) | Agent 3 | MCP foundation, highest value, proves AIInsight pattern |
+| 2 | UC3 (Standup) + UC9 (Gate Readiness) | Agent 3 | Daily operational + governance value |
+| 3 | UC6 (Marks Allocation) | Agent 3 | Direct score improvement |
+| 4 | UC5, UC7 | Agent 3 | Proposal quality |
+| 5 | UC13 | Agent 1 | Clarification chain (V2 data dependency) |
+| 6 | UC10, UC11 | Agent 4 | Commercial intelligence |
+| 7 | UC14, UC15 | Agents 1, 5 | Amendment detection, presentation intelligence |
+| 8 | UC2, UC8, UC12 | Agents 3, 6 | Secondary insight layer |
+| 9 | UC16-20 | Deferred | Team performance (requires multi-bid data) |
+
+### 7.3 Timeline Analysis — Reference Skill (Build First)
+
+Timeline analysis (UC1) is the first insight skill to build because it proves the full end-to-end loop: command triggers → MCP reads → Claude analyses → MCP writes AIInsight → application renders.
+
+**What it does:** Claude reads activity data for an active bid, applies the embedded rules and dependency graph, identifies activities behind schedule or at risk, calculates gap and cascade impact, and writes structured AIInsight records back into the application. The user sees AI analysis as native application content — not a chat response.
 
 **The intelligence goes beyond simple date comparison:**
 
@@ -961,40 +1242,6 @@ Risk register◀──    add_risk_flag()             ◀──  With confidence
 ```
 
 **Context window constraint:** For a bid with 84 activities, Claude must never load all records simultaneously. The MCP server must expose filtered queries. The timeline analysis skill must use `get_activities_due_within()` and `get_critical_path()` rather than loading everything.
-
----
-
-## 7a. The 20 AI Intelligence Use Cases (Session 13)
-
-The timeline analysis use case (Section 7) is the first of 20 intelligence use cases designed in Session 13. These use cases define the complete Layer 3 (AI Intelligence) capability — what the product surfaces from data the bid manager already enters.
-
-**Full specification:** `ai_use_cases_reference.html` in the docs folder.
-
-**Key design decisions:**
-- All 24 data entities are covered. No data is collected but unanalysed.
-- Every use case specifies: entities and fields consumed, what Claude reasons over, what is written back and where, and the UX design implication.
-- UC8 and UC17 are duplicates — consolidated to single implementation.
-- Theme E (UC16-20) requires multi-bid data — V2/V3 capability.
-- All use cases launch as on-demand in V1. Scheduled triggers are V2.
-
-**Build priority (intelligence use cases only):**
-
-| Priority | Use Case(s) | Rationale |
-|---|---|---|
-| 1 | UC1 (Timeline) + UC4 (Compliance) | MCP foundation, highest value |
-| 2 | UC3 (Standup) + UC9 (Gate Readiness) | Daily operational + governance value |
-| 3 | UC6 (Marks Allocation) | Direct score improvement |
-| 4 | UC5, UC7, UC13 | Proposal quality + clarification chain |
-| 5 | UC10, UC11 | Commercial intelligence |
-| 6 | UC14, UC15 | Amendment detection, presentation intelligence |
-| 7 | UC2, UC8, UC12 | Secondary intelligence layer |
-| 8 | UC16-20 | Team performance (requires multi-bid data) |
-
-**Relationship to AI suitability assessment:**
-- The suitability assessment (295 L3 tasks) defines Layer 2: what AI can DO (productivity skills).
-- The 20 use cases define Layer 3: what AI can SEE (supervisory intelligence).
-- Both share the MCP server as infrastructure.
-- Combined implementation roadmap interleaves both — see Section 9.1.
 
 ---
 
@@ -1030,29 +1277,35 @@ Self-contained HTML applications with local data storage. Intentional — proves
 
 ## 9. Build Instructions for Claude Code
 
-### 9.1 Phasing — Data Targets Before Skills, Skills Before Plugin
+### 9.1 Phasing — Data Targets Before MCP, MCP Before Skills
 
-The plugin architecture is a forward-looking design document. Build priority follows a clear dependency chain: data targets → MCP server → intelligence use cases → skills → expanded intelligence.
+The plugin architecture is a forward-looking design document. Build priority follows a clear dependency chain: data targets → MCP server → first agent + skills → remaining agents + skills.
 
 **Phase 1a (current — Sprint 1a):** ITT ingestion data layer — ResponseSection, EvaluationFramework, ITTDocument entities. ResponseItem migration. CSV import. Auto-migration of existing data.
 
 **Phase 1 (in progress):** Complete core Bid Execution modules — Submissions (10-stage lifecycle, quality dimensions, win themes, client scoring, ResponseSection/ResponseItem joined view), Reviews (dual scorecard), Governance (development reviews absorbed), Workspace, Activity Tracker, Readiness Dashboard.
 
-**Phase 2 — MCP Server (critical path):** Shared infrastructure for both AI skills (Layer 2) and AI intelligence (Layer 3). Data access layer with filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight entity schemas and append-only write capability. This is the foundation everything else depends on.
+**Phase 2 — MCP Server (critical path):** Shared infrastructure for all six agents. Data access layer with filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight entity schemas and append-only write capability. This is the foundation everything else depends on.
 
-**Phase 3 — First Intelligence Use Cases:** UC1 (Preventative Timeline Analysis) + UC4 (Compliance Coverage Intelligence). These prove the MCP architecture, establish the AIInsight pattern, and deliver the two highest-value intelligence use cases. UX conventions established: RAG flags on Gantt, heat maps on Response Register, mitigation cards, persistent banners.
+**Phase 3 — Agent 1 (Document Intelligence) + Agent 3 first insight skills:** Two parallel tracks:
+- Agent 1 productivity skills: ITT extraction, compliance mapping, contract analysis (itt-intelligence, itt-ingestion V1 scope). Transforms the first 2 weeks of every bid.
+- Agent 3 insight skills: UC1 (Timeline Analysis) + UC4 (Compliance Coverage). Proves the AIInsight write-back pattern and MCP architecture. UX conventions established: RAG flags on Gantt, heat maps on Response Register, mitigation cards, persistent banners.
 
-**Phase 4 — First AI Skills:** Phase 1 skills from AI suitability assessment — Document Intelligence. ITT extraction, compliance mapping, contract analysis (itt-intelligence, itt-ingestion V1 scope). Highest-impact productivity use cases, transforming the first 2 weeks of bid.
+**Phase 4 — Agent 3 expanded + Agent 5 (Content Drafting):** Two parallel tracks:
+- Agent 3 additional insight skills: UC3 (Standup Prioritisation) + UC9 (Gate Readiness) + UC6 (Marks Allocation). Daily operational, governance, and scoring value.
+- Agent 5 productivity skills: Response drafting, storyboard generation, evidence compilation. Highest-visibility skills — writers refine AI drafts instead of writing from scratch.
 
-**Phase 5 — Second Intelligence Wave:** UC3 (Standup Prioritisation) + UC9 (Gate Readiness) + UC6 (Marks Allocation). Daily operational value, governance value, and direct score improvement. Builds on proven MCP infrastructure from Phase 3.
+**Phase 5 — Agent 2 (Market Intelligence) + Agent 4 (Commercial):**
+- Agent 2 productivity skills: Client profiling, competitor analysis, incumbent assessment, sector scanning. Includes recurring/scheduled operation outside individual bids.
+- Agent 4 productivity skills: Cost modelling, pricing scenarios, risk premium validation. Plus insight skills UC10 (Risk/Pricing) + UC11 (Bid Cost Forecasting).
 
-**Phase 6 — Second AI Skills:** Phase 2 skills from AI suitability assessment — Content Generation. Response drafting, storyboard generation. Writers refine AI drafts instead of writing from scratch.
+**Phase 6 — Agent 6 (Solution & Delivery) + remaining insight skills:**
+- Agent 6 productivity skills: Operating model, staffing, transition, technology architecture.
+- Remaining insight skills distributed across agents: UC5, UC7, UC8, UC12, UC13, UC14, UC15.
 
-**Phase 7 — Expansion:** Remaining intelligence use cases (UC5, UC7, UC10-15) and skills (research, financial modelling, risk consolidation), interleaved based on customer demand.
+**Phase 7 (V2):** Requirement and ClarificationItem entities. Requirements Register and Traceability Matrix views. itt-ingestion extended scope (specification extraction). clarification-qa skill. Full requirements traceability. Theme E team performance insight skills (UC16-20) — requires multi-bid data.
 
-**Phase 8 (V2):** Requirement and ClarificationItem entities. Requirements Register and Traceability Matrix views. itt-ingestion extended scope (specification extraction). clarification-qa skill. Full requirements traceability. Theme E team performance intelligence (UC16-20) — requires multi-bid data.
-
-> **THREE-LAYER ARCHITECTURE (Session 13):** Layer 1 = Bid Execution App (data + UI). Layer 2 = AI Skills (productivity — Plugin Roles 2 & 3, from AI suitability assessment). Layer 3 = AI Intelligence (supervisory — Plugin Role 1, these 20 use cases). The MCP server is the shared infrastructure between Layers 2 and 3. See ai_use_cases_reference.html for the complete three-layer diagram.
+> **UNIFIED SKILL MODEL (Session 14):** There is no separate "intelligence layer." All AI capabilities — productivity skills and insight skills — are implemented identically as skills within agents. The difference is trigger type (human-invoked vs on-demand/scheduled) and data direction (reads external docs vs reads internal data only). See Section 7 for the full rationale. The `ai_use_cases_reference.html` document remains the authoritative specification for what each insight skill reasons over and writes back.
 
 ### 9.2 Plugin Build Sequence — When the Time Comes
 
@@ -1064,13 +1317,15 @@ The plugin architecture is a forward-looking design document. Build priority fol
 
 4. **Add write tools with boundary enforcement** — the MCP server must reject any write to a bid manager-owned field at the API layer.
 
-5. **Build the timeline-analysis SKILL.md** — the primary intelligence skill. Encodes the six-layer analysis described in Section 7.
+5. **Build Agent 1 (Document Intelligence) AGENT.md and first productivity skill** — itt-extraction SKILL.md. The foundation agent — all other agents depend on its outputs.
 
-6. **Implement `/pwin:timeline-review` command** — validate the full end-to-end loop: command triggers → MCP reads → Claude analyses → MCP writes AIInsight → application renders.
+6. **Build Agent 3 (Strategy & Scoring) first insight skill** — timeline-analysis SKILL.md (UC1). Encodes the six-layer analysis described in Section 7.3. Proves the AIInsight write-back pattern.
+
+7. **Implement `/pwin:ingest-itt` and `/pwin:timeline-review` commands** — validate two end-to-end loops: (a) document upload → Agent 1 productivity skill → MCP writes structured data; (b) command triggers → Agent 3 insight skill → MCP reads → Claude analyses → MCP writes AIInsight → application renders.
 
 ### 9.3 Design Constraints — Non-Negotiable
 
-- **One plugin, not multiple.** Sub-agents provide persona specialisation inside the single plugin.
+- **One plugin, not multiple.** Six capability-based agents provide specialisation inside the single plugin (see Section 4.2a).
 - **Both IDs must be present.** UUID is the system identifier. Activity code (SOL-04) is the human label. Both are required and must coexist on every activity record.
 - **Enumerated values are fixed.** No free text variants for status, RAG, classification, or confidence fields. Use the defined enums exactly.
 - **AIInsight is append-only.** Never update or delete a previous AI insight record.
@@ -1085,7 +1340,7 @@ The plugin architecture is a forward-looking design document. Build priority fol
 - ResponseItemAIInsight implementation — schema is defined, implementation waits for AI quality monitoring build
 - Scheduled task configuration — this is a Cowork setup step, not a build step
 - SaaS infrastructure — Supabase, hosted MCP server, multi-tenancy — these come after the HTML prototype is validated on a live engagement
-- Full plugin manifest with all five agents — timeline-analysis skill and bid-manager-agent are the build priority; other agents follow
+- Full plugin manifest with all six agents — Agent 1 (Document Intelligence) and timeline-analysis intelligence skill are the build priority; other agents follow per the dependency chain in Section 4.2a
 
 ### 9.5 V1/V2 Scope Boundary (decided Session 8, 2026-03-27)
 
@@ -1149,5 +1404,5 @@ The plugin architecture is a forward-looking design document. Build priority fol
 
 ---
 
-*PWIN Architect — AI Plugin Architecture Brief | v1.4 | April 2026 | BIP Management Consulting | Confidential*
-*Aligned with Architecture v6, Session 13 (2026-04-02). Incorporates 20 AI intelligence use cases and AI suitability assessment (295 L3 tasks).*
+*PWIN Architect — AI Plugin Architecture Brief | v1.5 | April 2026 | BIP Management Consulting | Confidential*
+*Aligned with Architecture v6, Session 14 (2026-04-02). Incorporates 20 AI intelligence use cases, practitioner-validated AI suitability assessment (295 L3 tasks), and capability-based agent architecture (6 agents, ~25 skills).*
