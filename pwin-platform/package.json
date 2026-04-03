@@ -1,0 +1,14 @@
+{
+  "name": "pwin-platform",
+  "version": "0.1.0",
+  "description": "PWIN Platform — MCP server and Data API for bid lifecycle management",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  }
+}
