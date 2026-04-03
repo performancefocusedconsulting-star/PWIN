@@ -131,6 +131,44 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ---
 
+## pwin-strategy
+
+AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Takes the qualification intelligence and transforms it into a locked win strategy, competitive positioning, and capture plan that Execution imports.
+
+### Reference Documents
+
+- No design documents yet — product folder created, awaiting design.
+
+### Position in Product Lifecycle
+
+```
+Qualify → Strategy → Execution
+  "Should we bid?"   "How do we win?"   "Execute the bid"
+```
+
+- **Receives from Qualify:** PWIN score, category assessments, buyer values, stakeholder maturity, competitive positioning maturity
+- **Produces for Execution:** locked win themes, competitive strategy, stakeholder map, buyer values, client intelligence, capture plan (all written to `shared.json`)
+- **Data file:** `win_strategy.json` per pursuit (designed in MCP architecture, not yet populated)
+
+### Shared Entities Owned by Strategy
+
+| Entity | Created by Strategy | Consumed by Execution |
+|--------|--------------------|-----------------------|
+| Win Themes | Defined and locked | Imported into SAL-04, threaded through responses |
+| Competitive Positioning | Full competitor strategy | SAL-03 imports, battle cards feed response writing |
+| Stakeholder Map | Enriched from Qualify maturity | SAL-10 imports, engagement tracked through bid |
+| Buyer Values | Confirmed and prioritised | SAL-01.2 imports, shapes solution design |
+| Client Intelligence | Built from capture engagement | SAL-01 imports |
+| Capture Plan | Produced and locked | SAL-06.4 imports, governs bid strategy |
+
+### Technical Constraints
+
+- Same as other products: single HTML file, vanilla JavaScript, no frameworks
+- Data persisted via PWIN Platform Data API (`win_strategy.json`)
+- MCP server already has Win Strategy read/write endpoints and shared entity sync rules designed
+
+---
+
 ## pwin-portfolio
 
 Portfolio-level intelligence dashboard. Provides a senior leadership view across all active pursuits — aggregating PWIN scores, pipeline economics, resource allocation, and risk exposure into a single operational picture.
