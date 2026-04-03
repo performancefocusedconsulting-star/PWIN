@@ -131,6 +131,46 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ---
 
+## pwin-portfolio
+
+Portfolio-level intelligence dashboard. Provides a senior leadership view across all active pursuits — aggregating PWIN scores, pipeline economics, resource allocation, and risk exposure into a single operational picture.
+
+### Reference Documents
+
+- `pwin-portfolio/docs/pwin-architect-portfolio-dashboard.html` — working prototype (early, uses illustrative Serco data)
+
+### Purpose Within the Product Family
+
+The Portfolio Dashboard sits **above** the individual pursuit products. While Qualify, Execution, and Verdict operate at the single-pursuit level, Portfolio aggregates across the entire pipeline:
+
+- **Qualify** answers "should we bid this?" for one opportunity
+- **Execution** answers "how is this bid progressing?" for one opportunity
+- **Portfolio** answers "how is our bid operation performing across all opportunities?"
+
+### Key Views (from prototype)
+
+- **Portfolio Grid** — all active pursuits with PWIN scores, stages, trajectories, category breakdowns, risk flags
+- **Priority Matrix** — bubble chart (TCV × PWIN, sized by bid cost, coloured by deal type) with raw and stage-adjusted modes
+- **Pursuit Detail** — drill-down into individual pursuit with category-level evidence and vulnerability analysis
+- **Portfolio Economics** — three-lever productivity framework (pursuit velocity, team efficiency, commercial yield) with ROI modelling
+- **Settings** — configurable parameters (win rate benchmarks, cost assumptions, period selection)
+
+### Platform Integration
+
+- Reads shared pursuit data from `shared.json` across all pursuits (PWIN scores, stages, sectors, TCV)
+- Consumes Qualify category scores (cp, pi, ss, oi, vp, pp) for the radar/category breakdown
+- Consumes Bid Execution activity status for trajectory and progress tracking
+- Consumes Verdict Pursuit Maturity Scores for historical portfolio benchmarking
+- The Portfolio Economics view models the consulting ROI — this is the commercial justification layer for Core and Command engagements
+
+### Technical Constraints
+
+- Same as other products: single HTML file, vanilla JavaScript, no frameworks
+- Prototype uses seed data (12 illustrative Serco pursuits). Production version reads from the PWIN Platform Data API
+- Not yet wired to the MCP server — currently standalone
+
+---
+
 ## bidequity-verdict
 
 Forensic post-loss bid review product. Independently evaluates the entire pursuit lifecycle — not just the written submission, but every upstream activity that determined whether the submission could succeed.

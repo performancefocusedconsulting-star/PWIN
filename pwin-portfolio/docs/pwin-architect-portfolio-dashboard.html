@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Portfolio Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0d14; --surface:#13131f; --surface2:#1a1a2a; --surface3:#0f0f1a;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+  --gold:#c9a84c; --gold-dim:rgba(201,168,76,0.15); --gold-mid:rgba(201,168,76,0.35);
+  --navy:#2d5499; --navy-dim:rgba(45,84,153,0.2);
+  --amber:#c76a0a; --amber-dim:rgba(199,106,10,0.18);
+  --green:#1a7a4a; --green-dim:rgba(26,122,74,0.18);
+  --red:#b91c1c; --red-dim:rgba(185,28,28,0.18);
+  --text:#e8e6e0; --text-dim:rgba(232,230,224,0.55); --text-muted:rgba(232,230,224,0.3);
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-mono:'DM Mono','Courier New',monospace;
+  --font-body:system-ui,-apple-system,sans-serif;
+  --header-h:72px; --tab-h:48px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.5;}
+
+/* HEADER */
+#header{position:fixed;top:0;left:0;right:0;height:var(--header-h);z-index:100;background:rgba(13,13,20,0.96);border-bottom:1px solid var(--border2);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 28px;gap:20px;}
+.wordmark{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--gold);letter-spacing:-0.02em;white-space:nowrap;flex-shrink:0;}
+.wordmark span{font-weight:400;}
+.client-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);border-left:1px solid var(--border2);padding-left:20px;white-space:nowrap;flex-shrink:0;}
+.header-spacer{flex:1;}
+.stat-chips{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.stat-chip{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 12px;display:flex;flex-direction:column;align-items:flex-start;}
+.chip-label{font-family:var(--font-mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);line-height:1;}
+.chip-value{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text);margin-top:2px;line-height:1;}
+.chip-value.gold{color:var(--gold);}
+.chip-value.green{color:#2db870;}
+
+/* PITCH BANNER */
+#pitch-banner{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(201,168,76,0.08);border-bottom:1px solid rgba(201,168,76,0.2);text-align:center;padding:5px 20px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);display:none;}
+#pitch-banner.visible{display:block;}
+
+/* TAB BAR */
+#tabbar{position:fixed;left:0;right:0;z-index:98;background:rgba(13,13,20,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);display:flex;padding:0 28px;transition:top 0.15s;}
+.tab-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:0 18px;height:var(--tab-h);border:none;background:none;cursor:pointer;transition:color 0.15s;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* CONTENT */
+#content{position:fixed;left:0;right:0;bottom:0;overflow-y:auto;background:var(--bg);}
+.tab-panel{display:none;padding:32px 28px 60px;min-height:100%;}
+.tab-panel.active{display:block;animation:fadeIn 0.2s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* TYPOGRAPHY */
+.section-title{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.02em;}
+.section-sub{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px;}
+
+/* GRID TABLE */
+.grid-table-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface);}
+.grid-table{width:100%;border-collapse:collapse;}
+.grid-table th{padding:10px 14px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);cursor:pointer;user-select:none;white-space:nowrap;}
+.grid-table th:hover{color:var(--gold);}
+.grid-table th.sorted{color:var(--gold);}
+.grid-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.grid-table tr:last-child td{border-bottom:none;}
+.grid-table tr:hover td{background:rgba(255,255,255,0.025);cursor:pointer;}
+.pursuit-name{font-size:13px;font-weight:500;color:var(--text);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sector-pill{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}
+.pill-es{background:rgba(45,84,153,0.2);color:#7aabff;border:1px solid rgba(45,84,153,0.3);}
+.pill-def{background:rgba(201,168,76,0.12);color:#d4b265;border:1px solid rgba(201,168,76,0.25);}
+.pill-jus{background:rgba(26,122,74,0.15);color:#4ec88a;border:1px solid rgba(26,122,74,0.3);}
+.pill-cg{background:rgba(185,28,28,0.12);color:#e87070;border:1px solid rgba(185,28,28,0.25);}
+.deal-type{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);white-space:nowrap;}
+.tcv-val{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;}
+.stage-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--border2);color:var(--text-dim);white-space:nowrap;}
+.risk-dots{display:flex;gap:4px;align-items:center;}
+.risk-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot-red{background:var(--red);}
+.dot-amber{background:var(--amber);}
+.dot-yellow{background:#d4b265;}
+.pwin-cell{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pwin-num{font-family:var(--font-mono);font-size:11px;font-weight:500;line-height:1;}
+
+/* ── TRAJECTORY CHIP ── */
+.traj-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:3px;font-family:var(--font-mono);font-size:8px;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;line-height:1.4;}
+.traj-chip.ahead{background:rgba(26,122,74,0.18);color:#2db870;border:1px solid rgba(26,122,74,0.3);}
+.traj-chip.on-track{background:rgba(201,168,76,0.12);color:var(--gold);border:1px solid rgba(201,168,76,0.25);}
+.traj-chip.monitor{background:rgba(199,106,10,0.15);color:#e8943a;border:1px solid rgba(199,106,10,0.3);}
+.traj-chip.escalate{background:rgba(185,28,28,0.15);color:#e87070;border:1px solid rgba(185,28,28,0.3);}
+.traj-chip .traj-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.traj-chip.ahead .traj-dot{background:#2db870;}
+.traj-chip.on-track .traj-dot{background:var(--gold);}
+.traj-chip.monitor .traj-dot{background:#e8943a;}
+.traj-chip.escalate .traj-dot{background:#e87070;}
+
+/* TRAJECTORY BAND — in detail view */
+.traj-band-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:16px;}
+.traj-band-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.traj-band-title{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);}
+.traj-band-status{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.traj-band-body{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;}
+.traj-track-wrap{position:relative;}
+.traj-track-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.traj-track-label{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);}
+.traj-track{height:12px;background:rgba(255,255,255,0.06);border-radius:6px;position:relative;overflow:visible;}
+.traj-band-fill{position:absolute;top:0;height:100%;border-radius:6px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.25);}
+.traj-actual-marker{position:absolute;top:-4px;width:4px;height:20px;border-radius:2px;transform:translateX(-50%);z-index:2;}
+.traj-track-ticks{display:flex;justify-content:space-between;margin-top:4px;}
+.traj-tick{font-family:var(--font-mono);font-size:8px;color:var(--text-muted);}
+.traj-context{font-size:12px;color:var(--text-dim);line-height:1.6;max-width:320px;}
+.traj-context strong{color:var(--text);}
+.traj-context em{color:var(--gold);font-style:normal;}
+
+/* MATRIX */
+#matrix-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;}
+#matrix-svg{display:block;width:100%;}
+.matrix-tooltip{position:absolute;background:#1e1e2f;border:1px solid var(--border2);border-radius:8px;padding:10px 14px;pointer-events:none;z-index:50;min-width:160px;display:none;}
+.tooltip-name{font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text);}
+.tooltip-row{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);display:flex;justify-content:space-between;gap:16px;line-height:1.8;}
+.tooltip-row span:last-child{color:var(--text);}
+.matrix-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.matrix-toggle{display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border2);}
+.matrix-toggle-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;border:none;cursor:pointer;background:transparent;color:var(--text-dim);transition:all 0.15s;}
+.matrix-toggle-btn.active{background:var(--gold-dim);color:var(--gold);}
+.matrix-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.legend-item{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+.matrix-mode-note{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:5px;padding:6px 12px;max-width:600px;line-height:1.6;}
+
+/* PURSUIT DETAIL */
+#detail-panel{display:grid;grid-template-columns:40% 1fr;gap:20px;}
+.detail-meta-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;}
+.detail-meta-name{font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:16px;line-height:1.2;}
+.meta-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);}
+.meta-key{font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+.meta-val{font-family:var(--font-mono);font-size:12px;color:var(--text);text-align:right;}
+.risk-flags-list{margin-top:16px;}
+.risk-flag-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:12px;color:var(--text-dim);border-bottom:1px solid var(--border);line-height:1.4;}
+.risk-flag-item::before{content:'⚠';color:var(--amber);font-size:11px;flex-shrink:0;margin-top:1px;}
+.detail-notes{margin-top:14px;padding:12px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:12px;color:var(--text-dim);line-height:1.6;border-left:2px solid rgba(201,168,76,0.3);}
+.detail-right{display:flex;flex-direction:column;gap:16px;}
+.radar-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;display:flex;align-items:flex-start;gap:28px;}
+
+/* CATEGORY BREAKDOWN */
+.cat-breakdown{flex:1;}
+.cat-hint{font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.cat-hint::before{content:'';display:inline-block;width:12px;height:1px;background:var(--gold);opacity:0.5;}
+.cat-row{border-radius:6px;overflow:hidden;margin-bottom:8px;border:1px solid transparent;transition:border-color 0.2s;}
+.cat-row.open{border-color:rgba(201,168,76,0.2);}
+.cat-row-header{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;cursor:pointer;border-radius:6px;transition:background 0.15s;user-select:none;}
+.cat-row-header:hover{background:rgba(255,255,255,0.04);}
+.cat-row.open .cat-row-header{background:rgba(201,168,76,0.06);border-radius:6px 6px 0 0;}
+.cat-header-left{display:flex;flex-direction:column;gap:4px;flex:1;}
+.cat-name{font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);}
+.cat-bar-track{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;width:100%;max-width:140px;}
+.cat-bar-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
+.cat-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.cat-score{font-family:var(--font-mono);font-size:13px;font-weight:500;min-width:28px;text-align:right;}
+.cat-chevron{font-size:10px;color:var(--text-muted);transition:transform 0.25s ease;line-height:1;}
+.cat-row.open .cat-chevron{transform:rotate(180deg);color:var(--gold);}
+.cat-evidence-wrap{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);}
+.cat-row.open .cat-evidence-wrap{max-height:800px;}
+.cat-evidence-inner{padding:16px 12px 14px;background:var(--surface3);border-top:1px solid var(--border);}
+.ev-section{margin-bottom:14px;}
+.ev-section:last-child{margin-bottom:0;}
+.ev-section-label{font-family:var(--font-mono);font-size:8px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ev-section-label::before{content:'';display:block;width:16px;height:1px;}
+.ev-section-label.ev-label-evidence{color:#2db870;}
+.ev-section-label.ev-label-evidence::before{background:#2db870;}
+.ev-section-label.ev-label-vuln{color:var(--amber);}
+.ev-section-label.ev-label-vuln::before{background:var(--amber);}
+.ev-section-label.ev-label-rationale{color:var(--gold);}
+.ev-section-label.ev-label-rationale::before{background:var(--gold);}
+.ev-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;line-height:1.5;}
+.ev-item:last-child{border-bottom:none;}
+.ev-item-icon{flex-shrink:0;font-size:10px;margin-top:2px;}
+.ev-item-text{color:var(--text-dim);}
+.vuln-item{padding:8px 10px;border-radius:5px;margin-bottom:6px;background:rgba(199,106,10,0.06);border:1px solid rgba(199,106,10,0.12);}
+.vuln-item:last-child{margin-bottom:0;}
+.vuln-issue{font-size:12px;color:var(--text-dim);margin-bottom:5px;line-height:1.4;}
+.vuln-action{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:#7aabff;font-family:var(--font-mono);line-height:1.4;}
+.vuln-action::before{content:'→';color:var(--navy);flex-shrink:0;}
+.rationale-text{font-family:var(--font-display);font-style:italic;font-size:14px;color:rgba(232,230,224,0.65);line-height:1.65;padding:10px 12px;background:rgba(201,168,76,0.04);border-left:2px solid rgba(201,168,76,0.3);border-radius:0 4px 4px 0;}
+.no-vulns{font-family:var(--font-mono);font-size:10px;color:#2db870;padding:6px 0;letter-spacing:0.06em;}
+
+/* EV CALCULATOR */
+.ev-calc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;}
+.ev-calc-title{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;}
+.ev-calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+.ev-metric{text-align:center;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border);}
+.ev-metric-val{font-family:var(--font-display);font-size:26px;font-weight:700;line-height:1;}
+.ev-metric-val.gold{color:var(--gold);}
+.ev-metric-val.green{color:#2db870;}
+.ev-metric-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-top:4px;}
+.ev-slider-row{display:flex;align-items:center;gap:14px;}
+.ev-slider-label{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);white-space:nowrap;}
+#ev-slider{flex:1;accent-color:var(--gold);cursor:pointer;}
+.ev-slider-val{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--gold);min-width:36px;}
+
+/* PORTFOLIO ECONOMICS */
+.levers-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;}
+.lever-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;}
+.lever-tag{font-family:var(--font-mono);font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.lever-title{font-family:var(--font-display);font-size:18px;font-weight:600;margin-bottom:14px;line-height:1.2;}
+.lever-big{font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1;margin:16px 0 6px;}
+.lever-big.gold{color:var(--gold);}
+.lever-big.navy{color:#5a8de8;}
+.lever-big.green{color:#2db870;}
+.lever-sub-text{font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:14px;}
+.lever-calc-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);}
+.lever-calc-row:last-child{border-bottom:none;}
+.lcr-key{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);}
+.lcr-val{font-family:var(--font-mono);font-size:11px;color:var(--text);font-weight:500;}
+.lcr-val.highlight{color:var(--gold);}
+.lever-constraint{font-family:var(--font-mono);font-size:9px;color:var(--amber);letter-spacing:0.08em;background:var(--amber-dim);border:1px solid rgba(199,106,10,0.25);border-radius:4px;padding:6px 10px;margin-top:10px;}
+.roi-summary-card{background:var(--surface);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:28px;display:grid;grid-template-columns:1fr 1fr auto;gap:28px;align-items:center;}
+.roi-col-title{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+.roi-total-val{font-family:var(--font-display);font-size:38px;font-weight:700;color:var(--gold);line-height:1;}
+.roi-breakdown{font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.7;}
+.retainer-input-wrap{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.retainer-prefix{font-family:var(--font-mono);font-size:14px;color:var(--text-dim);}
+#retainer-input{background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-family:var(--font-mono);font-size:16px;color:var(--text);width:120px;outline:none;transition:border-color 0.15s;}
+#retainer-input:focus{border-color:rgba(201,168,76,0.5);}
+.retainer-suffix{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.1em;}
+.roi-multiple-wrap{text-align:center;}
+.roi-multiple-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+#roi-multiple{font-family:var(--font-display);font-size:72px;font-weight:700;color:var(--gold);line-height:1;}
+.roi-multiple-sub{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);margin-top:2px;}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;}
+.settings-card-title{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.setting-row{margin-bottom:16px;}
+.setting-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;display:block;}
+.setting-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;font-family:var(--font-mono);font-size:13px;color:var(--text);outline:none;transition:border-color 0.15s;}
+.setting-input:focus{border-color:rgba(201,168,76,0.4);}
+.mode-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--border2);width:fit-content;}
+.mode-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:8px 18px;border:none;cursor:pointer;transition:all 0.15s;background:transparent;color:var(--text-dim);}
+.mode-btn.active{background:var(--gold-dim);color:var(--gold);}
+.no-pursuit-selected{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px;text-align:center;}
+.no-pursuit-icon{font-size:48px;margin-bottom:16px;opacity:0.3;}
+.no-pursuit-text{font-family:var(--font-display);font-size:20px;color:var(--text-dim);margin-bottom:8px;}
+.no-pursuit-sub{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;color:var(--text-muted);text-transform:uppercase;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.18);}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="wordmark">PWIN <span>Architect</span></div>
+  <div class="client-label" id="client-label-display">Serco Group — Portfolio Intelligence</div>
+  <div class="header-spacer"></div>
+  <div class="stat-chips">
+    <div class="stat-chip"><div class="chip-label">Active Pursuits</div><div class="chip-value" id="chip-count">—</div></div>
+    <div class="stat-chip"><div class="chip-label">Total TCV</div><div class="chip-value gold" id="chip-tcv">—</div></div>
+    <div class="stat-chip"><div class="chip-label">Weighted EV</div><div class="chip-value gold" id="chip-wev">—</div></div>
+    <div class="stat-chip"><div class="chip-label">Avg PWIN</div><div class="chip-value" id="chip-pwin">—</div></div>
+    <div class="stat-chip"><div class="chip-label">Portfolio Health</div><div class="chip-value green" id="chip-health">—</div></div>
+  </div>
+</header>
+
+<div id="pitch-banner">★ Illustrative — This view shows illustrative data calibrated to Serco's portfolio profile. Data is replaced with actuals at engagement start.</div>
+
+<nav id="tabbar">
+  <button class="tab-btn active" data-tab="grid">Portfolio Grid</button>
+  <button class="tab-btn" data-tab="matrix">Priority Matrix</button>
+  <button class="tab-btn" data-tab="detail">Pursuit Detail</button>
+  <button class="tab-btn" data-tab="economics">Portfolio Economics</button>
+  <button class="tab-btn" data-tab="settings">Settings</button>
+</nav>
+
+<div id="content">
+
+  <!-- TAB 1: GRID -->
+  <div class="tab-panel active" id="tab-grid">
+    <div class="section-title">Active Bid Portfolio</div>
+    <div class="section-sub" id="grid-period-label">FY2025 — 12 Active Pursuits</div>
+    <div class="grid-table-wrap">
+      <table class="grid-table" id="grid-table">
+        <thead><tr>
+          <th data-sort="name">Pursuit Name <span class="sort-arrow">↕</span></th>
+          <th data-sort="sector">Sector <span class="sort-arrow">↕</span></th>
+          <th data-sort="dealType">Type <span class="sort-arrow">↕</span></th>
+          <th data-sort="tcv">TCV <span class="sort-arrow">↕</span></th>
+          <th data-sort="stage">Stage <span class="sort-arrow">↕</span></th>
+          <th data-sort="pwin">PWIN <span class="sort-arrow">↕</span></th>
+          <th>Trajectory</th>
+          <th>Categories</th>
+          <th data-sort="riskCount">Risk <span class="sort-arrow">↕</span></th>
+        </tr></thead>
+        <tbody id="grid-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 2: MATRIX -->
+  <div class="tab-panel" id="tab-matrix">
+    <div class="section-title">Priority Matrix</div>
+    <div class="section-sub">Bubble size = bid cost · Colour = deal type</div>
+    <div id="matrix-wrap">
+      <div class="matrix-controls">
+        <div class="matrix-toggle">
+          <button class="matrix-toggle-btn active" data-mode="raw">Raw PWIN</button>
+          <button class="matrix-toggle-btn" data-mode="adjusted">Stage-Adjusted PWIN</button>
+        </div>
+        <div class="matrix-mode-note" id="matrix-mode-note">
+          X-axis shows raw PWIN score 0–100. Each bubble's position reflects the absolute probability of win.
+        </div>
+      </div>
+      <svg id="matrix-svg" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="matrix-tooltip" id="matrix-tooltip"></div>
+      <div class="matrix-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5a8de8;"></div>New Business</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c9a84c;"></div>Rebid</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2db870;"></div>Extension</div>
+        <div class="legend-item" style="margin-left:auto;">
+          <div style="width:10px;height:10px;border:1px solid rgba(255,255,255,0.3);border-radius:50%;"></div>Bubble radius = Bid Cost
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: DETAIL -->
+  <div class="tab-panel" id="tab-detail">
+    <div class="section-title">Pursuit Detail</div>
+    <div class="section-sub">Select a pursuit from the Portfolio Grid · Click any category for evidence, vulnerabilities &amp; score rationale</div>
+    <div id="detail-content"></div>
+  </div>
+
+  <!-- TAB 4: ECONOMICS -->
+  <div class="tab-panel" id="tab-economics">
+    <div class="section-title">Portfolio Economics</div>
+    <div class="section-sub">Three-lever productivity dividend framework — retainer justification view</div>
+    <div class="levers-grid" id="levers-grid"></div>
+    <div class="roi-summary-card">
+      <div>
+        <div class="roi-col-title">Total Annual Value — All Three Levers</div>
+        <div class="roi-total-val" id="roi-total-val">—</div>
+        <div class="roi-breakdown" id="roi-breakdown">—</div>
+      </div>
+      <div>
+        <div class="roi-col-title">Annual PWIN Architect Retainer</div>
+        <div class="retainer-input-wrap">
+          <div class="retainer-prefix">£</div>
+          <input type="number" id="retainer-input" value="720" min="1" step="10">
+          <div class="retainer-suffix">k / year</div>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Based on £5k/month × 12 active bids × 12 months</div>
+      </div>
+      <div class="roi-multiple-wrap">
+        <div class="roi-multiple-label">ROI Multiple</div>
+        <div id="roi-multiple">—</div>
+        <div class="roi-multiple-sub" id="roi-multiple-sub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: SETTINGS -->
+  <div class="tab-panel" id="tab-settings">
+    <div class="section-title">Settings</div>
+    <div class="section-sub">Client configuration · Display preferences · Data mode</div>
+    <div class="settings-grid">
+      <div class="settings-card">
+        <div class="settings-card-title">Client Configuration</div>
+        <div class="setting-row"><label class="setting-label">Client Name</label><input class="setting-input" id="s-client-name" type="text" value="Serco Group"></div>
+        <div class="setting-row"><label class="setting-label">Reporting Period</label><input class="setting-input" id="s-period" type="text" value="FY2025"></div>
+        <div class="setting-row"><label class="setting-label">PWIN Target Benchmark (pts)</label><input class="setting-input" id="s-pwin-target" type="number" value="12" min="1" max="30"></div>
+        <div class="setting-row"><label class="setting-label">Monthly Retainer per Active Bid (£k)</label><input class="setting-input" id="s-retainer-pm" type="number" value="5" min="1"></div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Display Mode</div>
+        <div class="setting-row">
+          <label class="setting-label">Data Mode</label>
+          <div class="mode-toggle" id="mode-toggle">
+            <button class="mode-btn active" data-mode="pitch">Pitch Mode</button>
+            <button class="mode-btn" data-mode="live">Live Mode</button>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text-muted);line-height:1.6;">
+            <strong style="color:var(--gold);">Pitch Mode:</strong> Illustrative data. Gold banner shown across all views.<br>
+            <strong style="color:#2db870;">Live Mode:</strong> Client data. Banner hidden.
+          </div>
+        </div>
+        <div class="setting-row" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <label class="setting-label">Applied Settings</label>
+          <button onclick="applySettings()" style="background:var(--gold-dim);border:1px solid var(--gold-mid);color:var(--gold);border-radius:6px;padding:8px 18px;cursor:pointer;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;">Apply &amp; Refresh Dashboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// PWIN BENCHMARK BANDS — by deal type × stage
+// Expected range [low, high] — editable in production
+// ══════════════════════════════════════════════════
+const BENCHMARKS = {
+  'New Business': { Qualification:[15,35], Shaping:[30,50], Bid:[38,58], BAFO:[45,65], Preferred:[70,90] },
+  'Rebid':        { Qualification:[45,60], Shaping:[55,70], Bid:[60,75], BAFO:[65,82], Preferred:[80,95] },
+  'Extension':    { Qualification:[70,85], Shaping:[75,90], Bid:[80,92], BAFO:[85,95], Preferred:[90,98] }
+};
+
+// Returns { low, high, status, label, pctile }
+function getTraj(pursuit) {
+  const band = BENCHMARKS[pursuit.dealType]?.[pursuit.stage];
+  if (!band) return null;
+  const [low, high] = band;
+  const pwin = pursuit.pwin;
+  const mid = (low + high) / 2;
+  // percentile position across the band (0 = at low, 100 = at high, can exceed)
+  const pctile = Math.round(((pwin - low) / (high - low)) * 100);
+  let status, label;
+  if (pwin > high) { status = 'ahead'; label = 'Ahead of Stage'; }
+  else if (pwin >= low) { status = 'on-track'; label = 'On Trajectory'; }
+  else if (pwin >= low - 10) { status = 'monitor'; label = 'Below Stage — Monitor'; }
+  else { status = 'escalate'; label = 'Below Stage — Escalate'; }
+  return { low, high, mid, pctile, status, label };
+}
+
+// Stage-adjusted PWIN: rescales actual PWIN to 0–100 where 50 = midpoint of expected band
+// Pursuits at the midpoint of their band score 50; above high → >100; below low → <0
+function stageAdjustedPwin(pursuit) {
+  const band = BENCHMARKS[pursuit.dealType]?.[pursuit.stage];
+  if (!band) return pursuit.pwin;
+  const [low, high] = band;
+  const range = high - low;
+  // Map: low → 0, high → 100
+  return Math.round(((pursuit.pwin - low) / range) * 100);
+}
+
+// ══════════════════════════════════════════════════
+// SEED DATA
+// ══════════════════════════════════════════════════
+const PURSUITS = [
+  { id:'p01', name:'Defence Maritime Services NG — Phase 2', sector:'Defence', dealType:'Rebid', tcv:850, stage:'Bid', pwin:65, bidCost:4.8, categories:{cp:72,pi:68,ss:75,oi:60,vp:65,pp:58}, riskFlags:['Incumbent advantage under pressure','Single evaluator risk','Aggressive pricing expected'], notes:'Strong incumbent position on DMS. Phase 2 scope expansion adds complexity. Key risk is competitor coalition. Stakeholder mapping well advanced; technical response leads with Royal Navy relationship depth.' },
+  { id:'p02', name:'AFRS Extension — All Extension Periods', sector:'Defence', dealType:'Extension', tcv:500, stage:'Preferred', pwin:82, bidCost:1.2, categories:{cp:85,pi:90,ss:80,oi:75,vp:78,pp:88}, riskFlags:['Political sensitivity — MoD budget cycle'], notes:'All extension options in play. H1 2025 performance data strongly supports case. Client relationship at senior level is secure. Key dependency is MoD spending review timeline.' },
+  { id:'p03', name:'National Probation Service — HMPPS Digital', sector:'Justice', dealType:'New Business', tcv:320, stage:'Shaping', pwin:38, bidCost:2.1, categories:{cp:42,pi:35,ss:40,oi:38,vp:55,pp:28}, riskFlags:['Low incumbent awareness','MoJ procurement complexity','Two strong competitors identified'], notes:'Significant new territory. Digital transformation angle is differentiated but customer relationship from scratch. Procurement Intelligence score reflects limited early engagement. Recommend accelerated stakeholder programme.' },
+  { id:'p04', name:'Emergency Services Network — Device Provisioning', sector:'Emergency Services', dealType:'Rebid', tcv:180, stage:'Bid', pwin:58, bidCost:1.8, categories:{cp:65,pi:72,ss:55,oi:50,vp:60,pp:62}, riskFlags:['Incumbent split with competitor','Price pressure from Home Office'], notes:'ESN rebid on device provisioning. Technical solution strong; commercial model being stress-tested. Competitor pricing intelligence suggests aggressive underbid risk. Value Proposition needs strengthening on outcomes.' },
+  { id:'p05', name:'HMRC Debt Management — Outsourced Operations', sector:'Central Government', dealType:'New Business', tcv:420, stage:'Qualification', pwin:32, bidCost:1.4, categories:{cp:35,pi:28,ss:42,oi:30,vp:48,pp:20}, riskFlags:['Very limited buyer access pre-ITT','Incumbent PAC scrutiny','IR35 compliance complexity','No existing HMRC relationship'], notes:'Early qualification stage. Pursuit case rests heavily on BPO track record. Political risk elevated. Go/No-Go review recommended at ITT issue.' },
+  { id:'p06', name:'Prisoner Escort & Custody Services — South', sector:'Justice', dealType:'Rebid', tcv:240, stage:'BAFO', pwin:68, bidCost:2.4, categories:{cp:70,pi:78,ss:72,oi:65,vp:62,pp:80}, riskFlags:['Price competition from GEO Group','Staff TUPE transition risk'], notes:'At BAFO stage. Incumbent advantage well leveraged. Price remains the principal risk factor. PWIN trajectory positive — moved from 52% at Bid to 68% post-evaluator feedback.' },
+  { id:'p07', name:'Asylum Accommodation & Support — Lot 3', sector:'Central Government', dealType:'New Business', tcv:150, stage:'Bid', pwin:45, bidCost:1.6, categories:{cp:48,pi:55,ss:50,oi:42,vp:58,pp:44}, riskFlags:['Political volatility — Home Office policy','Reputational sensitivity'], notes:'Politically sensitive contract. Value proposition frames around outcomes and safeguarding standards. Competitor Mears has incumbent advantage in Lot 2.' },
+  { id:'p08', name:'Fire & Rescue — Fleet & Estates FM Bundle', sector:'Emergency Services', dealType:'New Business', tcv:95, stage:'Shaping', pwin:42, bidCost:0.9, categories:{cp:45,pi:38,ss:48,oi:40,vp:52,pp:35}, riskFlags:['Complex multi-authority structure','Procurement timeline uncertain'], notes:'Bundled FM opportunity across 4 FRAs. Procurement route not yet confirmed. Alliance partner strategy recommended.' },
+  { id:'p09', name:'UK Defence Training — Ground Support NG', sector:'Defence', dealType:'Rebid', tcv:560, stage:'Bid', pwin:62, bidCost:3.6, categories:{cp:68,pi:65,ss:70,oi:62,vp:58,pp:65}, riskFlags:['Leidos consortium challenge','MOD transformation programme dependency'], notes:'Large rebid with consortium risk. Leidos-led consortium courting subcontractors. Serco relationship at MOD SPA level is strong.' },
+  { id:'p10', name:'Electronic Monitoring Services — Tagging NG', sector:'Justice', dealType:'Rebid', tcv:380, stage:'Shaping', pwin:55, bidCost:2.8, categories:{cp:60,pi:70,ss:58,oi:55,vp:62,pp:45}, riskFlags:['Technology lock-in risk — Buddi platform','Serco not current prime'], notes:'Complex rebid with technology dependency. Serco delivers monitoring service but does not own the platform.' },
+  { id:'p11', name:'Border Force — Port Facilitation Services', sector:'Central Government', dealType:'New Business', tcv:70, stage:'Qualification', pwin:22, bidCost:0.6, categories:{cp:25,pi:18,ss:30,oi:22,vp:38,pp:15}, riskFlags:['No existing Home Office border relationship','G4S incumbent with 8yr history','UK border policy uncertainty','Limited technical differentiation'], notes:'High-risk new territory. G4S entrenched. PWIN below threshold — recommend formal No-Go review unless strategic partnership route identified within 60 days.' },
+  { id:'p12', name:'NHS Facilities Management — Midlands Trust Bundle', sector:'Central Government', dealType:'Extension', tcv:130, stage:'Bid', pwin:78, bidCost:0.8, categories:{cp:80,pi:85,ss:75,oi:72,vp:70,pp:82}, riskFlags:['NHS procurement freeze risk — Q4'], notes:'Extension of existing Midlands trust FM contract. Very strong incumbent position. Client satisfaction score 9.2/10 at last review.' }
+];
+
+// ══════════════════════════════════════════════════
+// EVIDENCE DATA (12 pursuits × 6 categories)
+// ══════════════════════════════════════════════════
+const EVIDENCE = {
+  p01:{cp:{evidence:['Competitor analysis confirms Babcock/Leidos consortium as primary threat','Serco holds 8-year incumbent advantage — 97% KPI achievement record','Integrated platform management capability not replicated by Babcock','Price benchmarking completed — Serco within 4% of market rate on Phase 1 scope'],vulnerabilities:[{issue:'Babcock likely to undercut on mobilisation cost to win transition narrative',action:'Develop counter-narrative on transition risk and KPI continuity evidence'},{issue:'Phase 2 scope (cyber, digital) plays to Leidos strengths not Serco core',action:'Identify and confirm technology partner for cyber/digital sub-lot before ITT'}],rationale:'Score of 72 reflects strong incumbent positioning offset by a credible consortium threat on the expanded Phase 2 scope. Technical depth on core DMS is best-in-class; the digital expansion creates a material scoring gap without a confirmed technology partner.'},pi:{evidence:['Pre-market engagement completed — attended MoD industry day June 2025','ITT expected Q1 2026 confirmed via procurement notice','Evaluation criteria weights understood: 60% technical, 40% commercial','Contract authority identified: DES Commodities and Defence Equipment & Support'],vulnerabilities:[{issue:'Evaluation sub-criteria for Phase 2 digital lot not yet disclosed',action:'Submit formal clarification at ITT issue; engage MoD digital transformation team'},{issue:'Commercial evaluation model shifting to should-cost — Serco modelling not yet aligned',action:'Commission should-cost analysis before commercial response development'}],rationale:'Score of 68 reflects good procurement access at industry engagement level but incomplete intelligence on Phase 2 evaluation methodology. The should-cost shift is the primary intelligence gap that must be closed before commercial response development begins.'},ss:{evidence:['Rear Admiral (ret.) relationship maintained — informal access to DES SRO confirmed','Service Delivery Director has direct relationship with Royal Navy Fleet Commander staff','Three senior MoD civil servants attended Serco operational briefing Q3 2025','Customer satisfaction survey FY2025: 4.6/5'],vulnerabilities:[{issue:'New DES Director General appointed — relationship not yet established',action:'Request introductory briefing via existing SRO contact within 30 days'}],rationale:'Score of 75 reflects deep operational relationship at working level with emerging senior access. The DG transition creates a temporary gap at the most senior decision-making tier which must be closed before preferred bidder stage.'},oi:{evidence:['Serco CEO referenced DMS programme in FY2025 results as priority rebid','Bid approved at Group Bid Investment Board — Category A classification','Cross-divisional resource allocated: Defence, Digital, and Commercial leads confirmed'],vulnerabilities:[{issue:'MoD perceives Serco as operational partner, not strategic transformation partner',action:'Elevate engagement to Group CEO / MoD Secretary of State level before BAFO'},{issue:'Internal bid governance cadence may be too slow for Phase 2 complexity',action:'Move to weekly SteerCo for final 90 days pre-submission'}],rationale:'Score of 60 reflects adequate internal mobilisation but an influence gap at the strategic partnership tier. MoD frames Serco as a capable operator — a characterisation that will cost points on Phase 2 evaluation criteria unless addressed explicitly.'},vp:{evidence:['Operational outcomes data compiled: 99.2% vessel availability FY2023–25','Cost avoidance case: £12m saved vs. MoD baseline through process innovation','Social value commitment drafted: 120 apprenticeships, 18% ex-forces workforce target'],vulnerabilities:[{issue:'Phase 2 value proposition not yet developed — digital transformation outcomes undefined',action:'Co-develop digital outcomes framework with MoD customer team before ITT'},{issue:'Social value weighting increased to 10% under new PCR — current draft undersells',action:'Commission dedicated social value response with independent verification'}],rationale:'Score of 65 reflects excellent Phase 1 outcomes evidence but an underdeveloped Phase 2 narrative. The digital transformation component is the single largest scoring risk.'},pp:{evidence:['Storyboard review completed — 6 of 8 sections signed off','Commercial model v2 submitted to Bid Investment Board','Win theme workshop held — 5 themes confirmed'],vulnerabilities:[{issue:'Section 4 (Phase 2 digital solution) still at first draft — 6 weeks behind plan',action:'Appoint dedicated digital response lead; accelerate partner confirmation to unblock'},{issue:'Pricing sign-off requires CFO approval — not yet scheduled',action:'Book CFO commercial review for week of ITT issue + 4'}],rationale:'Score of 58 reflects solid progress on the core Phase 1 response with a material lag on Phase 2 digital sections. The timeline is recoverable but requires immediate resource escalation.'}},
+  p02:{cp:{evidence:['No credible alternative supplier for AFRS — specialist capability and TUPE risk deter competitors','H1 2025 operational KPIs: 94% recruitment target achievement against 85% benchmark','No formal expression of interest from alternate suppliers confirmed'],vulnerabilities:[{issue:'MoD policy shift toward open competition could force formal OJEU process',action:'Monitor Cabinet Office procurement policy updates; prepare open competition response as contingency'}],rationale:'Score of 85 reflects near-monopoly competitive position. AFRS is specialist enough that effective competition is limited. The sole credible threat is a policy-driven forced competition, not a better-qualified competitor.'},pi:{evidence:['Extension mechanism confirmed in original contract — Clause 14.3 permits up to 3 × 2-year extensions','Customer Intent to Extend letter received — signed by MoD Deputy Director Commercial','All extension period pricing pre-agreed in principle at original award'],vulnerabilities:[{issue:'MoD spending review could delay extension sign-off by 6–9 months',action:'Agree interim extension or bridge arrangement to protect revenue continuity'}],rationale:'Score of 90 reflects exceptional procurement intelligence — Serco has effectively authored the extension mechanism. The only remaining uncertainty is timing of sign-off, not the outcome itself.'},ss:{evidence:['Monthly service review attended by MoD 2-star and Serco Defence MD','Recruiting Directorate SRO relationship active — quarterly strategic review in calendar','Armed Forces Minister publicly cited AFRS outcomes in Parliamentary Q&A'],vulnerabilities:[],rationale:'Score of 80 reflects a fully mapped and active stakeholder network at all tiers. No material gaps identified. Ministerial visibility is an unusual strength that should be explicitly leveraged in the extension narrative.'},oi:{evidence:['AFRS cited as flagship programme in Serco Group FY2025 Annual Report','Board-level commitment confirmed','Dedicated AFRS account team resourced at 1.8× standard engagement level'],vulnerabilities:[{issue:'Serco Group restructure may change account ownership mid-extension',action:'Confirm AFRS account structure under new divisional model before extension signature'}],rationale:'Score of 75 reflects strong organisational commitment with a single structural risk around internal account ownership.'},vp:{evidence:['Recruitment target achievement improved from 78% (Year 1) to 94% (Year 4)','Digital recruitment platform delivered 23% reduction in time-to-offer','Female applicant conversion +18% against baseline'],vulnerabilities:[{issue:'Extension VP not differentiated from current delivery narrative',action:'Develop forward-looking innovation roadmap for Years 5–6 to strengthen the extension case'}],rationale:'Score of 78 reflects strong outcomes evidence for the current period with a weak forward-looking narrative. The extension case needs to articulate what Years 5–6 deliver over and above the current excellent model.'},pp:{evidence:['Extension heads of terms drafted and under internal legal review','Commercial schedule agreed with MoD commercial team','Mobilisation plan for extension period complete'],vulnerabilities:[],rationale:'Score of 88 reflects an extension in the final stages of commercial completion with no material blockers.'}},
+  p03:{cp:{evidence:['Serco has no existing HMPPS digital delivery track record','Capgemini and DXC identified as primary competitors with established MoJ digital relationships','Serco justice operational expertise is differentiated — probation outcomes data available across 3 regions'],vulnerabilities:[{issue:'Capgemini holds incumbent digital advisory position with HMPPS',action:'Secure a digital delivery subcontractor with existing HMPPS credentials for consortium approach'},{issue:'No Serco reference site for justice digital transformation at comparable scale',action:'Develop cross-sector digital transformation reference as analogous evidence'}],rationale:'Score of 42 reflects a genuine market entry challenge. A consortium strategy is essential to be competitive against established digital primes. Note: at Shaping stage for New Business, a score of 42 sits within the expected range — this is a trajectory question, not an exit signal.'},pi:{evidence:['OJEU notice issued November 2025 — ITT expected Q2 2026','Initial market engagement event attended by Serco BD team'],vulnerabilities:[{issue:'No direct access to HMPPS digital SRO or evaluation team',action:'Request bilateral meeting with HMPPS digital team before PIN closes'},{issue:'Evaluation criteria not yet disclosed',action:'Monitor procurement portal daily; attend all pre-market briefings'}],rationale:'Score of 35 reflects early-stage intelligence from public sources only. At Shaping stage for New Business this score is below the expected band — bilateral engagement must be initiated immediately to improve trajectory.'},ss:{evidence:['Justice MD has existing relationship with HMPPS Deputy Director (Probation Reform)','Three probation regional directors known from existing Serco justice contracts'],vulnerabilities:[{issue:'Digital SRO and technical evaluation lead are unknown — zero relationship at the digital tier',action:'Map HMPPS digital leadership structure and request introductions via operational relationships'},{issue:'Political sponsor for HMPPS digital programme not identified',action:'Research MoJ ministerial portfolio and identify appropriate parliamentary engagement route'}],rationale:'Score of 40 reflects partial stakeholder coverage through operational relationships but a complete absence of digital leadership engagement. Stakeholder mapping must expand urgently into the technology directorate.'},oi:{evidence:['Pursuit approved at Bid Investment Board — Category B classification','Justice sector lead assigned as pursuit sponsor'],vulnerabilities:[{issue:'Category B may be insufficient for a £320m digital bid',action:'Submit Category A reclassification with revised TCV and strategic rationale to Bid Investment Board'},{issue:'Digital capability resource constrained',action:'Identify and assign digital BD resource from Group Digital unit within 30 days'}],rationale:'Score of 38 reflects adequate but under-resourced internal sponsorship. A £320m digital bid at Category B resourcing will manifest in response quality at ITT. Reclassification is the most important near-term action.'},vp:{evidence:['Probation outcomes data: reoffending rate reduction 8% vs. benchmark across 3 regions','Technology innovation angle: AI case management for probation officers','Social value: 200 ex-offender employment pathways per year'],vulnerabilities:[{issue:'VP relies on operational outcomes rather than digital delivery evidence',action:'Reframe as outcomes-led digital — lead with probation results, support with digital enablers'}],rationale:'Score of 55 — the strongest category on this pursuit — reflects a coherent VP concept. The outcomes data is genuinely differentiated; the digital delivery narrative needs to be constructed around it.'},pp:{evidence:['Initial pursuit plan drafted — milestone schedule to ITT produced','Market engagement completed and summarised'],vulnerabilities:[{issue:'Consortium partner not confirmed — blocks solution design and pricing',action:'Issue partner RFI within 14 days; target selection by end of month'},{issue:'No storyboard developed — 8 weeks behind comparable pursuits',action:'Accelerate to storyboard in parallel with partner negotiation'}],rationale:'Score of 28 reflects a pursuit structurally behind where it needs to be. Three concurrent blockers must be resolved simultaneously, not sequentially. This score will move materially once the partner is confirmed.'}},
+  p04:{cp:{evidence:['Incumbent on 40% of current ESN device provisioning','Technical solution (Motorola partnership) confirmed and differentiated on interoperability','Home Office procurement: 3 suppliers shortlisted including Serco'],vulnerabilities:[{issue:'Airwave Solutions holds 60% of current provision',action:'Target Airwave-held lots on price and transition risk narrative'},{issue:'Competitor modelling below-cost entry price known',action:'Stress-test floor pricing model; identify 3 cost reduction levers available pre-submission'}],rationale:'Score of 65 reflects a credible competitive position from a partial incumbent base, offset by a competitor with a larger footprint and known aggressive pricing intent.'},pi:{evidence:['ITT issued October 2025 — submission deadline 28 February 2026','Evaluation criteria confirmed: 70% technical, 30% commercial','Home Office Commercial Director met bilaterally — pricing expectations confirmed'],vulnerabilities:[{issue:'Sub-criteria weighting for device lifecycle management not confirmed',action:'Submit formal clarification on sub-criteria before portal closes'}],rationale:'Score of 72 reflects strong procurement intelligence from an active ITT. Bilateral access to the commercial team is above-average for this stage.'},ss:{evidence:['Head of ESN Programme met at BAPCO conference September 2025','4 police force technology leads consulted','Emergency Services Network Authority relationship established'],vulnerabilities:[{issue:'Commercial evaluation lead not yet identified or engaged',action:'Request commercial team introduction through procurement portal'}],rationale:'Score of 55 reflects solid operational stakeholder coverage with a gap at the commercial evaluation tier.'},oi:{evidence:['Pursuit classified Category A','Emergency Services sector lead as executive sponsor','Resource plan confirmed: bid manager, technical lead, commercial lead, Motorola subcontractor'],vulnerabilities:[{issue:'Motorola subcontractor agreement not fully executed — IP licensing clause outstanding',action:'Escalate IP clause to General Counsel for resolution within 7 days'}],rationale:'Score of 50 reflects adequate internal sponsorship with a single contractual blocker that could delay solution finalisation.'},vp:{evidence:['Device availability SLA: 99.4% on current provision vs 97% benchmark','Transition management plan developed — zero service disruption on mobilisation evidenced','Blue Light case studies: improved device reliability linked to faster emergency response'],vulnerabilities:[{issue:'Outcomes evidence focused on inputs (device availability) rather than outcomes (response times)',action:'Quantify operational impact: seconds saved per incident × incident volume = lives-impact metric'}],rationale:'Score of 60 reflects strong operational evidence not yet translated into evaluator-facing outcome language. The shift from device metrics to mission-impact metrics is the single most impactful response improvement available.'},pp:{evidence:['Response sections 1–3 complete and reviewed','Pricing model v3 approved at commercial governance','Risk register current — 12 risks logged, 3 red'],vulnerabilities:[{issue:'Section 4 (innovation and future roadmap) at first draft only',action:'Assign technical director to own Section 4 through to final review'},{issue:'Two Motorola subcontractor deliverables not yet received',action:'Issue formal notice to Motorola — confirm receipt date'}],rationale:'Score of 62 reflects a bid in good overall shape with section-level gaps and a subcontractor dependency.'}},
+  p05:{cp:{evidence:['Serco BPO track record: 3 comparable outsourced operations in central government','No formal competitor analysis completed yet'],vulnerabilities:[{issue:'Capita holds incumbent position with deep HMRC institutional knowledge',action:'Commission competitive intelligence brief on Capita\'s HMRC relationship and performance record'},{issue:'Serco has no existing HMRC relationship',action:'Map HMRC commercial directorate; request pre-market engagement meeting as first priority'},{issue:'PAC scrutiny of HMRC outsourcing creates hostile media environment',action:'Develop public affairs brief and media handling strategy before any public engagement'}],rationale:'Score of 35 — at Qualification stage for New Business, the expected band is 15–35. This pursuit sits at the ceiling of its expected band, meaning trajectory is actually healthy for the stage. The absolute number is not the concern; it is whether the score builds materially by Shaping.'},pi:{evidence:['PIN published August 2025 — procurement route not yet confirmed','HMRC Transformation Board minutes (public) reviewed'],vulnerabilities:[{issue:'No access to HMRC commercial team — pre-engagement not yet requested',action:'Submit written request for pre-market engagement meeting within 14 days'},{issue:'Procurement route unconfirmed — affects entire bid strategy',action:'Monitor OJEU and Crown Commercial Service portal daily'}],rationale:'Score of 28 reflects intelligence derived entirely from public sources with no bilateral engagement underway. At Qualification for New Business the band floor is 15 — the score is in-band but improvement is required before Shaping.'},ss:{evidence:['Central Government MD has prior HMRC relationship from Aspire programme era','One HMRC Deputy Director known through cross-government transformation network'],vulnerabilities:[{issue:'Known contacts are not in the debt management or commercial directorate',action:'Use existing contacts to navigate to debt management leadership'},{issue:'No end-user engagement to understand operational requirements',action:'Request site visit through the procurement engagement process'}],rationale:'Score of 42 reflects marginal stakeholder access via peripheral relationships. The two known contacts provide a navigational entry point but are not decision-influencers on this contract.'},oi:{evidence:['Pursuit registered in pipeline — Category C at present'],vulnerabilities:[{issue:'Category C means no dedicated resource — passive monitoring only',action:'Escalate to Category B if pre-market engagement confirms viable path'},{issue:'IR35 compliance complexity not yet assessed',action:'Commission IR35 impact assessment before any commercial modelling'}],rationale:'Score of 30 reflects a pursuit on the register but not yet resourced. At Category C, Serco is observing rather than competing.'},vp:{evidence:['BPO outcomes evidence: £8m savings delivered on DWP debt recovery programme','Technology differentiator: AI-assisted case prioritisation reduces average debt age by 22%'],vulnerabilities:[{issue:'VP not validated against HMRC\'s stated objectives for this contract',action:'Review HMRC Annual Report and Transformation Plan to align VP to declared outcomes'}],rationale:'Score of 48 reflects transferable value proposition evidence not yet tailored to HMRC context. The AI case prioritisation differentiator is genuinely strong if aligned to HMRC\'s specific metrics.'},pp:{evidence:['Opportunity identified and registered in pipeline'],vulnerabilities:[{issue:'No win strategy, storyboard, or response plan in existence',action:'Convene pursuit qualification workshop — Go/No-Go gate decision required within 30 days'},{issue:'No partnership or subcontractor strategy developed',action:'Assess whether an HMRC-credentialled partner would materially improve competitive position'}],rationale:'Score of 20 reflects a pursuit at the very earliest stage. At Qualification this is not a failure — it reflects lifecycle position. The critical decision is whether to invest to move it forward or formally No-Go.'}},
+  p06:{cp:{evidence:['Incumbent on PECS South since 2011 — 14-year operational relationship with HMPPS','BAFO shortlist confirmed: Serco vs. GEO Group (US market entrant)','GEO Group UK track record limited — no HMPPS custody services delivery record in England','Performance record: 96.2% on-time escort completion FY2024–25'],vulnerabilities:[{issue:'GEO Group has submitted aggressively low price at BAFO — gap estimated at 8%',action:'Model price response options: match on price, or defend on total cost of ownership and transition risk narrative'}],rationale:'Score of 70 reflects a dominant incumbent position being challenged on price alone. GEO\'s lack of English custody operational experience is a material risk to HMPPS that must be foregrounded in the BAFO narrative.'},pi:{evidence:['At BAFO stage — full evaluation framework and sub-criteria weights confirmed','Evaluation panel composition known: 3 HMPPS evaluators + 1 independent assessor','Commercial model refined following evaluator feedback session'],vulnerabilities:[],rationale:'Score of 78 reflects near-complete procurement intelligence at BAFO stage. The evaluation framework is fully understood.'},ss:{evidence:['HMPPS Director General met at quarterly review — supportive of continuation','MoJ Commercial Director bilateral completed','TUPE consultation underway — 89% staff retention commitment given'],vulnerabilities:[{issue:'New MoJ Permanent Secretary may not be briefed on PECS strategic importance',action:'Request ministerial briefing note route through MoJ commercial team before award decision'}],rationale:'Score of 72 reflects a well-mapped stakeholder network with broad senior support for continuation.'},oi:{evidence:['PECS South classified Category A — full Executive Committee visibility','Group CEO personally briefed — commitment to win confirmed','Dedicated BAFO team of 12 assembled and colocated'],vulnerabilities:[],rationale:'Score of 65 reflects strong internal mobilisation. The score is deliberately discounted from maximum to acknowledge the risk of incumbent complacency after 14 years — active management of bid team urgency is required through to submission.'},vp:{evidence:['Outcomes evidence pack: 14 years data, court on-time delivery, custody incident rates','Innovation commitment: body-worn video technology rollout at no additional cost','Rehabilitation outcomes: 12% reduction in custody-related incidents vs. sector average'],vulnerabilities:[{issue:'BAFO VP does not adequately address "what\'s new" — reads as continuation not transformation',action:'Add forward-looking innovation roadmap: Years 1–3 transformation commitments with measurable milestones'}],rationale:'Score of 62 reflects excellent historical evidence with a gap in forward-looking differentiation. HMPPS evaluators at BAFO will ask what they get in the next contract that they didn\'t get in the last one.'},pp:{evidence:['BAFO response 85% complete','Legal review of TUPE schedule complete','Submission scheduled 14 days before deadline — contingency built in'],vulnerabilities:[{issue:'Innovation appendix not yet drafted — highest-scoring new section in the evaluation',action:'Assign senior writer to innovation appendix as priority — 5-day writing sprint to first draft'}],rationale:'Score of 80 reflects a BAFO response in excellent overall shape. The innovation appendix is the only material remaining item.'}},
+  p07:{cp:{evidence:['Mears holds incumbent on Lot 2 and is expected to compete on Lot 3','Serco has no asylum accommodation track record — genuine new sector entry','Clearsprings Ready Homes identified as second competitor'],vulnerabilities:[{issue:'Both primary competitors have operational infrastructure already in place',action:'Develop asset partnership strategy — identify property management partners in Lot 3 regions immediately'},{issue:'Serco brand risk: media scrutiny on asylum accommodation elevated',action:'Commission reputational risk assessment; develop proactive media and political engagement strategy'}],rationale:'Score of 48 reflects a pursuit where Serco has transferable government services capability but no sector-specific operational infrastructure. Partnership strategy is the primary route to competitive parity.'},pi:{evidence:['ITT issued via Crown Commercial Service framework — Serco is framework-listed','Evaluation criteria confirmed: 50% social value, 30% quality, 20% commercial','Lot 3 geography confirmed: West Midlands and East Midlands — 1,200 bed capacity requirement'],vulnerabilities:[{issue:'Social value evaluation methodology not yet understood — 50% weighting demands deep intelligence',action:'Request social value evaluation guidance from CCS; benchmark against Mears public commitments'}],rationale:'Score of 55 reflects solid structural knowledge of the procurement with a critical gap on social value evaluation methodology. At 50% weighting, the social value response is not one section among many — it is the bid.'},ss:{evidence:['Home Office AASC programme team identified — bilateral meeting requested and pending','Local authority contacts in West Midlands engaged'],vulnerabilities:[{issue:'Home Office asylum programme SRO not yet engaged at Director level',action:'Escalate bilateral meeting request to Director level'},{issue:'NGO and charity sector relationships absent — critical for social value at 50% weighting',action:'Map asylum support charities in Lot 3 regions; initiate partnership conversations within 14 days'}],rationale:'Score of 50 reflects partial stakeholder coverage with two significant gaps: the programme SRO and the NGO ecosystem.'},oi:{evidence:['Pursuit approved Category B — Justice and Central Government joint sponsorship','Reputational sensitivity flagged at Bid Investment Board'],vulnerabilities:[{issue:'Category B resource may not support a 50% social value response at required depth',action:'Request resource uplift for social value workstream specifically'}],rationale:'Score of 42 reflects joint divisional sponsorship adequate in governance terms but potentially under-resourced for the social value intensity of this bid.'},vp:{evidence:['Safeguarding credentials: ISO 45001 certified, 0 serious safeguarding incidents in justice contracts','Outcomes: integration into employment pathways within 6 months — 34% success rate in analogous programme'],vulnerabilities:[{issue:'Integration outcome evidence is from a different programme context',action:'Commission rapid evidence review to establish direct comparability'}],rationale:'Score of 58 reflects a VP with the right structural components but insufficient direct sector evidence.'},pp:{evidence:['Pursuit plan drafted — ITT response timeline mapped','Partner identification process initiated — 3 property management firms under preliminary discussion'],vulnerabilities:[{issue:'Property management partner not confirmed — blocks mobilisation plan, pricing, and social value response',action:'Issue formal partner selection decision within 21 days'},{issue:'Social value response structure not yet designed',action:'Engage social value specialist consultancy in parallel with partner process'}],rationale:'Score of 44 reflects a pursuit in early active development with two structural blockers. Partner confirmation is the critical path item.'}},
+  p08:{cp:{evidence:['Serco FM credentials: 15 years public sector FM delivery across 47 active sites','Fire sector specific experience: limited to 2 minor equipment maintenance contracts only'],vulnerabilities:[{issue:'MITIE and Engie have existing fire sector FM relationships',action:'Consider consortium approach with a fire-sector-specialist FM sub-contractor'},{issue:'Multi-authority structure favours suppliers with regional FM presence',action:'Map regional FM capability against Lot 3 authority geography'}],rationale:'Score of 45 reflects a pursuit where Serco\'s general FM credentials are strong but fire sector specificity is weak.'},pi:{evidence:['Procurement route not yet confirmed','LGA Fire Procurement Network attended — opportunity confirmed as active for 2026'],vulnerabilities:[{issue:'No bilateral engagement with any of the 4 procuring authorities',action:'Request meetings with Head of Estates at each FRA — target 2 confirmed within 30 days'},{issue:'ITT timeline uncertain — procurement freeze risk from DLUHC funding review',action:'Monitor DLUHC spending review outputs; build procurement delay contingency into resource plan'}],rationale:'Score of 38 reflects very early procurement intelligence from public sources only. The procurement route uncertainty is the most significant near-term risk.'},ss:{evidence:['West Midlands Fire Service Chief Executive known from local government network','LGA Emergency Services lead engaged informally at conference'],vulnerabilities:[{issue:'No relationships with the 3 other procuring authority heads',action:'Request introductions via WMFS contact'},{issue:'Political sponsor for bundled procurement not identified',action:'Research PCCs and Fire Authority chairs to identify the political decision-making structure'}],rationale:'Score of 48 reflects one strong relationship and peripheral awareness across other authorities.'},oi:{evidence:['Registered in pipeline — Category C'],vulnerabilities:[{issue:'No dedicated resource assigned',action:'Assess whether this pursuit warrants dedicated BD resource or should remain Category C monitored'},{issue:'No bid strategy or investment case developed',action:'Schedule strategy session with sector lead to determine pursuit posture before the procurement launches'}],rationale:'Score of 40 reflects a pursuit that has been registered but not yet activated.'},vp:{evidence:['FM outcomes from comparable public sector sites: 98.1% planned maintenance completion','Fleet management credential: MoD vehicle fleet FM contract covering 1,200 specialist vehicles'],vulnerabilities:[{issue:'Fire-specific fleet (appliances, aerial platforms) maintenance not in Serco reference base',action:'Identify and negotiate with specialist fire appliance maintenance firm for a targeted subcontract role'}],rationale:'Score of 52 reflects transferable FM outcomes evidence that stops short of fire-specific credibility.'},pp:{evidence:['Opportunity on watchlist','OJEU monitoring in place'],vulnerabilities:[{issue:'No active bid development underway',action:'Decide pursuit posture (active vs. monitor) within 30 days based on procurement route confirmation'}],rationale:'Score of 35 reflects a pursuit being monitored but not yet actively pursued. Appropriate for current stage.'}},
+  p09:{cp:{evidence:['Serco is the incumbent prime on Ground Support since 2017 — 8-year track record','Leidos-led consortium confirmed as primary competitive threat','Technical performance record: 98.4% training delivery target achievement FY2024–25'],vulnerabilities:[{issue:'Leidos consortium may secure 2 of Serco\'s current Babcock specialist subcontractors before ITT',action:'Issue exclusivity discussions with Babcock specialist teams within 14 days'},{issue:'MOD transformation programme may require capability uplift beyond current Serco scope',action:'Commission capability gap analysis against MOD\'s published transformation requirements'}],rationale:'Score of 68 reflects a strong incumbent position under active competitive pressure. Subcontractor allegiance is the single most important near-term variable.'},pi:{evidence:['ITT expected Q3 2026 — confirmed at MOD Acquisition Community day','Evaluation framework: 65% technical, 35% commercial','SRO identified: MOD Director Training and Education','Key evaluation themes confirmed: digitalisation, resilience, Net Zero'],vulnerabilities:[{issue:'Net Zero evaluation criteria weight not confirmed — potentially 15% standalone section',action:'Develop Net Zero response framework now; engage MOD sustainability team proactively'}],rationale:'Score of 65 reflects well-developed procurement intelligence from the 8-year incumbent tenure. The Net Zero weight uncertainty is the primary gap.'},ss:{evidence:['MOD Director Training and Education (SRO) met quarterly','Army Training Regiment commanding officers engaged across all 4 delivery sites','MOD Permanent Secretary met at Serco-hosted industry event Q2 2025'],vulnerabilities:[{issue:'Leidos recently hired a former MOD 2-star with direct relationships to the evaluation panel',action:'Map new relationship risk; consider equivalent senior hire or independent advisory appointment'}],rationale:'Score of 70 reflects a strong multi-tier stakeholder network built over 8 years. The Leidos senior hire introduces relationship competition at the evaluation panel tier for the first time.'},oi:{evidence:['Category A pursuit — Group Bid Investment Board quarterly review','Defence Division MD as executive sponsor','Full bid team resourced: 14 FTE including 3 subcontractor leads confirmed'],vulnerabilities:[{issue:'MOD transformation dependency means scope may change at ITT',action:'Build scope flexibility into team resourcing; maintain 20% unallocated capacity through to ITT'}],rationale:'Score of 62 reflects a well-resourced pursuit with a specific risk around scope uncertainty.'},vp:{evidence:['Training delivery outcomes: 94.2% pass rate vs. 89% sector average','Digitalisation: learning management system deployed across all 12 training centres','Net Zero progress: 28% carbon reduction vs. 2017 baseline'],vulnerabilities:[{issue:'Resilience narrative not yet developed as a standalone VP theme',action:'Develop dedicated resilience case study from COVID training delivery continuity record'}],rationale:'Score of 58 reflects a strong outcomes base with a gap in resilience narrative development. Given MOD\'s stated evaluation theme of resilience, this is a scoring risk.'},pp:{evidence:['Win strategy confirmed at SteerCo November 2025','Storyboard review completed — 7 of 9 sections approved','Subcontractor deliverables schedule issued — 3 of 5 confirmed on track'],vulnerabilities:[{issue:'Net Zero and Resilience sections not yet started',action:'Assign dedicated writer and SME to each section — 3-week sprint required'},{issue:'Two Babcock subcontractor deliverables on hold pending allegiance confirmation',action:'Resolve allegiance question within 14 days'}],rationale:'Score of 65 reflects a pursuit in generally good shape with two specific dependencies. The Babcock situation is the higher-priority risk given its systemic impact.'}},
+  p10:{cp:{evidence:['Serco delivers monitoring service under current EM contract — operationally embedded but not prime','G4S is current prime — holds the key MoJ EM team relationship','MoJ NG market intelligence: seeking integrated solution from single prime'],vulnerabilities:[{issue:'Serco does not own the monitoring platform — technology lock-in creates prime bid risk',action:'Evaluate alternative platform providers; assess whether platform acquisition is viable'},{issue:'G4S expected to bid as prime with platform ownership — structural advantage',action:'Develop open platform narrative as counter-positioning'}],rationale:'Score of 60 reflects a pursuit where Serco has strong service delivery credentials but a structural disadvantage in the technology layer. Resolving the platform question is the primary route to competitive parity.'},pi:{evidence:['MoJ EM team bilateral: NG procurement expected Q4 2026','Policy intent confirmed: MoJ seeking to expand EM to 30,000 concurrent tags','Pre-market engagement submission completed — Serco position paper well received'],vulnerabilities:[{issue:'Technology evaluation sub-criteria not yet defined — 25% weighting is significant',action:'Submit detailed technology clarification questions; request bilateral on evaluation methodology'}],rationale:'Score of 70 reflects strong procurement engagement at an early stage. The MoJ EM team relationship from current delivery is a genuine intelligence advantage.'},ss:{evidence:['MoJ Director EM Services — monthly service review relationship, well established','MoJ Deputy Director Technology met bilaterally at EM industry conference','HMPPS Director General has expressed support for continuity publicly'],vulnerabilities:[{issue:'Political sponsor not mapped — EM expansion to 30,000 tags requires Ministerial sign-off',action:'Identify MoJ Minister responsible for EM expansion; develop appropriate engagement route'}],rationale:'Score of 58 reflects excellent operational stakeholder coverage with a gap at the political tier.'},oi:{evidence:['Pursuit classified Category A','Justice MD as sponsor with direct MoJ relationship','Commercial team actively modelling prime vs. subcontractor bid configuration'],vulnerabilities:[{issue:'Platform decision (buy vs. partner vs. subcontract) not yet resolved',action:'Commission technology options appraisal within 30 days — board-level decision required'}],rationale:'Score of 55 reflects appropriate internal sponsorship with a strategic decision outstanding. The platform question is a corporate decision, not a bid question.'},vp:{evidence:['Monitoring service outcomes: 99.1% tag check-in compliance vs. 97.5% requirement','Reoffending impact: EM subjects show 18% lower reoffending rate vs. equivalent custodial sentences','Technology innovation: GPS + RF hybrid tagging reducing exclusion zone breaches by 31%'],vulnerabilities:[{issue:'Expansion value proposition not yet developed — 30,000 tag scale changes the delivery model fundamentally',action:'Develop scale-up value proposition: unit economics, outcomes projections, and operational model at 30k tags'}],rationale:'Score of 62 reflects strong operational outcomes evidence. The expansion narrative is the key development area.'},pp:{evidence:['Shaping strategy confirmed — MoJ engagement plan active','Commercial configuration options under modelling across 3 scenarios','Technology partner conversations initiated with 2 potential providers'],vulnerabilities:[{issue:'Platform decision is on critical path — storyboard and pricing cannot proceed until resolved',action:'Set 30-day decision deadline on platform — escalate to CEO if unresolved'},{issue:'Win theme workshop not yet held',action:'Schedule win theme workshop for the month of platform decision confirmation'}],rationale:'Score of 45 reflects a pursuit in active shaping with a critical-path blocker. The platform decision gates all subsequent bid development.'}},
+  p11:{cp:{evidence:['G4S has held this contract since 2017 — 8-year incumbent with all operational infrastructure in place','Serco has no existing Home Office border directorate relationship of any kind'],vulnerabilities:[{issue:'G4S is deeply entrenched — transition risk narrative will be deployed against any challenger',action:'Assess whether strategic partnership with G4S is an alternative commercial route'},{issue:'Serco has no credible port facilitation reference',action:'Identify international Serco business with port or border facility reference that can be transferred'},{issue:'UK border policy instability creates material procurement delay risk',action:'Only escalate investment if procurement is confirmed to proceed on original timeline'}],rationale:'Score of 25 — at Qualification stage for New Business, even the band floor (15) sits below Serco\'s current PWIN. This pursuit is within band but structurally weak. Without a credible reference and facing a deeply entrenched incumbent, the strategic question is whether direct competition is the right posture.'},pi:{evidence:['PIN published — procurement route being confirmed by Home Office','Home Office Borders and Immigration commercial team identified from public sources'],vulnerabilities:[{issue:'No bilateral engagement with Home Office commercial team',action:'Only request pre-market engagement if the No-Go review concludes in favour of proceeding'},{issue:'Evaluation criteria and framework completely unknown',action:'Attend any public procurement briefings; review all published policy intent documents'}],rationale:'Score of 18 reflects the very earliest stage of intelligence gathering from public sources only. Any meaningful procurement intelligence requires bilateral engagement that has not yet occurred.'},ss:{evidence:['No existing Home Office border directorate relationships have been identified'],vulnerabilities:[{issue:'Complete absence of relevant stakeholder relationships in the border directorate',action:'If proceeding, prioritise stakeholder mapping as the single most important first activity'},{issue:'Political environment around border security is highly sensitive',action:'Research PCCs and Fire Authority chairs to identify the political decision-making structure'}],rationale:'Score of 30 reflects a starting position of zero relevant stakeholder relationships. Building from scratch in a politically sensitive environment is an 18–24 month programme.'},oi:{evidence:['Registered as Category C watchlist item only'],vulnerabilities:[{issue:'No senior sponsorship or resource commitment',action:'Formal No-Go review recommended within 60 days: criteria — strategic partnership identified, OR credible reference secured, OR incumbent failure confirmed'},{issue:'ROI of bid investment vs. PWIN does not clear investment threshold',action:'Do not escalate beyond Category C without material improvement in at least 2 scoring categories first'}],rationale:'Score of 22 reflects a pursuit where the investment case has not yet been made — and may not be makeable. The recommendation is explicit: No-Go unless a strategic route is identified within 60 days.'},vp:{evidence:['Serco international ports reference: Dubai Airport guest experience partnership (AED495m)','Border security adjacent credentials: immigration detention facilities, 4 sites in the UK'],vulnerabilities:[{issue:'Dubai Airport reference is service excellence in a hospitality context — limited transferability',action:'Reframe as "high-throughput people facilitation" if used; be cautious about overstating the analogy'},{issue:'Immigration detention credentials carry active reputational sensitivity',action:'Assess carefully whether detention references should be included given the political environment'}],rationale:'Score of 38 reflects an attempt to construct a VP from adjacent credentials. Neither reference is directly transferable without significant reframing.'},pp:{evidence:['Opportunity identified and registered in the pipeline only'],vulnerabilities:[{issue:'No active bid development underway — appropriate given the No-Go recommendation at this stage',action:'Hold at registration status pending No-Go review outcome; do not invest resource until strategic route confirmed'}],rationale:'Score of 15 reflects a pursuit at registration stage with a formal No-Go review recommended. Investing in pursuit progress activities before the strategic route is confirmed would be a misallocation of bid resource.'}},
+  p12:{cp:{evidence:['Incumbent on all 4 Midlands Trust sites since 2019 — 6-year continuous delivery record','No credible alternative supplier has expressed interest','NHS Shared Business Services framework listing confirmed','Client satisfaction: 9.2/10 at last annual review Q3 2025'],vulnerabilities:[{issue:'NHS procurement freeze mandate from DHSC could delay extension',action:'Engage Trust CFOs to understand whether local delegation authority allows extension to proceed independently'}],rationale:'Score of 80 reflects a near-unassailable competitive position. The only credible risk is an administrative procurement freeze driven by DHSC policy, not a competitor threat.'},pi:{evidence:['Extension mechanism confirmed in original contract — 2 × 2-year options exercisable by Trust','All 4 Trust Estates Directors have confirmed intent to extend formally','Evaluation approach: no formal re-scoring — extension is delegated authority decision at Trust level'],vulnerabilities:[{issue:'University Hospitals Birmingham has a new Chief Executive — Board approval route uncertain',action:'Request introductory meeting with new UHB CEO before the Trust Board approval meeting is scheduled'}],rationale:'Score of 85 reflects an extension procedurally straightforward at 3 Trusts with a single uncertainty at UHB.'},ss:{evidence:['All 4 Trust Estates Directors engaged monthly — relationships active and positive','All Trust CFOs briefed on extension business case — all expressed support','Integrated Care Board representative briefed — system-level support confirmed'],vulnerabilities:[{issue:'UHB new CEO relationship not yet established',action:'Priority action: request introductory meeting within 10 days'}],rationale:'Score of 75 reflects comprehensive stakeholder coverage across 3 of 4 Trusts. The UHB gap is the only material item and is a straightforward relationship-building task.'},oi:{evidence:['Category B — Central Government and Healthcare divisional joint sponsorship confirmed','Account director assigned with full-time focus on this extension','Legal team briefed — contract update documentation in preparation'],vulnerabilities:[],rationale:'Score of 72 reflects appropriate and well-executed internal sponsorship. Resource and governance are proportionate to the opportunity — no gaps identified.'},vp:{evidence:['Estates condition improvement: 14% reduction in backlog maintenance liability over 6 years','Energy performance: 19% carbon reduction vs. 2019 baseline','Patient environment quality: FFT FM satisfaction scores averaging 4.4/5','Cost improvement: 7% real-terms cost reduction vs. inflation over the full contract term'],vulnerabilities:[{issue:'Extension VP is continuation-focused — lacks a Year 7–8 innovation narrative',action:'Develop forward-looking innovation commitments: digital twin pilot, EPC upgrade plan, predictive maintenance rollout'}],rationale:'Score of 70 reflects exceptional outcomes evidence across all key NHS FM dimensions. The single gap is a forward-looking narrative — Trust Estates Directors will want to understand what the next 2 years deliver beyond continuation.'},pp:{evidence:['Extension offer letter drafted and under internal legal review','Commercial schedule (indexed pricing for Years 7–8) agreed in principle with all Trusts','All 4 Trust mobilisation and transition plans updated','Submission targeted 6 weeks ahead of contractual deadline'],vulnerabilities:[{issue:'UHB Board approval meeting date not yet confirmed',action:'Confirm UHB Board calendar and book approval slot — escalate to NHS divisional lead if not schedulable within 30 days'}],rationale:'Score of 82 reflects an extension process near-complete at 3 Trusts and appropriately managed at UHB. The 6-week submission contingency is generous and provides adequate buffer.'}}
+};
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let state = {
+  pursuits: JSON.parse(JSON.stringify(PURSUITS)),
+  selectedId: null,
+  activeTab: 'grid',
+  sortCol: null, sortDir: 1,
+  pitchMode: true,
+  matrixMode: 'raw',
+  openCats: {},
+  settings: { clientName:'Serco Group', period:'FY2025', pwinTargetDelta:12, retainerPM:5 }
+};
+
+// ══════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════
+function fmtM(v){if(v>=1000) return '£'+(v/1000).toFixed(1)+'bn';return '£'+v.toFixed(v<10?1:0)+'m';}
+function pwinColor(p){if(p<35) return 'var(--red)';if(p<55) return 'var(--amber)';if(p<70) return 'var(--navy)';return 'var(--green)';}
+function pwinColorHex(p){if(p<35) return '#b91c1c';if(p<55) return '#c76a0a';if(p<70) return '#2d5499';return '#1a7a4a';}
+function catColor(s){if(s<35) return 'var(--red)';if(s<55) return 'var(--amber)';if(s<70) return '#5a8de8';return '#2db870';}
+function sectorClass(s){if(s==='Emergency Services') return 'pill-es';if(s==='Defence') return 'pill-def';if(s==='Justice') return 'pill-jus';return 'pill-cg';}
+function dealTypeColor(d){if(d==='New Business') return '#5a8de8';if(d==='Rebid') return '#c9a84c';return '#2db870';}
+
+const CAT_KEYS=['cp','pi','ss','oi','vp','pp'];
+const CAT_NAMES={cp:'Competitive Positioning',pi:'Procurement Intelligence',ss:'Stakeholder Strength',oi:'Organisational Influence',vp:'Value Proposition',pp:'Pursuit Progress'};
+const CAT_SHORT={cp:'CP',pi:'PI',ss:'SS',oi:'OI',vp:'VP',pp:'PP'};
+
+function portfolioStats(){
+  const ps=state.pursuits;
+  const count=ps.length;
+  const totalTCV=ps.reduce((a,p)=>a+p.tcv,0);
+  const wev=ps.reduce((a,p)=>a+p.tcv*p.pwin/100,0);
+  const avgPwin=Math.round(ps.reduce((a,p)=>a+p.pwin,0)/count);
+  const health=Math.round(ps.filter(p=>p.pwin>=50).length/count*100);
+  return{count,totalTCV,wev,avgPwin,health};
+}
+
+function updateHeaderChips(){
+  const s=portfolioStats();
+  document.getElementById('chip-count').textContent=s.count;
+  document.getElementById('chip-tcv').textContent=fmtM(s.totalTCV);
+  document.getElementById('chip-wev').textContent=fmtM(s.wev);
+  document.getElementById('chip-pwin').textContent=s.avgPwin+'%';
+  document.getElementById('chip-health').textContent=s.health+'%';
+  document.getElementById('client-label-display').textContent=state.settings.clientName+' — Portfolio Intelligence';
+}
+
+// ══════════════════════════════════════════════════
+// TRAJECTORY CHIP HTML
+// ══════════════════════════════════════════════════
+function buildTrajChip(pursuit) {
+  const t = getTraj(pursuit);
+  if (!t) return '<span style="color:var(--text-muted);font-family:var(--font-mono);font-size:10px;">—</span>';
+  return `<div style="display:flex;flex-direction:column;gap:4px;">
+    <div class="traj-chip ${t.status}"><span class="traj-dot"></span>${t.label}</div>
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);">Band: ${t.low}–${t.high}%</div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// TRAJECTORY BAND CARD — for Pursuit Detail
+// ══════════════════════════════════════════════════
+function buildTrajBandCard(pursuit) {
+  const t = getTraj(pursuit);
+  if (!t) return '';
+
+  const pwin = pursuit.pwin;
+  const bandWidth = t.high - t.low;
+  // Position everything on a 0–100 scale
+  const bandLeft = t.low;
+  const bandW = bandWidth;
+  const markerLeft = Math.max(0, Math.min(100, pwin));
+
+  const markerColor = pwinColorHex(pwin);
+
+  // Contextual explanation
+  const stageContext = {
+    Qualification: 'At Qualification, intelligence is limited and relationships are early. Scores are expected to be lower than at later stages.',
+    Shaping: 'At Shaping, solution differentiation and buyer access are developing. PWIN should be building as intelligence matures.',
+    Bid: 'In Bid, the response is in production. PWIN should be firming up as strategy is locked and risks are understood.',
+    BAFO: 'At BAFO, competitive position is largely set. PWIN should reflect realistic assessment of evaluator scoring.',
+    Preferred: 'At Preferred, the outcome is substantially determined. PWIN should reflect remaining commercial and political risk only.'
+  };
+
+  const dealContext = {
+    'New Business': 'New Business starts with no incumbent advantage. Building stakeholder relationships and procurement intelligence from scratch takes time — lower early-stage PWIN is structurally normal.',
+    'Rebid': 'Rebids carry incumbent advantage in relationships, operational evidence, and transition risk narrative. Higher PWIN expectations reflect this structural head start.',
+    'Extension': 'Extensions are near-certain for well-performing incumbents. The PWIN band reflects residual risk from external factors: policy freeze, competitor lobbying, or forced competition.'
+  };
+
+  let exitSignal = '';
+  if (t.status === 'on-track' || t.status === 'ahead') {
+    exitSignal = `<em>On trajectory.</em> The absolute PWIN score of ${pwin}% does not justify an exit decision at this stage and deal type. Monitor category score trajectory — particularly Procurement Intelligence and Stakeholder Strength — as the primary leading indicators.`;
+  } else if (t.status === 'monitor') {
+    exitSignal = `<strong>Below expected band.</strong> At ${pwin}%, this pursuit is ${t.low - pwin} points below the floor for a ${pursuit.dealType} at ${pursuit.stage}. Controllable category scores should be improving. If PI and SS are not building within the next review cycle, a formal recovery plan is warranted.`;
+  } else {
+    exitSignal = `<strong style="color:#e87070;">Materially below band.</strong> At ${pwin}%, this pursuit is ${t.low - pwin} points below the expected floor. An executive exit challenge is legitimate and should be addressed with a structured recovery case or a formal No-Go recommendation within 30 days.`;
+  }
+
+  return `<div class="traj-band-card">
+    <div class="traj-band-header">
+      <div>
+        <div class="traj-band-title">PWIN Trajectory — Stage &amp; Deal Type Context</div>
+        <div style="margin-top:6px;font-family:var(--font-mono);font-size:9px;color:var(--text-muted);">
+          ${pursuit.dealType} · ${pursuit.stage} · Expected band: ${t.low}–${t.high}%
+        </div>
+      </div>
+      <div class="traj-band-status">
+        <div class="traj-chip ${t.status}" style="font-size:10px;padding:4px 10px;">
+          <span class="traj-dot"></span>${t.label}
+        </div>
+      </div>
+    </div>
+
+    <div class="traj-band-body">
+      <div class="traj-track-wrap">
+        <div class="traj-track-label-row">
+          <span class="traj-track-label">0%</span>
+          <span class="traj-track-label">25%</span>
+          <span class="traj-track-label">50%</span>
+          <span class="traj-track-label">75%</span>
+          <span class="traj-track-label">100%</span>
+        </div>
+        <div class="traj-track" style="position:relative;">
+          <!-- full dim background -->
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.05);border-radius:6px;"></div>
+          <!-- expected band highlight -->
+          <div class="traj-band-fill" style="left:${bandLeft}%;width:${bandW}%;"></div>
+          <!-- actual PWIN marker -->
+          <div class="traj-actual-marker" style="left:${markerLeft}%;background:${markerColor};"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);">← Below stage</div>
+          <div style="position:relative;left:${markerLeft - 50}%;font-family:var(--font-mono);font-size:10px;font-weight:500;color:${markerColor};">▲ ${pwin}%</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);">Ahead of stage →</div>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:6px;border-left:2px solid rgba(201,168,76,0.25);">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;">Executive Framing</div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">${exitSignal}</div>
+        </div>
+      </div>
+
+      <div class="traj-context">
+        <div style="margin-bottom:12px;">
+          <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Stage Context</div>
+          <div>${stageContext[pursuit.stage] || ''}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Deal Type Context</div>
+          <div>${dealContext[pursuit.dealType] || ''}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// TAB / LAYOUT
+// ══════════════════════════════════════════════════
+function positionTabbar(){
+  const banner=document.getElementById('pitch-banner');
+  const bH=banner.classList.contains('visible')?banner.offsetHeight:0;
+  document.getElementById('tabbar').style.top=(72+bH)+'px';
+  document.getElementById('content').style.top=(72+bH+48)+'px';
+}
+
+function switchTab(tab){
+  state.activeTab=tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+tab));
+  if(tab==='matrix') renderMatrix();
+  if(tab==='economics') renderEconomics();
+  if(tab==='detail') renderDetail();
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+
+// ══════════════════════════════════════════════════
+// SVG HELPERS
+// ══════════════════════════════════════════════════
+function buildGaugeSVG(pwin){
+  const r=18,cx=24,cy=22,sw=4;
+  const angle=(pwin/100)*180-180,rad=(angle*Math.PI)/180;
+  const ex=cx+r*Math.cos(rad),ey=cy+r*Math.sin(rad);
+  return `<svg width="48" height="26" viewBox="0 0 48 26"><path d="M6,22 A18,18 0 0,1 42,22" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="${sw}" stroke-linecap="round"/><path d="M6,22 A18,18 0 0,1 ${ex.toFixed(2)},${ey.toFixed(2)}" fill="none" stroke="${pwinColor(pwin)}" stroke-width="${sw}" stroke-linecap="round"/></svg>`;
+}
+
+function buildMiniRadar(cats){
+  const cx=24,cy=24,r=18,n=6;
+  const pts=CAT_KEYS.map((k,i)=>{const a=(i/n)*2*Math.PI-Math.PI/2,v=cats[k]/100;return[cx+r*v*Math.cos(a),cy+r*v*Math.sin(a)];});
+  let grid='';
+  [0.33,0.66,1].forEach(s=>{const gp=CAT_KEYS.map((_,i)=>{const a=(i/n)*2*Math.PI-Math.PI/2;return[cx+r*s*Math.cos(a),cy+r*s*Math.sin(a)];});grid+=`<polygon points="${gp.map(p=>p.join(',')).join(' ')}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>`;});
+  return `<svg width="48" height="48" viewBox="0 0 48 48">${grid}<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="rgba(45,84,153,0.35)" stroke="#5a8de8" stroke-width="1.5"/></svg>`;
+}
+
+// ══════════════════════════════════════════════════
+// TAB 1: GRID
+// ══════════════════════════════════════════════════
+function renderGrid(){
+  const ps=[...state.pursuits];
+  if(state.sortCol){ps.sort((a,b)=>{let av=a[state.sortCol],bv=b[state.sortCol];if(state.sortCol==='riskCount'){av=a.riskFlags.length;bv=b.riskFlags.length;}if(typeof av==='string') return av.localeCompare(bv)*state.sortDir;return(av-bv)*state.sortDir;});}
+  const tbody=document.getElementById('grid-tbody');
+  tbody.innerHTML='';
+  ps.forEach(p=>{
+    const tr=document.createElement('tr');
+    tr.dataset.id=p.id;
+    const riskDots=p.riskFlags.map((_,i)=>`<div class="risk-dot ${i===0?'dot-red':i===1?'dot-amber':'dot-yellow'}"></div>`).join('');
+    tr.innerHTML=`
+      <td><div class="pursuit-name">${p.name}</div></td>
+      <td><span class="sector-pill ${sectorClass(p.sector)}">${p.sector}</span></td>
+      <td><span class="deal-type">${p.dealType}</span></td>
+      <td><span class="tcv-val">${fmtM(p.tcv)}</span></td>
+      <td><span class="stage-badge">${p.stage}</span></td>
+      <td><div class="pwin-cell">${buildGaugeSVG(p.pwin)}<span class="pwin-num" style="color:${pwinColor(p.pwin)}">${p.pwin}%</span></div></td>
+      <td>${buildTrajChip(p)}</td>
+      <td>${buildMiniRadar(p.categories)}</td>
+      <td><div class="risk-dots">${riskDots}</div></td>`;
+    tr.addEventListener('click',()=>{state.selectedId=p.id;switchTab('detail');});
+    tbody.appendChild(tr);
+  });
+  document.querySelectorAll('.grid-table th[data-sort]').forEach(th=>{
+    th.classList.toggle('sorted',th.dataset.sort===state.sortCol);
+    th.onclick=()=>{if(state.sortCol===th.dataset.sort) state.sortDir*=-1;else{state.sortCol=th.dataset.sort;state.sortDir=1;}renderGrid();};
+  });
+  document.getElementById('grid-period-label').textContent=`${state.settings.period} — ${state.pursuits.length} Active Pursuits`;
+}
+
+// ══════════════════════════════════════════════════
+// TAB 2: MATRIX
+// ══════════════════════════════════════════════════
+document.querySelectorAll('.matrix-toggle-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.matrix-toggle-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    state.matrixMode=b.dataset.mode;
+    const note = document.getElementById('matrix-mode-note');
+    if(state.matrixMode==='raw'){
+      note.textContent='X-axis shows raw PWIN score 0–100. Each bubble\'s position reflects the absolute probability of win.';
+    } else {
+      note.textContent='X-axis shows Stage-Adjusted PWIN: 0 = at floor of expected band for this stage & deal type, 100 = at ceiling. Pursuits left of 0 are below band. Pursuits right of 100 are ahead of stage. Use this view to identify which pursuits are genuinely underperforming vs. those that are simply early in their lifecycle.';
+    }
+    renderMatrix();
+  });
+});
+
+function renderMatrix(){
+  const svg=document.getElementById('matrix-svg');
+  svg.innerHTML='';
+  const W=900,H=520,pad={l:70,r:40,t:40,b:60};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const maxTCV=Math.max(...state.pursuits.map(p=>p.tcv));
+  const maxBC=Math.max(...state.pursuits.map(p=>p.bidCost));
+
+  const isAdj = state.matrixMode==='adjusted';
+
+  // For adjusted mode: x range is -50 to 150 to show above/below band
+  const xMin = isAdj ? -50 : 0;
+  const xMax = isAdj ? 150 : 100;
+  const xRange = xMax - xMin;
+
+  function xPx(val){ return pad.l+((val-xMin)/xRange)*iW; }
+  function yPx(tcv){ return pad.t+iH-(tcv/maxTCV)*iH; }
+  function rPx(bc){ return 8+(bc/maxBC)*28; }
+
+  // Quadrant midpoints
+  const midXVal = isAdj ? 50 : 50; // adjusted: 50 means "at midpoint of expected band"
+  const midX=xPx(midXVal), midY=yPx(maxTCV*0.5);
+
+  const quadLabels = isAdj
+    ? ['TRANSFORM PRIORITY\n(Behind Band)', 'PROTECT & CLOSE\n(Ahead of Band)', 'REVIEW & EXIT\n(Behind Band)', 'MONITOR\n(Ahead of Band)']
+    : ['TRANSFORM PRIORITY', 'PROTECT & CLOSE', 'REVIEW & EXIT', 'MONITOR'];
+
+  const quads=[
+    {x:pad.l,y:pad.t,w:midX-pad.l,h:midY-pad.t,fill:'rgba(185,28,28,0.04)',stroke:'rgba(201,168,76,0.25)',label:quadLabels[0],lx:pad.l+10,ly:pad.t+16,lc:'#c9a84c'},
+    {x:midX,y:pad.t,w:W-pad.r-midX,h:midY-pad.t,fill:'rgba(26,122,74,0.04)',stroke:'rgba(255,255,255,0.04)',label:quadLabels[1],lx:midX+10,ly:pad.t+16,lc:'rgba(232,230,224,0.25)'},
+    {x:pad.l,y:midY,w:midX-pad.l,h:H-pad.b-midY,fill:'rgba(199,106,10,0.04)',stroke:'rgba(255,255,255,0.04)',label:quadLabels[2],lx:pad.l+10,ly:midY+18,lc:'rgba(232,230,224,0.25)'},
+    {x:midX,y:midY,w:W-pad.r-midX,h:H-pad.b-midY,fill:'rgba(45,84,153,0.04)',stroke:'rgba(255,255,255,0.04)',label:quadLabels[3],lx:midX+10,ly:midY+18,lc:'rgba(232,230,224,0.25)'}
+  ];
+
+  quads.forEach(q=>{
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',q.x);rect.setAttribute('y',q.y);rect.setAttribute('width',q.w);rect.setAttribute('height',q.h);rect.setAttribute('fill',q.fill);rect.setAttribute('stroke',q.stroke);rect.setAttribute('stroke-width','1');
+    svg.appendChild(rect);
+    const lines=q.label.split('\n');
+    lines.forEach((line,i)=>{
+      const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x',q.lx);txt.setAttribute('y',q.ly+(i*13));
+      txt.setAttribute('font-family','DM Mono,monospace');txt.setAttribute('font-size','10');txt.setAttribute('letter-spacing','0.08em');txt.setAttribute('fill',q.lc);txt.textContent=line;
+      svg.appendChild(txt);
+    });
+  });
+
+  if(!isAdj){
+    const ann=document.createElementNS('http://www.w3.org/2000/svg','text');
+    ann.setAttribute('x',pad.l+10);ann.setAttribute('y',pad.t+32);ann.setAttribute('font-family','DM Mono,monospace');ann.setAttribute('font-size','9');ann.setAttribute('fill','rgba(201,168,76,0.55)');ann.textContent='Primary intervention zone — highest return on PWIN investment';
+    svg.appendChild(ann);
+  } else {
+    // Draw "in-band" zone
+    const bandX0 = xPx(0), bandX100 = xPx(100);
+    const bandRect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bandRect.setAttribute('x',bandX0);bandRect.setAttribute('y',pad.t);bandRect.setAttribute('width',bandX100-bandX0);bandRect.setAttribute('height',iH);
+    bandRect.setAttribute('fill','rgba(201,168,76,0.03)');bandRect.setAttribute('stroke','rgba(201,168,76,0.12)');bandRect.setAttribute('stroke-width','1');bandRect.setAttribute('stroke-dasharray','4,3');
+    svg.appendChild(bandRect);
+    // Labels
+    const bl=document.createElementNS('http://www.w3.org/2000/svg','text');
+    bl.setAttribute('x',bandX0+6);bl.setAttribute('y',pad.t+12);bl.setAttribute('font-family','DM Mono,monospace');bl.setAttribute('font-size','9');bl.setAttribute('fill','rgba(201,168,76,0.4)');bl.textContent='◀ BELOW EXPECTED BAND';svg.appendChild(bl);
+    const br=document.createElementNS('http://www.w3.org/2000/svg','text');
+    br.setAttribute('x',bandX100+6);br.setAttribute('y',pad.t+12);br.setAttribute('font-family','DM Mono,monospace');br.setAttribute('font-size','9');br.setAttribute('fill','rgba(45,84,153,0.5)');br.textContent='AHEAD OF BAND ▶';svg.appendChild(br);
+    const bm=document.createElementNS('http://www.w3.org/2000/svg','text');
+    bm.setAttribute('x',(bandX0+bandX100)/2);bm.setAttribute('y',H-pad.b+30);bm.setAttribute('text-anchor','middle');bm.setAttribute('font-family','DM Mono,monospace');bm.setAttribute('font-size','9');bm.setAttribute('fill','rgba(201,168,76,0.4)');bm.textContent='Expected band for stage & deal type';svg.appendChild(bm);
+  }
+
+  // X axis ticks
+  const xTicks = isAdj ? [-50,-25,0,25,50,75,100,125,150] : [0,25,50,75,100];
+  xTicks.forEach(v=>{
+    const x=xPx(v);
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x);l.setAttribute('y1',pad.t);l.setAttribute('x2',x);l.setAttribute('y2',H-pad.b);l.setAttribute('stroke','rgba(255,255,255,0.05)');l.setAttribute('stroke-width','1');svg.appendChild(l);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',x);t.setAttribute('y',H-pad.b+16);t.setAttribute('text-anchor','middle');t.setAttribute('font-family','DM Mono,monospace');t.setAttribute('font-size','10');t.setAttribute('fill','rgba(232,230,224,0.3)');t.textContent=isAdj?(v===0?'Band\nFloor':v===100?'Band\nCeil':v):v+'%';svg.appendChild(t);
+  });
+
+  [0,200,400,600,800].forEach(v=>{
+    if(v>maxTCV) return;
+    const y=yPx(v);
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',pad.l);l.setAttribute('y1',y);l.setAttribute('x2',W-pad.r);l.setAttribute('y2',y);l.setAttribute('stroke','rgba(255,255,255,0.05)');l.setAttribute('stroke-width','1');svg.appendChild(l);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',pad.l-8);t.setAttribute('y',y+4);t.setAttribute('text-anchor','end');t.setAttribute('font-family','DM Mono,monospace');t.setAttribute('font-size','10');t.setAttribute('fill','rgba(232,230,224,0.3)');t.textContent=v>0?'£'+v+'m':'£0';svg.appendChild(t);
+  });
+
+  const xl=document.createElementNS('http://www.w3.org/2000/svg','text');
+  xl.setAttribute('x',pad.l+iW/2);xl.setAttribute('y',H-8);xl.setAttribute('text-anchor','middle');xl.setAttribute('font-family','DM Mono,monospace');xl.setAttribute('font-size','11');xl.setAttribute('fill','rgba(232,230,224,0.4)');xl.setAttribute('letter-spacing','0.1em');
+  xl.textContent=isAdj?'STAGE-ADJUSTED PWIN (0 = BAND FLOOR · 100 = BAND CEILING)':'PWIN SCORE';
+  svg.appendChild(xl);
+
+  const tooltip=document.getElementById('matrix-tooltip');
+  const wrap=document.getElementById('matrix-wrap');
+
+  state.pursuits.forEach(p=>{
+    const xVal = isAdj ? stageAdjustedPwin(p) : p.pwin;
+    const cx2=xPx(xVal), cy2=yPx(p.tcv), r2=rPx(p.bidCost);
+    const col=dealTypeColor(p.dealType);
+    const traj=getTraj(p);
+    // In adjusted mode, colour by trajectory status instead of deal type
+    const bubbleStroke = isAdj && traj ? ({ahead:'#2db870',['on-track']:'#c9a84c',monitor:'#c76a0a',escalate:'#b91c1c'}[traj.status]) : col;
+    const bubbleFill = bubbleStroke+'33';
+
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx2);c.setAttribute('cy',cy2);c.setAttribute('r',r2);c.setAttribute('fill',bubbleFill);c.setAttribute('stroke',bubbleStroke);c.setAttribute('stroke-width','1.5');c.style.cursor='pointer';
+    c.addEventListener('mouseenter',()=>{
+      c.setAttribute('r',r2+3);
+      const ev=(p.tcv*p.pwin/100).toFixed(0);
+      const adjLine=isAdj&&traj?`<div class="tooltip-row"><span>Stage Adj.</span><span style="color:${bubbleStroke}">${xVal > 0 ? '+':''}${xVal} (${traj.label})</span></div>`:'';
+      tooltip.innerHTML=`<div class="tooltip-name">${p.name}</div><div class="tooltip-row"><span>TCV</span><span>${fmtM(p.tcv)}</span></div><div class="tooltip-row"><span>PWIN</span><span>${p.pwin}%</span></div>${adjLine}<div class="tooltip-row"><span>Exp. Value</span><span style="color:var(--gold)">£${ev}m</span></div><div class="tooltip-row"><span>Stage</span><span>${p.stage}</span></div>`;
+      tooltip.style.display='block';
+    });
+    c.addEventListener('mousemove',e=>{const rect=wrap.getBoundingClientRect();let tx=e.clientX-rect.left+14,ty=e.clientY-rect.top-10;if(tx+200>rect.width) tx-=220;tooltip.style.left=tx+'px';tooltip.style.top=ty+'px';});
+    c.addEventListener('mouseleave',()=>{c.setAttribute('r',r2);tooltip.style.display='none';});
+    c.addEventListener('click',()=>{state.selectedId=p.id;switchTab('detail');});
+    svg.appendChild(c);
+
+    if(p.tcv>150){
+      const lbl=document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x',cx2);lbl.setAttribute('y',cy2+4);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-family','DM Mono,monospace');lbl.setAttribute('font-size','9');lbl.setAttribute('fill','rgba(232,230,224,0.7)');lbl.setAttribute('pointer-events','none');
+      lbl.textContent=p.name.split(' ').slice(0,2).join(' ');
+      svg.appendChild(lbl);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// HEX RADAR
+// ══════════════════════════════════════════════════
+function buildHexRadar(cats,size){
+  const s=size||280,cx=s/2,cy=s/2,r=s*0.38,n=6;
+  let out=`<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">`;
+  [0.2,0.4,0.6,0.8,1.0].forEach(scale=>{
+    const pts=CAT_KEYS.map((_,i)=>{const a=(i/n)*2*Math.PI-Math.PI/2;return[cx+r*scale*Math.cos(a),cy+r*scale*Math.sin(a)];});
+    out+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>`;
+    const a0=-Math.PI/2,lx=cx+r*scale*Math.cos(a0),ly=cy+r*scale*Math.sin(a0)-4;
+    out+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="DM Mono,monospace" font-size="8" fill="rgba(232,230,224,0.2)" text-anchor="middle">${Math.round(scale*100)}</text>`;
+  });
+  CAT_KEYS.forEach((_,i)=>{const a=(i/n)*2*Math.PI-Math.PI/2,ex=cx+r*Math.cos(a),ey=cy+r*Math.sin(a);out+=`<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;});
+  const pts=CAT_KEYS.map((k,i)=>{const a=(i/n)*2*Math.PI-Math.PI/2,v=cats[k]/100;return[cx+r*v*Math.cos(a),cy+r*v*Math.sin(a)];});
+  out+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="rgba(45,84,153,0.25)" stroke="#5a8de8" stroke-width="2"/>`;
+  pts.forEach(p=>{out+=`<circle cx="${p[0].toFixed(2)}" cy="${p[1].toFixed(2)}" r="4" fill="#2d5499" stroke="#5a8de8" stroke-width="1.5"/>`;});
+  CAT_KEYS.forEach((k,i)=>{
+    const a=(i/n)*2*Math.PI-Math.PI/2,dist=r*1.18,lx=cx+dist*Math.cos(a),ly=cy+dist*Math.sin(a);
+    let anchor='middle';if(lx<cx-10) anchor='end';if(lx>cx+10) anchor='start';
+    out+=`<text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" font-family="DM Mono,monospace" font-size="10" letter-spacing="0.08em" fill="rgba(201,168,76,0.8)" text-anchor="${anchor}">${CAT_SHORT[k]}</text>`;
+  });
+  out+='</svg>';
+  return out;
+}
+
+// ══════════════════════════════════════════════════
+// EVIDENCE PANEL
+// ══════════════════════════════════════════════════
+function buildEvidencePanel(pursuitId, catKey){
+  const ev=EVIDENCE[pursuitId]&&EVIDENCE[pursuitId][catKey];
+  if(!ev) return '';
+  const evidenceItems=ev.evidence.map(e=>`<div class="ev-item"><span class="ev-item-icon" style="color:#2db870;">✓</span><span class="ev-item-text">${e}</span></div>`).join('');
+  const vulnItems=ev.vulnerabilities.length===0
+    ?`<div class="no-vulns">✓ No material vulnerabilities identified at this stage</div>`
+    :ev.vulnerabilities.map(v=>`<div class="vuln-item"><div class="vuln-issue">${v.issue}</div><div class="vuln-action">${v.action}</div></div>`).join('');
+  return `<div class="cat-evidence-wrap"><div class="cat-evidence-inner">
+    <div class="ev-section"><div class="ev-section-label ev-label-evidence">Evidence Base</div>${evidenceItems}</div>
+    <div class="ev-section"><div class="ev-section-label ev-label-vuln">Vulnerabilities &amp; Actions</div>${vulnItems}</div>
+    <div class="ev-section"><div class="ev-section-label ev-label-rationale">Score Rationale</div><div class="rationale-text">${ev.rationale}</div></div>
+  </div></div>`;
+}
+
+// ══════════════════════════════════════════════════
+// TAB 3: PURSUIT DETAIL
+// ══════════════════════════════════════════════════
+function renderDetail(){
+  const dc=document.getElementById('detail-content');
+  if(!state.selectedId){
+    dc.innerHTML=`<div class="no-pursuit-selected"><div class="no-pursuit-icon">⬡</div><div class="no-pursuit-text">No Pursuit Selected</div><div class="no-pursuit-sub">Select a row from the Portfolio Grid to view full analysis</div></div>`;
+    return;
+  }
+  const p=state.pursuits.find(x=>x.id===state.selectedId);
+  if(!p) return;
+  const ev=(p.tcv*p.pwin/100).toFixed(1);
+  const catRows=CAT_KEYS.map(k=>{
+    const score=p.categories[k];
+    return `<div class="cat-row" data-pursuit="${p.id}" data-cat="${k}">
+      <div class="cat-row-header">
+        <div class="cat-header-left">
+          <span class="cat-name">${CAT_NAMES[k]}</span>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${score}%;background:${catColor(score)}"></div></div>
+        </div>
+        <div class="cat-header-right">
+          <span class="cat-score" style="color:${catColor(score)}">${score}</span>
+          <span class="cat-chevron">▾</span>
+        </div>
+      </div>
+      ${buildEvidencePanel(p.id,k)}
+    </div>`;
+  }).join('');
+
+  dc.innerHTML=`<div id="detail-panel">
+    <div class="detail-meta-card">
+      <div class="detail-meta-name">${p.name}</div>
+      <div class="meta-row"><span class="meta-key">Sector</span><span class="meta-val"><span class="sector-pill ${sectorClass(p.sector)}">${p.sector}</span></span></div>
+      <div class="meta-row"><span class="meta-key">Deal Type</span><span class="meta-val">${p.dealType}</span></div>
+      <div class="meta-row"><span class="meta-key">TCV</span><span class="meta-val" style="color:var(--gold)">${fmtM(p.tcv)}</span></div>
+      <div class="meta-row"><span class="meta-key">Stage</span><span class="meta-val">${p.stage}</span></div>
+      <div class="meta-row"><span class="meta-key">PWIN</span><span class="meta-val" style="color:${pwinColor(p.pwin)};font-size:16px;font-weight:600;">${p.pwin}%</span></div>
+      <div class="meta-row"><span class="meta-key">Bid Cost</span><span class="meta-val">£${p.bidCost}m</span></div>
+      <div class="meta-row"><span class="meta-key">Expected Value</span><span class="meta-val" style="color:var(--gold)">£${ev}m</span></div>
+      <div class="risk-flags-list">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Risk Flags</div>
+        ${p.riskFlags.map(f=>`<div class="risk-flag-item">${f}</div>`).join('')}
+      </div>
+      <div class="detail-notes">${p.notes}</div>
+    </div>
+    <div class="detail-right">
+      ${buildTrajBandCard(p)}
+      <div class="radar-card">
+        ${buildHexRadar(p.categories,220)}
+        <div class="cat-breakdown">
+          <div class="cat-hint">Click any category for evidence &amp; vulnerabilities</div>
+          ${catRows}
+        </div>
+      </div>
+      <div class="ev-calc-card">
+        <div class="ev-calc-title">Expected Value Impact Calculator</div>
+        <div class="ev-calc-grid">
+          <div class="ev-metric"><div class="ev-metric-val">${p.pwin}%</div><div class="ev-metric-label">Current PWIN</div></div>
+          <div class="ev-metric"><div class="ev-metric-val gold">£${ev}m</div><div class="ev-metric-label">Current Exp. Value</div></div>
+          <div class="ev-metric"><div class="ev-metric-val green" id="ev-uplift-val">+£${(p.tcv*0.05).toFixed(1)}m</div><div class="ev-metric-label">Uplift at +5pts</div></div>
+        </div>
+        <div class="ev-slider-row">
+          <span class="ev-slider-label">PWIN Uplift:</span>
+          <input type="range" id="ev-slider" min="5" max="20" step="5" value="5">
+          <span class="ev-slider-val" id="ev-slider-display">+5 pts</span>
+          <span class="ev-slider-label" style="margin-left:8px;">→ Additional EV:</span>
+          <span class="ev-slider-val" id="ev-calc-result" style="font-size:16px">£${(p.tcv*0.05).toFixed(1)}m</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('ev-slider').addEventListener('input',function(){
+    const u=parseInt(this.value),d=(p.tcv*u/100).toFixed(1);
+    document.getElementById('ev-slider-display').textContent='+'+u+' pts';
+    document.getElementById('ev-calc-result').textContent='£'+d+'m';
+    document.getElementById('ev-uplift-val').textContent='+£'+d+'m';
+  });
+
+  dc.querySelectorAll('.cat-row-header').forEach(header=>{
+    header.addEventListener('click',()=>{
+      const row=header.closest('.cat-row');
+      const key=row.dataset.pursuit+'_'+row.dataset.cat;
+      const isOpen=row.classList.contains('open');
+      row.classList.toggle('open',!isOpen);
+      state.openCats[key]=!isOpen;
+    });
+  });
+
+  CAT_KEYS.forEach(k=>{
+    const key=p.id+'_'+k;
+    if(state.openCats[key]){
+      const row=dc.querySelector(`.cat-row[data-cat="${k}"]`);
+      if(row) row.classList.add('open');
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// TAB 4: ECONOMICS
+// ══════════════════════════════════════════════════
+function calcEconomics(retainerK){
+  const ps=state.pursuits;
+  const totalBidCost=ps.reduce((a,p)=>a+p.bidCost,0);
+  const prodSaving=totalBidCost*0.30;
+  const lever1=prodSaving*0.5;
+  const avgBidCost=totalBidCost/ps.length;
+  const lever2Cap=(prodSaving*0.5)/avgBidCost;
+  const delta=state.settings.pwinTargetDelta;
+  const wevCurrent=ps.reduce((a,p)=>a+p.tcv*p.pwin/100,0);
+  const wevTarget=ps.reduce((a,p)=>a+p.tcv*Math.min(100,p.pwin+delta)/100,0);
+  const lever3=wevTarget-wevCurrent;
+  const retainerM=(retainerK||720)/1000;
+  return{totalBidCost,prodSaving,lever1,lever2Cap,lever3,wevCurrent,wevTarget,totalLever:lever1+lever3,roi:((lever1+lever3)/retainerM).toFixed(0),retainerK:retainerK||720,avgBidCost,delta};
+}
+
+function renderEconomics(){
+  const rv=parseFloat(document.getElementById('retainer-input').value)||720;
+  const e=calcEconomics(rv);
+  document.getElementById('levers-grid').innerHTML=`
+    <div class="lever-card"><div class="lever-tag">Lever 01 — Margin</div><div class="lever-title">AI Productivity as Cost Reduction</div><div class="lever-sub-text">Take 50% of the productivity saving as direct margin improvement across all active bids.</div><div class="lever-big gold">£${e.lever1.toFixed(1)}m</div><div class="lever-sub-text" style="margin-top:0">Annual margin addition</div><div class="lever-calc-row"><span class="lcr-key">Total portfolio bid cost</span><span class="lcr-val">£${e.totalBidCost.toFixed(1)}m</span></div><div class="lever-calc-row"><span class="lcr-key">AI productivity saving (30%)</span><span class="lcr-val">£${e.prodSaving.toFixed(1)}m</span></div><div class="lever-calc-row"><span class="lcr-key">Lever 1 share (50%)</span><span class="lcr-val highlight">£${e.lever1.toFixed(1)}m</span></div><div class="lever-constraint">⚡ Constrained: Levers 1 + 2 share the same productivity pool. 50/50 split applied.</div></div>
+    <div class="lever-card"><div class="lever-tag">Lever 02 — Scale</div><div class="lever-title">Reinvest in Additional Bid Capacity</div><div class="lever-sub-text">Apply the remaining 50% of productivity saving to resource additional pursuits at current average bid cost.</div><div class="lever-big navy">+${e.lever2Cap.toFixed(1)}</div><div class="lever-sub-text" style="margin-top:0">Additional bids resourced per year</div><div class="lever-calc-row"><span class="lcr-key">Lever 2 pool (50% saving)</span><span class="lcr-val">£${(e.prodSaving*0.5).toFixed(1)}m</span></div><div class="lever-calc-row"><span class="lcr-key">Average bid cost per pursuit</span><span class="lcr-val">£${e.avgBidCost.toFixed(1)}m</span></div><div class="lever-calc-row"><span class="lcr-key">Additional capacity</span><span class="lcr-val highlight">${e.lever2Cap.toFixed(1)} bids</span></div><div class="lever-constraint">⚡ Constrained: Cannot claim full Levers 1 + 2 simultaneously — same productivity pool.</div></div>
+    <div class="lever-card"><div class="lever-tag">Lever 03 — Quality</div><div class="lever-title">Win Rate Improvement</div><div class="lever-sub-text">Apply PWIN Architect benchmark uplift of +${e.delta}pts across portfolio. Independent of Levers 1/2.</div><div class="lever-big green">£${e.lever3.toFixed(0)}m</div><div class="lever-sub-text" style="margin-top:0">Additional expected contract value</div><div class="lever-calc-row"><span class="lcr-key">Portfolio weighted EV (current)</span><span class="lcr-val">£${e.wevCurrent.toFixed(0)}m</span></div><div class="lever-calc-row"><span class="lcr-key">Portfolio weighted EV (+${e.delta}pts)</span><span class="lcr-val">£${e.wevTarget.toFixed(0)}m</span></div><div class="lever-calc-row"><span class="lcr-key">Delta expected contract value</span><span class="lcr-val highlight">£${e.lever3.toFixed(0)}m</span></div></div>`;
+  document.getElementById('roi-total-val').textContent='£'+e.totalLever.toFixed(1)+'m';
+  document.getElementById('roi-breakdown').innerHTML=`Lever 1 (Margin): <strong style="color:var(--gold)">£${e.lever1.toFixed(1)}m</strong> + Lever 3 (Quality): <strong style="color:#2db870">£${e.lever3.toFixed(0)}m</strong><br><span style="font-size:11px;color:var(--text-muted)">Lever 2 expresses as capacity (+${e.lever2Cap.toFixed(1)} bids) — not included in cash ROI</span>`;
+  document.getElementById('roi-multiple').textContent=e.roi+'×';
+  document.getElementById('roi-multiple-sub').textContent='£'+e.totalLever.toFixed(0)+'m value / £'+e.retainerK+'k investment';
+}
+
+let retainerTimer=null;
+document.getElementById('retainer-input').addEventListener('input',()=>{clearTimeout(retainerTimer);retainerTimer=setTimeout(renderEconomics,300);});
+
+// ══════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════
+document.querySelectorAll('.mode-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    state.pitchMode=b.dataset.mode==='pitch';
+    document.getElementById('pitch-banner').classList.toggle('visible',state.pitchMode);
+    positionTabbar();
+  });
+});
+
+function applySettings(){
+  state.settings.clientName=document.getElementById('s-client-name').value||'Serco Group';
+  state.settings.period=document.getElementById('s-period').value||'FY2025';
+  state.settings.pwinTargetDelta=parseInt(document.getElementById('s-pwin-target').value)||12;
+  state.settings.retainerPM=parseInt(document.getElementById('s-retainer-pm').value)||5;
+  document.getElementById('retainer-input').value=state.settings.retainerPM*state.pursuits.length*12;
+  updateHeaderChips();
+  renderGrid();
+  if(state.activeTab==='economics') renderEconomics();
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+document.getElementById('pitch-banner').classList.add('visible');
+positionTabbar();
+updateHeaderChips();
+renderGrid();
+</script>
+</body>
+</html>
