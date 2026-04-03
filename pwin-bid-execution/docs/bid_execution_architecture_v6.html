@@ -1360,10 +1360,22 @@ R.build=()=>`
 
   <br/><br/>7. Design doc contradiction noted: PWIN-Qualify-Design v1.html Section 08 says dynamic category weights were rejected (comparability concern). Built app implements them via WEIGHT_PROFILES. Decision was reversed after design doc was written.
 
+  <br/><br/><strong>MCP server architecture designed (Session 15 continued)</strong>
+  <br/>8. Full MCP server architecture document saved as <strong>mcp_server_architecture.md</strong> in the docs folder (v1.0). Key decisions:
+  <br/>— <strong>Single Node.js process, dual interface:</strong> HTTP Data API (localhost:3456) for HTML product apps + stdio MCP for Claude. Both read/write the same JSON file store.
+  <br/>— <strong>localStorage replaced:</strong> HTML apps use fetch() to the Data API instead of localStorage. Apps degrade gracefully when server is not running (read-only mode from cached state).
+  <br/>— <strong>JSON file store per pursuit:</strong> ~/.pwin/pursuits/{pursuitId}/ containing shared.json (cross-product entities), qualify.json, bid_execution.json, win_strategy.json.
+  <br/>— <strong>Shared pursuit entities defined:</strong> Pursuit, PWIN Score (with history), Win Themes, Competitive Positioning, Stakeholder Map, Buyer Values, Client Intelligence, Capture Plan — all with confidence ratings (H/M/L/U).
+  <br/>— <strong>78 MCP tools total:</strong> 49 read (30 Bid Execution existing + 6 Qualify + 10 shared + 3 platform) and 29 write (17 Bid Execution existing + 4 Qualify + 6 shared + 2 reference placeholders).
+  <br/>— <strong>Field-level permission enforcement:</strong> complete ownership map (bid_manager vs ai) with server-side validation on every write. Append-only enforcement for all AIInsight entities.
+  <br/>— <strong>Platform knowledge layer:</strong> sector enrichment, opportunity type intelligence, reasoning rules stored as shared platform data accessible to all agents.
+  <br/>— <strong>Confidence model adopted platform-wide:</strong> H (Confirmed) / M (Inferred) / L (Assumed) / U (Unknown) per data point with source traceability.
+  <br/>— <strong>SaaS migration path:</strong> JSON files → Supabase, HTTP API → hosted API, stdio MCP → HTTP MCP. Tool schemas and field names do not change.
+  <br/>— <strong>Estimated ~2,300 lines of code.</strong> 13-step build sequence starting with server skeleton, through Bid Execution tools, to full multi-product capability.
+
   <br/><br/><strong>What happens next:</strong>
-  <br/>— MCP server architecture design — now scoped as multi-product platform service with shared pursuit entities
-  <br/>— Key design question: localStorage-to-MCP bridge (recommended: Option D — shared JSON file store, one Node.js server)
-  <br/>— Practitioner review of two AI enrichment spreadsheets (treat as platform-level knowledge, not Qualify-specific)
+  <br/>— Begin MCP server implementation (Step 1: server skeleton + health check)
+  <br/>— Practitioner review of two AI enrichment spreadsheets (platform-level knowledge)
   <br/>— Map the proforma/template library — what documents each agent produces
   <br/>— Remaining backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
   </div></div>

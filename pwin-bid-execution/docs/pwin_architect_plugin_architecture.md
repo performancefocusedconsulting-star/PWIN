@@ -557,9 +557,11 @@ Three purpose-built skills automate the extraction of structured data from UK go
 
 ## 5. MCP Server Design
 
+> **AUTHORITATIVE SOURCE:** The full MCP server architecture is defined in `mcp_server_architecture.md` (v1.0, Session 15). That document supersedes this section for: multi-product data store layout, Data API endpoints, shared entity schemas, Qualify-specific tools, platform knowledge tools, confidence model, and graceful degradation. This section is retained as a quick reference for Bid Execution-specific tool schemas.
+
 ### 5.1 What It Is
 
-A lightweight Node.js process (~200-300 lines) running locally alongside the application. Exposes the application's data as typed tool functions over stdio. When moving to SaaS, the server moves to a hosted API endpoint — **the tool schemas do not change**.
+A single Node.js process running locally that serves two interfaces: (1) a Data API over HTTP (localhost:3456) for each HTML product app to load/save data, and (2) an MCP Server over stdio for Claude to read/write bid data. Both interfaces read and write the same JSON file store. The server is a multi-product platform service — it serves PWIN Qualify, Win Strategy, and Bid Execution from a shared pursuit-level data store. See `mcp_server_architecture.md` for the full architecture.
 
 ### 5.2 Read Tools
 
