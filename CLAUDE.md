@@ -91,6 +91,46 @@ An AI-assisted bid qualification and coaching application. Pursuit teams self-as
 
 ---
 
+## pwin-platform
+
+The PWIN Platform MCP server — a single Node.js process serving dual interfaces for all products.
+
+### Architecture
+
+- **Data API (HTTP, localhost:3456)** — replaces localStorage for HTML product apps. Pursuit CRUD, per-product load/save, shared entity access, import/export.
+- **MCP Server (stdio)** — 94 typed tools for Claude (read + write). Field-level permission enforcement on all AI writes.
+- **JSON file store** under `~/.pwin/` — per-pursuit directories with shared.json + product files.
+- **Skill runner** — generic executor for declarative YAML skill configs. Assembles context from platform knowledge + pursuit data, calls Claude, executes write-backs via MCP tools.
+
+### Reference Documents
+
+- `pwin-bid-execution/docs/mcp_server_architecture.md` — authoritative architecture spec (v1.0)
+- `pwin-bid-execution/docs/pwin_architect_plugin_architecture.md` — plugin architecture (v1.5), agent specs, skill definitions
+
+### Technical Constraints
+
+- Node.js (ES modules). Single dependency: `@modelcontextprotocol/sdk`.
+- No database — JSON files on disk. Designed for SaaS migration (Supabase/Postgres).
+- Skills are YAML config files, not code. The skill runner is the only executor.
+- `ANTHROPIC_API_KEY` environment variable required for live skill execution. Without it, skills run in dry-run mode (prompt assembly only).
+
+### Running
+
+```bash
+cd pwin-platform
+npm install
+node src/server.js              # Data API only (default)
+node src/server.js --mcp        # MCP server only (stdio, for Claude)
+node src/server.js --both       # Both interfaces
+node test/test-skills.js        # Run test suite (68 tests)
+```
+
+### Platform Knowledge
+
+11 JSON files seeded under `~/.pwin/platform/` from the two enrichment spreadsheets. Served via MCP tools (`get_sector_knowledge`, `get_reasoning_rules`, etc.). Must be seeded before skills can assemble context-rich prompts — run the extraction script or copy from a seeded environment.
+
+---
+
 ## Adding New Products
 
 When a new product folder is added, create a new section in this file following the same structure as above.

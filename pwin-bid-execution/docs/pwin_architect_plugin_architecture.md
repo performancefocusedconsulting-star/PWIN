@@ -36,7 +36,7 @@ The platform is composed of discrete products, each addressing a distinct phase 
 | PWIN Coach | Bid/no-bid qualification. 24-question framework, 6 categories, PWIN formula output, Alex Mercer AI persona | Built — HTML prototype |
 | Portfolio Dashboard | Pipeline management. Priority matrix, PWIN benchmarking, trajectory tracking. 12 Serco seed pursuits | Built — HTML prototype |
 | Bid Execution | Full bid lifecycle management. 84 activities, 10 workstreams, governance gates, submissions engine | Architecture complete — build in progress |
-| PWIN Architect Plugin | AI intelligence layer across all products. MCP-connected. Persona-routed sub-agents | Design complete — build starting |
+| PWIN Platform (MCP Server) | Multi-product MCP server + Data API. 94 tools, JSON file store, field-level permissions, skill runner. Serves Qualify, Win Strategy, Bid Execution | Built — 94 MCP tools, Data API, 3 skills, 11 platform knowledge files, 68 tests passing |
 | Bid Library | Past proposals, case studies, evidence blocks. Shared data source across all products | Concept — to be built |
 | Competitor Dossiers | Pre-compiled intelligence on frequent competitors. Quarterly refresh cadence | Concept — to be built |
 | Client Profiles | Buyer intelligence, stakeholder maps, procurement history by buyer | Concept — to be built |

@@ -1379,6 +1379,42 @@ R.build=()=>`
   <br/>— Map the proforma/template library — what documents each agent produces
   <br/>— Remaining backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
   </div></div>
+
+  <div class="co co-b"><div class="co-l">Session 16 — 2026-04-03</div><div class="co-t"><strong>What was decided:</strong>
+
+  <br/><br/><strong>MCP server built and tested</strong>
+  <br/>1. PWIN Platform MCP server implemented in <code>pwin-platform/</code> folder. Single Node.js process, dual interface (HTTP Data API on localhost:3456 + stdio MCP). 94 MCP tools registered (expanded from 78 in design — 8 additional platform knowledge tools added). All endpoints tested end-to-end.
+
+  <br/><br/>2. <strong>JSON file store:</strong> pursuit CRUD, per-product load/save (qualify, bid_execution, win_strategy), shared entity access with correct null vs missing pursuit distinction, import/export, archive. All data persists under ~/.pwin/.
+
+  <br/><br/>3. <strong>Field-level permission enforcement:</strong> complete ownership map implemented in permissions.js. AI writes to bid_manager-owned fields rejected with specific field names in error. Validated in test suite.
+
+  <br/><br/><strong>Platform knowledge seeded from enrichment spreadsheets</strong>
+  <br/>4. 11 JSON files extracted from PWIN_AI_Enrichment_Review.xlsx and BWIN_Qualify_AI_Design_Proforma_v2.xlsx and written to ~/.pwin/platform/: sector_knowledge (8 sectors), opportunity_types (8 types), sector_opp_matrix (8 intersections), reasoning_rules (34 rules across 7 categories), confidence_model (4 ratings + 9 completeness sections), data_points (54 fields), source_hierarchy (20 entries), few_shot_examples (6 calibration cases), output_schema (16 fields), system_prompt (6 sections), success_factors (12 factors).
+
+  <br/><br/>5. All platform knowledge accessible via MCP tools: get_sector_knowledge, get_opportunity_type_knowledge, get_reasoning_rules, get_confidence_model, get_data_points, get_few_shot_examples, get_output_schema, get_system_prompt, get_source_hierarchy, get_success_factors, get_sector_opp_matrix.
+
+  <br/><br/><strong>Skill architecture built — declarative YAML configs with generic runner</strong>
+  <br/>6. Skills are YAML config files, not code modules. Each defines: id, agent, prompt templates, context sources, write tools, input schema. A generic skill-runner.js loads the config, gathers context from pursuit data + platform knowledge, resolves {{template_variables}} in prompts, calls Claude API with tool definitions, and executes write-backs against the store.
+
+  <br/><br/>7. <strong>Three Phase 3 skills implemented:</strong>
+  <br/>— Agent 1 Skill 1: ITT Extraction (itt-extraction.yaml) — reads ITT document, extracts ResponseSections, EvaluationFramework, ITTDocuments, procurement context. 5 write tools.
+  <br/>— Agent 3 Skill 5: Timeline Analysis UC1 (timeline-analysis.yaml) — analyses activity dates, identifies timeline gaps, cascade risks, resource conflicts. 3 write tools.
+  <br/>— Agent 3 Skill 8: Compliance Coverage UC4 (compliance-coverage.yaml) — produces weighted risk matrix for compliance gaps, hurdle score exposure, disqualification risks. 3 write tools.
+
+  <br/><br/>8. Dry-run mode: without ANTHROPIC_API_KEY, skills return the fully assembled prompt (system + user) for inspection. Verified that sector knowledge, opportunity type intelligence, reasoning rules, and bid data all inject correctly into prompts.
+
+  <br/><br/>9. <strong>Test suite:</strong> 68 tests passing across 7 test groups — skill loading, context gathering, prompt assembly, write-back execution, permission enforcement, compliance coverage specifics, platform knowledge integrity.
+
+  <br/><br/>10. <strong>API endpoints added:</strong> GET /api/skills (list all), POST /api/skills/{id}/execute (live execution), POST /api/skills/{id}/dry-run (prompt assembly only).
+
+  <br/><br/><strong>What happens next:</strong>
+  <br/>— Connect an Anthropic API key and test live skill execution (Claude processes prompt, calls write-back tools, results land in store)
+  <br/>— Build remaining 54 skill YAML configs across all 6 agents
+  <br/>— Wire HTML product apps to Data API (replace localStorage with fetch to localhost:3456)
+  <br/>— Practitioner review of two AI enrichment spreadsheets (platform-level knowledge — review columns still empty)
+  <br/>— Remaining design backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
+  </div></div>
 `;
 
 render();

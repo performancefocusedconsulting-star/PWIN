@@ -8,6 +8,7 @@
 
 import { createServer } from 'node:http';
 import * as store from './store.js';
+import { listSkills, executeSkill } from './skill-runner.js';
 
 const PORT = parseInt(process.env.PWIN_PORT || '3456', 10);
 
@@ -244,6 +245,55 @@ async function handleRequest(req, res) {
       if (!body) return badRequest(res, 'Request body required');
       const id = await store.importPursuit(body);
       return json(res, 201, { imported: true, pursuitId: id });
+    }
+
+    // --- Skills ---
+
+    // GET /api/skills
+    if (method === 'GET' && (params = match(method, url, '/api/skills')) !== null) {
+      const skills = await listSkills();
+      return json(res, 200, skills);
+    }
+
+    // POST /api/skills/{skillId}/execute
+    if (method === 'POST') {
+      const skillMatch = url.split('?')[0].match(/^\/api\/skills\/([^/]+)\/execute$/);
+      if (skillMatch) {
+        const skillId = skillMatch[1];
+        const body = await readBody(req);
+        if (!body) return badRequest(res, 'Request body required (at minimum: { pursuitId })');
+        try {
+          const result = await executeSkill(skillId, body);
+          return json(res, 200, result);
+        } catch (err) {
+          if (err.message.startsWith('Skill not found')) return notFound(res, err.message);
+          if (err.message.startsWith('Missing required')) return badRequest(res, err.message);
+          throw err;
+        }
+      }
+    }
+
+    // POST /api/skills/{skillId}/dry-run — assemble prompt without calling Claude
+    if (method === 'POST') {
+      const dryMatch = url.split('?')[0].match(/^\/api\/skills\/([^/]+)\/dry-run$/);
+      if (dryMatch) {
+        const skillId = dryMatch[1];
+        const body = await readBody(req);
+        if (!body) return badRequest(res, 'Request body required');
+        // Temporarily unset API key to force dry run
+        const savedKey = process.env.ANTHROPIC_API_KEY;
+        delete process.env.ANTHROPIC_API_KEY;
+        try {
+          const result = await executeSkill(skillId, body);
+          return json(res, 200, result);
+        } catch (err) {
+          if (err.message.startsWith('Skill not found')) return notFound(res, err.message);
+          if (err.message.startsWith('Missing required')) return badRequest(res, err.message);
+          throw err;
+        } finally {
+          if (savedKey) process.env.ANTHROPIC_API_KEY = savedKey;
+        }
+      }
     }
 
     // --- Fallthrough ---

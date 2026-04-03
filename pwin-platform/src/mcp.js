@@ -254,13 +254,100 @@ function createMcpServer() {
   server.tool(
     'get_reasoning_rules',
     'Get business rules for PWIN scoring and gate readiness, optionally filtered by category',
-    { category: z.enum(['winnability', 'desirability', 'deliverability', 'intelligence_quality', 'financials']).optional() },
+    { category: z.string().optional() },
     async ({ category }) => {
       const data = await store.getPlatformData('reasoning_rules.json');
       if (!data) return { content: [{ type: 'text', text: '[]' }] };
       let rules = Array.isArray(data) ? data : [];
-      if (category) rules = rules.filter(r => r.category === category);
+      if (category) rules = rules.filter(r => r.category.toLowerCase().replace(/[& ]/g, '_') === category.toLowerCase().replace(/[& ]/g, '_'));
       return { content: [{ type: 'text', text: JSON.stringify(rules, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_confidence_model',
+    'Get confidence rating definitions (H/M/L/U) and completeness thresholds',
+    {},
+    async () => {
+      const data = await store.getPlatformData('confidence_model.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_data_points',
+    'Get the 51 intelligence data point definitions with sources and confidence rules',
+    { section: z.string().optional() },
+    async ({ section }) => {
+      const data = await store.getPlatformData('data_points.json');
+      if (!data) return { content: [{ type: 'text', text: '[]' }] };
+      let points = Array.isArray(data) ? data : [];
+      if (section) points = points.filter(p => p.section.toLowerCase().includes(section.toLowerCase()));
+      return { content: [{ type: 'text', text: JSON.stringify(points, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_few_shot_examples',
+    'Get AI calibration few-shot examples (evidence input → ideal AI review)',
+    {},
+    async () => {
+      const data = await store.getPlatformData('few_shot_examples.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_output_schema',
+    'Get AI output schema field definitions (current + proposed)',
+    {},
+    async () => {
+      const data = await store.getPlatformData('output_schema.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_system_prompt',
+    'Get the core system prompt sections (persona, scepticism, scoring, tone, challenge/capture standards)',
+    {},
+    async () => {
+      const data = await store.getPlatformData('system_prompt.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_source_hierarchy',
+    'Get source priority hierarchy for intelligence data gathering',
+    {},
+    async () => {
+      const data = await store.getPlatformData('source_hierarchy.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_success_factors',
+    'Get the 12 success factors for AI system validation',
+    {},
+    async () => {
+      const data = await store.getPlatformData('success_factors.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_sector_opp_matrix',
+    'Get intersection intelligence for a sector × opportunity type combination',
+    { sector: z.string().optional(), opportunityType: z.string().optional() },
+    async ({ sector, opportunityType }) => {
+      const data = await store.getPlatformData('sector_opp_matrix.json');
+      if (!data) return { content: [{ type: 'text', text: '[]' }] };
+      let entries = Array.isArray(data) ? data : [];
+      if (sector) entries = entries.filter(e => e.sector.toLowerCase().includes(sector.toLowerCase()));
+      if (opportunityType) entries = entries.filter(e => e.opportunityType.toLowerCase().includes(opportunityType.toLowerCase()));
+      return { content: [{ type: 'text', text: JSON.stringify(entries, null, 2) }] };
     }
   );
 
