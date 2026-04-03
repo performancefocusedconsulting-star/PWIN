@@ -212,11 +212,19 @@ function assemblePrompt(skill, context, input) {
   });
 
   // Build user message from skill template + input
+  // Uses the same named mappings as system prompt, plus input values
   let userMessage = skill.user_prompt || '';
   userMessage = userMessage.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+    // Input values first (pursuitId, document, etc.)
     if (input[key] !== undefined) {
       return typeof input[key] === 'string' ? input[key] : JSON.stringify(input[key], null, 2);
     }
+    // Named context mappings
+    if (key === 'pursuit_context' && context.pursuit) return JSON.stringify(context.pursuit, null, 2);
+    if (key === 'pwin_score' && context.pwinScore) return JSON.stringify(context.pwinScore, null, 2);
+    if (key === 'win_themes' && context.winThemes) return JSON.stringify(context.winThemes, null, 2);
+    if (key === 'competitive_positioning' && context.competitivePositioning) return JSON.stringify(context.competitivePositioning, null, 2);
+    // Direct context key lookup
     if (context[key] !== undefined) {
       return typeof context[key] === 'string' ? context[key] : JSON.stringify(context[key], null, 2);
     }
@@ -230,17 +238,22 @@ function assemblePrompt(skill, context, input) {
 // Claude API call
 // ---------------------------------------------------------------------------
 
-async function callClaude(systemPrompt, userMessage, tools, model) {
+async function callClaude(systemPrompt, messages, tools, model) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY environment variable is required to execute skills');
   }
 
+  // messages can be a string (first turn) or array (multi-turn)
+  const msgArray = typeof messages === 'string'
+    ? [{ role: 'user', content: messages }]
+    : Array.isArray(messages) ? messages : [{ role: 'user', content: String(messages) }];
+
   const body = {
     model: model || 'claude-sonnet-4-20250514',
     max_tokens: 8192,
     system: systemPrompt,
-    messages: [{ role: 'user', content: userMessage }],
+    messages: msgArray,
   };
 
   // If tools are defined, include them for structured output
@@ -633,24 +646,58 @@ async function executeSkill(skillId, input) {
     };
   }
 
-  // Call Claude
-  const response = await callClaude(systemPrompt, userMessage, tools, skill.model);
+  // Multi-turn tool use loop: call Claude, execute tool calls, send results back, repeat
+  const allWriteResults = [];
+  const allTextBlocks = [];
+  let messages = [{ role: 'user', content: userMessage }];
+  let totalUsage = { input_tokens: 0, output_tokens: 0 };
+  let lastResponse = null;
+  const MAX_TURNS = 10;
 
-  // Execute write-backs
-  const writeResults = await executeWriteBacks(skill, input.pursuitId, response);
+  for (let turn = 0; turn < MAX_TURNS; turn++) {
+    const response = await callClaude(systemPrompt, messages, tools, skill.model);
+    lastResponse = response;
+    totalUsage.input_tokens += response.usage?.input_tokens || 0;
+    totalUsage.output_tokens += response.usage?.output_tokens || 0;
 
-  // Extract text response
-  const textBlocks = (response.content || [])
-    .filter(b => b.type === 'text')
-    .map(b => b.text);
+    // Collect text blocks
+    for (const block of response.content || []) {
+      if (block.type === 'text') allTextBlocks.push(block.text);
+    }
+
+    // If no tool use, we're done
+    if (response.stop_reason !== 'tool_use') break;
+
+    // Execute tool calls and build tool results for next turn
+    const toolResults = [];
+    for (const block of response.content || []) {
+      if (block.type !== 'tool_use') continue;
+      const { id, name, input: toolInput } = block;
+      try {
+        const result = await executeToolCall(name, input.pursuitId, toolInput);
+        allWriteResults.push({ tool: name, success: true, result });
+        toolResults.push({ type: 'tool_result', tool_use_id: id, content: JSON.stringify(result) });
+      } catch (err) {
+        allWriteResults.push({ tool: name, success: false, error: err.message });
+        toolResults.push({ type: 'tool_result', tool_use_id: id, content: `Error: ${err.message}`, is_error: true });
+      }
+    }
+
+    // Add assistant response + tool results to conversation for next turn
+    messages = [
+      ...messages,
+      { role: 'assistant', content: response.content },
+      { role: 'user', content: toolResults },
+    ];
+  }
 
   return {
     skillId,
-    model: response.model,
-    stopReason: response.stop_reason,
-    text: textBlocks.join('\n'),
-    writeResults,
-    usage: response.usage,
+    model: lastResponse?.model,
+    stopReason: lastResponse?.stop_reason,
+    text: allTextBlocks.join('\n'),
+    writeResults: allWriteResults,
+    usage: totalUsage,
   };
 }
 
