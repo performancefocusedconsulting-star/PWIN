@@ -83,7 +83,7 @@ These buyers want an independent assessment they can trust — one not produced 
 
 ## 5. Verdict Evaluation Framework
 
-This is the core of the product. Verdict evaluates the pursuit across seven domains, each containing specific assessment criteria. For every criterion, Verdict asks three questions: Was this activity performed? What evidence exists? How effective was the output?
+This is the core of the product. Verdict evaluates the pursuit across eight domains, each containing specific assessment criteria. For every criterion, Verdict asks three questions: Was this activity performed? What evidence exists? How effective was the output?
 
 The framework is derived from BidEquity's pursuit methodology — the same structured activities that govern live pursuit delivery in Core and Command. Applying it retrospectively to a lost bid surfaces exactly where the pursuit operation broke down.
 
@@ -237,9 +237,31 @@ This domain assesses whether the commercial proposition was competitive, defensi
 
 ---
 
-### 5.8 Evaluation Framework Summary
+### 5.8 Post-Submission and Presentation
 
-The seven domains above are assessed in a structured, weighted format. Each domain receives an overall maturity rating and a set of specific findings. The weighting reflects the relative impact each domain has on pursuit outcome:
+This domain assesses what happened after the written submission was uploaded — the presentation, BAFO, and contract negotiation stages that can determine the outcome even when the written submission scores well. Not all procurements include these stages, but where they occurred, the quality of the organisation's post-submission response is a material finding.
+
+**Assessment criteria:**
+
+**Presentation preparation.** If the procurement included a presentation or interview stage, was there a structured preparation process? Was the presentation designed as a strategic narrative that reinforced the win themes and addressed known evaluator concerns — or was it a last-minute assembly of slides from the written submission? Were speakers selected for credibility and seniority appropriate to the audience, or were they the people who happened to be available?
+
+**Presentation rehearsal and coaching.** Were rehearsals conducted? Were they structured — with a simulated evaluation panel, timed runs, and challenging questions — or were they informal read-throughs? Were speakers coached on delivery, messaging discipline, and handling hostile questions? Was feedback from rehearsals acted on and incorporated into the final presentation?
+
+**Evaluator question anticipation.** Were likely evaluator questions anticipated and prepared for? Were answers structured, evidence-based, and aligned with the win strategy — or were speakers left to improvise? Did the team prepare for the difficult questions (pricing justification, delivery risk, incumbent transition, key person availability) as well as the comfortable ones?
+
+**BAFO response (where applicable).** If a Best and Final Offer stage occurred, was the BAFO response strategic — genuinely improving the offer based on what was learned during the evaluation process — or was it a mechanical price reduction with no strategic rationale? Was the BAFO decision governed through a formal gate, or was it made under time pressure without proper commercial review?
+
+**Contract negotiation readiness.** If negotiations occurred before the award decision was finalised, was the organisation prepared? Were negotiation positions documented in advance? Were red lines, trade-offs, and fallback positions agreed at a governance level — or was the negotiation team improvising in the room?
+
+**Post-submission intelligence.** After submission, did the organisation continue to gather intelligence — through legitimate channels — about the evaluation process, competitor positioning, or client thinking? Was this intelligence used to shape the presentation or BAFO response, or did the team go dark after submission?
+
+**Evidence required:** Presentation deck and speaker notes, rehearsal schedule and feedback records, anticipated questions and prepared answers, BAFO decision records with commercial rationale, contract negotiation brief with approved positions, post-submission engagement log.
+
+---
+
+### 5.9 Evaluation Framework Summary
+
+The eight domains above are assessed in a structured, weighted format. Each domain receives an overall maturity rating and a set of specific findings. The weighting reflects the relative impact each domain has on pursuit outcome:
 
 | Domain | Weight | Rationale |
 |--------|--------|-----------|
@@ -248,8 +270,11 @@ The seven domains above are assessed in a structured, weighted format. Each doma
 | Team Mobilisation and Organisation | 10% | Necessary condition — inadequate mobilisation constrains everything downstream |
 | Solution Development | 15% | The quality of the solution determines the ceiling for the technical and commercial response |
 | Governance and Review Process | 10% | Governance is the mechanism by which problems are caught and quality is assured |
-| Proposal Production and Quality | 20% | The scored submission — the artefact that directly determines the evaluation outcome |
+| Proposal Production and Quality | 15% | The scored submission — the artefact that directly determines the evaluation outcome |
 | Commercial and Pricing | 10% | Pricing is often a pass/fail filter — competitive positioning matters as much as technical quality |
+| Post-Submission and Presentation | 5% | Where applicable — presentation, BAFO, and negotiation can determine outcome after a strong written submission |
+
+**Note:** Domain 5.8 is conditionally assessed. Not all procurements include a presentation, BAFO, or negotiation stage. Where these stages did not occur, the domain is excluded from the weighted calculation and the remaining domain weights are normalised to 100%. The weight of 5% reflects that the written submission carries more evaluative weight than the presentation in most public sector procurements, but a poor presentation can lose a bid that was otherwise winning.
 
 Each domain is scored on a five-point maturity scale:
 
@@ -288,6 +313,7 @@ The client provides two categories of documentation:
 | Governance and management | Bid plan, team organogram, RACI, governance framework, review gate records, action logs, decision logs |
 | Production management | Storyboards, style guide, win theme matrix, word count tracking, internal scoring records |
 | Commercial | Pricing strategy, commercial model, risk allocation, competitive benchmarking |
+| Post-submission (where applicable) | Presentation deck and speaker notes, rehearsal records, anticipated Q&A preparation, BAFO decision records, contract negotiation brief |
 
 Category B inputs are what make Verdict forensic rather than superficial. Where Category B documentation is absent, that absence is itself a finding — it indicates activities that were either not performed or not documented, both of which are failure modes.
 
@@ -334,7 +360,7 @@ The evaluation engine (used in both Pass 1 and Pass 2) operates across three lay
 
 ### 6.4 Pattern Analysis Engine (Portfolio Tier)
 
-For Verdict Portfolio engagements (three pursuits), the platform identifies cross-pursuit patterns across all seven domains:
+For Verdict Portfolio engagements (three pursuits), the platform identifies cross-pursuit patterns across all eight domains:
 
 - Recurring process gaps — activities systematically absent across multiple pursuits
 - Governance patterns — review gates that consistently fail to improve output quality
@@ -350,11 +376,11 @@ For Verdict Portfolio engagements (three pursuits), the platform identifies cros
 
 | Deliverable | Content | Tier |
 |-------------|---------|------|
-| Verdict Report | Full seven-domain evaluation with maturity ratings, specific findings, and evidence assessment per domain. Pursuit Maturity Score. | Single + Portfolio |
+| Verdict Report | Full eight-domain evaluation with maturity ratings, specific findings, and evidence assessment per domain. Pursuit Maturity Score. | Single + Portfolio |
 | Scoring Report | Independent section-by-section scoring against evaluation criteria. Comparison with authority feedback and client internal assessment. Variance analysis. | Single + Portfolio |
 | Traceability Map | Visual representation of the intelligence-to-submission chain, showing where upstream activities connected to or disconnected from the scored response. | Single + Portfolio |
 | Recommendation Register | Prioritised recommendations mapped to specific domains and pursuit lifecycle stages, with impact rating and implementation guidance. | Single + Portfolio |
-| Portfolio Pattern Report | Cross-pursuit pattern analysis across all seven domains. Organisational-level findings, recurring failure modes, and structural recommendations. | Portfolio only |
+| Portfolio Pattern Report | Cross-pursuit pattern analysis across all eight domains. Organisational-level findings, recurring failure modes, and structural recommendations. | Portfolio only |
 | Consultative Debrief | Live session (remote or in-person), structured around findings. Forensic walkthrough that pressure-tests assumptions, surfaces blind spots, and translates analysis into action. | Single + Portfolio |
 
 ### 6.6 Data Retention and Compounding
@@ -403,7 +429,7 @@ Verdict is not a new platform build. It is a new product configuration of existi
 |-----------|--------|-------------|
 | Proposal parsing skill | 1 YAML | Agent 1 currently extracts ITTs, not submitted proposals. New skill ingests the client's response and maps it to the evaluation criteria structure. |
 | Independent scoring skill | 1 YAML | Scores each response section against evaluation criteria using the authority's scoring methodology. **Shared with Bid Execution** — same skill serves pre-review AI scoring in live bids and retrospective scoring in Verdict. |
-| 7 forensic domain assessment skills | 7 YAMLs | One per Verdict domain. Takes existing analysis patterns and reframes as retrospective forensic findings with maturity ratings (Absent/Informal/Defined/Managed/Optimised). |
+| 8 forensic domain assessment skills | 8 YAMLs | One per Verdict domain (including conditional Domain 5.8 Post-Submission). Takes existing analysis patterns and reframes as retrospective forensic findings with maturity ratings (Absent/Informal/Defined/Managed/Optimised). |
 | Traceability analysis skill | 1 YAML | Maps the chain from intelligence → strategy → storyboards → submission. Genuinely new analysis — no existing skill does cross-artefact traceability. |
 | Verdict report assembly skill | 1 YAML | Consolidates all domain findings into the structured Verdict Report with Pursuit Maturity Score. |
 | Interview question generation | Part of domain skills | Each forensic domain skill produces a "gaps and probe questions" output alongside the maturity rating — consumed by the consultant for Pass 2. |
@@ -428,12 +454,12 @@ Based on live testing of the platform skills (Session 16, April 2026):
 |------|---------------|----------------|
 | Ingest procurement docs | ITT Extraction | ~$0.03 |
 | Ingest submitted proposal | Proposal Parsing (new) | ~$0.05–0.10 |
-| 7 domain assessments (Pass 1) | 7 forensic skills | ~$0.21 |
+| 8 domain assessments (Pass 1) | 8 forensic skills (Domain 5.8 where applicable) | ~$0.24 |
 | Independent scoring | Scoring skill × 5–10 sections | ~$0.15–0.30 |
 | Traceability analysis | 1 skill | ~$0.05 |
-| Pass 2 re-assessment | 7 forensic skills (enriched) | ~$0.21 |
+| Pass 2 re-assessment | 8 forensic skills (enriched) | ~$0.24 |
 | Report assembly | 1 skill | ~$0.05 |
-| **Total per Single Verdict** | | **~$0.75–0.95** |
+| **Total per Single Verdict** | | **~$0.80–1.00** |
 
 At £2,000 price point with <£1 API cost, gross margin on platform costs is effectively 100%. The cost driver is consultant time, not technology.
 
@@ -447,7 +473,7 @@ Verdict operates on a fixed-fee, transactional basis — deliberately different 
 
 | Tier | Price | Scope |
 |------|-------|-------|
-| Verdict Single | £2,000 | One pursuit: full seven-domain evaluation, independent scoring, traceability map, recommendation register, consultative debrief |
+| Verdict Single | £2,000 | One pursuit: full eight-domain evaluation, independent scoring, traceability map, recommendation register, consultative debrief |
 | Verdict Portfolio | £5,000 | Three pursuits: everything in Single applied three times, plus cross-pursuit pattern analysis and portfolio-level diagnostic |
 
 **Pricing note:** The £2,000 / £5,000 figures are indicative starting points. Final pricing may flex with pursuit complexity (contract value, number of evaluation lots, volume of submission documentation), but the principle is fixed-fee and agreed before work begins. The Portfolio tier at £5,000 for three reviews represents a clear saving over three Singles at £6,000 — the discount incentivises the multi-bid engagement that generates the most valuable intelligence for both parties.
@@ -470,13 +496,13 @@ Verdict occupies a specific position in the BidEquity product hierarchy:
 **Core** → Pursuit intelligence and qualification (live pursuits, outcome-aligned)
 **Command** → Embedded bid office capability (live pursuits, outcome-aligned)
 
-Verdict is the entry point. Core is the ongoing engagement. Command is the deepest integration. Each product builds on the data generated by the previous one. The seven domains evaluated by Verdict map directly to the workstreams managed by Core and Command — the same methodology applied retrospectively (Verdict) or in real time (Core/Command).
+Verdict is the entry point. Core is the ongoing engagement. Command is the deepest integration. Each product builds on the data generated by the previous one. The eight domains evaluated by Verdict map directly to the workstreams managed by Core and Command — the same methodology applied retrospectively (Verdict) or in real time (Core/Command).
 
 ### 9.2 Conversion Flywheel
 
 The conversion logic operates in three stages:
 
-**Stage 1: Single Verdict.** Client brings one lost pursuit. Receives a full seven-domain evaluation on a real pursuit they care about. The depth of the analysis — covering activities and evidence they never expected an external reviewer to examine — builds trust in a way that no pitch deck can match.
+**Stage 1: Single Verdict.** Client brings one lost pursuit. Receives a full eight-domain evaluation on a real pursuit they care about. The depth of the analysis — covering activities and evidence they never expected an external reviewer to examine — builds trust in a way that no pitch deck can match.
 
 **Stage 2: Portfolio Verdict.** Client commissions two more reviews. The pattern report surfaces structural issues they had never identified — recurring process gaps, governance failures, and mobilisation problems that repeat across different bid teams and different pursuits.
 
@@ -492,7 +518,7 @@ For organisations already using Core or Command, Verdict extends the compounding
 
 | Dimension | Internal Reviews | Consultancy Retrospectives | BidEquity Verdict |
 |-----------|-----------------|---------------------------|-------------------|
-| Scope | Focused on the written responses | Limited to what the consultant examines | Full pursuit lifecycle — seven domains from intelligence to commercials |
+| Scope | Focused on the written responses | Limited to what the consultant examines | Full pursuit lifecycle — eight domains from intelligence to commercials |
 | Evidence assessment | Assumes activities were performed | Takes the team's account at face value | Asks "where is the evidence?" for every activity. Absence is a finding. |
 | Independence | Conducted by the team that lost | Individual consultant's judgement | Platform-scored, methodology-driven, structured evaluation framework |
 | Scoring | No independent scoring | Subjective assessment | Calibrated parallel scoring against authority criteria with variance analysis |
@@ -500,7 +526,7 @@ For organisations already using Core or Command, Verdict extends the compounding
 | Actionability | Confirms existing beliefs | Report with generic recommendations | Prioritised recommendations mapped to specific domains and pursuit lifecycle stages |
 | Data value | Discarded after the meeting | A document, not a dataset | Feeds compounding intelligence platform with Pursuit Maturity Score and domain-level benchmarks |
 | Cost | Free | £10,000–£30,000+ | £2,000–£5,000 fixed fee |
-| Speed | Days (but shallow) | Weeks | Days (platform-enabled depth across all seven domains) |
+| Speed | Days (but shallow) | Weeks | Days (platform-enabled depth across all eight domains) |
 
 ---
 
@@ -562,7 +588,7 @@ Verdict is a transactional sale, not a consultative one. The decision cycle shou
 
 Verdict is built on the existing PWIN Platform MCP server (94 tools, 55 skills, 11 platform knowledge files). The platform already supports document ingestion, evaluation criteria analysis, compliance coverage, win theme audit, governance assessment, and structured report generation. Verdict adds a product-specific data file, ~11 new skill configs, and a two-pass execution flow.
 
-This means the original phased roadmap assumption — that Phase 1 would be "consultancy-led with platform-assisted analysis" — underestimates the automation available from day one. The platform can run the full seven-domain analysis automatically in Pass 1; the consultant's role is Pass 2 (investigation, enrichment, professional judgement).
+This means the original phased roadmap assumption — that Phase 1 would be "consultancy-led with platform-assisted analysis" — underestimates the automation available from day one. The platform can run the full eight-domain analysis automatically in Pass 1; the consultant's role is Pass 2 (investigation, enrichment, professional judgement).
 
 ### 12.2 Build Sequence
 
@@ -581,7 +607,7 @@ This means the original phased roadmap assumption — that Phase 1 would be "con
 |------|--------|
 | Proposal parsing skill | New Agent 1 skill — ingests submitted proposal, maps responses to evaluation criteria, extracts claims and evidence per section |
 | Independent scoring skill | Scores each response section against evaluation criteria. **Shared with Bid Execution** pre-review AI scoring. Build once, configure for both products. |
-| 7 forensic domain assessment skills | One per Verdict domain. Each produces: maturity rating, specific findings, evidence assessment, gaps, and probe questions for consultant interview |
+| 8 forensic domain assessment skills | One per Verdict domain (Domain 5.8 conditionally assessed). Each produces: maturity rating, specific findings, evidence assessment, gaps, and probe questions for consultant interview |
 | Traceability analysis skill | Maps intelligence → strategy → storyboards → submission. Identifies breaks in the chain. |
 | Verdict report assembly skill | Consolidates all domain outputs into final Verdict Report with Pursuit Maturity Score |
 
@@ -591,7 +617,7 @@ This means the original phased roadmap assumption — that Phase 1 would be "con
 |------|--------|
 | Client intake workflow | Structured document upload and classification (Category A vs B) |
 | Pass 2 enrichment flow | API endpoint for consultant to submit interview findings; triggers domain re-assessment |
-| Verdict Report template | Branded output format covering all seven domains |
+| Verdict Report template | Branded output format covering all eight domains |
 | Scoring comparison | Variance analysis between AI scores, authority scores (if available), and client self-assessment |
 
 **Sprint 4: Portfolio Tier (2–3 days)**
@@ -609,7 +635,7 @@ This means the original phased roadmap assumption — that Phase 1 would be "con
 The build plan above produces a commercially launchable product. The phased launch is about market validation, not platform readiness:
 
 **Month 1: Founding client engagements (2–3 Verdict Singles)**
-- Validate the seven-domain framework against real lost bids
+- Validate the eight-domain framework against real lost bids
 - Refine forensic domain skill prompts based on actual client documentation
 - Calibrate independent scoring against known authority outcomes
 - Establish consultant delivery process (intake → Pass 1 → interview → Pass 2 → debrief)
@@ -669,7 +695,7 @@ Verdict succeeds if it achieves three things within its first twelve months:
 
 3. **Compounding data contribution.** Verdict engagement data is structured and retained in the platform, contributing to Pursuit Maturity Score benchmarks, pattern libraries, and scoring calibration that improve both Verdict delivery and Core/Command engagement planning.
 
-4. **Framework validation.** The seven-domain evaluation framework is validated through at least 10 engagements in the first 12 months, with refinements incorporated based on real-world application. The framework becomes a recognised, defensible standard for pursuit capability assessment.
+4. **Framework validation.** The eight-domain evaluation framework is validated through at least 10 engagements in the first 12 months, with refinements incorporated based on real-world application. The framework becomes a recognised, defensible standard for pursuit capability assessment.
 
 ---
 
@@ -779,9 +805,22 @@ This appendix maps each Verdict evaluation domain against the existing PWIN Qual
 
 **Coverage: STRONG.** COM workstream (7 activities) covers the full commercial lifecycle. Agent 4 skills map directly. **No gap.**
 
-### A.8 Summary: What's Missing from Verdict That Qualify and Execution Already Cover
+### A.8 Domain 5.8: Post-Submission & Presentation (5%, conditional)
 
-Nothing material. The Verdict PRD's 7 domains are well-covered by the combined Qualify + Execution methodology. The coverage pattern is:
+| Verdict Criterion | Qualify Coverage | Bid Execution Activities |
+|---|---|---|
+| Presentation preparation | — | POST-01 Presentation design & development |
+| Presentation rehearsal & coaching | — | POST-02 Presentation rehearsals & coaching |
+| Evaluator question anticipation | — | POST-02 (rehearsal includes Q&A prep), Agent 5 Skill 5.7 (presentation-intelligence UC15) |
+| BAFO response | — | POST-05 BAFO preparation & revised pricing, POST-06 BAFO governance approval |
+| Contract negotiation readiness | — | POST-07 Contract negotiation support |
+| Post-submission intelligence | — | POST-04 Post-submission clarification management |
+
+**Coverage: STRONG on Bid Execution.** The POST workstream (8 activities) covers the full post-submission lifecycle. Agent 5 Skill 5.7 (presentation-intelligence) already predicts evaluator probe questions from review data. **No gap in activities. Domain is conditionally assessed — excluded from scoring when the procurement did not include a presentation/BAFO stage.**
+
+### A.9 Summary: What's Missing from Verdict That Qualify and Execution Already Cover
+
+Nothing material. The Verdict PRD's 8 domains are well-covered by the combined Qualify + Execution methodology. The coverage pattern is:
 
 | Domain | Qualify | Execution | Gap? |
 |---|---|---|---|
@@ -792,8 +831,9 @@ Nothing material. The Verdict PRD's 7 domains are well-covered by the combined Q
 | 5.5 Governance | Absent | **Strong** (GOV gates, Pink/Red/Gold) | No |
 | 5.6 Proposal Quality | Absent | Strong (PRD workstream) | **Yes — independent scoring skill not built** |
 | 5.7 Commercial | Absent | **Strong** (COM workstream) | No |
+| 5.8 Post-Submission | Absent | **Strong** (POST workstream, 8 activities) | No (conditional domain) |
 
-### A.9 What Verdict Covers That Neither Product Currently Assesses
+### A.10 What Verdict Covers That Neither Product Currently Assesses
 
 1. **Retrospective maturity rating** — the 5-point scale (Absent → Optimised) applied per domain is new. Existing skills produce findings and recommendations; they don't produce a normalised maturity assessment.
 
