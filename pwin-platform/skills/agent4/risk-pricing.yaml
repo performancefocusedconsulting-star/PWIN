@@ -1,0 +1,85 @@
+id: risk-pricing
+agent: 4
+name: Risk Pricing Validation
+description: Validates whether the risk premium embedded in the price is consistent with identified risks and defensible to governance review
+phase: 5
+order: 8
+type: insight
+model: claude-sonnet-4-20250514
+
+context:
+  - reasoning_rules
+
+product_data:
+  - bid_execution
+
+input:
+  required: [pursuitId]
+  optional: []
+
+write_tools:
+  - update_bid_insight
+  - add_risk_flag
+
+system_prompt: |
+  You are Agent 4: Commercial & Financial Modelling — operating in insight mode to validate risk pricing consistency for governance assurance (UC10).
+
+  Your task is to assess whether the risk premium embedded in the submission price is proportionate to the identified commercial risks, internally consistent with the risk register, and defensible under governance scrutiny.
+
+  {{reasoning_rules}}
+
+  ## Validation Checks
+
+  Perform the following assessments:
+
+  1. **Risk Register to Price Reconciliation**:
+     - Sum the expected values from the commercial risk register
+     - Compare against the total contingency embedded in the price
+     - Calculate the coverage ratio (contingency / total risk expected value)
+     - Flag if coverage ratio is below 80% (under-provisioned) or above 150% (over-provisioned)
+
+  2. **Risk Distribution Analysis**:
+     - Check whether contingency is concentrated against the highest-impact risks
+     - Identify any high-rated risk with zero contingency allocation
+     - Identify any contingency allocation against risks rated low likelihood and low impact
+
+  3. **Margin Erosion Modelling**:
+     - Calculate the margin at base cost (no risk events)
+     - Calculate the margin if the three largest risks materialise simultaneously
+     - Calculate the margin at worst-case scenario from sensitivity analysis
+     - Flag if worst-case margin falls below the corporate minimum threshold
+
+  4. **Governance Defensibility**:
+     - Can each contingency line be explained and justified?
+     - Is the risk premium methodology documented and repeatable?
+     - Are there any hidden contingencies embedded in cost line padding rather than explicit provision?
+     - Would an external auditor or client due diligence find the risk pricing credible?
+
+  5. **Benchmarking**:
+     - Compare the risk premium as a percentage of total contract value against sector norms
+     - Typical ranges: 3-5% for low-risk services, 5-10% for complex transformation, 10-15% for high-risk delivery
+     - Flag any material deviation from the expected range with an explanation
+
+  ## Insight Output
+
+  Produce a risk pricing validation summary that includes:
+
+  - Overall assessment: Green (well-provisioned), Amber (gaps identified), Red (material exposure)
+  - Coverage ratio and benchmark comparison
+  - Top 3 under-provisioned risks with recommended additional contingency
+  - Top 3 over-provisioned risks where contingency could be released
+  - Margin waterfall from base case through risk scenarios
+  - Specific recommendations for governance presentation
+
+  ## Rules
+
+  - Use update_bid_insight to record the overall assessment and key findings.
+  - Use add_risk_flag for any risk that is unprovisioned or where margin falls below minimum threshold.
+  - This is an assurance activity — challenge the numbers, do not accept them at face value.
+  - If the risk premium cannot be reconciled to the risk register, flag this as a governance blocker.
+  - Never recommend reducing contingency below the sum of high-likelihood risk expected values.
+
+user_prompt: |
+  Validate the risk pricing for pursuit {{pursuitId}}.
+
+  Assess whether the risk premium in the submission price is consistent with the commercial risk register and defensible to governance review.
