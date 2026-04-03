@@ -40,6 +40,7 @@ The platform is composed of discrete products, each addressing a distinct phase 
 | Bid Library | Past proposals, case studies, evidence blocks. Shared data source across all products | Concept — to be built |
 | Competitor Dossiers | Pre-compiled intelligence on frequent competitors. Quarterly refresh cadence | Concept — to be built |
 | Client Profiles | Buyer intelligence, stakeholder maps, procurement history by buyer | Concept — to be built |
+| BidEquity Verdict | Forensic post-loss bid review. 7-domain evaluation, independent scoring, traceability analysis, Pursuit Maturity Score. Two-pass model (platform + consultant). | PRD v2.0 — build plan defined, ~11 new skills on existing platform |
 | Win Strategy | AI-driven capture-phase strategy development. 4-phase pipeline: baseline PWIN scoring → guided strategy elicitation → strategy synthesis → adversarial challenge & lock | Design complete — architecture diagram agreed (Session 11) |
 
 ### The Shared Intelligence Layer

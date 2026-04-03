@@ -131,6 +131,30 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ---
 
+## bidequity-verdict
+
+Forensic post-loss bid review product. Independently evaluates the entire pursuit lifecycle — not just the written submission, but every upstream activity that determined whether the submission could succeed.
+
+### Reference Documents
+
+- `bidequity-verdict/docs/BidEquity-Verdict-PRD-v2.md` — product requirements document (draft, v2.0)
+
+### Architecture
+
+- Runs on the same PWIN Platform MCP server as Qualify and Bid Execution — not a separate build.
+- Two-pass execution model: Pass 1 (platform analysis with AI), Pass 2 (consultant investigation with AI-generated probe questions, then re-assessment).
+- 7 evaluation domains, each scored on a 5-point maturity scale (Absent → Optimised). Weighted to produce a Pursuit Maturity Score.
+- ~11 new YAML skill configs (7 forensic domain assessments + proposal parsing + independent scoring + traceability + report assembly). Independent scoring skill is shared with Bid Execution pre-review AI scoring.
+- Product data stored as `verdict.json` per pursuit, alongside existing product files.
+
+### Commercial Model
+
+- Fixed-fee transactional: Verdict Single (£2,000 / 1 pursuit), Verdict Portfolio (£5,000 / 3 pursuits).
+- Gateway product into Core and Command (outcome-aligned consulting engagements).
+- API cost per engagement: <£1. Cost driver is consultant time, not platform.
+
+---
+
 ## Adding New Products
 
 When a new product folder is added, create a new section in this file following the same structure as above.
