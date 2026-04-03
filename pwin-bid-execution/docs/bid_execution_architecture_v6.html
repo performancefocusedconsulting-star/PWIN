@@ -1420,11 +1420,25 @@ R.build=()=>`
 
   <br/><br/>13. All tests used synthetic data injected via API — not data from the actual HTML apps. For meaningful ongoing testing, a real opportunity should be loaded through the Bid Execution app with realistic bid data.
 
+  <br/><br/><strong>Session 16 continued — Verdict product, cost model, brand system</strong>
+
+  <br/><br/>14. <strong>All 55 skill configs built</strong> across 6 agents (52 new files, 4,221 lines). Built in parallel using 6 sub-agents, one per agent directory. All 55 load and list via GET /api/skills.
+
+  <br/><br/>15. <strong>BidEquity Verdict PRD v2.0</strong> reviewed and updated. New product folder created at bidequity-verdict/. PRD updated with: two-pass execution model (platform analysis → consultant investigation → re-assessment), platform reuse assessment (~11 new skills on existing infrastructure, 9-14 day build), Domain 5.8 (Post-Submission &amp; Presentation) added as conditional domain, full cross-reference of all 8 domains against Qualify categories and Bid Execution activities (Appendix A). Two gaps identified: team mobilisation assessment skill (new) and independent scoring skill (designed but not built — shared with Bid Execution pre-review AI scoring).
+
+  <br/><br/>16. <strong>API cost model</strong> built as 6-sheet Excel workbook (BidEquity_API_Cost_Model.xlsx). Headline: £12.58 API cost per medium opportunity (10 sections, 10 weeks). Top cost drivers: Standup Priorities ($2.47/opp, 30 daily calls), Timeline Analysis ($1.38), Response Section Drafting ($1.35). API cost is &lt;0.1% of revenue across all client profiles. Verdict margin ~40% at £2k price point after consultant time. Cost reduction levers: Haiku for standup (92% saving), prompt caching (30% input saving), pre-built intelligence.
+
+  <br/><br/>17. <strong>Brand design system</strong> extracted from branded execution prototype. BidEquity brand v1.2: Spline Sans + Inter fonts, teal (#5CA3B6) accent, warm parchment backgrounds (#F7F4EE), zero border-radius throughout, light mode. Reskin of all three products deferred until product functionality is complete.
+
   <br/><br/><strong>What happens next:</strong>
-  <br/>— Load a real or realistic opportunity through the Bid Execution app for richer skill testing
-  <br/>— Build remaining 54 skill YAML configs across all 6 agents
-  <br/>— Practitioner review of two AI enrichment spreadsheets (platform-level knowledge — review columns still empty)
-  <br/>— Remaining design backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
+  <br/>— Load a real or realistic opportunity for skill testing
+  <br/>— Practitioner review of 55 skill prompts (batch notes, refine in one pass)
+  <br/>— Build Bid Execution product features (scheduling, dependencies, remaining UX from Sessions 8-10)
+  <br/>— Build Verdict product (~11 new skill configs, verdict.json data model, MCP tools)
+  <br/>— Build independent scoring skill (shared: Bid Execution pre-review + Verdict retrospective)
+  <br/>— Reskin all three products with BidEquity brand design system (after functionality complete)
+  <br/>— Practitioner review of enrichment spreadsheets (review columns still empty)
+  <br/>— Remaining design backlog: module renumbering, competitive dialogue methodology, SQ stage methodology, 8 open Proforma design decisions (DN-01 to DN-08)
   </div></div>
 `;
 
