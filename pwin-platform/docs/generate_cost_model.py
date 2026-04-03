@@ -729,7 +729,206 @@ def build_verdict_cost(wb):
 
 
 # ============================================================================
-# SHEET 6: Key Assumptions
+# SHEET 6: Product Cost Summary (all products side by side)
+# ============================================================================
+
+def build_product_summary(wb, execution_cost):
+    ws = wb.create_sheet('Product Cost Summary')
+
+    ws.merge_cells('A1:F1')
+    ws.cell(row=1, column=1, value='BidEquity Platform — API Cost by Product').font = Font(color='B8860B', bold=True, size=14, name='Calibri')
+    ws.cell(row=1, column=1).fill = DARK_NAVY
+    for c in range(1, 7):
+        ws.cell(row=1, column=c).fill = DARK_NAVY
+
+    ws.merge_cells('A2:F2')
+    ws.cell(row=2, column=1, value='All costs are Claude API token costs only. Consultant time, infrastructure, and overheads are excluded.').font = Font(color='999999', size=9, name='Calibri')
+    ws.cell(row=2, column=1).fill = DARK_NAVY
+    for c in range(1, 7):
+        ws.cell(row=2, column=c).fill = DARK_NAVY
+
+    # ── Qualify Product ──
+    row = 4
+    ws.cell(row=row, column=1, value='PWIN QUALIFY').font = GOLD_FONT
+    row += 1
+
+    q_headers = ['Step', 'Invocations', 'Input Tokens', 'Output Tokens', 'Cost (USD)', 'Notes']
+    for i, h in enumerate(q_headers, 1):
+        ws.cell(row=row, column=i, value=h)
+    style_header_row(ws, row, len(q_headers))
+
+    qualify_steps = [
+        ('AI Assurance Review (per question)', 24, 2500, 800, 'System prompt + question + evidence + rubric + sector context. Currently calls Claude API directly from browser.'),
+        ('Full Qualification Report', 1, 5000, 2000, 'Synthesises all 24 reviews into overall assessment with PWIN score.'),
+        ('PWIN Score Calculation', 3, 3000, 500, 'At initial assessment, post-review, and final. Lightweight calculation.'),
+    ]
+
+    row += 1
+    qualify_total = 0
+    m = MODELS['sonnet']
+    for name, invocations, inp, out, notes in qualify_steps:
+        call_cost = inp / 1_000_000 * m['input_per_m'] + out / 1_000_000 * m['output_per_m']
+        step_cost = call_cost * invocations
+        qualify_total += step_cost
+
+        ws.cell(row=row, column=1, value=name).font = BODY_FONT
+        style_data_cell(ws, row, 2, NUM_FORMAT).value = invocations
+        style_data_cell(ws, row, 3, NUM_FORMAT).value = inp * invocations
+        style_data_cell(ws, row, 4, NUM_FORMAT).value = out * invocations
+        style_data_cell(ws, row, 5, MONEY_FORMAT_4).value = step_cost
+        ws.cell(row=row, column=6, value=notes).font = Font(color='666666', size=9, name='Calibri')
+        for c in range(1, 7):
+            ws.cell(row=row, column=c).border = THIN_BORDER
+        row += 1
+
+    row += 1
+    ws.cell(row=row, column=1, value='Qualify Total per Pursuit').font = BOLD_FONT
+    style_data_cell(ws, row, 5, MONEY_FORMAT, bold=True).value = qualify_total
+    ws.cell(row=row, column=5).fill = AMBER_FILL
+    ws.cell(row=row, column=6, value=f'GBP: £{qualify_total * 0.79:.2f}').font = BOLD_FONT
+
+    # ── Execution Product ──
+    row += 2
+    ws.cell(row=row, column=1, value='PWIN EXECUTION (Bid Lifecycle)').font = GOLD_FONT
+    row += 1
+
+    exec_headers = ['Phase', 'Skills', 'Invocations', 'Cost (USD)', 'Notes']
+    for i, h in enumerate(exec_headers, 1):
+        ws.cell(row=row, column=i, value=h)
+    style_header_row(ws, row, len(exec_headers))
+
+    phase_order = ['Pre-Bid', 'ITT Receipt', 'Strategy', 'Solution', 'Commercial',
+                   'Production', 'Ongoing', 'Governance', 'Mid-Bid', 'Pre-Submit', 'Post-Submit']
+    row += 1
+    for phase in phase_order:
+        phase_skills = [s for s in SKILLS if s['phase'] == phase]
+        if not phase_skills:
+            continue
+        invocations = sum(s['frequency'] for s in phase_skills)
+        phase_cost = sum(cost_per_opp(s) for s in phase_skills)
+
+        ws.cell(row=row, column=1, value=phase).font = BODY_FONT
+        style_data_cell(ws, row, 2, NUM_FORMAT).value = len(phase_skills)
+        style_data_cell(ws, row, 3, NUM_FORMAT).value = invocations
+        style_data_cell(ws, row, 4, MONEY_FORMAT).value = phase_cost
+        # Notes for key phases
+        notes_map = {
+            'Ongoing': 'Standup (30×), Timeline (8×), Compliance (4×), Effort reforecast (4×), Bid cost (4×)',
+            'Production': 'Drafting (10×), Formatting (10×), Win theme audit (3×), Review trajectory (3×)',
+            'Governance': 'Gate readiness (5×), Governance packs (5×), Stakeholder risk (2×), Risk/pricing (1×)',
+            'Pre-Bid': 'Client profiling, sector scanning, incumbent, competitors, stakeholders — REUSABLE',
+        }
+        ws.cell(row=row, column=5, value=notes_map.get(phase, '')).font = Font(color='666666', size=9, name='Calibri')
+        for c in range(1, 6):
+            ws.cell(row=row, column=c).border = THIN_BORDER
+        row += 1
+
+    row += 1
+    ws.cell(row=row, column=1, value='Execution Total per Opportunity').font = BOLD_FONT
+    style_data_cell(ws, row, 4, MONEY_FORMAT, bold=True).value = execution_cost
+    ws.cell(row=row, column=4).fill = AMBER_FILL
+    ws.cell(row=row, column=5, value=f'GBP: £{execution_cost * 0.79:.2f}').font = BOLD_FONT
+
+    # ── Verdict Product ──
+    row += 2
+    ws.cell(row=row, column=1, value='BIDEQUITY VERDICT (Post-Loss Review)').font = GOLD_FONT
+    row += 1
+
+    v_headers = ['Step', 'Cost (USD)', 'Notes']
+    for i, h in enumerate(v_headers, 1):
+        ws.cell(row=row, column=i, value=h)
+    style_header_row(ws, row, len(v_headers))
+
+    verdict_summary = [
+        ('Document ingestion (ITT + proposal)', 0.17, '2 skills: ITT extraction + proposal parsing'),
+        ('8 domain assessments (Pass 1)', 0.76, '8 forensic domain skills'),
+        ('Independent scoring (8 sections)', 0.60, 'Per-section scoring against evaluation criteria'),
+        ('Traceability analysis', 0.16, 'Cross-artefact chain mapping'),
+        ('Pass 2 re-assessment (post-interview)', 0.70, '8 domains re-run with enriched data'),
+        ('Report assembly', 0.14, 'Consolidates all findings into Verdict Report'),
+    ]
+    row += 1
+    verdict_total = 0
+    for name, cost, notes in verdict_summary:
+        verdict_total += cost
+        ws.cell(row=row, column=1, value=name).font = BODY_FONT
+        style_data_cell(ws, row, 2, MONEY_FORMAT).value = cost
+        ws.cell(row=row, column=3, value=notes).font = Font(color='666666', size=9, name='Calibri')
+        for c in range(1, 4):
+            ws.cell(row=row, column=c).border = THIN_BORDER
+        row += 1
+
+    row += 1
+    ws.cell(row=row, column=1, value='Verdict Total per Engagement').font = BOLD_FONT
+    style_data_cell(ws, row, 2, MONEY_FORMAT, bold=True).value = verdict_total
+    ws.cell(row=row, column=2).fill = AMBER_FILL
+    ws.cell(row=row, column=3, value=f'GBP: £{verdict_total * 0.79:.2f}').font = BOLD_FONT
+
+    # ── Combined Summary ──
+    row += 3
+    ws.cell(row=row, column=1, value='COMBINED COST SUMMARY').font = GOLD_FONT
+    row += 1
+    for col_h, val in [('Product', 1), ('Cost per Use (USD)', 2), ('Cost per Use (GBP)', 3), ('Price to Client', 4), ('API as % Price', 5)]:
+        ws.cell(row=row, column=val, value=col_h)
+    style_header_row(ws, row, 5)
+
+    combined = [
+        ('Qualify (per pursuit)', qualify_total, qualify_total * 0.79, 'Included in Core/Command', None),
+        ('Execution (per opportunity)', execution_cost, execution_cost * 0.79, 'Included in Core/Command', None),
+        ('Qualify + Execution combined', qualify_total + execution_cost, (qualify_total + execution_cost) * 0.79, '£80-500k/yr (Core/Command)', (qualify_total + execution_cost) * 0.79 / 80000),
+        ('Verdict Single', verdict_total, verdict_total * 0.79, '£2,000', verdict_total * 0.79 / 2000),
+        ('Verdict Portfolio (×3)', verdict_total * 3, verdict_total * 3 * 0.79, '£5,000', verdict_total * 3 * 0.79 / 5000),
+    ]
+
+    row += 1
+    for name, cost_usd, cost_gbp, price, pct in combined:
+        ws.cell(row=row, column=1, value=name).font = BODY_FONT
+        style_data_cell(ws, row, 2, MONEY_FORMAT).value = cost_usd
+        style_data_cell(ws, row, 3, MONEY_FORMAT).value = cost_gbp
+        ws.cell(row=row, column=4, value=str(price) if isinstance(price, str) else price).font = BODY_FONT
+        if pct is not None:
+            style_data_cell(ws, row, 5, PCT_FORMAT).value = pct
+            ws.cell(row=row, column=5).fill = GREEN_FILL if pct < 0.01 else AMBER_FILL
+        for c in range(1, 6):
+            ws.cell(row=row, column=c).border = THIN_BORDER
+        row += 1
+
+    # Scaling scenario
+    row += 2
+    ws.cell(row=row, column=1, value='ANNUAL SCALING SCENARIO').font = GOLD_FONT
+    row += 1
+    for col_h, val in [('Client Scenario', 1), ('Opps/Year', 2), ('API/Year (GBP)', 3), ('Revenue/Year', 4), ('API as % Revenue', 5)]:
+        ws.cell(row=row, column=val, value=col_h)
+    style_header_row(ws, row, 5)
+
+    annual_scenarios = [
+        ('1 Core client, 5 opps', 5, (qualify_total + execution_cost) * 5 * 0.79, 80000),
+        ('1 Command client, 15 opps', 15, (qualify_total + execution_cost) * 15 * 0.79, 250000),
+        ('5 Core + 2 Command clients', 55, (qualify_total + execution_cost) * 55 * 0.79, 900000),
+        ('10 Verdict Singles/year', 10, verdict_total * 10 * 0.79, 20000),
+        ('Full portfolio: 5 Core + 2 Command + 10 Verdicts', 65, ((qualify_total + execution_cost) * 55 + verdict_total * 10) * 0.79, 920000),
+    ]
+
+    row += 1
+    for name, opps, annual_api, revenue in annual_scenarios:
+        ws.cell(row=row, column=1, value=name).font = BODY_FONT
+        style_data_cell(ws, row, 2, NUM_FORMAT).value = opps
+        style_data_cell(ws, row, 3, MONEY_FORMAT).value = annual_api
+        style_data_cell(ws, row, 4, MONEY_FORMAT).value = revenue
+        pct = annual_api / revenue if revenue else 0
+        style_data_cell(ws, row, 5, PCT_FORMAT).value = pct
+        ws.cell(row=row, column=5).fill = GREEN_FILL if pct < 0.01 else AMBER_FILL
+        for c in range(1, 6):
+            ws.cell(row=row, column=c).border = THIN_BORDER
+        row += 1
+
+    widths = [38, 20, 18, 22, 16, 50]
+    for i, w in enumerate(widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+
+# ============================================================================
+# SHEET 7: Key Assumptions
 # ============================================================================
 
 def build_assumptions(wb):
@@ -793,6 +992,7 @@ def main():
     build_portfolio_scenarios(wb, total_cost)
     build_cost_reduction(wb, total_cost)
     build_verdict_cost(wb)
+    build_product_summary(wb, total_cost)
     build_assumptions(wb)
 
     output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs', 'BidEquity_API_Cost_Model.xlsx')
