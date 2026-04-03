@@ -1340,6 +1340,33 @@ R.build=()=>`
   <br/>— Define the document ingestion pipeline — how uploaded documents flow into the system
   <br/>— Remaining backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
   </div></div>
+
+  <div class="co co-b"><div class="co-l">Session 15 — 2026-04-04</div><div class="co-t"><strong>What was decided:</strong>
+
+  <br/><br/><strong>MCP server scoped as multi-product platform service</strong>
+  <br/>1. PWIN Qualify product reviewed — working prototype (24 questions, 6 categories, PWIN formula, AI assurance review) plus two AI enrichment design documents (enrichment review + intelligence-gathering proforma). Both enrichment docs have content complete but practitioner review columns not yet filled in.
+
+  <br/><br/>2. Cross-product data comparison revealed substantial overlap between Qualify and Bid Execution. Every Qualify scoring category maps directly to SAL workstream activities: Competitive Positioning → SAL-03/04, Procurement Intelligence → SAL-05/06/07, Stakeholder Strength → SAL-10, Organisational Influence → SAL-10/06.2, Value Proposition → SAL-04/06.2, Pursuit Progress → SAL-10/01.
+
+  <br/><br/>3. The MCP server cannot be product-specific. Three products share the same pursuit lifecycle (Qualify → Win Strategy → Bid Execution). Data flows downstream — each product enriches and refines what the previous one started. Architecture decision: <strong>one server, one data store, multiple products, one MCP interface</strong>.
+
+  <br/><br/><strong>Shared pursuit entities defined</strong>
+  <br/>4. Common entities across all products: Pursuit (ID, client, opportunity, sector, TCV, type), PWIN Score (category scores, weight profile), Competitive Positioning, Stakeholder Map, Buyer Values, Win Themes, Client Intelligence, Evaluation Intelligence, Capture Plan. Each entity has a clear owner (which product creates it) and consumers (which products read it).
+
+  <br/><br/><strong>AI enrichment documents are platform-level, not product-specific</strong>
+  <br/>5. The AI Enrichment Review (sector knowledge, opportunity type intelligence, few-shot examples) and AI Design Proforma (51 data points, 20 reasoning rules, confidence model) describe capabilities that already exist in the Bid Execution agent architecture. The 51 data points map heavily to Bid Execution entities. The 20 reasoning rules map to Agent 3 (winnability/desirability) and Agent 6 (deliverability) business logic. The sector/opportunity type knowledge should be shared across the platform.
+
+  <br/><br/>6. The confidence model (H=Confirmed/M=Inferred/L=Assumed/U=Unknown per data point) is genuinely new — Bid Execution doesn&apos;t have this. Recommended for adoption platform-wide for source traceability.
+
+  <br/><br/>7. Design doc contradiction noted: PWIN-Qualify-Design v1.html Section 08 says dynamic category weights were rejected (comparability concern). Built app implements them via WEIGHT_PROFILES. Decision was reversed after design doc was written.
+
+  <br/><br/><strong>What happens next:</strong>
+  <br/>— MCP server architecture design — now scoped as multi-product platform service with shared pursuit entities
+  <br/>— Key design question: localStorage-to-MCP bridge (recommended: Option D — shared JSON file store, one Node.js server)
+  <br/>— Practitioner review of two AI enrichment spreadsheets (treat as platform-level knowledge, not Qualify-specific)
+  <br/>— Map the proforma/template library — what documents each agent produces
+  <br/>— Remaining backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
+  </div></div>
 `;
 
 render();

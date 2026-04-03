@@ -67,6 +67,30 @@ A single self-contained HTML application for bid production control and assuranc
 
 ---
 
+## pwin-qualify
+
+An AI-assisted bid qualification and coaching application. Pursuit teams self-assess opportunity strength across 6 categories (24 questions), receive an AI assurance review that challenges over-scoring, and get a PWIN score with a pursue/condition/walk-away recommendation.
+
+### Reference Documents
+
+- `pwin-qualify/docs/PWIN-Qualify-Design v1.html` — functional design document (scoring model, PWIN formula, context engine, AI assurance layer, rejected decisions)
+- `pwin-qualify/docs/PWIN_AI_Enrichment_Review.xlsx` — AI prompt enrichment spec (sector knowledge, opportunity types, few-shot examples, output schema, system prompt) — **review columns not yet completed**
+- `pwin-qualify/docs/BWIN Qualify_AI Design_Proforma_v2.xlsx` — Phase 1 intelligence-gathering spec (51 data points, 20 reasoning rules, confidence model) — **not yet completed**
+- `pwin-qualify/docs/PWIN_Architect_v1.html` — working prototype application
+
+### Technical Constraints
+
+- Same as pwin-bid-execution: single HTML file, vanilla JavaScript, no frameworks, no external dependencies beyond Google Fonts.
+- JSON file export/import for persistence (not localStorage).
+- No MCP integration yet — AI assurance review currently calls Claude API directly from the browser.
+
+### Cross-Product Data
+
+- PWIN Qualify shares pursuit-level data with Win Strategy and Bid Execution (see Session 15 memory for shared entity model).
+- Sector and opportunity type knowledge is platform-level, not product-specific.
+
+---
+
 ## Adding New Products
 
 When a new product folder is added, create a new section in this file following the same structure as above.
