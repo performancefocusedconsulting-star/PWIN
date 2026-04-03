@@ -808,6 +808,127 @@ body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font
 <script>
 'use strict';
 /* ════════════════════════════════════════════════════════════
+   PLATFORM — Server Connection & Data API Client
+════════════════════════════════════════════════════════════ */
+const PLATFORM = (() => {
+  const API_BASE = 'http://localhost:3456';
+  let _connected = false;
+  let _pursuitId = null;
+
+  async function checkConnection() {
+    try {
+      const r = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(2000) });
+      if (r.ok) { _connected = true; return true; }
+    } catch (e) { /* server not running */ }
+    _connected = false;
+    return false;
+  }
+
+  async function apiGet(path) {
+    if (!_connected) return null;
+    try {
+      const r = await fetch(`${API_BASE}${path}`);
+      if (!r.ok) return null;
+      return r.json();
+    } catch (e) { return null; }
+  }
+
+  async function apiPut(path, data) {
+    if (!_connected) return null;
+    try {
+      const r = await fetch(`${API_BASE}${path}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!r.ok) return null;
+      return r.json();
+    } catch (e) { return null; }
+  }
+
+  async function apiPost(path, data) {
+    if (!_connected) return null;
+    try {
+      const r = await fetch(`${API_BASE}${path}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return r.json();
+    } catch (e) { return null; }
+  }
+
+  // Load bid data from server (bid_execution product data for a pursuit)
+  async function loadBidFromServer(bidId) {
+    if (!_pursuitId) return null;
+    return apiGet(`/api/pursuits/${_pursuitId}/bid-execution`);
+  }
+
+  // Save bid data to server
+  async function saveBidToServer(bidId, bidData) {
+    if (!_pursuitId) return;
+    await apiPut(`/api/pursuits/${_pursuitId}/bid-execution`, bidData);
+  }
+
+  // Sync practice data (bid list) to server as pursuit list
+  async function syncPracticeToServer(practice) {
+    // Practice data stays in localStorage — it's the local bid index
+    // Server has its own pursuit list via GET /api/pursuits
+  }
+
+  // List pursuits from server
+  async function listPursuits() {
+    return apiGet('/api/pursuits') || [];
+  }
+
+  // Create a pursuit on the server from a bid
+  async function createPursuit(bid) {
+    return apiPost('/api/pursuits', {
+      client: bid.clientOrg || bid.title || '',
+      opportunity: bid.title || '',
+      sector: bid.sector || null,
+      tcv: bid.tcv ? parseFloat(bid.tcv) * 1000000 : null,
+      createdBy: 'bid_execution',
+    });
+  }
+
+  function renderBanner() {
+    let banner = document.getElementById('pwin-platform-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'pwin-platform-banner';
+      banner.style.cssText = 'padding:6px 16px;font-family:"DM Mono",monospace;font-size:11px;text-align:center;position:fixed;top:0;left:0;right:0;z-index:9999;transition:opacity .3s;';
+      document.body.prepend(banner);
+      document.body.style.paddingTop = '28px';
+    }
+    if (_connected) {
+      banner.style.background = 'linear-gradient(135deg, #0a1628, #142240)';
+      banner.style.color = '#b8860b';
+      banner.style.borderBottom = '1px solid #1a3055';
+      banner.innerHTML = `PWIN Platform connected${_pursuitId ? ' — pursuit linked' : ' — no pursuit linked'} <span style="color:#3a506b;margin-left:8px;">localhost:3456</span>`;
+    } else {
+      banner.style.background = 'linear-gradient(135deg, #1a1008, #241810)';
+      banner.style.color = '#8b4513';
+      banner.style.borderBottom = '1px solid #3a2010';
+      banner.innerHTML = 'PWIN Platform not connected — AI features unavailable, data is local only';
+    }
+  }
+
+  return {
+    get connected() { return _connected; },
+    get pursuitId() { return _pursuitId; },
+    set pursuitId(id) { _pursuitId = id; localStorage.setItem('pwin:pursuitId', id); },
+    checkConnection,
+    listPursuits,
+    createPursuit,
+    loadBidFromServer,
+    saveBidToServer,
+    renderBanner,
+    apiGet,
+    apiPut,
+    apiPost,
+  };
+})();
+
+/* ════════════════════════════════════════════════════════════
    STORE — State, Mutations, Persistence, Utilities
 ════════════════════════════════════════════════════════════ */
 const STORE = (() => {
@@ -1002,6 +1123,11 @@ const STORE = (() => {
   function _save(key, val) {
     try { localStorage.setItem(key, JSON.stringify(val)); }
     catch(e) { console.error('STORE save error', key, e); }
+    // Async sync to server — fire and forget
+    if (PLATFORM.connected && key.startsWith('pwin:bid:')) {
+      const bidId = key.replace('pwin:bid:', '');
+      PLATFORM.saveBidToServer(bidId, val).catch(() => {});
+    }
   }
 })();
 
@@ -10414,9 +10540,25 @@ function handleStakeholderCsvExport() {
 /* ════════════════════════════════════════════════════════════
    INIT
 ════════════════════════════════════════════════════════════ */
+// Boot: init from localStorage immediately, then check platform async
 STORE.init();
 WIZARD.load();
 renderApp();
+
+// Async platform connection check — enhances app if server is running
+(async () => {
+  const connected = await PLATFORM.checkConnection();
+  PLATFORM.renderBanner();
+
+  if (connected) {
+    // Restore linked pursuit ID
+    const savedPursuitId = localStorage.getItem('pwin:pursuitId');
+    if (savedPursuitId) {
+      PLATFORM.pursuitId = savedPursuitId;
+      PLATFORM.renderBanner();
+    }
+  }
+})();
 </script>
 </body>
 </html>
