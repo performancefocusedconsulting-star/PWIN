@@ -1408,10 +1408,21 @@ R.build=()=>`
 
   <br/><br/>10. <strong>API endpoints added:</strong> GET /api/skills (list all), POST /api/skills/{id}/execute (live execution), POST /api/skills/{id}/dry-run (prompt assembly only).
 
+  <br/><br/><strong>HTML apps wired to Data API</strong>
+  <br/>11. Both Bid Execution and Qualify HTML apps now detect the platform server on startup (localhost:3456 health check with 2-second timeout) and display a connection status banner. Bid Execution auto-syncs every save to the server alongside localStorage (fire-and-forget). Qualify auto-saves positions/evidence/reviews on score changes (debounced 1s), auto-loads from server on startup, and syncs pursuit context to the shared entity. Both apps degrade gracefully when the server is not running.
+
+  <br/><br/><strong>Live skill execution tested with Anthropic API key</strong>
+  <br/>12. Multi-turn tool use loop implemented — skills now loop until Claude finishes (up to 10 turns), executing tool calls and feeding results back each round. All three Phase 3 skills tested live:
+
+  <br/><br/>— <strong>Timeline Analysis (UC1):</strong> 10 write-backs (4 activity insights, 2 risk flags, 5 standup actions). Identified overdue PRE-01, missing start dates on critical path, Strategy Lead resource conflict, and Defence-specific SC/DV clearance check. ~$0.03.
+  <br/>— <strong>Compliance Coverage (UC4):</strong> 8 write-backs (1 coverage insight, 2 risk flags, 5 standup actions). Identified GDPR DPA disqualification risk, unknown SC clearance and MOSAF compliance, 50% marks at risk from unlinked sections. ~$0.03.
+  <br/>— <strong>ITT Extraction:</strong> 5 write-backs. Correctly parsed HMPPS Probation Case Management ITT: 5 response sections with marks/hurdles/word limits, evaluation framework (60/40 split), procurement context (restricted, hybrid, £25m, Jaggaer), client scoring scheme (0-5 with pass mark 3), ITT document record. ~$0.03.
+
+  <br/><br/>13. All tests used synthetic data injected via API — not data from the actual HTML apps. For meaningful ongoing testing, a real opportunity should be loaded through the Bid Execution app with realistic bid data.
+
   <br/><br/><strong>What happens next:</strong>
-  <br/>— Connect an Anthropic API key and test live skill execution (Claude processes prompt, calls write-back tools, results land in store)
+  <br/>— Load a real or realistic opportunity through the Bid Execution app for richer skill testing
   <br/>— Build remaining 54 skill YAML configs across all 6 agents
-  <br/>— Wire HTML product apps to Data API (replace localStorage with fetch to localhost:3456)
   <br/>— Practitioner review of two AI enrichment spreadsheets (platform-level knowledge — review columns still empty)
   <br/>— Remaining design backlog: module renumbering, competitive dialogue methodology, SQ stage methodology
   </div></div>
