@@ -1,0 +1,2662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Pursuit Qualification Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --ink:        #0B1628;
+  --navy:       #132247;
+  --navy-mid:   #1E3A6E;
+  --navy-light: #2D5499;
+  --amber:      #E8920A;
+  --amber-lt:   #FDF3E3;
+  --amber-mid:  #F5A623;
+  --teal:       #0F7EA6;
+  --teal-lt:    #E0F4FA;
+  --green:      #1A7A4A;
+  --green-lt:   #E4F5EC;
+  --red:        #B91C1C;
+  --red-lt:     #FEF2F2;
+  --slate:      #64748B;
+  --border:     #E1E7F0;
+  --surface:    #F7F9FC;
+  --white:      #FFFFFF;
+
+  --cat-cp:    #EBF2FF;
+  --cat-pi:    #E8F5EE;
+  --cat-ss:    #FEF3E8;
+  --cat-oi:    #F0EAFF;
+  --cat-vp:    #FEFCE8;
+  --cat-pp:    #E8F7FB;
+
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(11,22,40,0.08), 0 1px 2px rgba(11,22,40,0.04);
+  --shadow-md: 0 4px 16px rgba(11,22,40,0.10), 0 2px 6px rgba(11,22,40,0.06);
+  --shadow-lg: 0 12px 40px rgba(11,22,40,0.14), 0 4px 12px rgba(11,22,40,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── TOP HEADER ─────────────────────────────────────────────── */
+.app-header {
+  background: var(--ink);
+  padding: 0 32px;
+  display: flex; align-items: stretch;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+.header-brand {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; border-right: 1px solid rgba(255,255,255,0.08);
+  padding-right: 28px; margin-right: 28px;
+}
+.brand-mark {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--amber); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 18px; color: white; font-weight: 700;
+  flex-shrink: 0;
+}
+.brand-text { line-height: 1.2; }
+.brand-name { font-family: var(--font-display); color: white; font-size: 16px; letter-spacing: 0.01em; }
+.brand-sub  { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 1px; }
+
+.header-nav { display: flex; align-items: center; gap: 4px; flex: 1; }
+.nav-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 7px;
+  white-space: nowrap;
+}
+.nav-btn:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.06); }
+.nav-btn.active { color: white; background: rgba(255,255,255,0.10); }
+.nav-btn .nav-icon { font-size: 15px; opacity: 0.7; }
+
+.header-pwin {
+  display: flex; align-items: center; gap: 20px;
+  padding: 12px 0 12px 28px;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  margin-left: auto;
+}
+.pwin-display { text-align: right; }
+.pwin-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+.pwin-value {
+  font-family: var(--font-mono); font-size: 28px; font-weight: 500;
+  color: var(--amber); line-height: 1;
+  transition: color 0.4s;
+}
+.pwin-value.good { color: #4ADE80; }
+.completion-pill {
+  background: rgba(255,255,255,0.08); border-radius: 20px;
+  padding: 5px 12px; font-size: 11px;
+  color: rgba(255,255,255,0.6); font-family: var(--font-mono);
+}
+
+/* ── VIEWS ──────────────────────────────────────────────────── */
+.view { display: none; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+.view.active { display: block; }
+
+/* ── ① ASSESSMENT VIEW ──────────────────────────────────────── */
+.cat-section { margin-bottom: 28px; }
+.cat-header-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+.cat-swatch { width: 12px; height: 28px; border-radius: 3px; flex-shrink: 0; }
+.cat-name { font-family: var(--font-display); font-size: 17px; color: var(--navy); }
+.cat-weight-badge {
+  margin-left: auto; font-family: var(--font-mono); font-size: 11px;
+  padding: 3px 10px; border-radius: 12px;
+  background: var(--navy); color: white;
+}
+.cat-score-mini {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  color: var(--amber); background: rgba(232,146,10,0.10);
+  padding: 3px 10px; border-radius: 12px; min-width: 52px; text-align: center;
+}
+
+.q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:900px){ .q-grid { grid-template-columns: 1fr; } }
+
+.q-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 10px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.q-card:hover { box-shadow: var(--shadow-md); }
+.q-card.scored { border-left: 3px solid var(--teal); }
+.q-card.scored-sa { border-left-color: var(--green); }
+.q-card.scored-d  { border-left-color: var(--amber); }
+.q-card.scored-sd { border-left-color: var(--red); }
+.q-card.reviewed  { border-right: 3px solid var(--amber); }
+
+.q-topic { font-size: 12px; font-weight: 600; color: var(--navy-mid); letter-spacing: 0.02em; }
+.q-text  { font-size: 12px; color: var(--slate); line-height: 1.55; }
+
+.q-controls { display: flex; gap: 8px; align-items: flex-start; }
+.pos-select {
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 6px 10px; color: var(--ink); background: var(--surface);
+  cursor: pointer; flex: 1; transition: border-color 0.15s;
+}
+.pos-select:focus { outline: none; border-color: var(--navy-light); }
+
+.btn-review-q {
+  flex-shrink: 0; border: 1px solid var(--border);
+  background: white; border-radius: var(--radius-sm);
+  padding: 6px 10px; font-size: 11px; font-weight: 600;
+  color: var(--navy-mid); cursor: pointer; white-space: nowrap;
+  transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+}
+.btn-review-q:hover { background: var(--navy); color: white; border-color: var(--navy); }
+.btn-review-q.done { color: var(--amber); border-color: var(--amber); }
+
+.evidence-area {
+  font-family: var(--font-body); font-size: 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 8px 10px; color: var(--ink);
+  background: var(--surface); resize: vertical; min-height: 72px;
+  width: 100%; line-height: 1.5;
+  transition: border-color 0.15s;
+}
+.evidence-area:focus { outline: none; border-color: var(--navy-light); background: white; }
+.evidence-area::placeholder { color: #A0AEB8; font-style: italic; }
+
+.inline-verdict {
+  border-radius: var(--radius-sm); padding: 8px 10px;
+  font-size: 11px; line-height: 1.5;
+  border-left: 3px solid;
+}
+.iv-validated { background: var(--green-lt); border-color: var(--green); color: #0F5132; }
+.iv-queried   { background: var(--amber-lt); border-color: var(--amber); color: #7C3D0A; }
+.iv-challenged{ background: var(--red-lt);   border-color: var(--red);   color: var(--red); }
+.iv-title { font-weight: 600; margin-bottom: 2px; }
+
+/* ── ② DASHBOARD VIEW ───────────────────────────────────────── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+@media(max-width:1100px){ .dash-grid { grid-template-columns: 1fr 1fr; } }
+
+.dash-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dash-card-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--slate);
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* PWIN gauge */
+.gauge-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; padding: 10px 0;
+}
+.gauge-outer {
+  position: relative; width: 180px; height: 180px;
+}
+.gauge-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.gauge-bg { fill: none; stroke: var(--border); stroke-width: 14; }
+.gauge-fill { fill: none; stroke-width: 14; stroke-linecap: round; transition: stroke-dasharray 0.6s ease, stroke 0.4s; }
+.gauge-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.gauge-pct { font-family: var(--font-mono); font-size: 34px; font-weight: 500; line-height: 1; color: var(--ink); }
+.gauge-target-label { font-size: 10px; color: var(--slate); margin-top: 4px; }
+
+.gauge-phase {
+  font-size: 12px; font-weight: 600; padding: 4px 14px;
+  border-radius: 20px; letter-spacing: 0.02em;
+}
+
+.phase-bar {
+  width: 100%; height: 6px; background: var(--border);
+  border-radius: 3px; overflow: hidden; margin-top: 4px;
+}
+.phase-fill { height: 100%; border-radius: 3px; background: var(--amber); transition: width 0.6s ease; }
+
+/* Category bars */
+.cat-bar-row { margin-bottom: 12px; }
+.cat-bar-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.cat-bar-name { font-size: 12px; font-weight: 500; color: var(--ink); }
+.cat-bar-val  { font-family: var(--font-mono); font-size: 12px; color: var(--slate); }
+.cat-bar-bg   { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.cat-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+/* Radar chart */
+.radar-wrap { position: relative; height: 320px; }
+
+/* Stats row */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--surface); border-radius: var(--radius-md);
+  padding: 12px 14px; border: 1px solid var(--border);
+}
+.stat-label { font-size: 10px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.07em; }
+.stat-val   { font-family: var(--font-mono); font-size: 22px; font-weight: 500; color: var(--navy); margin-top: 2px; }
+.stat-sub   { font-size: 10px; color: var(--slate); margin-top: 1px; }
+
+/* ── ③ AI REVIEW VIEW ───────────────────────────────────────── */
+.review-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+@media(max-width:860px){ .review-layout { grid-template-columns: 1fr; } }
+
+.review-nav {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  position: sticky; top: 90px;
+}
+.review-nav-title {
+  padding: 14px 16px; background: var(--navy);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
+  text-transform: uppercase; color: rgba(255,255,255,0.7);
+}
+.review-nav-body { padding: 8px; max-height: calc(100vh - 180px); overflow-y: auto; }
+
+.rnav-cat { margin-bottom: 6px; }
+.rnav-cat-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--slate);
+  padding: 4px 8px; display: block;
+}
+.rnav-q {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px; border-radius: var(--radius-sm);
+  font-size: 11px; cursor: pointer; gap: 6px;
+  color: var(--ink); transition: background 0.12s;
+  border: 1px solid transparent;
+}
+.rnav-q:hover { background: var(--surface); }
+.rnav-q.active { background: var(--navy); color: white; }
+.rnav-q .rv-indicator {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; background: var(--border);
+}
+.rnav-q .rv-indicator.done { background: var(--amber); }
+.rnav-q .rv-indicator.validated { background: var(--green); }
+.rnav-q .rv-indicator.challenged { background: var(--red); }
+
+/* Review panel */
+.review-panel {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.review-panel-header {
+  background: var(--navy); padding: 18px 22px;
+}
+.rph-cat  { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+.rph-topic{ font-family: var(--font-display); font-size: 19px; color: white; }
+.rph-text { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 8px; line-height: 1.55; }
+
+.review-panel-body { padding: 20px 22px; }
+.rp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+
+.rp-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--slate); margin-bottom: 6px; display: block;
+}
+.rp-select {
+  width: 100%; font-family: var(--font-body); font-size: 13px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 9px 11px; color: var(--ink); background: var(--surface);
+  cursor: pointer; transition: border-color 0.15s;
+}
+.rp-select:focus { outline: none; border-color: var(--navy-light); }
+
+.pts-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 9px 11px;
+  font-family: var(--font-mono); font-size: 24px; font-weight: 500;
+  color: var(--navy); height: 42px; display: flex; align-items: center;
+}
+
+.rp-textarea {
+  width: 100%; font-family: var(--font-body); font-size: 13px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px; color: var(--ink); background: var(--surface);
+  resize: vertical; min-height: 110px; line-height: 1.6;
+  transition: border-color 0.15s;
+}
+.rp-textarea:focus { outline: none; border-color: var(--navy-light); background: white; }
+.rp-textarea::placeholder { color: #B0BAC5; font-style: italic; }
+
+/* Rubric */
+.rubric-toggle-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--teal); cursor: pointer;
+  background: none; border: none; font-family: var(--font-body);
+  padding: 0; margin-bottom: 14px; text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.rubric-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;
+}
+.rubric-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+.rubric-badge {
+  font-size: 9px; font-weight: 700; padding: 3px 9px; border-radius: 10px;
+  flex-shrink: 0; min-width: 104px; text-align: center;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px;
+}
+.rb-sa { background: var(--green-lt); color: var(--green); }
+.rb-a  { background: var(--teal-lt);  color: var(--teal);  }
+.rb-d  { background: var(--amber-lt); color: #7C3D0A; }
+.rb-sd { background: var(--red-lt);   color: var(--red);   }
+.rubric-req { font-size: 12px; color: var(--slate); line-height: 1.5; }
+
+/* Run button */
+.btn-run {
+  width: 100%; padding: 13px; border-radius: var(--radius-md);
+  background: var(--navy); color: white; border: none;
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 9px; transition: background 0.15s; letter-spacing: 0.01em;
+}
+.btn-run:hover:not(:disabled) { background: var(--navy-mid); }
+.btn-run:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+/* Result */
+.result-wrap { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+
+.verdict-header {
+  border-radius: var(--radius-md); padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.vh-validated { background: var(--green-lt); }
+.vh-queried   { background: var(--amber-lt); }
+.vh-challenged{ background: var(--red-lt);   }
+
+.verdict-left { display: flex; align-items: center; gap: 12px; }
+.verdict-icon { font-size: 26px; }
+.verdict-name { font-weight: 700; font-size: 16px; }
+.verdict-desc { font-size: 11px; margin-top: 2px; opacity: 0.8; }
+.vn-validated { color: var(--green); }
+.vn-queried   { color: #7C3D0A; }
+.vn-challenged{ color: var(--red); }
+
+.suggested-score-box {
+  text-align: right;
+}
+.ss-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; }
+.ss-val   {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  padding: 4px 12px; border-radius: 12px; border: 1.5px solid; display: inline-block; margin-top: 3px;
+}
+.ss-green { color: var(--green); border-color: var(--green); background: var(--green-lt); }
+.ss-amber { color: #7C3D0A; border-color: var(--amber); background: var(--amber-lt); }
+.ss-red   { color: var(--red);   border-color: var(--red);   background: var(--red-lt);   }
+
+.conf-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.conf-label { font-size: 11px; color: var(--slate); min-width: 90px; }
+.conf-bar-bg { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.conf-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.conf-pct { font-family: var(--font-mono); font-size: 11px; color: var(--slate); min-width: 32px; text-align: right; }
+
+.narrative-text { font-size: 13px; color: var(--ink); line-height: 1.7; margin-bottom: 16px; }
+
+.inflation-flag {
+  background: #FFFBEB; border: 1px solid #F5C97A; border-left: 3px solid var(--amber);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 9px 12px; font-size: 12px; color: #7C3D0A;
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+
+.result-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--slate);
+  margin-bottom: 8px; margin-top: 16px;
+}
+
+.challenge-list, .action-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.challenge-list li {
+  font-size: 13px; color: var(--ink); padding: 9px 12px 9px 14px;
+  border-left: 3px solid var(--amber); background: var(--amber-lt);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.5;
+}
+.action-list li {
+  font-size: 13px; color: var(--ink); padding: 9px 12px 9px 14px;
+  border-left: 3px solid var(--teal); background: var(--teal-lt);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.5;
+}
+
+/* ── FULL REPORT ────────────────────────────────────────────── */
+.btn-report {
+  background: var(--amber); color: white; border: none;
+  border-radius: var(--radius-md); padding: 12px 22px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: background 0.15s; margin-bottom: 20px;
+}
+.btn-report:hover:not(:disabled) { background: #C97A08; }
+.btn-report:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.report-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.report-header {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--navy-mid) 100%);
+  padding: 22px 26px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.report-title { font-family: var(--font-display); font-size: 22px; color: white; }
+.report-sub   { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 5px; }
+.report-pwin  {
+  font-family: var(--font-mono); font-size: 42px; font-weight: 500;
+  color: var(--amber); text-align: right;
+}
+.report-pwin-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.report-body { padding: 24px 26px; }
+.report-section { margin-bottom: 22px; }
+.report-section-title {
+  font-family: var(--font-display); font-size: 16px; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.report-text { font-size: 13px; color: var(--ink); line-height: 1.75; }
+.report-risk-item {
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  margin-bottom: 8px; font-size: 13px; border-left: 3px solid;
+}
+.risk-high   { background: var(--red-lt);   border-color: var(--red);   color: var(--ink); }
+.risk-medium { background: var(--amber-lt); border-color: var(--amber); color: var(--ink); }
+.risk-action { background: var(--teal-lt);  border-color: var(--teal);  color: var(--ink); }
+.risk-label  { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+
+/* ── SHARED ─────────────────────────────────────────────────── */
+.spinner {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.spinner-dark {
+  border-color: rgba(19,34,71,0.15);
+  border-top-color: var(--navy);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-block {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px; color: var(--slate); font-size: 13px;
+}
+
+.score-tag {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.tag-sa { background: var(--green-lt); color: var(--green); }
+.tag-a  { background: var(--teal-lt);  color: var(--teal); }
+.tag-d  { background: var(--amber-lt); color: #7C3D0A; }
+.tag-sd { background: var(--red-lt);   color: var(--red); }
+.tag-blank { background: var(--surface); color: var(--slate); }
+
+.empty-state {
+  padding: 40px 20px; text-align: center;
+  color: var(--slate); font-size: 13px; line-height: 1.7;
+}
+.empty-icon { font-size: 36px; opacity: 0.25; margin-bottom: 12px; }
+
+/* ── CONTEXT FORM ───────────────────────────────────────────── */
+.ctx-form {
+  max-width: 780px;
+}
+.ctx-section-title {
+  font-family: var(--font-display); font-size: 18px; color: var(--navy);
+  margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border);
+}
+.ctx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.ctx-grid-full { grid-column: 1 / -1; }
+.ctx-field { display: flex; flex-direction: column; gap: 5px; }
+.ctx-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--slate);
+}
+.ctx-label .ctx-required { color: var(--amber); margin-left: 2px; }
+.ctx-label .ctx-optional { color: #B0BAC5; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 10px; margin-left: 4px; }
+.ctx-input, .ctx-select {
+  font-family: var(--font-body); font-size: 13px; font-weight: 400;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 13px; color: var(--ink); background: white;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.ctx-input:focus, .ctx-select:focus {
+  outline: none; border-color: var(--navy-light);
+  box-shadow: 0 0 0 3px rgba(45,84,153,0.08);
+}
+.ctx-input.filled, .ctx-select.filled { border-color: var(--navy-light); background: white; }
+.ctx-input::placeholder { color: #B0BAC5; }
+.ctx-hint { font-size: 11px; color: var(--slate); line-height: 1.5; margin-top: 1px; }
+
+.ctx-radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.ctx-radio-label {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); cursor: pointer; font-size: 13px;
+  color: var(--ink); transition: all 0.12s; background: white;
+}
+.ctx-radio-label:hover { border-color: var(--navy-light); background: var(--surface); }
+.ctx-radio-label input[type=radio] { accent-color: var(--navy); width: 14px; height: 14px; }
+.ctx-radio-label.checked { border-color: var(--navy-mid); background: #EEF3FB; color: var(--navy); font-weight: 500; }
+
+.ctx-proceed-wrap { margin-top: 8px; }
+.btn-proceed {
+  background: var(--navy); color: white; border: none;
+  border-radius: var(--radius-md); padding: 13px 28px;
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 9px;
+  transition: background 0.15s; letter-spacing: 0.01em;
+}
+.btn-proceed:hover:not(:disabled) { background: var(--navy-mid); }
+.btn-proceed:disabled { background: #C0CADA; cursor: not-allowed; }
+.ctx-status {
+  font-size: 12px; color: var(--slate); margin-top: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ctx-complete-banner {
+  background: var(--green-lt); border: 1px solid var(--green);
+  border-radius: var(--radius-md); padding: 10px 14px;
+  font-size: 12px; color: var(--green); display: flex;
+  align-items: center; gap: 8px; margin-top: 12px; font-weight: 500;
+}
+
+.nav-btn.locked { opacity: 0.4; cursor: not-allowed; }
+.nav-btn.locked:hover { background: none; color: rgba(255,255,255,0.5); }
+
+.ctx-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.10); border-radius: 20px;
+  padding: 5px 12px; font-size: 11px; color: rgba(255,255,255,0.75);
+  max-width: 380px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── RUBRIC TOGGLE ───────────────────────────────────────── */
+.rubric-toggle {
+  font-family: var(--font-mono); font-size: 10px; color: var(--slate);
+  background: none; border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 9px; cursor: pointer; margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: all 0.12s;
+}
+.rubric-toggle:hover { border-color: var(--navy-light); color: var(--navy); background: var(--surface); }
+.rubric-panel {
+  display: none; margin-top: 10px; border-radius: 6px;
+  overflow: hidden; border: 1px solid var(--border);
+  font-size: 11px;
+}
+.rubric-panel.open { display: block; }
+.rubric-row {
+  display: grid; grid-template-columns: 128px 1fr;
+  border-bottom: 1px solid var(--border);
+}
+.rubric-row:last-child { border-bottom: none; }
+.rubric-label {
+  padding: 8px 10px; font-weight: 600; font-size: 10px;
+  border-right: 1px solid var(--border);
+}
+.rubric-label.sa  { background: var(--green-lt);  color: var(--green); }
+.rubric-label.ag  { background: var(--teal-lt);   color: var(--teal); }
+.rubric-label.dis { background: var(--amber-lt);  color: #7C3D0A; }
+.rubric-label.sd  { background: var(--red-lt);    color: var(--red); }
+.rubric-text { padding: 8px 10px; color: var(--slate); line-height: 1.5; background: white; }
+
+/* ── PROFILE BADGE ───────────────────────────────────────── */
+.profile-banner {
+  background: var(--ice); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 16px; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.profile-badge {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px; letter-spacing: 0.05em;
+  background: var(--navy); color: white;
+}
+.profile-weights {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.pw-chip {
+  font-family: var(--font-mono); font-size: 10px;
+  padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border);
+  color: var(--slate); background: white;
+}
+.pw-chip.elevated { border-color: var(--amber); color: #7C3D0A; background: var(--amber-lt); font-weight: 600; }
+
+/* ── NEW PURSUIT BUTTON ──────────────────────────────────── */
+.btn-new-pursuit {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.05em; padding: 5px 12px; border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+  background: transparent; color: rgba(255,255,255,0.55);
+  transition: all 0.12s; display: flex; align-items: center; gap: 5px;
+}
+.btn-new-pursuit:hover { background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.3); }
+
+/* ── SESSION PERSISTENCE ─────────────────────────────────── */
+.session-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; background: rgba(255,255,255,0.05);
+  border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-session {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.05em; padding: 5px 12px; border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+  transition: all 0.12s; background: transparent; color: rgba(255,255,255,0.7);
+}
+.btn-session:hover { background: rgba(255,255,255,0.08); color: white; }
+.btn-session.save  { border-color: var(--amber); color: var(--amber); }
+.btn-session.save:hover { background: rgba(232,146,10,0.12); }
+.session-label {
+  font-family: var(--font-mono); font-size: 9px;
+  color: rgba(255,255,255,0.3); letter-spacing: 0.08em;
+}
+.session-toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--navy); color: white; font-size: 12px;
+  padding: 10px 18px; border-radius: 8px; border-left: 3px solid var(--green);
+  font-family: var(--font-mono); box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  animation: toast-in 0.2s ease; pointer-events: none;
+}
+@keyframes toast-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #C0CADA; }
+</style>
+</head>
+<body>
+
+<!-- ── APP SHELL ───────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="header-brand">
+    <div class="brand-mark">P</div>
+    <div class="brand-text">
+      <div class="brand-name">PWIN Architect</div>
+      <div class="brand-sub">Pursuit Qualification Platform</div>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-btn active" onclick="switchView('context')" id="nav-context">
+      <span class="nav-icon">◧</span> Pursuit Context
+    </button>
+    <button class="nav-btn locked" onclick="requireContext(event,'assessment')" id="nav-assessment">
+      <span class="nav-icon">☰</span> Assessment
+    </button>
+    <button class="nav-btn locked" onclick="requireContext(event,'dashboard')" id="nav-dashboard">
+      <span class="nav-icon">◉</span> PWIN Dashboard
+    </button>
+    <button class="nav-btn locked" onclick="requireContext(event,'review')" id="nav-review">
+      <span class="nav-icon">◈</span> AI Assurance Review
+    </button>
+    <button class="nav-btn" onclick="switchView('help')" id="nav-help">
+      <span class="nav-icon">?</span> How to Use
+    </button>
+  </nav>
+  <div class="header-pwin">
+    <div class="session-toolbar">
+      <span class="session-label">SESSION</span>
+      <button class="btn-new-pursuit" onclick="newPursuit()" title="Start a new pursuit — clears all data">⊕ New</button>
+      <button class="btn-session save" onclick="saveSession()" title="Save session to file">↓ Save</button>
+      <label class="btn-session" title="Load a saved session" style="cursor:pointer;">
+        ↑ Load<input type="file" accept=".json" style="display:none;" onchange="loadSessionFile(event)">
+      </label>
+    </div>
+    <div class="ctx-pill" id="ctx-pill" style="display:none;"></div>
+    <div class="completion-pill" id="completion-pill">0 / 24</div>
+    <div class="pwin-display">
+      <div class="pwin-label">PWIN Score</div>
+      <div class="pwin-value" id="header-pwin">0%</div>
+    </div>
+  </div>
+</header>
+
+<!-- ① PURSUIT CONTEXT -->
+<div class="view active" id="view-context">
+  <div class="ctx-form">
+
+    <div style="margin-bottom:26px;">
+      <div style="font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:6px;">Pursuit Context</div>
+      <div style="font-size:13px;color:var(--slate);line-height:1.6;">Complete this before beginning the assessment. These details calibrate the AI scoring thresholds, challenge questions, and assurance report to your specific opportunity.</div>
+    </div>
+
+    <!-- Opportunity -->
+    <div class="ctx-section-title">Opportunity</div>
+    <div class="ctx-grid" style="margin-bottom:28px;">
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Organisation (Client) <span class="ctx-required">*</span></label>
+        <input class="ctx-input" id="ctx-org" type="text" placeholder="e.g. Home Office, Metropolitan Police, NHS England" oninput="onCtxChange()">
+        <span class="ctx-hint">The client organisation you are bidding to.</span>
+      </div>
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Opportunity Name <span class="ctx-required">*</span></label>
+        <input class="ctx-input" id="ctx-opp" type="text" placeholder="e.g. National Digital Policing Platform — Phase 2" oninput="onCtxChange()">
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Sector <span class="ctx-required">*</span></label>
+        <select class="ctx-select" id="ctx-sector" onchange="onCtxChange()">
+          <option value="">— Select sector —</option>
+          <option>Emergency Services</option>
+          <option>Defence</option>
+          <option>Justice &amp; Probation</option>
+          <option>Central Government</option>
+          <option>Local Government</option>
+          <option>NHS / Health</option>
+          <option>Transport</option>
+          <option>Education</option>
+          <option>Other Public Sector</option>
+        </select>
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Total Contract Value (TCV) <span class="ctx-required">*</span></label>
+        <input class="ctx-input" id="ctx-tcv" type="text" placeholder="e.g. £45m, £2.3m, £400m" oninput="onCtxChange()">
+        <span class="ctx-hint">Used to calibrate evidence bar and risk thresholds.</span>
+      </div>
+    </div>
+
+    <!-- Procurement -->
+    <div class="ctx-section-title">Procurement</div>
+    <div class="ctx-grid" style="margin-bottom:28px;">
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Opportunity Type <span class="ctx-required">*</span></label>
+        <select class="ctx-select" id="ctx-opptype" onchange="onCtxChange()">
+          <option value="">— Select type —</option>
+          <option value="BPO">BPO (Business Process Outsourcing)</option>
+          <option value="IT Outsourcing">IT Outsourcing</option>
+          <option value="Managed Service">Managed Service</option>
+          <option value="Digital Outcomes">Digital Outcomes</option>
+          <option value="Consulting / Advisory">Consulting / Advisory</option>
+          <option value="Infrastructure & Hardware">Infrastructure &amp; Hardware</option>
+          <option value="Software / SaaS">Software / SaaS</option>
+        </select>
+        <span class="ctx-hint">Calibrates the category weighting model and AI review thresholds to the specific dynamics of this opportunity type.</span>
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Procurement Route <span class="ctx-required">*</span></label>
+        <select class="ctx-select" id="ctx-route" onchange="onCtxChange()">
+          <option value="">— Select route —</option>
+          <option>Open Procedure</option>
+          <option>Restricted Procedure</option>
+          <option>Competitive Dialogue</option>
+          <option>Competitive Procedure with Negotiation</option>
+          <option>Framework Call-off</option>
+          <option>Dynamic Purchasing System</option>
+          <option>Direct Award</option>
+          <option>Other / Unknown</option>
+        </select>
+        <span class="ctx-hint">Shapes what Procurement Intelligence questions mean in this context.</span>
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Pursuit Stage <span class="ctx-required">*</span></label>
+        <select class="ctx-select" id="ctx-stage" onchange="onCtxChange()">
+          <option value="">— Select stage —</option>
+          <option>Pre-market engagement</option>
+          <option>Market engagement underway</option>
+          <option>ITT not yet published</option>
+          <option>ITT / RFP published</option>
+          <option>Shortlisted / BAFO</option>
+          <option>Preferred Bidder</option>
+        </select>
+      </div>
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Incumbent Position <span class="ctx-required">*</span></label>
+        <div class="ctx-radio-group" id="ctx-incumbent-group">
+          <label class="ctx-radio-label" id="inc-label-challenger">
+            <input type="radio" name="incumbent" value="We are the challenger — no incumbent relationship" onchange="onCtxRadio('incumbent','challenger')"> We are the challenger
+          </label>
+          <label class="ctx-radio-label" id="inc-label-incumbent">
+            <input type="radio" name="incumbent" value="We are the incumbent defending this contract" onchange="onCtxRadio('incumbent','incumbent')"> We are the incumbent
+          </label>
+          <label class="ctx-radio-label" id="inc-label-none">
+            <input type="radio" name="incumbent" value="No clear incumbent — new or emerging requirement" onchange="onCtxRadio('incumbent','none')"> No clear incumbent
+          </label>
+        </div>
+        <span class="ctx-hint">Incumbent vs challenger status fundamentally changes the risk profile on stakeholder and competitive questions.</span>
+      </div>
+    </div>
+
+    <!-- Intelligence -->
+    <div class="ctx-section-title">Additional Context <span style="font-size:12px;font-weight:400;color:var(--slate);font-family:var(--font-body);"> — optional but improves AI output</span></div>
+    <div class="ctx-grid" style="margin-bottom:28px;">
+      <div class="ctx-field">
+        <label class="ctx-label">Bid / No-Bid Decision Date <span class="ctx-optional">(optional)</span></label>
+        <input class="ctx-input" id="ctx-bnb" type="date" oninput="onCtxChange()">
+        <span class="ctx-hint">Creates urgency framing in AI action recommendations.</span>
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Known Primary Competitor(s) <span class="ctx-optional">(optional)</span></label>
+        <input class="ctx-input" id="ctx-competitors" type="text" placeholder="e.g. Capita, Sopra Steria, CGI" oninput="onCtxChange()">
+        <span class="ctx-hint">Named competitors sharpen the AI's competitive challenge questions.</span>
+      </div>
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Strategic Importance to BIP <span class="ctx-optional">(optional)</span></label>
+        <select class="ctx-select" id="ctx-importance" onchange="onCtxChange()">
+          <option value="">— Select —</option>
+          <option>Must Win — critical to target</option>
+          <option>High — significant revenue impact</option>
+          <option>Medium — important but not critical</option>
+          <option>Low — opportunistic</option>
+        </select>
+        <span class="ctx-hint">Informs the tone and urgency of the gate recommendation.</span>
+      </div>
+    </div>
+
+    <div class="ctx-proceed-wrap">
+      <button class="btn-proceed" id="ctx-proceed-btn" onclick="proceedToAssessment()" disabled>
+        Begin Assessment →
+      </button>
+      <div class="ctx-status" id="ctx-status">Complete the required fields above to proceed.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ② ASSESSMENT -->
+<div class="view" id="view-assessment">
+  <div id="assessment-body"></div>
+</div>
+
+<!-- ② DASHBOARD -->
+<div class="view" id="view-dashboard">
+  <div class="dash-grid">
+    <!-- PWIN Gauge -->
+    <div>
+      <div class="dash-card" style="margin-bottom:16px;">
+        <div class="dash-card-title">Overall PWIN Score</div>
+        <div class="gauge-wrap">
+          <div class="gauge-outer">
+            <svg class="gauge-svg" viewBox="0 0 100 100">
+              <circle class="gauge-bg" cx="50" cy="50" r="40"/>
+              <circle class="gauge-fill" id="gauge-fill" cx="50" cy="50" r="40"
+                stroke-dasharray="0 251.2" stroke="#E8920A"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-pct" id="gauge-pct">0%</div>
+              <div class="gauge-target-label">Target: 75%</div>
+            </div>
+          </div>
+          <span class="gauge-phase" id="gauge-phase" style="background:#F0F3F8;color:#64748B;">Pre-Capture</span>
+          <div style="width:100%;padding:0 10px;">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--slate);margin-bottom:3px;">
+              <span>0%</span><span>Target 75%</span><span>100%</span>
+            </div>
+            <div class="phase-bar"><div class="phase-fill" id="phase-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Completion Status</div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Answered</div>
+            <div class="stat-val" id="stat-answered">0</div>
+            <div class="stat-sub">of 24 questions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Reviewed</div>
+            <div class="stat-val" id="stat-reviewed">0</div>
+            <div class="stat-sub">AI reviews done</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Validated</div>
+            <div class="stat-val" id="stat-validated" style="color:var(--green);">0</div>
+            <div class="stat-sub">scores confirmed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Challenged</div>
+            <div class="stat-val" id="stat-challenged" style="color:var(--red);">0</div>
+            <div class="stat-sub">scores flagged</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radar chart -->
+    <div class="dash-card">
+      <div class="dash-card-title">Category Performance Profile</div>
+      <div class="radar-wrap">
+        <canvas id="radar-chart"></canvas>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:16px;justify-content:center;font-size:11px;color:var(--slate);">
+        <span style="display:flex;align-items:center;gap:5px;">
+          <span style="display:inline-block;width:16px;height:3px;background:var(--navy-mid);border-radius:2px;"></span> Current Score
+        </span>
+        <span style="display:flex;align-items:center;gap:5px;">
+          <span style="display:inline-block;width:16px;height:3px;background:var(--amber);border-radius:2px;border-top:1px dashed var(--amber);"></span> Target (75%)
+        </span>
+      </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="dash-card">
+      <div class="dash-card-title">Category Breakdown</div>
+      <div id="cat-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ AI REVIEW -->
+<div class="view" id="view-review">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div style="font-family:var(--font-display);font-size:20px;color:var(--navy);">AI Assurance Review</div>
+      <div style="font-size:12px;color:var(--slate);margin-top:3px;">Select a question to review, or generate a full portfolio assurance report.</div>
+    </div>
+    <button class="btn-report" id="btn-full-report" onclick="runFullReport()">
+      <span>◈</span> Generate Full Assurance Report
+    </button>
+  </div>
+
+  <div id="full-report-area"></div>
+
+  <div class="review-layout">
+    <div class="review-nav">
+      <div class="review-nav-title">24 Qualification Questions</div>
+      <div class="review-nav-body" id="review-nav-body"></div>
+    </div>
+    <div id="review-main">
+      <div class="empty-state">
+        <div class="empty-icon">◎</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Select a question from the panel</div>
+        <div>Choose any question on the left to review your evidence against the scoring rubric.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+const CATS = [
+  { id:"cp", name:"Competitive Positioning",  weight:0.20, color:"#2D5499", bg:"var(--cat-cp)" },
+  { id:"pi", name:"Procurement Intelligence", weight:0.10, color:"#1A7A4A", bg:"var(--cat-pi)" },
+  { id:"ss", name:"Stakeholder Strength",      weight:0.20, color:"#C76A0A", bg:"var(--cat-ss)" },
+  { id:"oi", name:"Organisational Influence",  weight:0.20, color:"#6B21A8", bg:"var(--cat-oi)" },
+  { id:"vp", name:"Value Proposition",         weight:0.20, color:"#92400E", bg:"var(--cat-vp)" },
+  { id:"pp", name:"Pursuit Progress",          weight:0.10, color:"#0E7490", bg:"var(--cat-pp)" },
+];
+
+const QUESTIONS = [
+  { cat:"cp", topic:"Strategy Foundation",
+    text:"We have defined both a route-to-market strategy and a competitive approach, shared it across the pursuit team, and it is built on our proven strengths while directly targeting gaps in our competitors' offerings.",
+    rubric:{"Strongly Agree":"Named route-to-market strategy documented and distributed. Competitive approach signed off. Specific competitor weaknesses identified by name. Evidence of team briefing.","Agree":"Strategy exists and discussed but not formally documented. Competitor gaps identified but not yet exploited.","Disagree":"General sense of direction but no formal strategy. Competitor analysis partial or assumption-based.","Strongly Disagree":"No strategy defined. Competitors not analysed. Team not aligned."},
+    signals:["we plan to","we will develop","in due course","being developed","we intend to"], qw:0.3},
+  { cat:"cp", topic:"Competitive Intelligence",
+    text:"We have identified our primary competitors on this opportunity, understand the strengths they will rely on, and have a costed tactical plan to outperform them at evaluation.",
+    rubric:{"Strongly Agree":"At least two named competitors with documented bid strategy. Specific strengths articulated. Tactical counter-plan written and costed.","Agree":"Competitors named and understood at high level. Plan in draft but not costed.","Disagree":"Competitors assumed rather than confirmed. No documented counter plan.","Strongly Disagree":"No competitor analysis undertaken."},
+    signals:["probably","likely to be","we assume","we think","we believe"], qw:0.2},
+  { cat:"cp", topic:"Winning Proposition",
+    text:"We have evidence that our central winning proposition has resonated with key stakeholders and is shaping the client's evaluation criteria, and we have demonstrated that only we can deliver it convincingly.",
+    rubric:{"Strongly Agree":"Named stakeholders explicitly confirmed proposition resonates. Evidence evaluation criteria reflects our language. Clear proof point competitors cannot match.","Agree":"Positive informal feedback. Some alignment with criteria but not confirmed as shaping them.","Disagree":"Proposition defined internally but not tested with client.","Strongly Disagree":"No winning proposition defined."},
+    signals:["we feel","we believe this resonates","generally positive","good feedback"], qw:0.4},
+  { cat:"cp", topic:"Countertactics",
+    text:"We have anticipated the moves our competitors are most likely to make against us and have embedded specific counter-measures into our pursuit plan.",
+    rubric:{"Strongly Agree":"Named competitors mapped to specific attacks. Documented counter-measures with named owners and dates, embedded in pursuit plan.","Agree":"Competitor attacks anticipated at high level. Counter-measures identified but not embedded.","Disagree":"Some awareness of tactics but no formal counter-plan.","Strongly Disagree":"No analysis of competitor tactics."},
+    signals:["we are aware","we will address","to be developed","in due course"], qw:0.1},
+  { cat:"pi", topic:"Clarity of Approval Steps",
+    text:"The client has shared their full approval and sign-off sequence with us, and we have validated it as credible given the contract value, their organisational structure, and their procurement track record.",
+    rubric:{"Strongly Agree":"Full approval chain documented with names and roles. Validated against comparable procurements. Client contact confirmed accuracy.","Agree":"Approval chain known at high level. Not fully validated but assessed as plausible.","Disagree":"Partial knowledge of process. Key sign-off steps unknown.","Strongly Disagree":"Approval process unknown."},
+    signals:["standard process","we assume","typical for this type","should be straightforward"], qw:0.1},
+  { cat:"pi", topic:"Decision Criteria & Drivers",
+    text:"We have obtained the client's minimum award criteria and their priority evaluation themes, understand what is driving them, and can either demonstrate clear superiority against them or have an active plan to shape them.",
+    rubric:{"Strongly Agree":"Formal award criteria obtained. Priority weighting known. Business drivers understood and documented. Superiority evidenced or influence plan in place.","Agree":"Award criteria known. Priorities understood but not fully validated.","Disagree":"Criteria assumed from procurement documents only.","Strongly Disagree":"Award criteria not established or unknown."},
+    signals:["standard criteria","we expect","similar to previous","we assume quality and price"], qw:0.4},
+  { cat:"pi", topic:"Decision Timeline",
+    text:"We understand the client's procurement timeline, the factors driving each key milestone, and we have a realistic capture plan to meet them.",
+    rubric:{"Strongly Agree":"Full timeline documented with milestone drivers identified. Capture plan mapped with resource allocated.","Agree":"Key milestones known. Drivers partially understood. Capture plan drafted but not fully resourced.","Disagree":"High-level timeline from procurement notice only. No capture plan aligned.","Strongly Disagree":"Timeline not known."},
+    signals:["we will align","to be planned","we intend to resource"], qw:0.3},
+  { cat:"pi", topic:"Final Veto Rights",
+    text:"We have identified by name and role the most senior individual who could override the formal evaluation panel at each level of the client's hierarchy, and have a plan to manage that risk.",
+    rubric:{"Strongly Agree":"Named individual(s) at each level. Their position assessed. Specific risk mitigation plan in place.","Agree":"Senior veto holder identified but position unknown. No mitigation plan.","Disagree":"Aware veto right exists but individual not identified.","Strongly Disagree":"No analysis of veto rights."},
+    signals:["unlikely to be exercised","not a concern","the SRO will be supportive"], qw:0.2},
+  { cat:"ss", topic:"Internal Champion",
+    text:"Within the client's senior decision-making network, we have developed one or more internal champions who have committed to a joint action plan with specific milestones to advance our position.",
+    rubric:{"Strongly Agree":"Named champion(s) with seniority confirmed. Joint action plan documented with milestones and mutual commitments. Champion has taken visible action.","Agree":"Named supportive contact. Verbal commitment but no formal joint plan.","Disagree":"Positive contact but no commitment to action. No champion relationship.","Strongly Disagree":"No internal champion identified."},
+    signals:["we have a good relationship","they are supportive","very receptive","we believe they will help"], qw:0.4},
+  { cat:"ss", topic:"Competitor Relationships",
+    text:"We have identified the client contacts our key competitors are relying on for support, and we are executing a specific plan to neutralise their influence.",
+    rubric:{"Strongly Agree":"Named competitor contacts identified with role. Neutralisation plan documented and being executed with evidence of progress.","Agree":"Competitor relationships identified. Awareness of influence but no active plan.","Disagree":"Some awareness of competitor relationships but not specifically mapped.","Strongly Disagree":"No analysis of competitor relationships."},
+    signals:["probably have contacts","we think they know","we are aware they have relationships"], qw:0.3},
+  { cat:"ss", topic:"Evaluator Coverage",
+    text:"The client's technical evaluators and business case owners have confirmed that our proposed approach meets their minimum requirements and are actively supportive of our solution.",
+    rubric:{"Strongly Agree":"Named evaluators and business case owners explicitly confirmed requirements met. Evidence of active support.","Agree":"Evaluators broadly positive. Requirements met but not formally confirmed.","Disagree":"Limited contact with evaluators. Requirements assumed.","Strongly Disagree":"No engagement with evaluators."},
+    signals:["we assume they are satisfied","they seemed positive","no concerns raised","we haven't met them yet"], qw:0.1},
+  { cat:"ss", topic:"Decision Authority Relationships",
+    text:"Compared to our competitors, we have stronger working relationships with the individuals who hold decision authority and those who meaningfully influence the award outcome.",
+    rubric:{"Strongly Agree":"Named decision authorities engaged at appropriate level. Relationship depth assessed as stronger than competitors with evidence of differential access.","Agree":"Good relationships with key decision authorities. Competitor relationships not fully assessed.","Disagree":"Some contact but depth insufficient. Competitor relationships may be stronger.","Strongly Disagree":"No substantive relationships with decision authorities."},
+    signals:["we know them well","long-standing relationship","they prefer us","good rapport"], qw:0.2},
+  { cat:"oi", topic:"Network of Influence",
+    text:"We have mapped the client's senior decision-making network and broader sphere of influence, understand the key relationships between them, and are actively leveraging this to our advantage.",
+    rubric:{"Strongly Agree":"Stakeholder map completed with influence relationships documented. Key power relationships identified and being worked. Evidence mapping has changed approach.","Agree":"Key stakeholders identified. Some relationship mapping done. Not yet actively leveraged.","Disagree":"Basic stakeholder list exists but no influence mapping.","Strongly Disagree":"No stakeholder mapping undertaken."},
+    signals:["we know the key people","well connected","good access","we have contacts"], qw:0.2},
+  { cat:"oi", topic:"Personal Agendas",
+    text:"We have identified how key senior individuals benefit personally or professionally from selecting us, and we are using this insight to reinforce our proposition over competitors.",
+    rubric:{"Strongly Agree":"Named senior individuals with specific personal/professional motivations identified. Motivations explicitly reflected in proposition and messaging.","Agree":"General awareness of senior priorities. Proposition reflects these but not individually tailored.","Disagree":"Organisation-level priorities known but individual motivations not mapped.","Strongly Disagree":"No analysis of individual motivations."},
+    signals:["we assume","they will want","generally interested in","we think they care about"], qw:0.1},
+  { cat:"oi", topic:"Power Dynamics",
+    text:"We understand the internal political dynamics within the client and are aligned with the individuals and factions most likely to carry influence over the final decision.",
+    rubric:{"Strongly Agree":"Key internal factions and power dynamics documented. Alignment with dominant faction confirmed. Risk from opposing factions assessed and managed.","Agree":"Aware of main political dynamics. Aligned with likely dominant group but not fully assessed.","Disagree":"Some awareness of political tensions but not mapped or managed.","Strongly Disagree":"No understanding of internal political dynamics."},
+    signals:["straightforward client","no political issues","all aligned","simple structure"], qw:0.3},
+  { cat:"oi", topic:"Political Coaching",
+    text:"We have trusted sources within the client organisation who regularly provide us with political insight and guidance on how to strengthen our position.",
+    rubric:{"Strongly Agree":"Named trusted sources who have proactively shared insight. Evidence intelligence has changed our approach. Sources engaged on regular cadence.","Agree":"Sources exist but engagement ad hoc. Some useful insight received but not systematic.","Disagree":"Informal conversations but no reliable source of political intelligence.","Strongly Disagree":"No internal sources of political guidance."},
+    signals:["we get feedback","they tell us things sometimes","generally well informed","good conversations"], qw:0.4},
+  { cat:"vp", topic:"Co-Developed",
+    text:"Our value proposition has been shaped through direct collaboration with the client and is grounded in their specific organisational priorities, constraints, and expectations.",
+    rubric:{"Strongly Agree":"Client contributed directly to proposition development. Named client contacts reviewed and endorsed. Specific constraints and priorities reflected with evidence.","Agree":"Proposition informed by client conversations. Not formally co-developed but reflects input.","Disagree":"Proposition built internally based on procurement documents. Limited direct client input.","Strongly Disagree":"Proposition developed with no client engagement."},
+    signals:["based on our understanding","we believe this reflects","standard approach tailored","our standard proposition"], qw:0.4},
+  { cat:"vp", topic:"Client Value Justification",
+    text:"We have validated our cost-benefit case with the right client stakeholders and they have confirmed the credibility of the projected impacts on their key operational and financial outcomes.",
+    rubric:{"Strongly Agree":"Cost-benefit analysis validated with named client finance or operational lead. Projected impacts confirmed as credible and aligned to their baseline data.","Agree":"Cost-benefit case shared with client. Positive reception but not formally validated.","Disagree":"Cost-benefit case built internally. Not yet shared or tested with client.","Strongly Disagree":"No cost-benefit analysis developed."},
+    signals:["our modelling shows","we project","we estimate savings of","we expect this will deliver"], qw:0.3},
+  { cat:"vp", topic:"Differentiated",
+    text:"We have embedded clear differentiators into our value narrative, and influential client stakeholders have confirmed these set us apart from the competition.",
+    rubric:{"Strongly Agree":"Named differentiators confirmed by named stakeholders as meaningful advantages. Differentiators explicitly reference what competitors cannot match.","Agree":"Differentiators identified and in the narrative. Client feedback positive but no explicit confirmation of competitive advantage.","Disagree":"Differentiators claimed internally but not tested or confirmed by client.","Strongly Disagree":"No clear differentiators identified."},
+    signals:["we believe we are differentiated","our experience sets us apart","clients like our approach","we are unique in"], qw:0.1},
+  { cat:"vp", topic:"Validated Alignment",
+    text:"Key client stakeholders have confirmed internally that our proposition is well-aligned to their strategic priorities, that our solution is credible, and that our approach is the strongest on offer.",
+    rubric:{"Strongly Agree":"Named stakeholders explicitly stated our proposition is strongest. Evidence this endorsement is being shared internally.","Agree":"Positive signals from stakeholders. Alignment confirmed informally but no explicit statement of being strongest.","Disagree":"General positivity but no confirmation of alignment or competitive standing.","Strongly Disagree":"No validation of proposition alignment from client."},
+    signals:["we feel well positioned","feedback has been positive","they seem impressed","we think they prefer us"], qw:0.2},
+  { cat:"pp", topic:"Client Engagement",
+    text:"The client is investing meaningful time and resource in our collaboration, with both sides holding live actions that are actively developing the business case.",
+    rubric:{"Strongly Agree":"Client committed named senior resource to joint working. Live action log with mutual commitments. Evidence of client-initiated contact.","Agree":"Regular meetings occurring. Some joint working but primarily us driving the agenda.","Disagree":"Meetings happening but client engagement passive. No joint actions.","Strongly Disagree":"Client engagement limited to formal procurement interactions only."},
+    signals:["they attend our meetings","responsive to our emails","we have good access","they reply promptly"], qw:0.4},
+  { cat:"pp", topic:"Communication Transparency",
+    text:"The client is sharing sensitive or non-public information with us that is enabling us to build a stronger and more targeted proposition.",
+    rubric:{"Strongly Agree":"Named examples of non-public information shared (budget, internal priorities, evaluation concerns). Intelligence demonstrably reflected in approach.","Agree":"Some internal perspective shared informally. Not systematically captured or leveraged.","Disagree":"Information limited to that in public procurement documents.","Strongly Disagree":"No non-public information shared."},
+    signals:["they tell us things","we have good conversations","they are open with us","good relationship"], qw:0.3},
+  { cat:"pp", topic:"Message Adoption",
+    text:"Client decision-makers and their teams are using our language and framing internally, indicating that our narrative has been adopted beyond the immediate contacts we brief.",
+    rubric:{"Strongly Agree":"Named examples of client staff using our terminology in their own communications. Evidence of our narrative in client documents or presentations.","Agree":"Positive feedback suggesting our framing is resonating. No direct evidence of wider adoption.","Disagree":"Our contacts understand the message but no evidence of wider internal adoption.","Strongly Disagree":"No evidence of message resonance."},
+    signals:["they understand us","they like our approach","good reception","they get it"], qw:0.1},
+  { cat:"pp", topic:"Future Focus",
+    text:"We have had substantive conversations with senior client contacts about the shape of a long-term partnership, including future phases, extensions, or adjacent work.",
+    rubric:{"Strongly Agree":"Named senior contacts engaged in specific discussions about future scope. Notes or follow-up actions exist. Client has shown initiative in scoping future phases.","Agree":"Future potential discussed informally. Positive signals but not client-initiated.","Disagree":"Future relationship mentioned in passing. No substantive discussion.","Strongly Disagree":"No discussion of future beyond current procurement."},
+    signals:["they mentioned future work","lots of opportunity here","great platform for growth","we expect follow-on"], qw:0.2}
+];
+
+// ── Dynamic weight profiles (internal — not shown in UI) ──────
+// Three profiles: services / technology / advisory
+// Applied based on opportunity type selected in context form.
+// Default (no type selected): equal weights as below.
+const WEIGHT_PROFILES = {
+  default:    { cp:0.20, pi:0.10, ss:0.20, oi:0.20, vp:0.20, pp:0.10 },
+  services:   { cp:0.22, pi:0.12, ss:0.22, oi:0.18, vp:0.16, pp:0.10 },
+  technology: { cp:0.18, pi:0.28, ss:0.14, oi:0.10, vp:0.18, pp:0.12 },
+  advisory:   { cp:0.18, pi:0.04, ss:0.26, oi:0.24, vp:0.24, pp:0.04 },
+};
+
+const OPP_TYPE_PROFILE = {
+  'BPO':                    'services',
+  'IT Outsourcing':         'services',
+  'Managed Service':        'services',
+  'Digital Outcomes':       'services',
+  'Consulting / Advisory':  'advisory',
+  'Infrastructure & Hardware': 'technology',
+  'Software / SaaS':        'technology',
+};
+
+function applyWeightProfile(oppType) {
+  const profile = OPP_TYPE_PROFILE[oppType] || 'default';
+  const weights = WEIGHT_PROFILES[profile];
+  CATS.forEach(cat => { cat.weight = weights[cat.id]; });
+}
+
+const SCORE_PTS = { "Strongly Agree":4, "Agree":3, "Disagree":2, "Strongly Disagree":1 };
+const MAX_CAT   = 4; // weighted average max (normalised weights sum to 1 per category)
+
+// ── State ──
+const state = {
+  positions: {},   // idx → score string
+  evidence:  {},   // idx → evidence string
+  reviews:   {},   // idx → {verdict, suggestedScore, ...}
+  selectedReviewIdx: null,
+  radarChart: null,
+  context: {
+    org: '', opp: '', sector: '', tcv: '', oppType: '',
+    route: '', stage: '', incumbent: '', bnb: '', competitors: '', importance: ''
+  },
+  contextComplete: false,
+};
+
+// ══════════════════════════════════════════════════════════════
+// PURSUIT CONTEXT
+// ══════════════════════════════════════════════════════════════
+const CTX_REQUIRED = ['org','opp','sector','tcv','oppType','route','stage','incumbent'];
+
+function onCtxChange() {
+  state.context.org         = document.getElementById('ctx-org').value.trim();
+  state.context.opp         = document.getElementById('ctx-opp').value.trim();
+  state.context.sector      = document.getElementById('ctx-sector').value;
+  state.context.tcv         = document.getElementById('ctx-tcv').value.trim();
+  state.context.oppType     = document.getElementById('ctx-opptype').value;
+  state.context.route       = document.getElementById('ctx-route').value;
+  state.context.stage       = document.getElementById('ctx-stage').value;
+  state.context.bnb         = document.getElementById('ctx-bnb').value;
+  state.context.competitors = document.getElementById('ctx-competitors').value.trim();
+  state.context.importance  = document.getElementById('ctx-importance').value;
+
+  // Apply dynamic category weights based on opportunity type
+  applyWeightProfile(state.context.oppType);
+  updateProfileBanner();
+
+  const complete = CTX_REQUIRED.every(k => state.context[k]);
+  state.contextComplete = complete;
+
+  const btn    = document.getElementById('ctx-proceed-btn');
+  const status = document.getElementById('ctx-status');
+  const missing = CTX_REQUIRED.filter(k => !state.context[k]).length;
+
+  btn.disabled = !complete;
+  if (complete) {
+    status.innerHTML = '<span style="color:var(--green);">✓</span> All required fields complete — ready to proceed.';
+  } else {
+    status.textContent = `${missing} required field${missing !== 1 ? 's' : ''} remaining.`;
+  }
+
+  // Unlock / lock nav tabs
+  ['assessment','dashboard','review'].forEach(id => {
+    const btn = document.getElementById('nav-'+id);
+    if (complete) btn.classList.remove('locked');
+    else          btn.classList.add('locked');
+  });
+
+  // Update header pill
+  const pill = document.getElementById('ctx-pill');
+  if (complete) {
+    pill.style.display = 'inline-flex';
+    const oppLabel = state.context.oppType ? ` · ${state.context.oppType}` : '';
+    pill.textContent = `${state.context.opp} · ${state.context.org}${oppLabel}`;
+  } else {
+    pill.style.display = 'none';
+  }
+}
+
+function onCtxRadio(field, val) {
+  state.context[field] = document.querySelector(`input[name="${field}"]:checked`)?.value || '';
+  // Update checked styling
+  document.querySelectorAll(`#ctx-${field}-group .ctx-radio-label`).forEach(el => {
+    el.classList.toggle('checked', el.querySelector('input').value === state.context[field]);
+  });
+  onCtxChange();
+}
+
+function proceedToAssessment() {
+  if (!state.contextComplete) return;
+  // Show completion banner
+  const wrap = document.getElementById('ctx-proceed-btn').parentElement;
+  const banner = document.createElement('div');
+  banner.className = 'ctx-complete-banner';
+  banner.innerHTML = '✓ Pursuit context saved. You can return here at any time to update these details.';
+  const existing = wrap.querySelector('.ctx-complete-banner');
+  if (existing) existing.remove();
+  wrap.appendChild(banner);
+  switchView('assessment');
+}
+
+function requireContext(e, target) {
+  if (!state.contextComplete) {
+    e.preventDefault();
+    // Flash the context tab
+    const ctxBtn = document.getElementById('nav-context');
+    ctxBtn.style.outline = '2px solid var(--amber)';
+    setTimeout(() => ctxBtn.style.outline = '', 1200);
+    switchView('context');
+    document.getElementById('ctx-status').innerHTML =
+      '<span style="color:var(--amber);">⚠</span> Please complete the pursuit context before proceeding.';
+    return;
+  }
+  switchView(target);
+}
+
+// Returns a formatted context block for AI prompts
+function getContextBlock() {
+  const c = state.context;
+  const lines = [
+    `Organisation: ${c.org}`,
+    `Opportunity: ${c.opp}`,
+    `Sector: ${c.sector}`,
+    `Opportunity Type: ${c.oppType}`,
+    `Total Contract Value: ${c.tcv}`,
+    `Procurement Route: ${c.route}`,
+    `Pursuit Stage: ${c.stage}`,
+    `Incumbent Position: ${c.incumbent}`,
+  ];
+  if (c.competitors) lines.push(`Known Competitors: ${c.competitors}`);
+  if (c.importance)  lines.push(`Strategic Importance: ${c.importance}`);
+  if (c.bnb)         lines.push(`Bid/No-Bid Deadline: ${c.bnb}`);
+  return lines.join('\n');
+}
+
+// ══════════════════════════════════════════════════════════════
+// ALEX PERSONA — Level 2 Structured Object
+// Edit fields independently. buildPersonaPrompt() assembles at runtime.
+// Version this object when making significant changes.
+// ══════════════════════════════════════════════════════════════
+const ALEX_PERSONA = {
+
+  meta: { version: "1.0", lastUpdated: "2026-03", owner: "BIP PWIN Architect" },
+
+  identity: {
+    name:  "Alex Mercer",
+    title: "Senior Bid Director & Pursuit Assurance Lead",
+    roleStatement: `You are Alex Mercer, Senior Bid Director and Pursuit Assurance Lead.
+You conduct independent gate reviews for pursuit teams bidding on UK public sector contracts.
+Your role is not to manage the bid — it is to hold the mirror.
+You tell teams what their evidence actually shows, not what they hope it shows.
+You are the last line of defence between a pursuit team's optimism and the commercial consequences of submitting from a position they haven't earned.`
+  },
+
+  background: {
+    narrative: `Seventeen years running pursuit and capture on UK public sector programmes ranging from £8m framework call-offs to £1.2bn+ strategic outsourcing contracts. Started as a bid writer on an MoJ custody services contract in 2007. Has sat on the client side as an evaluator for a significant NHS digital procurement — that experience permanently changed how you read stakeholder claims. Has personally led or assured pursuits across Emergency Services, Defence, Justice, Central Government, and NHS. Has seen three £100m+ bids lost from a position the pursuit team considered strong with four months to ITT.`
+  },
+
+  coreBeliefs: [
+    "Most bids are lost before the ITT is published. The pursuit phase determines the outcome. The bid phase documents it.",
+    "The gap between what a team believes about their position and what is actually true is the single largest commercial risk in any pursuit.",
+    "A relationship is only worth claiming if it has produced a documented action or commitment. Everything else is goodwill, and goodwill does not survive an evaluation panel.",
+    "Procurement Intelligence is the most consistently under-invested category in public sector bid management.",
+    "Evidence that is six months old is not evidence — it is history. Pursuit positions decay.",
+    "Internal consensus is not external validation. The only opinions that count are held by people in the client organisation who are not being paid to attend the meeting.",
+  ],
+
+  characterTraits: [
+    "Ask the question behind the question. A claimed strength always has a structural vulnerability beneath it — find it.",
+    "Pattern recognition over prescription. You recognise situations, not checklists. Reference what typically happens in procurements like this.",
+    "Calibrate everything to context: contract value, pursuit stage, opportunity type, sector. Never apply an abstract standard.",
+    "Always make a call. Uncertainty about degree is acceptable. Refusing to assess is not.",
+    "Your challenge is protective, not adversarial. You want the team to win. The most useful thing you can do is tell them the truth early enough to act on it.",
+  ],
+
+  toneGuidance: [
+    "Declarative in assessment, specific in challenge. State what the evidence shows, then what it doesn't show.",
+    "No hedging on Challenged verdicts. State the finding clearly without qualification.",
+    "Pattern language is permitted and encouraged: 'In a procurement like this...', 'The pattern here is...'",
+    "Acknowledge genuine strength plainly. 'The evidence here is substantive.' That is enough — no congratulation.",
+    "Shift to coaching register for capture actions — specific, executable, forward-looking.",
+  ],
+
+  languagePatterns: {
+    use: [
+      "The evidence tells me...",
+      "What this doesn't tell me is...",
+      "At this stage of the pursuit...",
+      "In a procurement like this...",
+      "The pattern here is...",
+      "The absence of [X] is itself a signal.",
+      "Named individual. Named commitment. Named date.",
+    ],
+    avoid: [
+      "Great evidence", "Well done", "Excellent work",
+      "It's hard to say without more information",
+      "You might want to consider",
+      "Best practice suggests",
+      "While the team has clearly made progress",
+      "Perhaps", "Potentially", "May want to",
+    ]
+  },
+
+  hardRules: {
+    will: [
+      "Always deliver a Validated / Queried / Challenged verdict",
+      "Name the specific inflation signal when inflation is detected",
+      "Suggest a named role as owner on every capture action",
+      "Ask challenge questions the team could actually go and answer",
+    ],
+    willNot: [
+      "Validate evidence that does not meet the standard to protect morale",
+      "Ask generic questions that could apply to any bid",
+      "Congratulate the team for meeting the expected minimum standard",
+      "Hedge a Challenged verdict into Queried to soften the message",
+    ]
+  },
+
+  workflowTriggers: {
+    autoChallenge: [
+      "If evidence contains ONLY team assertions with no named client individual or documented client action → auto-verdict CHALLENGED. State: 'This evidence is entirely internally generated. No external validation is present.'",
+      "If evidence is primarily future-tense (we plan to / we will / we intend) → auto-verdict CHALLENGED. State: 'This describes intent, not current position.'",
+      "If evidence references a contact with no name, role, or seniority → auto-verdict CHALLENGED. State: 'An unnamed individual is not a named commitment.'",
+    ],
+    autoQuery: [
+      "If evidence names an individual with positive engagement but no documented commitment → downgrade any Strongly Agree to QUERIED. State: 'Named individual — good. Documented commitment — not present.'",
+    ],
+    calibrationRules: [
+      "TCV above £50m + Strongly Agree on any Stakeholder category → require named Director-level commitment that has survived at least one organisational change",
+      "Pre-market stage + Strongly Agree on Procurement Intelligence → flag stage mismatch: formal criteria rarely confirmed pre-market",
+      "Challenger position + Strongly Agree on Decision Authority / Internal Champion → require evidence of active incumbent displacement, not equivalent access",
+      "Incumbent position + Strongly Disagree on Competitive Positioning → flag incumbent complacency risk explicitly",
+    ],
+    inflationTriggers: [
+      "Phrases: 'we believe / we feel / we think / we are confident / we are well known / generally positive / good reception' with no external validation → inflationDetected: true, quote the phrase verbatim",
+      "Comparative superiority without named competitor + specific differentiating fact → inflationDetected: true",
+      "Strongly Agree claimed with fewer than 50 words of evidence → flag brevity mismatch",
+    ]
+  },
+
+  successCriteria: {
+    verdictQuality: [
+      "Verdict is unambiguous and narrative opens with its basis — no preamble",
+      "If suggestedScore differs from claimed, the specific downgrade reason is stated in one sentence",
+      "Narrative references opportunity context (TCV / sector / stage / opportunity type) because it materially affects the assessment",
+      "If inflation detected, the specific phrase is quoted verbatim and explained",
+    ],
+    challengeQuality: [
+      "Specificity: question could not be asked at any other bid without modification",
+      "Answerability: team could find the answer within 5 working days if position is as claimed",
+      "Non-duplication: question does not ask for information already present in the evidence",
+    ],
+    actionQuality: [
+      "Executable: specifies what to do, what the output should be, and why it closes the gap",
+      "Owner: names a role (Bid Manager / Sector Director / Account Lead) not just 'the team'",
+      "At least one action is client-facing and generates new evidence — not internal preparation",
+    ],
+    finalCheck: [
+      "Would the team know exactly what to do differently, and why? If no — rewrite before returning",
+      "Does the output contain any phrase from languagePatterns.avoid? If yes — rewrite that sentence",
+      "Is the verdict consistent with all triggered workflowTriggers conditions? Resolve any conflict before returning",
+    ]
+  }
+};
+
+// ── Assembles the full system prompt from persona + context ────
+function buildPersonaPrompt(outputSchema) {
+  const p   = ALEX_PERSONA;
+  const ctx = state.context;
+  let prompt = '';
+
+  // 1. Role & identity
+  prompt += p.identity.roleStatement + '\n\n';
+
+  // 2. Background
+  prompt += p.background.narrative + '\n\n';
+
+  // 3. Core beliefs
+  prompt += 'WHAT YOU HOLD TO BE TRUE:\n';
+  p.coreBeliefs.forEach(b => prompt += `— ${b}\n`);
+  prompt += '\n';
+
+  // 4. Character traits
+  prompt += 'HOW YOU THINK:\n';
+  p.characterTraits.forEach(t => prompt += `— ${t}\n`);
+  prompt += '\n';
+
+  // 5. Tone & language
+  prompt += 'TONE:\n';
+  p.toneGuidance.forEach(t => prompt += `— ${t}\n`);
+  prompt += '\nLANGUAGE — USE: ' + p.languagePatterns.use.join(' | ');
+  prompt += '\nLANGUAGE — NEVER: ' + p.languagePatterns.avoid.join(' | ') + '\n\n';
+
+  // 6. Hard rules
+  prompt += 'YOU WILL: ' + p.hardRules.will.join(' | ') + '\n';
+  prompt += 'YOU WILL NOT: ' + p.hardRules.willNot.join(' | ') + '\n\n';
+
+  // 7. Workflow triggers
+  const t = p.workflowTriggers;
+  prompt += 'AUTOMATIC VERDICT TRIGGERS:\n';
+  [...t.autoChallenge, ...t.autoQuery].forEach(r => prompt += `— ${r}\n`);
+  prompt += '\nCALIBRATION RULES:\n';
+  t.calibrationRules.forEach(r => prompt += `— ${r}\n`);
+  prompt += '\nINFLATION TRIGGERS:\n';
+  t.inflationTriggers.forEach(r => prompt += `— ${r}\n`);
+  prompt += '\n';
+
+  // 8. Sector enrichment (placeholder — will expand when enrichment content confirmed)
+  if (ctx.sector) {
+    prompt += `SECTOR CONTEXT: This is a ${ctx.sector} sector opportunity. Apply your knowledge of this sector's procurement culture, stakeholder norms, and competitive dynamics when calibrating your assessment.\n\n`;
+  }
+
+  // 9. Opportunity type context — full enrichment blocks per type
+  if (ctx.oppType) {
+    const oppEnrichment = {
+      'BPO': `This is a Business Process Outsourcing opportunity. Key calibration:
+Evaluation is dominated by transition risk and incumbent lock-in — challenge any Competitive Positioning claim that does not address how the team counters the incumbent's 'too risky to change' narrative.
+The client's internal staff are hidden stakeholders: TUPE implications affect employees whose managers sit outside the formal procurement team but carry political influence. Stakeholder maps must include HR, trade union liaisons, and operational line managers, not just the commercial team.
+Procurement velocity is slow (12–24 months typical) — challenge timeline claims shorter than this norm.
+Value Proposition claims must address total cost of transition, not just steady-state savings. A co-developed business case that does not model transition costs and productivity dip is incomplete.
+Reference sites are critical — challenge any capability claim that cannot be backed by a named comparable reference client.`,
+
+      'IT Outsourcing': `This is an IT Outsourcing opportunity. Key calibration:
+ITO procurement governance is highly complex — multiple workstreams (infrastructure, applications, service desk, security) typically have separate evaluation owners. A stakeholder map that does not reflect workstream structure is incomplete.
+Procurement timelines are long (18–36 months) and subject to slippage — challenge timeline claims unless backed by specific intelligence on the client's internal milestones beyond the published timetable.
+Incumbent lock-in through technical dependencies is significant — a challenger must demonstrate a credible transition strategy, not just relationship superiority.
+Evaluation is heavily weighted towards technical solution quality and commercial model — relationship claims carry less weight than in BPO. Challenge any team over-indexing on stakeholder position at the expense of solution development.
+Security accreditation (Cyber Essentials Plus, ISO 27001, IL3/IL4 for government) is often a binary pass/fail gate — confirm compliance status before accepting any capability claims.`,
+
+      'Managed Service': `This is a Managed Service opportunity. Key calibration:
+Evaluation prioritises operational continuity and service stability. A Value Proposition that leads with innovation rather than continuity may misread the client's primary concern, particularly where service failure is politically visible.
+The transition and mobilisation plan is often evaluated as a scored criterion — challenge any team that has not engaged the client on transition planning.
+Governance model and relationship management are frequently cited reasons for switching providers — the team's approach to retained client engagement must be explicitly addressed.
+For re-competed managed services, the challenger must demonstrate specific intelligence about the incumbent's weaknesses and how they will be exploited.
+Key person retention and TUPE considerations must be addressed in the Value Proposition for labour-intensive managed services.`,
+
+      'Digital Outcomes': `This is a Digital Outcomes opportunity. Key calibration:
+Digital Outcomes procurement typically runs through the Digital Outcomes and Specialists (DOS) framework or equivalent — the team must understand the specific lot, evaluation criteria, and call-off process that applies.
+Evaluation is typically centred on team capability, methodology, and cultural fit rather than price alone. Challenge Value Proposition claims that focus on outputs (deliverables) rather than outcomes (measurable benefits).
+Procurement velocity is faster than outsourcing — timelines of 4–8 weeks are common for call-offs. Challenge any team that has not engaged the client during requirements definition, as this is the primary window for shaping the outcome.
+GDS/CDDO assessment or Service Standard compliance may apply — the team should know whether this is required and have a plan for it.
+Named individuals being proposed and their specific relevance to this client's context are critical. Generic capability statements carry very little weight with experienced digital buyers.`,
+
+      'Consulting / Advisory': `This is a Consulting or Advisory opportunity. Key calibration:
+Personal relationships dominate over formal procurement process far more than in other types — an Internal Champion based on institutional relationship rather than individual personal trust is weaker than it appears.
+Differentiation is almost entirely about people and methodology — a Value Proposition that does not name the specific individuals being proposed and explain why they are uniquely qualified is not differentiated.
+Procurement velocity is fast (4–12 weeks typical) — challenge the team on whether they have engaged during scope definition, as this is the highest-leverage period.
+Co-development of approach is the most powerful signal of influence — evidence that the client has shaped the scope or methodology based on the team's input carries more weight than any other relationship indicator.
+Rate card competitiveness is scrutinised in public sector consulting — commercial position claims must acknowledge the wider market context.`,
+
+      'Infrastructure & Hardware': `This is an Infrastructure and Hardware opportunity. Key calibration:
+Evaluation is primarily specification-driven. PWIN on this type is more binary around whether the proposed solution meets mandatory technical requirements — relationship advantages are less decisive than in service-led opportunities.
+Procurement Intelligence carries disproportionate weight — understanding the exact specification, any derogations from standard, and who authored the technical requirements provides decisive advantage. Apply a higher evidence bar on Procurement Intelligence claims.
+Value Proposition must address whole-life cost, not just capital cost — TCO modelling, maintenance regime, and end-of-life considerations are standard evaluation criteria.
+Supply chain and delivery risk are explicit evaluation criteria in major infrastructure programmes — challenge capability claims that do not reference specific supply chain commitments.
+For cyber or security infrastructure, NCSC guidance and DSP Toolkit requirements must be explicitly addressed.`,
+
+      'Software / SaaS': `This is a Software or SaaS opportunity. Key calibration:
+Evaluation is largely product-led and relationship advantages are less decisive than in service-led bids. The evaluation process centres on product demonstration and functional fit against defined requirements.
+The team's engagement with requirements definition is the highest-value intelligence activity — challenge any Procurement Intelligence claim that does not demonstrate specific input to the requirements phase.
+Procurement route varies significantly: direct procurement, G-Cloud call-off, DOS framework, or competitive tender depending on contract value — the team must know which applies and its specific call-off rules.
+Total Cost of Ownership including integration, data migration, training, and ongoing support is frequently underestimated by clients — challenge Value Propositions that do not proactively address these.
+Reference sites and case studies carry disproportionate weight — named public sector references at comparable scale are near-mandatory. Data protection, GDPR compliance, and penetration testing certification are standard gateway requirements.`,
+    };
+
+    const oppBlock = oppEnrichment[ctx.oppType];
+    if (oppBlock) prompt += `OPPORTUNITY TYPE CONTEXT:\n${oppBlock}\n\n`;
+  }
+
+  // 10. Output schema (always second-to-last)
+  prompt += outputSchema + '\n\n';
+
+  // 11. Success criteria (always last — self-audit before returning)
+  const sc = p.successCriteria;
+  prompt += 'BEFORE RETURNING YOUR RESPONSE, CHECK:\n';
+  [...sc.verdictQuality, ...sc.challengeQuality,
+   ...sc.actionQuality,  ...sc.finalCheck]
+    .forEach(c => prompt += `□ ${c}\n`);
+  prompt += 'If any check fails — rewrite that element before returning.\n';
+
+  return prompt;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCORING
+// ══════════════════════════════════════════════════════════════
+function getCatScore(catId) {
+  // Returns weighted average score (0–4 scale)
+  // Each question contributes proportionally to its normalised within-category weight (qw)
+  const qs = QUESTIONS.filter(q => q.cat === catId);
+  return qs.reduce((s, q) => {
+    const idx = QUESTIONS.indexOf(q);
+    const pts = SCORE_PTS[state.positions[idx]] || 0;
+    return s + pts * q.qw;   // qw already normalised (sum = 1 per category)
+  }, 0);
+}
+
+function getPWIN() {
+  return CATS.reduce((total, cat) => {
+    const raw = getCatScore(cat.id);
+    return total + (raw / MAX_CAT) * cat.weight;
+  }, 0);
+}
+
+function getPhase(pwin) {
+  if (pwin < 0.15) return { label:"Pre-Capture",        color:"#6B7280", bg:"#F0F3F8" };
+  if (pwin < 0.35) return { label:"Capture Commenced",  color:"#B91C1C", bg:"#FEF2F2" };
+  if (pwin < 0.55) return { label:"Active Capture",     color:"#B45309", bg:"#FDF3E3" };
+  if (pwin < 0.70) return { label:"Pre-ITT",            color:"#1D4ED8", bg:"#EFF6FF" };
+  if (pwin < 0.85) return { label:"ITT Ready",          color:"#15803D", bg:"#F0FDF4" };
+  return                  { label:"Strong Position",    color:"#15803D", bg:"#DCFCE7" };
+}
+
+function getAnswered()  { return Object.values(state.positions).filter(Boolean).length; }
+function getReviewed()  { return Object.keys(state.reviews).length; }
+function getValidated() { return Object.values(state.reviews).filter(r => r.verdict === "Validated").length; }
+function getChallenged(){ return Object.values(state.reviews).filter(r => r.verdict === "Challenged").length; }
+
+// ══════════════════════════════════════════════════════════════
+// UPDATE FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+function updateHeader() {
+  const pwin = getPWIN();
+  const pct  = Math.round(pwin * 100);
+  const el   = document.getElementById('header-pwin');
+  el.textContent = pct + "%";
+  el.className   = "pwin-value" + (pwin >= 0.75 ? " good" : "");
+  document.getElementById('completion-pill').textContent = getAnswered() + " / 24";
+}
+
+function updateDashboard() {
+  const pwin = getPWIN();
+  const pct  = Math.round(pwin * 100);
+  const circ = 2 * Math.PI * 40;
+
+  document.getElementById('gauge-pct').textContent = pct + "%";
+  document.getElementById('gauge-fill').setAttribute('stroke-dasharray', `${(circ * pwin).toFixed(1)} ${circ}`);
+  document.getElementById('gauge-fill').setAttribute('stroke', pwin >= 0.75 ? '#4ADE80' : '#E8920A');
+  document.getElementById('phase-fill').style.width = pct + "%";
+
+  const phase = getPhase(pwin);
+  const gp = document.getElementById('gauge-phase');
+  gp.textContent = phase.label;
+  gp.style.background = phase.bg;
+  gp.style.color = phase.color;
+
+  document.getElementById('stat-answered').textContent  = getAnswered();
+  document.getElementById('stat-reviewed').textContent  = getReviewed();
+  document.getElementById('stat-validated').textContent = getValidated();
+  document.getElementById('stat-challenged').textContent= getChallenged();
+
+  // Category bars
+  const barsEl = document.getElementById('cat-bars');
+  barsEl.innerHTML = CATS.map(cat => {
+    const weighted = getCatScore(cat.id);
+    const pct2   = Math.round((weighted / MAX_CAT) * 100);
+    const contrib = (weighted / MAX_CAT * cat.weight * 100).toFixed(1);
+    return `<div class="cat-bar-row">
+      <div class="cat-bar-meta">
+        <span class="cat-bar-name">${cat.name}</span>
+        <span class="cat-bar-val">${pct2}% <span style="color:var(--slate);font-size:10px;">(${contrib}pp)</span></span>
+      </div>
+      <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${pct2}%;background:${cat.color};"></div></div>
+    </div>`;
+  }).join('');
+
+  updateRadar();
+}
+
+function updateRadar() {
+  const scores = CATS.map(c => Math.round((getCatScore(c.id) / MAX_CAT) * 100));
+  const target  = CATS.map(() => 75);
+
+  if (state.radarChart) {
+    state.radarChart.data.datasets[0].data = scores;
+    state.radarChart.update('none');
+    return;
+  }
+
+  const ctx = document.getElementById('radar-chart').getContext('2d');
+  state.radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: CATS.map(c => c.name),
+      datasets: [
+        { label:'Your Score', data: scores,
+          backgroundColor:'rgba(45,84,153,0.18)', borderColor:'#1E3A6E',
+          borderWidth:2, pointBackgroundColor:'#1E3A6E', pointRadius:4, pointHoverRadius:6 },
+        { label:'Target 75%', data: target,
+          backgroundColor:'rgba(232,146,10,0.08)', borderColor:'rgba(232,146,10,0.7)',
+          borderWidth:1.5, borderDash:[5,4], pointRadius:0 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      scales: { r: {
+        min:0, max:100,
+        ticks:{ stepSize:25, font:{size:9}, color:'#94A3B8' },
+        grid:{ color:'rgba(0,0,0,0.07)' },
+        pointLabels:{ font:{size:11, family:"'DM Sans', sans-serif"}, color:'#334155' },
+        angleLines:{ color:'rgba(0,0,0,0.07)' }
+      }},
+      plugins:{ legend:{ display:false } }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// ASSESSMENT BUILD
+// ══════════════════════════════════════════════════════════════
+function buildAssessment() {
+  const body = document.getElementById('assessment-body');
+
+  // Profile banner — shows active weight profile if opp type is set
+  const profileBannerHTML = `<div class="profile-banner" id="profile-banner" style="display:none;">
+    <span id="profile-badge" class="profile-badge">DEFAULT WEIGHTS</span>
+    <div class="profile-weights" id="profile-weights"></div>
+    <span style="font-size:11px;color:var(--slate);margin-left:auto;">Category weights calibrated to your opportunity type</span>
+  </div>`;
+
+  body.innerHTML = profileBannerHTML + CATS.map(cat => {
+    const qs = QUESTIONS.filter(q => q.cat === cat.id);
+    return `
+    <div class="cat-section">
+      <div class="cat-header-row">
+        <div class="cat-swatch" style="background:${cat.color}"></div>
+        <div class="cat-name">${cat.name}</div>
+        <div class="cat-score-mini" id="cat-score-${cat.id}">0%</div>
+        <div class="cat-weight-badge" id="cat-weight-badge-${cat.id}">${(cat.weight*100).toFixed(0)}% weight</div>
+      </div>
+      <div class="q-grid">
+        ${qs.map(q => {
+          const idx = QUESTIONS.indexOf(q);
+          const rubricRows = Object.entries(q.rubric).map(([label, text]) => {
+            const cls = label === 'Strongly Agree' ? 'sa'
+                      : label === 'Agree'          ? 'ag'
+                      : label === 'Disagree'       ? 'dis' : 'sd';
+            return `<div class="rubric-row">
+              <div class="rubric-label ${cls}">${label}</div>
+              <div class="rubric-text">${text}</div>
+            </div>`;
+          }).join('');
+          return `<div class="q-card" id="qcard-${idx}">
+            <div class="q-topic">${q.topic}</div>
+            <div class="q-text">${q.text}</div>
+            <div class="q-controls">
+              <select class="pos-select" id="pos-${idx}" onchange="setPosition(${idx}, this.value)">
+                <option value="">— Not assessed —</option>
+                <option value="Strongly Agree">Strongly Agree</option>
+                <option value="Agree">Agree</option>
+                <option value="Disagree">Disagree</option>
+                <option value="Strongly Disagree">Strongly Disagree</option>
+              </select>
+            </div>
+            <textarea class="evidence-area" id="ev-${idx}"
+              placeholder="Enter evidence — name individuals, documents, dates, commitments…"
+              oninput="saveEvidence(${idx}, this.value)"></textarea>
+            <button class="rubric-toggle" onclick="toggleRubric(${idx})" id="rubric-btn-${idx}">
+              ▶ scoring rubric
+            </button>
+            <div class="rubric-panel" id="rubric-panel-${idx}">
+              ${rubricRows}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  updateProfileBanner();
+}
+
+function setPosition(idx, val) {
+  state.positions[idx] = val;
+  updateCardStyle(idx);
+  updateCatScore(QUESTIONS[idx].cat);
+  updateHeader();
+  updateDashboard();
+  updateReviewNav();
+}
+
+function saveEvidence(idx, val) {
+  state.evidence[idx] = val;
+}
+
+function updateCardStyle(idx) {
+  const card = document.getElementById(`qcard-${idx}`);
+  const pos  = state.positions[idx];
+  card.className = "q-card";
+  if (pos === "Strongly Agree") card.classList.add("scored", "scored-sa");
+  else if (pos === "Agree") card.classList.add("scored");
+  else if (pos === "Disagree") card.classList.add("scored", "scored-d");
+  else if (pos === "Strongly Disagree") card.classList.add("scored", "scored-sd");
+  if (state.reviews[idx]) card.classList.add("reviewed");
+}
+
+function updateCatScore(catId) {
+  const weighted = getCatScore(catId);
+  const pct = Math.round((weighted / MAX_CAT) * 100);
+  const el  = document.getElementById(`cat-score-${catId}`);
+  if (el) el.textContent = `${pct}%`;
+  // Also refresh weight badge in case profile changed
+  const wb = document.getElementById(`cat-weight-badge-${catId}`);
+  const cat = CATS.find(c => c.id === catId);
+  if (wb && cat) wb.textContent = `${(cat.weight*100).toFixed(0)}% weight`;
+}
+
+function toggleRubric(idx) {
+  const panel = document.getElementById(`rubric-panel-${idx}`);
+  const btn   = document.getElementById(`rubric-btn-${idx}`);
+  const open  = panel.classList.toggle('open');
+  btn.textContent = (open ? '▼' : '▶') + ' scoring rubric';
+}
+
+function updateProfileBanner() {
+  const oppType = state.context.oppType;
+  const banner  = document.getElementById('profile-banner');
+  const badge   = document.getElementById('profile-badge');
+  const weightsEl = document.getElementById('profile-weights');
+  if (!banner) return;
+
+  if (!oppType) {
+    banner.style.display = 'none';
+    return;
+  }
+
+  banner.style.display = 'flex';
+
+  // Profile label
+  const profile = OPP_TYPE_PROFILE[oppType] || 'default';
+  const profileLabels = { services:'Services Profile', technology:'Technology Profile', advisory:'Advisory Profile', default:'Default Profile' };
+  badge.textContent = (profileLabels[profile] || 'Custom').toUpperCase() + ' · ' + oppType;
+
+  // Default weights for comparison
+  const defaults = WEIGHT_PROFILES.default;
+  const active   = WEIGHT_PROFILES[profile] || defaults;
+
+  weightsEl.innerHTML = CATS.map(cat => {
+    const w   = active[cat.id];
+    const def = defaults[cat.id];
+    const elevated = w > def;
+    return `<span class="pw-chip${elevated ? ' elevated' : ''}" title="${cat.name}">
+      ${cat.name.split(' ')[0]} ${(w*100).toFixed(0)}%${elevated ? ' ↑' : ''}
+    </span>`;
+  }).join('');
+
+  // Refresh all cat-weight-badges
+  CATS.forEach(cat => {
+    const wb = document.getElementById(`cat-weight-badge-${cat.id}`);
+    if (wb) wb.textContent = `${(cat.weight*100).toFixed(0)}% weight`;
+  });
+}
+
+function newPursuit() {
+  const opp = state.context.opp || 'this pursuit';
+  if (!confirm(`Start a new pursuit?\n\nAll scores, evidence, and AI reviews for "${opp}" will be cleared. Save the session first if you want to keep this data.`)) return;
+
+  // Clear state
+  state.positions = {};
+  state.evidence  = {};
+  state.reviews   = {};
+  state.selectedReviewIdx = null;
+  state.context   = { org:'', opp:'', sector:'', tcv:'', oppType:'', route:'', stage:'', incumbent:'', bnb:'', competitors:'', importance:'' };
+  state.contextComplete = false;
+
+  // Reset weights to default
+  applyWeightProfile('');
+
+  // Clear context form fields
+  ['ctx-org','ctx-opp','ctx-tcv','ctx-bnb','ctx-competitors'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['ctx-sector','ctx-opptype','ctx-route','ctx-stage','ctx-importance'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  // Clear radio buttons
+  document.querySelectorAll('input[name="incumbent"]').forEach(r => r.checked = false);
+  document.querySelectorAll('#ctx-incumbent-group .ctx-radio-label').forEach(el => el.classList.remove('checked'));
+
+  // Remove completion banner if present
+  const oldBanner = document.querySelector('.ctx-complete-banner');
+  if (oldBanner) oldBanner.remove();
+
+  // Re-run validation
+  onCtxChange();
+
+  // Rebuild assessment and review
+  buildAssessment();
+  buildReviewNav();
+  updateHeader();
+
+  // Lock tabs and go to context
+  ['assessment','dashboard','review'].forEach(id => {
+    document.getElementById('nav-'+id)?.classList.add('locked');
+  });
+  switchView('context');
+  showToast('New pursuit started');
+}
+
+// ══════════════════════════════════════════════════════════════
+// BUILD REVIEW NAV
+// ══════════════════════════════════════════════════════════════
+function buildReviewNav() {
+  const body = document.getElementById('review-nav-body');
+  body.innerHTML = CATS.map(cat => {
+    const qs = QUESTIONS.filter(q => q.cat === cat.id);
+    return `<div class="rnav-cat">
+      <span class="rnav-cat-label">${cat.name}</span>
+      ${qs.map(q => {
+        const idx = QUESTIONS.indexOf(q);
+        return `<div class="rnav-q" id="rnav-${idx}" onclick="selectReview(${idx})">
+          <span style="flex:1">${q.topic}</span>
+          <span class="rv-indicator" id="rv-ind-${idx}"></span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function updateReviewNav() {
+  QUESTIONS.forEach((q, idx) => {
+    const ind = document.getElementById(`rv-ind-${idx}`);
+    if (!ind) return;
+    const r = state.reviews[idx];
+    if (r) {
+      ind.className = "rv-indicator " + (r.verdict === "Validated" ? "validated" : r.verdict === "Challenged" ? "challenged" : "done");
+    } else if (state.positions[idx]) {
+      ind.className = "rv-indicator done";
+      ind.style.background = "rgba(45,84,153,0.3)";
+    } else {
+      ind.className = "rv-indicator";
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// REVIEW PANEL
+// ══════════════════════════════════════════════════════════════
+function selectReview(idx) {
+  state.selectedReviewIdx = idx;
+  document.querySelectorAll('.rnav-q').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById(`rnav-${idx}`);
+  if (navEl) navEl.classList.add('active');
+  renderReviewPanel(idx);
+}
+
+function renderReviewPanel(idx) {
+  const q    = QUESTIONS[idx];
+  const cat  = CATS.find(c => c.id === q.cat);
+  const pos  = state.positions[idx] || "";
+  const ev   = state.evidence[idx] || "";
+  const rev  = state.reviews[idx];
+
+  const rubricHtml = Object.entries(q.rubric).map(([lvl, req]) => {
+    const cls = {"Strongly Agree":"rb-sa","Agree":"rb-a","Disagree":"rb-d","Strongly Disagree":"rb-sd"}[lvl];
+    return `<div class="rubric-row">
+      <span class="rubric-badge ${cls}">${lvl}</span>
+      <span class="rubric-req">${req}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('review-main').innerHTML = `
+  <div class="review-panel">
+    <div class="review-panel-header">
+      <div class="rph-cat">${cat.name}</div>
+      <div class="rph-topic">${q.topic}</div>
+      <div class="rph-text">${q.text}</div>
+    </div>
+    <div class="review-panel-body">
+      <div class="rp-row">
+        <div>
+          <label class="rp-label">Your Position</label>
+          <select class="rp-select" id="rp-pos-${idx}" onchange="setPositionFromReview(${idx}, this.value)">
+            <option value="">— Not assessed —</option>
+            ${["Strongly Agree","Agree","Disagree","Strongly Disagree"].map(s =>
+              `<option value="${s}" ${pos===s?"selected":""}>${s}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="rp-label">Score Points</label>
+          <div class="pts-box" id="rp-pts-${idx}">${SCORE_PTS[pos] || "—"}</div>
+        </div>
+      </div>
+      <label class="rp-label">Evidence / Notes</label>
+      <textarea class="rp-textarea" id="rp-ev-${idx}"
+        placeholder="Describe your evidence in specific detail — name individuals, roles, documents, dates, and explicit commitments made. The quality of this evidence directly determines the AI review's usefulness."
+        oninput="saveEvidence(${idx}, this.value); syncEvidenceToAssessment(${idx});">${ev}</textarea>
+
+      <button class="rubric-toggle-btn" onclick="toggleRubricPanel(${idx})">
+        <span id="rtarrow-${idx}">▶</span> View scoring rubric for this question
+      </button>
+      <div id="rubric-panel-${idx}" style="display:none">
+        <div class="rubric-panel">${rubricHtml}</div>
+      </div>
+
+      <button class="btn-run" id="rp-btn-${idx}" onclick="runSingleReview(${idx})">
+        <span>◈</span> Run AI Assurance Review
+      </button>
+
+      ${rev ? renderResultHtml(rev) : `
+        <div class="empty-state" style="padding:24px 0">
+          <div class="empty-icon" style="font-size:24px;">◎</div>
+          <div>Enter your position and evidence above, then run the review.</div>
+        </div>`}
+    </div>
+  </div>`;
+}
+
+function setPositionFromReview(idx, val) {
+  state.positions[idx] = val;
+  const sel = document.getElementById(`pos-${idx}`);
+  if (sel) sel.value = val;
+  document.getElementById(`rp-pts-${idx}`).textContent = SCORE_PTS[val] || "—";
+  updateCardStyle(idx);
+  updateCatScore(QUESTIONS[idx].cat);
+  updateHeader();
+  updateDashboard();
+}
+
+function syncEvidenceToAssessment(idx) {
+  const ev = document.getElementById(`ev-${idx}`);
+  if (ev) ev.value = state.evidence[idx] || "";
+}
+
+function toggleRubricPanel(idx) {
+  const panel = document.getElementById(`rubric-panel-${idx}`);
+  const arrow = document.getElementById(`rtarrow-${idx}`);
+  const shown = panel.style.display !== 'none';
+  panel.style.display = shown ? 'none' : 'block';
+  arrow.textContent   = shown ? '▶' : '▼';
+}
+
+// ══════════════════════════════════════════════════════════════
+// AI REVIEW — SINGLE QUESTION
+// ══════════════════════════════════════════════════════════════
+async function runSingleReview(idx) {
+  const q   = QUESTIONS[idx];
+  const pos = state.positions[idx] || (document.getElementById(`rp-pos-${idx}`) && document.getElementById(`rp-pos-${idx}`).value);
+  const ev  = state.evidence[idx] || (document.getElementById(`rp-ev-${idx}`) && document.getElementById(`rp-ev-${idx}`).value);
+
+  if (!pos) { alert('Please select a position before requesting a review.'); return; }
+  if (!ev || ev.length < 20) { alert('Please provide more detailed evidence (at least a sentence) before requesting a review.'); return; }
+
+  const btn = document.getElementById(`rp-btn-${idx}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Reviewing…'; }
+
+  const rubricText = Object.entries(q.rubric).map(([l,r]) => `${l}: ${r}`).join('\n');
+  const contextBlock = getContextBlock();
+
+  const outputSchema = `Respond ONLY with a valid JSON object — no markdown, no preamble, no explanation outside the JSON.
+
+Required fields:
+{
+  "verdict": "Validated" | "Queried" | "Challenged",
+  "suggestedScore": "Strongly Agree" | "Agree" | "Disagree" | "Strongly Disagree",
+  "confidenceLevel": number 0-100,
+  "narrative": "2-3 sentence assessment referencing the pursuit context where relevant",
+  "inflationDetected": boolean,
+  "inflationReason": "specific phrase or claim suggesting inflation, or empty string",
+  "challengeQuestions": ["q1","q2","q3"],
+  "captureActions": ["action with named owner and output","action2"]
+}`;
+
+  const systemPrompt = buildPersonaPrompt(outputSchema);
+
+  const userPrompt = `PURSUIT CONTEXT:
+${contextBlock}
+
+QUESTION BEING REVIEWED:
+Question: ${q.text}
+Category: ${CATS.find(c=>c.id===q.cat).name} | Topic: ${q.topic}
+Claimed Score: ${pos}
+Evidence: ${ev}
+Scoring Rubric:\n${rubricText}
+Inflation signals to watch: ${q.signals.join(', ')}`;
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514", max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      const msg = errBody?.error?.message || `HTTP ${resp.status} ${resp.statusText}`;
+      throw new Error(msg);
+    }
+
+    const data = await resp.json();
+    if (!data.content || !data.content.length) throw new Error("Empty response from API");
+
+    const text = data.content.map(b => b.text || "").join("").replace(/```json|```/g, "").trim();
+    const result = JSON.parse(text);
+    state.reviews[idx] = result;
+
+    const qbtn = document.getElementById(`qbtn-${idx}`);
+    if (qbtn) { qbtn.classList.add('done'); qbtn.textContent = '✓ Reviewed'; }
+
+    updateCardStyle(idx);
+    updateReviewNav();
+    updateDashboard();
+    renderReviewPanel(idx);
+  } catch(err) {
+    const errMsg = err.message.includes('Failed to fetch') || err.message.includes('NetworkError')
+      ? 'Network error — ensure this app is open inside Claude.ai (not a downloaded local file). The AI review requires the Claude.ai environment to authenticate API calls.'
+      : `Review failed: ${err.message}`;
+    const panel = document.getElementById('review-main');
+    if (panel) {
+      const existingErr = panel.querySelector('.err-banner');
+      if (existingErr) existingErr.remove();
+      panel.insertAdjacentHTML('beforeend',
+        `<div class="err-banner" style="margin-top:14px;padding:12px 14px;background:var(--red-lt);border:1px solid var(--red);border-radius:var(--radius-md);color:var(--red);font-size:12px;line-height:1.6;">
+          <strong>Error:</strong> ${errMsg}
+        </div>`);
+    }
+  }
+
+  if (btn) { btn.disabled = false; btn.innerHTML = '<span>◈</span> Run AI Assurance Review'; }
+}
+
+// ══════════════════════════════════════════════════════════════
+// RESULT HTML
+// ══════════════════════════════════════════════════════════════
+function renderResultHtml(r) {
+  const vcls   = r.verdict==="Validated"?"vh-validated":r.verdict==="Challenged"?"vh-challenged":"vh-queried";
+  const vicon  = r.verdict==="Validated"?"✓":r.verdict==="Challenged"?"✕":"⚠";
+  const vncls  = r.verdict==="Validated"?"vn-validated":r.verdict==="Challenged"?"vn-challenged":"vn-queried";
+  const vdesc  = r.verdict==="Validated"?"Evidence supports the claimed score":r.verdict==="Challenged"?"Evidence does not justify the claimed score":"Partial evidence — score may be defensible with caveats";
+  const sscls  = r.verdict==="Validated"?"ss-green":r.verdict==="Challenged"?"ss-red":"ss-amber";
+  const confcol= r.confidenceLevel>=70?"var(--green)":r.confidenceLevel>=40?"var(--amber)":"var(--red)";
+
+  return `<div class="result-wrap">
+    <div class="verdict-header ${vcls}">
+      <div class="verdict-left">
+        <div class="verdict-icon">${vicon}</div>
+        <div>
+          <div class="verdict-name ${vncls}">${r.verdict}</div>
+          <div class="verdict-desc">${vdesc}</div>
+        </div>
+      </div>
+      <div class="suggested-score-box">
+        <div class="ss-label">Suggested Score</div>
+        <span class="ss-val ${sscls}">${r.suggestedScore}</span>
+      </div>
+    </div>
+
+    <div class="conf-row">
+      <span class="conf-label">Review confidence</span>
+      <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:${r.confidenceLevel}%;background:${confcol};"></div></div>
+      <span class="conf-pct">${r.confidenceLevel}%</span>
+    </div>
+
+    <p class="narrative-text">${r.narrative}</p>
+
+    ${r.inflationDetected ? `<div class="inflation-flag"><span>⚠</span><div><strong>Score inflation detected:</strong> ${r.inflationReason}</div></div>` : ''}
+
+    <div class="result-section-title">Challenge Questions — what a bid director would ask</div>
+    <ul class="challenge-list">${r.challengeQuestions.map(q=>`<li>${q}</li>`).join('')}</ul>
+
+    <div class="result-section-title">Recommended Capture Actions</div>
+    <ul class="action-list">${r.captureActions.map(a=>`<li>${a}</li>`).join('')}</ul>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FULL REPORT
+// ══════════════════════════════════════════════════════════════
+async function runFullReport() {
+  const answered = getAnswered();
+  if (answered < 8) { alert('Please answer at least 8 questions before generating a full report.'); return; }
+
+  const btn = document.getElementById('btn-full-report');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Generating report…';
+
+  const area = document.getElementById('full-report-area');
+  area.innerHTML = `<div class="report-card" style="margin-bottom:20px;">
+    <div class="loading-block"><div class="spinner spinner-dark"></div> The AI is analysing all ${answered} scored questions and generating your pursuit assurance report…</div>
+  </div>`;
+
+  const pwin = getPWIN();
+  const phase = getPhase(pwin).label;
+  const contextBlock = getContextBlock();
+  const c = state.context;
+
+  const scoreSummary = CATS.map(cat => {
+    const weighted = getCatScore(cat.id);
+    const pct = Math.round((weighted / MAX_CAT) * 100);
+    return `${cat.name}: ${pct}% (weighted) — Category Weight: ${(cat.weight*100).toFixed(0)}%`;
+  }).join('\n');
+
+  const questionSummary = QUESTIONS.map((q,i) => {
+    const pos = state.positions[i];
+    const ev  = state.evidence[i] || "(no evidence provided)";
+    const rev = state.reviews[i];
+    if (!pos) return null;
+    return `[${CATS.find(c=>c.id===q.cat).name} / ${q.topic}]
+Score: ${pos} | Evidence: ${ev.substring(0,200)}${ev.length>200?'…':''}
+${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not individually reviewed'}`;
+  }).filter(Boolean).join('\n\n');
+
+  const fullReportSchema = `Respond ONLY with valid JSON:
+{
+  "executiveSummary": "3-4 sentences on overall pursuit health and primary risks, referencing the opportunity and organisation by name",
+  "pwinAssessment": "2-3 sentences on whether the PWIN score is credible or inflated given evidence quality and contract value",
+  "strengthAreas": ["specific strength with evidence", "strength 2", "strength 3"],
+  "criticalRisks": [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}],
+  "immediateActions": ["specific action with suggested owner", "action 2", "action 3", "action 4", "action 5"],
+  "gateRecommendation": "Proceed | Proceed with Conditions | Review Required | Stop",
+  "gateRationale": "2-3 sentences explaining the gate recommendation in the context of this specific opportunity"
+}`;
+
+  const systemPrompt = buildPersonaPrompt(fullReportSchema);
+
+  const userPrompt = `PURSUIT CONTEXT:
+${contextBlock}
+
+ASSESSMENT RESULTS:
+Pursuit Phase: ${phase}
+Overall PWIN: ${Math.round(pwin*100)}% (Target: 75%)
+Questions Answered: ${answered}/24
+AI Reviews Completed: ${getReviewed()}
+Challenges Flagged: ${getChallenged()}
+
+Category Scores:
+${scoreSummary}
+
+Scored Questions with Evidence:
+${questionSummary}`;
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514", max_tokens: 2000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      const msg = errBody?.error?.message || `HTTP ${resp.status} ${resp.statusText}`;
+      throw new Error(msg);
+    }
+
+    const data = await resp.json();
+    if (!data.content || !data.content.length) throw new Error("Empty response from API");
+
+    const text = data.content.map(b => b.text || "").join("").replace(/```json|```/g, "").trim();
+    const r    = JSON.parse(text);
+
+    const gateColor = {
+      "Proceed":"var(--green)","Proceed with Conditions":"var(--amber)",
+      "Review Required":"#D97706","Stop":"var(--red)"
+    }[r.gateRecommendation] || "var(--slate)";
+
+    area.innerHTML = `
+    <div class="report-card" style="margin-bottom:24px;">
+      <div class="report-header">
+        <div>
+          <div class="report-title">${c.opp || 'Pursuit Assurance Report'}</div>
+          <div class="report-sub">${c.org}${c.sector ? ' · ' + c.sector : ''}${c.tcv ? ' · ' + c.tcv : ''} · ${phase} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+          <div style="margin-top:12px;display:inline-block;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:700;background:${gateColor};color:white;letter-spacing:0.04em;">
+            GATE: ${r.gateRecommendation.toUpperCase()}
+          </div>
+        </div>
+        <div>
+          <div class="report-pwin-label">PWIN Score</div>
+          <div class="report-pwin">${Math.round(pwin*100)}%</div>
+        </div>
+      </div>
+      <div class="report-body">
+        <div class="report-section">
+          <div class="report-section-title">Executive Summary</div>
+          <p class="report-text">${r.executiveSummary}</p>
+        </div>
+        <div class="report-section">
+          <div class="report-section-title">PWIN Score Assessment</div>
+          <p class="report-text">${r.pwinAssessment}</p>
+        </div>
+        <div class="report-section">
+          <div class="report-section-title">Pursuit Strengths</div>
+          ${r.strengthAreas.map(s=>`<div class="report-risk-item risk-action"><div class="risk-label">✓ Strength</div>${s}</div>`).join('')}
+        </div>
+        <div class="report-section">
+          <div class="report-section-title">Critical Risks</div>
+          ${r.criticalRisks.map(risk=>`<div class="report-risk-item ${risk.severity==='High'?'risk-high':'risk-medium'}">
+            <div class="risk-label">${risk.severity} Risk — ${risk.category}</div>${risk.risk}
+          </div>`).join('')}
+        </div>
+        <div class="report-section">
+          <div class="report-section-title">Immediate Actions Required</div>
+          ${r.immediateActions.map((a,i)=>`<div class="report-risk-item risk-action">
+            <div class="risk-label">Action ${i+1}</div>${a}
+          </div>`).join('')}
+        </div>
+        <div class="report-section">
+          <div class="report-section-title">Gate Recommendation</div>
+          <p class="report-text">${r.gateRationale}</p>
+        </div>
+      </div>
+    </div>`;
+  } catch(err) {
+    const errMsg = err.message.includes('Failed to fetch') || err.message.includes('NetworkError')
+      ? 'Network error — ensure this app is open inside Claude.ai (not a downloaded local file). The AI review requires the Claude.ai environment to authenticate API calls.'
+      : `Error generating report: ${err.message}`;
+    area.innerHTML = `<div style="padding:14px 16px;background:var(--red-lt);border:1px solid var(--red);border-radius:var(--radius-md);color:var(--red);font-size:13px;line-height:1.6;margin-bottom:16px;">
+      <strong>Error:</strong> ${errMsg}
+    </div>`;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>◈</span> Generate Full Assurance Report';
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function switchView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  if (id === 'dashboard') updateDashboard();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SESSION PERSISTENCE
+// ══════════════════════════════════════════════════════════════
+const SESSION_VERSION = 2;
+
+function saveSession() {
+  const c = state.context;
+  const opp = (c.opp || 'pursuit').replace(/[^a-z0-9]/gi, '_').substring(0, 40);
+  const date = new Date().toISOString().slice(0,10);
+
+  const payload = {
+    _version:  SESSION_VERSION,
+    _savedAt:  new Date().toISOString(),
+    _app:      'PWIN Architect',
+    context:   { ...state.context },
+    positions: { ...state.positions },
+    evidence:  { ...state.evidence },
+    reviews:   { ...state.reviews },
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)],
+                        { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `PWIN_${opp}_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Session saved');
+}
+
+function loadSessionFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data._app !== 'PWIN Architect') {
+        showToast('⚠ Not a PWIN Architect session file', true); return;
+      }
+      restoreSession(data);
+      showToast('✓ Session loaded — ' + (data.context?.opp || 'unnamed pursuit'));
+    } catch {
+      showToast('⚠ Could not read session file', true);
+    }
+  };
+  reader.readAsText(file);
+  // Reset input so same file can be reloaded
+  event.target.value = '';
+}
+
+function restoreSession(data) {
+  // 1. Restore context
+  Object.assign(state.context, data.context || {});
+
+  // 2. Apply weight profile from restored oppType
+  applyWeightProfile(state.context.oppType || '');
+
+  // 3. Restore scores, evidence, reviews
+  state.positions = data.positions || {};
+  state.evidence  = data.evidence  || {};
+  state.reviews   = data.reviews   || {};
+
+  // 4. Repopulate context form fields
+  const fieldMap = {
+    'ctx-org':        'org',
+    'ctx-opp':        'opp',
+    'ctx-sector':     'sector',
+    'ctx-tcv':        'tcv',
+    'ctx-opptype':    'oppType',
+    'ctx-route':      'route',
+    'ctx-stage':      'stage',
+    'ctx-bnb':        'bnb',
+    'ctx-competitors':'competitors',
+    'ctx-importance': 'importance',
+  };
+  Object.entries(fieldMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el && state.context[key]) el.value = state.context[key];
+  });
+
+  // Restore radio buttons
+  const incVal = state.context.incumbent || '';
+  const incMap = { challenger:'challenger', incumbent:'incumbent', none:'none' };
+  const incKey = Object.keys(incMap).find(k => incVal.includes(k));
+  if (incKey) {
+    const radio = document.querySelector(`input[name="incumbent"][value="${incVal}"]`);
+    if (radio) {
+      radio.checked = true;
+      document.querySelectorAll('#ctx-incumbent-group .ctx-radio-label').forEach(el => {
+        el.classList.toggle('checked', el.querySelector('input').value === incVal);
+      });
+    }
+  }
+
+  // 5. Re-run context validation to unlock tabs and update header pill
+  onCtxChange();
+
+  // 6. Rebuild assessment and review nav to reflect restored scores
+  buildAssessment();
+  buildReviewNav();
+  updateHeader();
+
+  // Re-apply saved positions to rebuilt cards
+  Object.entries(state.positions).forEach(([idx, pos]) => {
+    const sel = document.getElementById(`pos-${idx}`);
+    if (sel) sel.value = pos;
+    updateCardStyle(parseInt(idx));
+    updateCatScore(QUESTIONS[parseInt(idx)].cat);
+  });
+  Object.entries(state.evidence).forEach(([idx, ev]) => {
+    const ta = document.getElementById(`ev-${idx}`);
+    if (ta) ta.value = ev;
+  });
+
+  // 7. Rebuild review panel if there are reviews
+  if (Object.keys(state.reviews).length > 0) {
+    updateReviewNav();
+    updateDashboard();
+  }
+
+  // 8. If context was complete, navigate to Assessment
+  if (state.contextComplete) {
+    // Stay on context tab but mark complete
+    const wrap = document.getElementById('ctx-proceed-btn').parentElement;
+    const existing = wrap.querySelector('.ctx-complete-banner');
+    if (!existing) {
+      const banner = document.createElement('div');
+      banner.className = 'ctx-complete-banner';
+      banner.innerHTML = '✓ Session restored. All scores and context loaded.';
+      wrap.appendChild(banner);
+    }
+  }
+}
+
+function showToast(msg, isError = false) {
+  const existing = document.querySelector('.session-toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'session-toast';
+  t.style.borderLeftColor = isError ? 'var(--red)' : 'var(--green)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+buildAssessment();
+buildReviewNav();
+updateHeader();
+updateDashboard();
+</script>
+
+<!-- ④ HELP VIEW — injected after script so it is pure HTML -->
+<div class="view" id="view-help" style="max-width:900px;">
+
+  <div style="margin-bottom:28px;">
+    <div style="font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:6px;">How to Use PWIN Architect</div>
+    <div style="font-size:13px;color:var(--slate);line-height:1.6;">A capture-phase coaching tool for pursuit teams. Read this before your first session.</div>
+  </div>
+
+  <!-- Philosophy box -->
+  <div style="background:var(--navy);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:24px;color:white;">
+    <div style="font-family:var(--font-display);font-size:16px;margin-bottom:10px;color:var(--amber);">The right mindset</div>
+    <div style="font-size:13px;line-height:1.8;color:rgba(255,255,255,0.82);">
+      PWIN Architect is a <strong style="color:white;">coaching tool, not a reporting tool.</strong> Its purpose is to surface the gaps in your pursuit position so you can close them — not to produce a number that satisfies a governance gate. Score yourself honestly. A team that scores 35% and knows exactly why is in a far stronger position than a team that claims 70% on thin evidence.
+      <br><br>
+      The AI Assurance Review is a <strong style="color:white;">challenge mechanism</strong>, not a validation stamp. Complete your scoring independently first. Only then use the AI to pressure-test your evidence. If you adjust scores <em>before</em> the AI review to improve the result, you are coaching the tool — not yourself.
+    </div>
+  </div>
+
+  <!-- Step by step -->
+  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:16px;">Step-by-step workflow</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;">
+
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Score independently</div>
+      </div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>Assessment</strong> tab. For each of the 24 questions, select your honest position — Strongly Agree, Agree, Disagree, or Strongly Disagree. Leave blank only if the question genuinely cannot be assessed yet. Blank counts as zero and will pull your PWIN score down, which is intentional.</div>
+    </div>
+
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Record your evidence</div>
+      </div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">For each scored question, enter your supporting evidence in the text box below the dropdown. Be specific: name the individuals involved, state their role, reference documents, and describe commitments made. Vague evidence produces a weak AI review. The AI cannot challenge what it cannot read.</div>
+    </div>
+
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Review the PWIN Dashboard</div>
+      </div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>PWIN Dashboard</strong> tab to see your overall score, pursuit phase, radar profile, and category breakdown. This gives the team a shared picture of where the pursuit is strong and where attention is needed before the AI review session.</div>
+    </div>
+
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Run the AI Assurance Review</div>
+      </div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>AI Assurance Review</strong> tab. Select each question from the left panel and click <em>Run AI Assurance Review</em>. The AI will assess whether your evidence justifies your score, flag inflation, and provide challenge questions. Once you have reviewed key questions, generate a <em>Full Assurance Report</em> for a gate-level synthesis.</div>
+    </div>
+
+  </div>
+
+  <!-- Scoring reference -->
+  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:16px;">Scoring reference</div>
+
+  <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:28px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead>
+        <tr style="background:var(--navy);color:white;">
+          <th style="padding:11px 16px;text-align:left;font-weight:600;letter-spacing:0.04em;">Position</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;letter-spacing:0.04em;">Points</th>
+          <th style="padding:11px 16px;text-align:left;font-weight:600;letter-spacing:0.04em;">What it means</th>
+          <th style="padding:11px 16px;text-align:left;font-weight:600;letter-spacing:0.04em;">Typical phase</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 16px;font-weight:600;color:var(--green);">Strongly Agree</td>
+          <td style="padding:10px 16px;text-align:center;font-family:var(--font-mono);font-weight:600;">4</td>
+          <td style="padding:10px 16px;color:var(--slate);">Strong position — substantiated by named evidence, documented commitments, confirmed by client contacts</td>
+          <td style="padding:10px 16px;color:var(--slate);">ITT ready</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);background:var(--surface);">
+          <td style="padding:10px 16px;font-weight:600;color:var(--teal);">Agree</td>
+          <td style="padding:10px 16px;text-align:center;font-family:var(--font-mono);font-weight:600;">3</td>
+          <td style="padding:10px 16px;color:var(--slate);">Position established with evidence, but room to strengthen — verbal commitments, informal signals</td>
+          <td style="padding:10px 16px;color:var(--slate);">Mid capture</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 16px;font-weight:600;color:#B45309;">Disagree</td>
+          <td style="padding:10px 16px;text-align:center;font-family:var(--font-mono);font-weight:600;">2</td>
+          <td style="padding:10px 16px;color:var(--slate);">Gap identified — work in progress, partial evidence only, no formal commitments yet</td>
+          <td style="padding:10px 16px;color:var(--slate);">Early capture</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);background:var(--surface);">
+          <td style="padding:10px 16px;font-weight:600;color:var(--red);">Strongly Disagree</td>
+          <td style="padding:10px 16px;text-align:center;font-family:var(--font-mono);font-weight:600;">1</td>
+          <td style="padding:10px 16px;color:var(--slate);">Significant gap — active risk with no mitigation plan, we are behind competitors here</td>
+          <td style="padding:10px 16px;color:var(--slate);">Capture commencement</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 16px;font-weight:600;color:var(--slate);">(Blank)</td>
+          <td style="padding:10px 16px;text-align:center;font-family:var(--font-mono);font-weight:600;">0</td>
+          <td style="padding:10px 16px;color:var(--slate);">Not yet assessed — deliberately penalises PWIN to reward completion and honest engagement</td>
+          <td style="padding:10px 16px;color:var(--slate);">Pre-capture / Day 1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PWIN benchmarks -->
+  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:16px;">PWIN benchmarks by pursuit phase</div>
+
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px;">
+    <div style="background:var(--red-lt);border:1px solid var(--red);border-radius:var(--radius-md);padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">15 – 35%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Capture commencement</div>
+    </div>
+    <div style="background:var(--amber-lt);border:1px solid var(--amber);border-radius:var(--radius-md);padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">35 – 55%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Active capture</div>
+    </div>
+    <div style="background:#EFF6FF;border:1px solid var(--navy-light);border-radius:var(--radius-md);padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">55 – 70%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Pre-ITT</div>
+    </div>
+    <div style="background:var(--green-lt);border:1px solid var(--green);border-radius:var(--radius-md);padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">70 – 85%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">ITT ready</div>
+    </div>
+    <div style="background:var(--green-lt);border:1px solid var(--green);border-radius:var(--radius-md);padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">100%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Maximum possible</div>
+    </div>
+  </div>
+
+  <!-- Category weights -->
+  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:10px;">Category weights</div>
+  <div style="font-size:12px;color:var(--slate);margin-bottom:14px;line-height:1.6;">
+    Category weights are calibrated to your opportunity type. Select an opportunity type in the Pursuit Context form to see the weights that will apply to your assessment. The default weights below apply when no type is selected.
+  </div>
+  <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:28px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;" id="help-weights-table">
+      <thead>
+        <tr style="background:var(--navy);color:white;">
+          <th style="padding:11px 16px;text-align:left;font-weight:600;">Category</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Services: BPO / ITO / Managed Service / Digital Outcomes">Services</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Technology: Infrastructure / Software / SaaS">Technology</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Advisory: Consulting">Advisory</th>
+          <th style="padding:11px 16px;text-align:left;font-weight:600;">What drives this</th>
+        </tr>
+      </thead>
+      <tbody id="help-weights-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+  (function() {
+    const RATIONALE = {
+      cp: 'Primary differentiator — directly within the team\'s control',
+      pi: 'Varies significantly by type: critical for technology bids, less decisive for advisory',
+      ss: 'Relationship-driven in services and advisory; less decisive in specification-driven technology bids',
+      oi: 'Most powerful in advisory pursuits; minimal impact in specification-led technology awards',
+      vp: 'Co-development evidence matters across all types but carries highest weight in advisory',
+      pp: 'A lagging indicator — reflects the outcomes of the higher-weight categories',
+    };
+    const tbody = document.getElementById('help-weights-body');
+    if (!tbody) return;
+    tbody.innerHTML = CATS.map((cat, i) => {
+      const bg  = i%2===0 ? '' : 'background:var(--surface);';
+      const sv  = (WEIGHT_PROFILES.services[cat.id]   * 100).toFixed(0);
+      const tv  = (WEIGHT_PROFILES.technology[cat.id] * 100).toFixed(0);
+      const av  = (WEIGHT_PROFILES.advisory[cat.id]   * 100).toFixed(0);
+      const max = Math.max(WEIGHT_PROFILES.services[cat.id], WEIGHT_PROFILES.technology[cat.id], WEIGHT_PROFILES.advisory[cat.id]);
+      const chip = (val, pctNum) => {
+        const isMax = pctNum/100 === max;
+        const style = isMax
+          ? 'font-family:var(--font-mono);font-weight:700;padding:2px 10px;border-radius:10px;font-size:12px;background:var(--amber-lt);color:#7C3D0A;border:1px solid var(--amber-med);'
+          : 'font-family:var(--font-mono);font-weight:600;padding:2px 10px;border-radius:10px;font-size:12px;background:var(--surface);color:var(--slate);';
+        return `<span style="${style}">${val}%</span>`;
+      };
+      return `<tr style="border-bottom:1px solid var(--border);${bg}">
+        <td style="padding:10px 16px;font-weight:600;color:var(--navy);">${cat.name}</td>
+        <td style="padding:10px 16px;text-align:center;">${chip(sv, parseInt(sv))}</td>
+        <td style="padding:10px 16px;text-align:center;">${chip(tv, parseInt(tv))}</td>
+        <td style="padding:10px 16px;text-align:center;">${chip(av, parseInt(av))}</td>
+        <td style="padding:10px 16px;color:var(--slate);">${RATIONALE[cat.id]}</td>
+      </tr>`;
+    }).join('');
+  })();
+  </script>
+
+  <!-- Tips -->
+  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:16px;">Tips for effective use</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);display:flex;gap:12px;">
+      <div style="font-size:20px;color:var(--navy);flex-shrink:0;margin-top:2px;">◎</div>
+      <div>
+        <div style="font-weight:600;color:var(--navy);font-size:13px;margin-bottom:5px;">Use it regularly</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.65;">PWIN Architect is most valuable as a recurring coaching session — ideally monthly during capture. Track how your PWIN score moves over time as the pursuit develops.</div>
+      </div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);display:flex;gap:12px;">
+      <div style="font-size:20px;color:var(--navy);flex-shrink:0;margin-top:2px;">⚠</div>
+      <div>
+        <div style="font-weight:600;color:var(--navy);font-size:13px;margin-bottom:5px;">Blank = honest, not lazy</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.65;">If you genuinely have not yet built a position on a question, leave it blank. Do not select Disagree to avoid a zero — that obscures the real gap. Zeros are flags for action.</div>
+      </div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);display:flex;gap:12px;">
+      <div style="font-size:20px;color:var(--navy);flex-shrink:0;margin-top:2px;">◈</div>
+      <div>
+        <div style="font-weight:600;color:var(--navy);font-size:13px;margin-bottom:5px;">Run the AI review after scoring</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.65;">Always complete and commit your scores before visiting the AI Assurance Review tab. The review is a challenge to your independent assessment, not a guide to what score to choose.</div>
+      </div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);display:flex;gap:12px;">
+      <div style="font-size:20px;color:var(--navy);flex-shrink:0;margin-top:2px;">✓</div>
+      <div>
+        <div style="font-weight:600;color:var(--navy);font-size:13px;margin-bottom:5px;">Evidence is everything</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.65;">The AI review quality scales directly with the quality of your evidence. Single sentences get weak challenges. Specific named evidence — who said what, when, in what context — produces actionable coaching output.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
