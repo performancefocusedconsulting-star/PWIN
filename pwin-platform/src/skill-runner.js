@@ -251,7 +251,7 @@ async function callClaude(systemPrompt, messages, tools, model) {
 
   const body = {
     model: model || 'claude-sonnet-4-20250514',
-    max_tokens: 8192,
+    max_tokens: 16384,
     system: systemPrompt,
     messages: msgArray,
   };
@@ -262,17 +262,31 @@ async function callClaude(systemPrompt, messages, tools, model) {
     body.tool_choice = { type: 'auto' };
   }
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify(body),
-  });
+  // Retry with exponential backoff for rate limits
+  let response;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) {
+      const delay = Math.pow(2, attempt) * 30000; // 30s, 60s
+      console.error(`[skill-runner] Rate limited, waiting ${delay/1000}s before retry ${attempt + 1}...`);
+      await new Promise(r => setTimeout(r, delay));
+    }
 
-  if (!response.ok) {
+    response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.ok) break;
+
+    if (response.status === 429 && attempt < 2) {
+      continue; // retry after backoff
+    }
+
     const errText = await response.text();
     throw new Error(`Claude API error ${response.status}: ${errText}`);
   }
@@ -654,8 +668,14 @@ async function executeSkill(skillId, input) {
   let lastResponse = null;
   const MAX_TURNS = 10;
 
+  // Allow model override from input (e.g. for rate limit workaround)
+  const modelOverride = input._model || skill.model;
+
   for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const response = await callClaude(systemPrompt, messages, tools, skill.model);
+    // Rate limit protection: wait between turns
+    if (turn > 0) await new Promise(r => setTimeout(r, 2000));
+
+    const response = await callClaude(systemPrompt, messages, tools, modelOverride);
     lastResponse = response;
     totalUsage.input_tokens += response.usage?.input_tokens || 0;
     totalUsage.output_tokens += response.usage?.output_tokens || 0;
