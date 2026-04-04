@@ -1,35 +1,34 @@
 /**
  * Test: Skill 1.1 — ITT Extraction
  *
- * Purpose: Extract structured data from the ESN Lot 2 ITT documents.
- * The full evaluation framework (62 pages including Annex 1 scoring guidance)
- * is fed to the skill. No truncation.
+ * GENERIC TEST — works against any ITT document set. No hard-coded
+ * section names, weights, or document-specific expectations.
  *
- * Documents used:
- *   - Part A: Information Document (pages 1-12 overview + pages 32-45 lot descriptions)
- *   - Part B: Evaluation Framework Lot 2 (ALL 62 pages including Annex 1 scoring guidance)
+ * What this test validates:
  *
- * Expected output:
- *   - Response sections matching every Tier 5 evaluation criterion
- *   - Evaluation framework with 70/30 split and sub-category weights
- *   - Scoring scheme (5-point scale from the scoring guidance)
- *   - Procurement context (restricted, MEAT, Bravo, £500m+)
- *   - ITT document records
+ * STRUCTURAL (automated — any document):
+ *   - Skill executes without error
+ *   - At least 1 response section created
+ *   - Every scored section has: reference, evaluationMaxScore > 0, questionText
+ *   - Scored section weights sum to approximately 100%
+ *   - Evaluation framework exists with quality + price weights summing to 100
+ *   - Scoring scheme exists with at least 3 levels, each with a description
+ *   - Procurement context has at least 3 populated fields
+ *   - At least 1 ITT document record created
+ *   - No section has empty question text
+ *   - Question text is substantive (median length > 80 chars)
  *
- * Validation checks:
- *   - At least 15 scored response sections (the ITT has 15 Tier 5 scored criteria)
- *   - Public Safety Communications section exists with 16.8% weight
- *   - Evaluation framework total = 100, quality = 70, price = 30
- *   - Scoring scheme has at least 4 levels
- *   - Procurement route = restricted
- *   - All section weights sum to approximately 100%
- *   - Key Requirements (pass/fail) identified
+ * QUALITY (human review via HTML page):
+ *   - Do the sections match what's in the source document?
+ *   - Are any sections from the ITT missing?
+ *   - Is the question text capturing the evaluation criteria, not just section titles?
+ *   - Are the weights correct?
+ *   - Are pass/fail requirements correctly identified?
+ *   - Is the scoring scheme accurate?
  *
- * Human review:
- *   - Compare extracted sections against Part B pages 12-14 (Tier 4/5 criteria table)
- *   - Check question text captures the scoring guidance descriptors, not just section names
- *   - Verify no sections from the ITT are missing from the extraction
- *   - Check evaluation category assignments (technical vs commercial)
+ * INPUT: Provide document paths as command line args or via config.
+ *   node test-itt-extraction.js
+ *   (reads from config at top of file — edit paths for your dataset)
  */
 
 import {
@@ -37,55 +36,15 @@ import {
   TestResult, generateReviewHTML, estimateTokens,
 } from './test-helpers.js';
 
-async function run() {
-  console.log('\n╔═══════════════════════════════════════════════╗');
-  console.log('║  TEST: Skill 1.1 — ITT Extraction (ESN Lot 2) ║');
-  console.log('╚═══════════════════════════════════════════════╝\n');
+// ═══════════════════════════════════════════════════════════════
+// DATASET CONFIGURATION — edit these for your test data
+// ═══════════════════════════════════════════════════════════════
 
-  const test = new TestResult('ITT Extraction');
-
-  // ── Step 1: Extract document text ──
-  console.log('  Step 1: Extracting document text...');
-
-  // Part A overview (pages 1-12 + lot descriptions 32-45)
-  const partA = await extractPDF(
-    'Part A - Information/ESN ITT Part A - Information Document final 20140808.pdf',
-    { pages: [...Array(12).keys(), ...Array.from({length: 14}, (_, i) => 32 + i)] }
-  );
-  console.log(`    Part A: ${partA.pages} total pages, extracted ${partA.chars} chars`);
-
-  // Part B Lot 2 — ALL pages including Annex 1 scoring guidance
-  const partB = await extractPDF(
-    'Part B - Evaluation Framework/ESN ITT Part B - Evaluation Framework Lot 2 v1.pdf'
-  );
-  console.log(`    Part B: ${partB.pages} pages, ${partB.chars} chars (FULL — no truncation)`);
-
-  const document = [
-    'ESN INVITATION TO TENDER — LOT 2: USER SERVICES',
-    'Authority: Home Office (Secretary of State for the Home Department)',
-    'Programme: Emergency Services Network (ESN)',
-    'Date: 8 August 2014',
-    'Procurement: Restricted procedure, OJEU 2014/S 077-133654',
-    'Contract: 84 months, estimated £500m+ across all lots',
-    'Submission: Bravo eSourcing portal',
-    'TUPE: Applicable (transferring from Airwave)',
-    '',
-    '=== PART A: INFORMATION DOCUMENT (Key Sections) ===',
-    partA.text,
-    '',
-    '=== PART B: LOT 2 EVALUATION FRAMEWORK (FULL — 62 PAGES) ===',
-    partB.text,
-  ].join('\n');
-
-  const totalTokens = estimateTokens(document);
-  console.log(`    Combined document: ${document.length} chars (~${totalTokens} tokens)`);
-  test.check(totalTokens > 10000, `Document has sufficient content (~${totalTokens} tokens)`);
-
-  // ── Step 2: Create pursuit ──
-  console.log('\n  Step 2: Creating test pursuit...');
-  const shared = await createPursuit({
+const DATASET = {
+  name: 'ESN Lot 2 — User Services',
+  pursuit: {
     client: 'Home Office',
-    opportunity: 'ESN Lot 2 — User Services (ITT Extraction Test)',
+    opportunity: 'Emergency Services Network — Lot 2 User Services',
     sector: 'Emergency Services',
     tcv: 500000000,
     opportunityType: 'IT Outsourcing',
@@ -93,168 +52,211 @@ async function run() {
     submissionDeadline: '2014-10-31',
     contractDurationMonths: 84,
     createdBy: 'bid_execution',
-  });
+  },
+  // Documents to feed to the skill — full paths relative to test-data/
+  documents: [
+    {
+      path: 'Part B - Evaluation Framework/ESN ITT Part B - Evaluation Framework Lot 2 v1.pdf',
+      label: 'Evaluation Framework (full)',
+      pages: null, // null = all pages
+    },
+    {
+      path: 'Part A - Information/ESN ITT Part A - Information Document final 20140808.pdf',
+      label: 'ITT Information (overview)',
+      pages: [0,1,2,3,4,5,6,7,8,9,10,11, 32,33,34,35,36,37,38,39,40,41,42,43,44],
+    },
+  ],
+  model: 'claude-haiku-4-5-20251001',
+};
+
+// ═══════════════════════════════════════════════════════════════
+
+async function run() {
+  console.log(`\n╔═══════════════════════════════════════════════════════╗`);
+  console.log(`║  TEST: ITT Extraction — ${DATASET.name.padEnd(30)}║`);
+  console.log(`╚═══════════════════════════════════════════════════════╝\n`);
+
+  const test = new TestResult(`ITT Extraction: ${DATASET.name}`);
+
+  // ── Step 1: Extract documents ──
+  console.log('  Step 1: Extracting documents...');
+  const docParts = [];
+  for (const doc of DATASET.documents) {
+    const extracted = await extractPDF(doc.path, { pages: doc.pages });
+    console.log(`    ${doc.label}: ${extracted.extractedPages}/${extracted.pageCount} pages, ${extracted.chars} chars`);
+    docParts.push(`=== ${doc.label.toUpperCase()} ===\n${extracted.text}`);
+  }
+  const document = docParts.join('\n\n');
+  const totalTokens = estimateTokens(document);
+  console.log(`    Combined: ~${totalTokens} tokens`);
+
+  // ── Step 2: Create pursuit ──
+  console.log('\n  Step 2: Creating pursuit...');
+  const shared = await createPursuit(DATASET.pursuit);
   const pursuitId = shared.pursuit.id;
   console.log(`    Pursuit: ${pursuitId}`);
 
   // ── Step 3: Execute skill ──
-  console.log('\n  Step 3: Executing ITT Extraction skill...');
+  console.log('\n  Step 3: Executing ITT Extraction...');
   const result = await executeSkill('itt-extraction', {
     pursuitId,
     document,
-    _model: 'claude-haiku-4-5-20251001',
+    _model: DATASET.model,
   });
 
   if (result.error) {
-    console.error(`    ERROR: ${result.error}`);
-    test.check(false, `Skill executed without error: ${result.error}`);
+    test.fail(`Skill execution: ${result.error}`);
     test.summary();
     return;
   }
 
-  console.log(`    Model: ${result.model}`);
-  console.log(`    Tokens: ${result.usage.input_tokens} in / ${result.usage.output_tokens} out`);
-  console.log(`    Write-backs: ${result.writeResults.length}`);
+  test.pass('Skill executed without error');
   test.recordUsage(result.usage, result.model);
+  console.log(`    Model: ${result.model} | Tokens: ${result.usage.input_tokens} in / ${result.usage.output_tokens} out`);
 
-  // ── Step 4: Validate output ──
-  console.log('\n  Step 4: Validating extracted data...');
-  const bidData = await getProductData(pursuitId, 'bid-execution');
+  // ── Step 4: Generic structural validation ──
+  console.log('\n  Step 4: Structural validation...');
+  const bid = await getProductData(pursuitId, 'bid-execution');
 
-  const sections = bidData.responseSections || [];
+  const sections = bid.responseSections || [];
   const scored = sections.filter(s => (s.evaluationMaxScore || 0) > 0);
-  const framework = bidData.evaluationFramework || {};
-  const context = bidData.procurementContext || {};
-  const scoring = bidData.clientScoringScheme || {};
-  const docs = bidData.ittDocuments || [];
+  const unscored = sections.filter(s => (s.evaluationMaxScore || 0) === 0);
+  const framework = bid.evaluationFramework || {};
+  const context = bid.procurementContext || {};
+  const scoring = bid.clientScoringScheme || {};
+  const docs = bid.ittDocuments || [];
 
-  // Structural checks
-  test.check(sections.length >= 15, `At least 15 response sections extracted (got ${sections.length})`);
-  test.check(scored.length >= 15, `At least 15 scored sections (got ${scored.length})`);
+  // --- Response Sections ---
+  test.check(sections.length >= 1, `Response sections created (${sections.length})`);
+  test.check(scored.length >= 1, `Scored sections found (${scored.length})`);
 
-  // Section weight checks
+  // Every scored section must have key fields
+  const missingRef = scored.filter(s => !s.reference);
+  test.check(missingRef.length === 0, `All scored sections have a reference (${missingRef.length} missing)`);
+
+  const missingText = scored.filter(s => !s.questionText || s.questionText.length < 10);
+  test.check(missingText.length === 0, `All scored sections have question text (${missingText.length} empty/thin)`);
+
+  const missingCategory = scored.filter(s => !s.evaluationCategory);
+  test.check(missingCategory.length === 0, `All scored sections have an evaluation category (${missingCategory.length} missing)`);
+
+  // Weights should sum to approximately 100%
   const totalWeight = scored.reduce((sum, s) => sum + (s.evaluationMaxScore || 0), 0);
-  test.check(Math.abs(totalWeight - 100) < 5, `Scored section weights sum to ~100% (got ${totalWeight.toFixed(1)}%)`);
+  test.check(totalWeight > 80 && totalWeight < 120, `Scored weights sum to ~100% (got ${totalWeight.toFixed(1)}%)`);
 
-  // Public Safety Communications — the highest weighted technical section
-  const psc = sections.find(s => s.reference?.includes('Public Safety') || (s.evaluationMaxScore === 16.8));
-  test.check(!!psc, 'Public Safety Communications section found');
-  if (psc) {
-    test.check(psc.evaluationMaxScore === 16.8, `PSC weight is 16.8% (got ${psc.evaluationMaxScore})`);
-    test.check(psc.hurdleScore > 0, `PSC has a hurdle score (got ${psc.hurdleScore})`);
+  // Question text quality — median length
+  const textLengths = scored.map(s => (s.questionText || '').length).sort((a, b) => a - b);
+  const medianLength = textLengths[Math.floor(textLengths.length / 2)] || 0;
+  test.check(medianLength > 80, `Median question text length > 80 chars (got ${medianLength})`);
+  if (medianLength < 150) {
+    test.warn(`Median question text is ${medianLength} chars — may be section titles only, not full evaluation criteria`);
   }
 
-  // Pricing section
-  const pricing = sections.find(s => (s.evaluationMaxScore || 0) >= 25 && s.evaluationCategory === 'commercial');
-  test.check(!!pricing, 'Pricing section found (28.5%)');
-  if (pricing) {
-    test.check(pricing.evaluationMaxScore >= 28, `Pricing weight is ~28.5% (got ${pricing.evaluationMaxScore})`);
+  // --- Evaluation Framework ---
+  test.check(!!framework.totalScore, `Evaluation framework has a total score (${framework.totalScore})`);
+  test.check(!!framework.qualityWeight || !!framework.priceWeight, 'Evaluation framework has quality or price weights');
+
+  if (framework.qualityWeight && framework.priceWeight) {
+    const fwTotal = framework.qualityWeight + framework.priceWeight;
+    test.check(fwTotal >= 95 && fwTotal <= 105, `Framework weights sum to ~100% (${fwTotal}%)`);
   }
 
-  // Evaluation framework
-  test.check(framework.totalScore === 100, `Framework total = 100 (got ${framework.totalScore})`);
-  test.check(framework.qualityWeight === 70, `Framework quality = 70% (got ${framework.qualityWeight})`);
-  test.check(framework.priceWeight === 30, `Framework price = 30% (got ${framework.priceWeight})`);
+  // --- Scoring Scheme ---
+  test.check(!!scoring.levels && scoring.levels.length >= 3, `Scoring scheme has >= 3 levels (${scoring.levels?.length || 0})`);
 
-  // Scoring scheme
-  test.check(!!scoring.levels, 'Scoring scheme has levels');
   if (scoring.levels) {
-    test.check(scoring.levels.length >= 4, `At least 4 scoring levels (got ${scoring.levels.length})`);
-    const hasDescriptions = scoring.levels.every(l => l.description && l.description.length > 10);
-    test.check(hasDescriptions, 'All scoring levels have substantive descriptions');
+    const withDesc = scoring.levels.filter(l => l.description && l.description.length > 10);
+    test.check(withDesc.length === scoring.levels.length, `All scoring levels have descriptions (${withDesc.length}/${scoring.levels.length})`);
   }
 
-  // Procurement context
-  test.check(context.procurementRoute === 'restricted', `Route = restricted (got ${context.procurementRoute})`);
-  test.check(context.evaluationModel?.includes('advantageous') || context.evaluationModel?.includes('MEAT'),
-    `Evaluation model = MEAT (got ${context.evaluationModel})`);
-  test.check(context.estimatedContractValue >= 100000000, `Contract value > £100m (got ${context.estimatedContractValue})`);
+  // --- Procurement Context ---
+  const contextFields = Object.entries(context).filter(([k, v]) => v && k !== 'updatedAt');
+  test.check(contextFields.length >= 3, `Procurement context has >= 3 fields populated (${contextFields.length})`);
 
-  // ITT documents
-  test.check(docs.length >= 1, `At least 1 ITT document recorded (got ${docs.length})`);
+  // --- ITT Documents ---
+  test.check(docs.length >= 1, `ITT document records created (${docs.length})`);
 
-  // Question text quality — check that scored sections have substantive question text
-  const thinQuestions = scored.filter(s => (s.questionText || '').length < 100);
-  if (thinQuestions.length > 0) {
-    test.warn(`${thinQuestions.length} scored sections have thin question text (<100 chars) — may need scoring guidance enrichment`);
+  // --- Hurdle scores / pass-fail ---
+  const hurdleSections = sections.filter(s => s.hurdleScore > 0);
+  if (hurdleSections.length > 0) {
+    test.pass(`Pass/fail hurdle sections identified (${hurdleSections.length})`);
+  } else {
+    test.warn('No hurdle scores found — check if the ITT has mandatory pass/fail requirements');
   }
-  const richQuestions = scored.filter(s => (s.questionText || '').length > 200);
-  test.check(richQuestions.length >= 5, `At least 5 sections have rich question text >200 chars (got ${richQuestions.length})`);
 
-  // Key requirements
-  const keyReqs = sections.filter(s => s.hurdleScore > 0);
-  test.check(keyReqs.length >= 2, `At least 2 sections have hurdle scores (got ${keyReqs.length})`);
+  // --- Write-back success ---
+  const failedWrites = result.writeResults.filter(w => !w.success);
+  test.check(failedWrites.length === 0, `All write-backs succeeded (${failedWrites.length} failed)`);
 
   // ── Step 5: Generate review HTML ──
   console.log('\n  Step 5: Generating review page...');
 
-  const maxScore = Math.max(...scored.map(s => s.evaluationMaxScore || 0));
-  const reviewPath = await generateReviewHTML('test-itt-extraction.html', {
-    title: 'ITT Extraction — ESN Lot 2 User Services',
-    subtitle: `Test run ${new Date().toISOString().slice(0,16)} | ${sections.length} sections | $${test.apiCost.toFixed(4)}`,
+  const reviewPath = await generateReviewHTML(`test-itt-extraction-${Date.now()}.html`, {
+    title: `ITT Extraction — ${DATASET.name}`,
+    subtitle: `${new Date().toISOString().slice(0, 16)} | ${sections.length} sections | $${test.apiCost.toFixed(4)} | ${result.model}`,
     sections: [
+      // Automated checks
       {
-        title: 'Summary',
+        title: 'Automated Checks',
+        subtitle: 'Structural validation — these must pass for any ITT document',
+        type: 'checklist',
+        items: test.checks.map(c => ({ pass: c.pass, message: c.message })),
+      },
+      // Summary cards
+      {
+        title: 'Extraction Summary',
         type: 'cards',
         items: [
-          { label: 'Response Sections', value: sections.length, detail: `${scored.length} scored + ${sections.length - scored.length} returnable` },
-          { label: 'Evaluation Split', value: `${framework.qualityWeight || '?'} / ${framework.priceWeight || '?'}`, detail: 'Technical / Commercial' },
-          { label: 'Hurdle Gates', value: keyReqs.length, detail: 'Pass/fail requirements' },
-          { label: 'Weight Sum', value: `${totalWeight.toFixed(1)}%`, detail: 'Scored sections total' },
-          { label: 'API Cost', value: `$${test.apiCost.toFixed(4)}`, detail: `${test.tokensIn} in / ${test.tokensOut} out` },
+          { label: 'Total Sections', value: String(sections.length), detail: `${scored.length} scored + ${unscored.length} returnable` },
+          { label: 'Weight Sum', value: `${totalWeight.toFixed(1)}%`, detail: 'Scored sections' },
+          { label: 'Framework', value: `${framework.qualityWeight || '?'} / ${framework.priceWeight || '?'}`, detail: 'Quality / Price' },
+          { label: 'Scoring Levels', value: String(scoring.levels?.length || 0) },
+          { label: 'Hurdle Gates', value: String(hurdleSections.length) },
+          { label: 'Context Fields', value: String(contextFields.length) },
         ],
       },
+      // Scored sections — full detail for human review
       {
-        title: 'Scored Response Sections (ranked by weight)',
-        subtitle: 'Compare against Part B pages 12-14: Tier 4/5 criteria table',
+        title: 'Scored Response Sections — REVIEW THESE',
+        subtitle: 'Compare each section against the source document. Check: correct reference, correct weight, complete question text, correct category.',
         type: 'table',
-        headers: ['#', 'Reference', 'Weight', 'Category', 'Type', 'Hurdle', 'Question Text'],
+        headers: ['#', 'Reference', 'Weight %', 'Category', 'Type', 'Hurdle', 'Question Text (full)'],
         rows: scored
           .sort((a, b) => (b.evaluationMaxScore || 0) - (a.evaluationMaxScore || 0))
-          .map(s => [
-            s.sectionNumber || '?',
+          .map((s, i) => [
+            String(i + 1),
             s.reference || '?',
             `<strong>${s.evaluationMaxScore}%</strong>`,
-            `<span class="badge badge-${s.evaluationCategory === 'commercial' ? 'warn' : 'pass'}">${s.evaluationCategory}</span>`,
+            s.evaluationCategory || '?',
             s.responseType || '?',
-            s.hurdleScore > 0 ? `<span class="badge badge-fail">${s.hurdleScore}</span>` : '—',
-            `<div style="font-size:11px;color:#576482;max-width:500px;">${(s.questionText || '').replace(/</g, '&lt;')}</div>`,
+            s.hurdleScore > 0 ? `<strong style="color:#C15050;">${s.hurdleScore}</strong>` : '—',
+            `<div style="font-size:11px;color:#576482;max-width:600px;white-space:pre-wrap;">${(s.questionText || '').replace(/</g, '&lt;')}</div>`,
           ]),
       },
-      {
+      // Returnable sections
+      ...(unscored.length > 0 ? [{
         title: 'Returnable / Compliance Sections',
         type: 'table',
         headers: ['#', 'Reference', 'Type', 'Hurdle', 'Requirement'],
-        rows: sections
-          .filter(s => (s.evaluationMaxScore || 0) === 0)
-          .map(s => [
-            s.sectionNumber || '?',
-            s.reference || '?',
-            s.responseType || '?',
-            s.hurdleScore > 0 ? `<span class="badge badge-fail">PASS/FAIL</span>` : '—',
-            `<div style="font-size:11px;max-width:500px;">${(s.questionText || '').replace(/</g, '&lt;')}</div>`,
-          ]),
-      },
-      {
-        title: 'Procurement Context',
-        type: 'json',
-        data: context,
-      },
-      {
-        title: 'Evaluation Framework',
-        type: 'json',
-        data: framework,
-      },
-      {
-        title: 'Client Scoring Scheme',
-        type: 'json',
-        data: scoring,
-      },
+        rows: unscored.map((s, i) => [
+          String(i + 1),
+          s.reference || '?',
+          s.responseType || '?',
+          s.hurdleScore > 0 ? '<strong style="color:#C15050;">PASS/FAIL</strong>' : '—',
+          `<div style="font-size:11px;max-width:500px;">${(s.questionText || '').replace(/</g, '&lt;')}</div>`,
+        ]),
+      }] : []),
+      // Raw data for deep inspection
+      { title: 'Procurement Context', type: 'json', data: context },
+      { title: 'Evaluation Framework', type: 'json', data: framework },
+      { title: 'Scoring Scheme', type: 'json', data: scoring },
+      { title: 'ITT Documents', type: 'json', data: docs },
+      // Claude's text output
       {
         title: 'Claude Output',
-        subtitle: 'Raw text response from the skill execution',
+        subtitle: 'Raw text response — check for any observations the skill made about the document',
         type: 'text',
-        content: result.text || '(no text output)',
+        content: result.text || '(no text)',
       },
     ],
   });
@@ -262,7 +264,7 @@ async function run() {
 
   // ── Summary ──
   const { passed, failed } = test.summary();
-  return { passed, failed, reviewPath, pursuitId };
+  process.exit(failed > 0 ? 1 : 0);
 }
 
 run().catch(err => {

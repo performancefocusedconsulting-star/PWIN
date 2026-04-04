@@ -1,69 +1,84 @@
 # Skill Test Framework
 
-## Purpose
+## Design Principle
 
-Structured, repeatable tests for each AI skill against real procurement data (ESN Lot 2). Each test has a defined script, input specification, expected output structure, and visual review page.
+Tests validate the **skill's capability**, not knowledge of a specific document. All automated checks are structural and generic — they work against any procurement dataset. No test knows in advance what sections, weights, or content the document contains. The skill must find that independently.
+
+Human review happens separately via generated HTML pages, where the reviewer compares the skill's output against the source documents.
+
+## Two Types of Validation
+
+### Automated (generic — any document)
+- Did the skill produce output?
+- Is the output structurally complete? (sections have references, weights, question text)
+- Do weights sum correctly?
+- Is the text substantive, not thin summaries?
+- Are actions specific, not generic advice?
+
+### Human Review (per-dataset — needs a person)
+- Is the extraction accurate against the source?
+- Are any sections missing?
+- Are weights correct?
+- Is the narrative strategically useful?
+- Would a bid manager act on the recommendations?
 
 ## Test Data
 
-ESN (Emergency Services Network) — Home Office, 2014. Multi-lot IT outsourcing procurement for digital replacement of Airwave. Lot 2 (User Services) used as primary test subject.
-
-**Location:** `pwin-bid-execution/test-data/` (gitignored — not committed to repo)
-
-**Available documents:**
-- Part A: Information Document (124 pages) — programme overview, lot descriptions, procurement process
-- Part B: Evaluation Framework Lot 2 (62 pages) — scoring criteria, weights, scoring guidance
-- Part B: Evaluation Framework Lot 3 (62 pages)
-- Part B: Evaluation Framework Lot 4 (62 pages)
-- Part C: Draft Contracts — Lot 2/3/4, ~34 schedules each (T&Cs, requirements, SLAs, pricing)
-- Part D: Bid Forms — Lot 2/3/4, response templates per schedule
-
-## How Tests Work
-
-Each test script (`test-*.js`) does the following:
-
-1. **Extracts** the relevant document text from PDFs/Word docs
-2. **Creates** a fresh pursuit on the platform
-3. **Executes** the skill with the full document content (no truncation)
-4. **Validates** the output structure (sections created, fields populated, correct types)
-5. **Generates** an HTML review page for human inspection
-6. **Reports** pass/fail on structural checks + cost
+Place procurement documents in `pwin-bid-execution/test-data/` (gitignored). The current test dataset is ESN Lot 2 (Home Office Emergency Services Network, 2014). To test against a different opportunity, edit the `DATASET` config block at the top of each test script.
 
 ## Running Tests
 
 ```bash
-# Prerequisite: server running, API key set
+# Prerequisites
 export ANTHROPIC_API_KEY=sk-ant-...
 cd pwin-platform
 node src/server.js &
 
-# Run a single test
+# Run one test
 node test/skill-tests/test-itt-extraction.js
 
-# Run all tests
+# Run all tests in dependency order
 node test/skill-tests/run-all.js
+
+# With rate limit protection (Tier 1 accounts)
+RATE_LIMIT_DELAY_MS=65000 node test/skill-tests/run-all.js
 ```
 
-## Test List
+## Test Execution Order
 
-| Test | Skill | Documents Used | What It Validates |
-|------|-------|----------------|-------------------|
-| test-itt-extraction | 1.1 ITT Extraction | Part A (overview) + Part B Lot 2 (full 62 pages incl. Annex 1 scoring guidance) | Response sections match evaluation framework, weights correct, scoring scheme captured, procurement context complete |
-| test-evaluation-criteria | 1.2 Evaluation Criteria Analysis | Part B Lot 2 (full) + extracted sections from test-itt-extraction | Marks concentration analysis, sub-criteria breakdown, hurdle identification |
-| test-procurement-briefing | 1.5 Procurement Briefing | Part A (full 124 pages) + Part B Lot 2 (criteria summary) | Narrative quality, sector-specific insight, strategic recommendations |
-| test-compliance-coverage | 3.8 Compliance Coverage | Extracted sections + Part D bid forms (compliance checklist) | Coverage gaps identified, mandatory requirements flagged, marks-at-risk calculated |
-| test-contract-analysis | 1.3 Contract Analysis | Part C Lot 2 — T&Cs + key schedules (2.1, 7.1, 8.5) | Obligations extracted, red lines identified, risk areas flagged |
-| test-timeline-analysis | 3.5 Timeline Analysis | Pre-loaded 84-activity schedule with realistic dates | Overdue activities flagged, critical path risks, resource conflicts |
+Tests follow the skill dependency chain (see WORKFLOW.md):
 
-## Review Process
+1. **ITT Extraction** — no dependencies, extracts the exam paper
+2. **Procurement Briefing** — no dependencies, produces narrative
+3. **Compliance Coverage** — depends on ITT Extraction output
+4. (Future) Timeline Analysis — depends on seeded activity data
+5. (Future) Win Theme Audit — depends on seeded themes + extracted sections
 
-After running a test:
-1. Check the console output for structural pass/fail
-2. Open the generated HTML review page in a browser
-3. Compare extracted data against the source documents
-4. Note any missing sections, incorrect weights, or misclassified items
-5. Feed findings back into skill prompt refinement
+## Reviewing Results
 
-## Rate Limit Note
+After tests run, open the HTML files in `test/skill-tests/results/`:
 
-Tests are designed for Tier 3 (120K input tokens/min). At Tier 1 (30K/min), tests will hit rate limits. Each test includes a configurable delay between API calls. Set `RATE_LIMIT_DELAY_MS` environment variable to control pacing (default: 0 at Tier 3, set to 65000 for Tier 1).
+1. Check the **Automated Checks** section — all must pass
+2. Read the **extracted data tables** — compare against source documents
+3. Read the **AI narrative output** — judge quality as a bid professional
+4. Note issues for skill prompt refinement
+
+## Adapting for a New Dataset
+
+1. Copy procurement documents to `pwin-bid-execution/test-data/`
+2. Edit the `DATASET` block in each test script:
+   - Update document paths
+   - Update pursuit metadata (client, sector, value, etc.)
+3. Run the tests — automated checks work unchanged
+4. Review the HTML output against your new documents
+
+## Seed Data
+
+Some skills need data that documents can't provide (activity schedules, team, win themes). Use `seed-esn-data.js` as a template — edit for your dataset:
+
+```bash
+# After ITT Extraction has run:
+node test/skill-tests/seed-esn-data.js <pursuitId>
+```
+
+The seed data deliberately includes issues for the AI to find: overdue activities, resource conflicts, unassigned sections, draft win themes.
