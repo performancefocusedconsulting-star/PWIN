@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Bid Execution Standard Operating Procedures v1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;
+  --bdr:#253551;--bdr-s:#1A2844;
+  --gold:#C49438;--gold-d:rgba(196,148,56,.12);--gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;
+  --grn:#34D399;--grn-d:rgba(52,211,153,.10);
+  --red:#F87171;--red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24;--amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA;--blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA;--pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);
+  --pink:#F472B6;--pink-d:rgba(244,114,182,.10);
+  --lime:#A3E635;--lime-d:rgba(163,230,53,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.hdr{padding:16px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);}
+.hdr-l{display:flex;align-items:baseline;gap:12px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.hdr-v{font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);background:var(--bg2);padding:3px 8px;border:1px solid var(--bdr);}
+.nav{display:flex;gap:1px;padding:0 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;}
+.nav-b{padding:9px 12px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-b:hover{color:var(--t2);}.nav-b.on{color:var(--gold);border-bottom-color:var(--gold);}
+.ct{padding:22px 28px;max-width:1440px;margin:0 auto;display:none;}
+.ct.active{display:block;animation:fi .2s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:820px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:20px 0 8px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:14px 0 6px;}
+.sh3{font-size:12px;font-weight:600;color:var(--t2);margin:10px 0 4px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+.cg{display:grid;gap:10px;margin-bottom:18px;}
+.c2{grid-template-columns:repeat(2,1fr);}.c3{grid-template-columns:repeat(3,1fr);}.c4{grid-template-columns:repeat(4,1fr);}.c5{grid-template-columns:repeat(5,1fr);}
+@media(max-width:1100px){.c4,.c5{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.c2,.c3,.c4,.c5{grid-template-columns:1fr;}}
+.cd{background:var(--bg2);border:1px solid var(--bdr);padding:14px;position:relative;overflow:hidden;transition:all .15s;}
+.cd:hover{background:var(--bg3);border-color:var(--gold);}
+.cd::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.cd.a-gold::before{background:var(--gold)}.cd.a-grn::before{background:var(--grn)}.cd.a-blu::before{background:var(--blu)}.cd.a-pur::before{background:var(--pur)}.cd.a-red::before{background:var(--red)}.cd.a-amb::before{background:var(--amb)}.cd.a-cyn::before{background:var(--cyn)}.cd.a-pink::before{background:var(--pink)}.cd.a-lime::before{background:var(--lime)}
+.cd-n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);opacity:.3;position:absolute;top:8px;right:10px;}
+.cd-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.cd-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.cd-b{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}.co.co-a{border-color:var(--amb)}.co.co-p{border-color:var(--pur)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}.co.co-a .co-l{color:var(--amb)}.co.co-p .co-l{color:var(--pur)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+.tb{width:100%;border-collapse:collapse;margin:6px 0 16px;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.tb td{padding:6px 8px;font-size:11.5px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.tb td:first-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);white-space:nowrap;}
+.tb tr:hover td{background:var(--bg3);}
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:1px 5px;border-radius:2px;display:inline-block;margin:1px 1px;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}.fe-b{color:var(--blu);background:var(--blu-d)}.fe-p{color:var(--pur);background:var(--pur-d)}.fe-c{color:var(--cyn);background:var(--cyn-d)}.fe-pk{color:var(--pink);background:var(--pink-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}.fe-lm{color:var(--lime);background:var(--lime-d)}
+.sop-step{display:flex;gap:12px;margin:10px 0;align-items:flex-start;}
+.sop-num{min-width:28px;height:28px;background:var(--gold-d);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.sop-num.ai{background:var(--blu-d);border-color:var(--blu);color:var(--blu);}
+.sop-num.plat{background:var(--grn-d);border-color:var(--grn);color:var(--grn);}
+.sop-num.esc{background:var(--red-d);border-color:var(--red);color:var(--red);}
+.sop-body{flex:1;}
+.sop-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.sop-desc{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.sop-check{margin-top:4px;padding:6px 10px;background:var(--bg3);border-left:2px solid var(--grn);font-size:11px;color:var(--t2);line-height:1.5;}
+.sop-warn{margin-top:4px;padding:6px 10px;background:var(--bg3);border-left:2px solid var(--red);font-size:11px;color:var(--t2);line-height:1.5;}
+.leg{display:flex;gap:16px;margin:10px 0;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);}
+.leg-dot{width:10px;height:10px;border-radius:2px;}
+.leg-dot.op{background:var(--gold);}.leg-dot.ai{background:var(--blu);}.leg-dot.pl{background:var(--grn);}.leg-dot.es{background:var(--red);}
+.act-hdr{background:var(--bg2);border:1px solid var(--bdr);padding:12px 14px;margin:14px 0 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s;}
+.act-hdr:hover{background:var(--bg3);}
+.act-hdr-l{display:flex;align-items:center;gap:10px;}
+.act-code{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--gold);}
+.act-name{font-size:13px;font-weight:600;color:var(--t1);}
+.act-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.act-body{background:var(--bg2);border:1px solid var(--bdr);border-top:none;padding:14px;display:none;}
+.act-body.open{display:block;}
+.tog{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);transition:transform .15s;}.tog.op{transform:rotate(90deg);}
+.fl{display:flex;align-items:stretch;gap:0;margin:14px 0;overflow-x:auto;}
+.fl-n{flex:1;min-width:110px;background:var(--bg2);border:1px solid var(--bdr);padding:10px 8px;text-align:center;}
+.fl-n.fl-on{border-color:var(--gold);background:var(--gold-g);}
+.fl-a{display:flex;align-items:center;color:var(--t4);font-size:13px;padding:0 2px;}
+.fl-nl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:1px;}
+.fl-nt{font-size:10px;font-weight:600;color:var(--t1);margin-bottom:1px;}
+.fl-nd{font-size:9px;color:var(--t2);line-height:1.2;}
+.maturity{display:inline-block;padding:2px 6px;border-radius:2px;font-family:'DM Mono',monospace;font-size:9px;border:1px solid;}
+.maturity.m-full{color:var(--grn);border-color:var(--grn);background:var(--grn-d);}
+.maturity.m-part{color:var(--amb);border-color:var(--amb);background:var(--amb-d);}
+.maturity.m-plan{color:var(--blu);border-color:var(--blu);background:var(--blu-d);}
+.maturity.m-none{color:var(--t3);border-color:var(--t4);background:var(--bg3);}
+@media print{body{background:#fff;color:#1a1a1a;font-size:11px;}.hdr,.nav{display:none;}.ct{display:block!important;padding:10px;}.act-body{display:block!important;}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-brand">PWIN Architect</div>
+    <div class="hdr-sub">Bid Execution &mdash; Standard Operating Procedures</div>
+  </div>
+  <div class="hdr-v">v1.0 &mdash; April 2026 &mdash; LIVING DOCUMENT</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="app"></div>
+
+<script>
+const TABS=[
+  {id:'purpose',l:'Purpose & Model'},
+  {id:'setup',l:'Bid Setup'},
+  {id:'develop',l:'Development Phase'},
+  {id:'produce',l:'Production Phase'},
+  {id:'post',l:'Post-Submission'},
+  {id:'daily',l:'Daily Operations'},
+  {id:'gates',l:'Gate Management'},
+  {id:'escalation',l:'Escalation Rules'},
+  {id:'maturity',l:'SOP Maturity'},
+  {id:'next',l:'Next Session'}
+];
+
+const CONTENT={
+
+/* ═══════════════════════════════════════════════════════════════════
+   PURPOSE & MODEL
+   ═══════════════════════════════════════════════════════════════════ */
+purpose: `
+<div class="sl">SOP Foundation</div>
+<div class="st">Purpose, Operating Model & How to Use This Document</div>
+<div class="sd">
+  This SOP enables a Bid Coordinator — a junior or mid-level operator — to manage the full lifecycle of a complex bid using the PWIN platform.
+  The methodology prescribes what to do. The platform tracks state and automates calculations. AI handles analysis and drafting. This SOP tells the operator exactly when to do what, and when to escalate.
+</div>
+
+<div class="sh">The Staffing Model</div>
+<div class="bt">The SOP is designed around a three-tier operating model that replaces the traditional senior-bid-manager-does-everything approach.</div>
+
+<div class="cg c3">
+  <div class="cd a-gold">
+    <div class="cd-n">1</div>
+    <div class="cd-l">Bid Coordinator (Operator)</div>
+    <div class="cd-t">Follows This SOP</div>
+    <div class="cd-b">
+      <strong>Profile:</strong> 1–3 years experience. Organised, process-oriented, comfortable with technology. Does not need deep bid strategy expertise.<br><br>
+      <strong>Responsibilities:</strong> Bid setup, status tracking, nudge management, gate preparation, review coordination, progress reporting, deadline management, document management, standup facilitation.<br><br>
+      <strong>Does NOT:</strong> Make strategic decisions, set win themes, design solutions, approve pricing, decide go/no-go.
+    </div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-n">2</div>
+    <div class="cd-l">AI Agents (6 Capability Agents)</div>
+    <div class="cd-t">Automated by Platform</div>
+    <div class="cd-b">
+      <strong>Coverage:</strong> 55 skills across document intelligence, market research, strategy analysis, commercial modelling, content drafting, solution design support.<br><br>
+      <strong>Responsibilities:</strong> ITT extraction, timeline analysis, compliance tracking, standup prioritisation, response drafting, governance pack assembly, effort forecasting.<br><br>
+      <strong>Does NOT:</strong> Make decisions. All AI outputs are recommendations that the operator presents to the relevant workstream lead.
+    </div>
+  </div>
+  <div class="cd a-red">
+    <div class="cd-n">3</div>
+    <div class="cd-l">Workstream Leads (Senior / SME)</div>
+    <div class="cd-t">Escalation Points</div>
+    <div class="cd-b">
+      <strong>Profile:</strong> Senior bid managers, solution architects, commercial directors, legal counsel, delivery directors. Deep domain expertise.<br><br>
+      <strong>Responsibilities:</strong> Strategic decisions, quality assurance, gate decisions, win theme approval, pricing sign-off, risk acceptance, client relationships.<br><br>
+      <strong>Engaged:</strong> At defined escalation points. Not involved in day-to-day tracking — that is the operator's job.
+    </div>
+  </div>
+</div>
+
+<div class="co co-g">
+  <div class="co-l">Design Principle</div>
+  <div class="co-t">
+    The operator follows the process. AI does the analysis. Senior people make the decisions.<br>
+    This SOP eliminates the need for the senior bid manager to also be the project manager, the document controller, the progress chaser, and the meeting organiser. Those roles are procedural — they can be done by someone following this SOP with the platform's guidance.
+  </div>
+</div>
+
+<div class="sh">Step Legend</div>
+<div class="bt">Every procedure in this SOP uses coloured step markers to indicate who does the work.</div>
+<div class="leg">
+  <div class="leg-item"><div class="leg-dot op"></div> <strong>Operator</strong> — Bid Coordinator follows this step</div>
+  <div class="leg-item"><div class="leg-dot ai"></div> <strong>AI</strong> — Platform AI skill executes this step</div>
+  <div class="leg-item"><div class="leg-dot pl"></div> <strong>Platform</strong> — System calculates / automates</div>
+  <div class="leg-item"><div class="leg-dot es"></div> <strong>Escalate</strong> — Senior person decides</div>
+</div>
+
+<div class="sh">How to Read Activity Procedures</div>
+<div class="bt">Each activity in the SOP follows a consistent structure:</div>
+<table class="tb">
+  <tr><th>Section</th><th>What It Contains</th></tr>
+  <tr><td>Purpose</td><td>What this activity achieves and why it matters to the bid</td></tr>
+  <tr><td>Entry Conditions</td><td>What must be true before this activity can start. The platform enforces these — the operator confirms.</td></tr>
+  <tr><td>Procedure</td><td>Numbered steps. Gold = operator. Blue = AI. Green = platform. Red = escalate to senior.</td></tr>
+  <tr><td>Quality Criteria</td><td>How to verify the activity is complete to standard. The operator checks these before marking "draft complete".</td></tr>
+  <tr><td>Exit &amp; Handoff</td><td>What happens next. Which downstream activities are unblocked. Who to notify.</td></tr>
+  <tr><td>Common Mistakes</td><td>What operators typically get wrong. Read these before your first time running this activity.</td></tr>
+</table>
+
+<div class="sh">Reference Documents</div>
+<div class="bt">This SOP does not duplicate the architecture or rules. It tells the operator what to do; the architecture says what exists; the rules say how state changes.</div>
+<table class="tb">
+  <tr><th>Document</th><th>Use When</th></tr>
+  <tr><td>bid_execution_architecture_v6.html</td><td>Understanding modules, data model, activity definitions, L2/L3 methodology detail</td></tr>
+  <tr><td>bid_execution_rules.html</td><td>Understanding state transitions, scoring formulae, threshold values, validation rules</td></tr>
+  <tr><td>pwin_architect_plugin_architecture.md</td><td>Understanding AI agent capabilities, skill definitions, what AI can and cannot do</td></tr>
+  <tr><td>This SOP</td><td>Day-to-day operations: what to do, when, in what order, and when to escalate</td></tr>
+</table>
+
+<div class="sh">Document Maturity</div>
+<div class="co co-a">
+  <div class="co-l">Living Document</div>
+  <div class="co-t">
+    This SOP is being built alongside the platform. Not every procedure is fully detailed yet. The <strong>SOP Maturity</strong> tab tracks which sections are complete, which are in draft, and which are placeholders.
+    As each product feature is built, the corresponding SOP section is refined to match actual platform behaviour. The SOP is always one step behind the build — never speculative.
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   BID SETUP
+   ═══════════════════════════════════════════════════════════════════ */
+setup: `
+<div class="sl">Phase 0</div>
+<div class="st">Bid Setup — 5-Stage Wizard</div>
+<div class="sd">
+  Every bid starts with the setup wizard. This creates the bid, selects the archetype, configures governance, assigns the team, and runs a feasibility check.
+  Target: 30–45 minutes. The operator completes this with input from the Sales Lead (for strategy context) and the Bid Director (for governance configuration).
+</div>
+
+<div class="sh">Pre-Setup Checklist</div>
+<div class="bt">Before opening the wizard, the operator must have these inputs ready.</div>
+<table class="tb">
+  <tr><th>Input</th><th>Source</th><th>Why Needed</th></tr>
+  <tr><td>Pursuit name, reference, client, sector</td><td>CRM / Sales Lead</td><td>Basic identification — cannot be changed after setup</td></tr>
+  <tr><td>ITT issue date &amp; submission deadline</td><td>ITT document</td><td>Drives the entire backward-planned schedule</td></tr>
+  <tr><td>Total Contract Value (TCV) estimate</td><td>Sales Lead</td><td>Determines governance tier (which gates are required)</td></tr>
+  <tr><td>Archetype selection</td><td>Sales Lead / Bid Director</td><td>Services, Technology/Digital, or Consulting/Advisory — drives which activities are active</td></tr>
+  <tr><td>Complexity level</td><td>Bid Director</td><td>Standard, Complex, or Major — adjusts team sizes and effort estimates</td></tr>
+  <tr><td>Team member names and roles</td><td>Resource manager / Bid Director</td><td>Assigns ownership of activities and workstreams</td></tr>
+</table>
+
+<div class="sh">Procedure: Wizard Stage 1 — Bid Identity</div>
+<div class="sop-step">
+  <div class="sop-num">1</div>
+  <div class="sop-body">
+    <div class="sop-title">Open new bid wizard</div>
+    <div class="sop-desc">Navigate to Dashboard &rarr; New Bid. Enter pursuit name, client name, sector, reference number.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">2</div>
+  <div class="sop-body">
+    <div class="sop-title">Enter key dates</div>
+    <div class="sop-desc">ITT issue date, submission deadline, any known presentation date. These are the hard constraints the scheduler works backward from.</div>
+    <div class="sop-warn"><strong>Warning:</strong> Submission deadline drives everything. If this date changes later, the entire schedule recalculates. Get it right.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">3</div>
+  <div class="sop-body">
+    <div class="sop-title">Enter TCV and deal type</div>
+    <div class="sop-desc">Total Contract Value (£), deal type (new business, rebid, framework call-off, etc.). TCV determines which governance gates are required.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Wizard Stage 2 — Archetype &amp; Complexity</div>
+<div class="sop-step">
+  <div class="sop-num">4</div>
+  <div class="sop-body">
+    <div class="sop-title">Select archetype</div>
+    <div class="sop-desc">Choose Services, Technology/Digital, or Consulting/Advisory. This deactivates inapplicable activities (e.g. TUPE for Technology) and loads the correct L2/L3 content.</div>
+    <div class="sop-check"><strong>Check:</strong> If unsure, ask the Sales Lead: "Is this primarily about people and operations (Services), technology delivery (Technology), or advisory expertise (Consulting)?"</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num esc">5</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: Confirm complexity level with Bid Director</div>
+    <div class="sop-desc">Standard (base team sizes), Complex (2&times; parallelisable), Major (3&times; parallelisable). This is a resourcing decision — the operator does not make it alone.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Wizard Stage 3 — Activity Configuration</div>
+<div class="sop-step">
+  <div class="sop-num plat">6</div>
+  <div class="sop-body">
+    <div class="sop-title">PLATFORM: Auto-generates activity set</div>
+    <div class="sop-desc">Platform creates 84 activities (minus deactivated by archetype), sets default effort estimates, calculates elapsed days, assigns to workstreams.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">7</div>
+  <div class="sop-body">
+    <div class="sop-title">Review and adjust activity set</div>
+    <div class="sop-desc">Walk through the activity list. Deactivate any activities not relevant to this specific bid (e.g. SUP workstream if no partners, BM-09 if not competitive dialogue). For each deactivated activity, record the reason.</div>
+    <div class="sop-warn"><strong>Warning:</strong> Do NOT deactivate SAL-06 (Win Strategy Lock) or BM-10 (Storyboard Sign-off). These are methodology gates and are non-negotiable.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Wizard Stage 4 — Team Assignment</div>
+<div class="sop-step">
+  <div class="sop-num">8</div>
+  <div class="sop-body">
+    <div class="sop-title">Assign core team roles</div>
+    <div class="sop-desc">Assign: Bid Manager (yourself or senior BM), Solution Lead, Commercial Lead, Delivery Lead, Legal Lead, Supply Chain Lead. Each must be a named person. One person per core role.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">9</div>
+  <div class="sop-body">
+    <div class="sop-title">Enter day rates and availability</div>
+    <div class="sop-desc">For each team member: day rate (or select from standard rate card), known unavailability dates. Rates drive cost-to-bid tracking. Unavailability drives scheduling conflicts.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Wizard Stage 5 — Governance &amp; Feasibility</div>
+<div class="sop-step">
+  <div class="sop-num esc">10</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: Configure governance gates with Bid Director</div>
+    <div class="sop-desc">Select from gate library: Pursuit Approval (mandatory), Solution Review, Pricing Review, Executive Approval (tier-based on TCV), Legal Review, Final Submission Authority (mandatory). Set planned dates and approving bodies.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num plat">11</div>
+  <div class="sop-body">
+    <div class="sop-title">PLATFORM: Runs feasibility check</div>
+    <div class="sop-desc">System backward-schedules all activities from submission deadline, checks for timeline infeasibility, calculates critical path, identifies resource conflicts and public holiday impacts.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">12</div>
+  <div class="sop-body">
+    <div class="sop-title">Review feasibility result</div>
+    <div class="sop-desc">
+      <strong>Feasible:</strong> Proceed. Confirm bid creation.<br>
+      <strong>Tight:</strong> Note the warnings. Proceed with awareness.<br>
+      <strong>Infeasible:</strong> The timeline cannot accommodate all activities. System shows deficit in working days and recommendations (increase team, reduce scope, negotiate deadline).
+    </div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num esc">13</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: If infeasible — Bid Director must acknowledge</div>
+    <div class="sop-desc">If the feasibility check returns "infeasible", the Bid Director must formally acknowledge the timeline risk. System creates an automatic risk entry in BM-13 and sets initial health to red. This is an auditable decision — the operator does not have authority to override.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">14</div>
+  <div class="sop-body">
+    <div class="sop-title">Confirm bid creation</div>
+    <div class="sop-desc">Click "Create Bid". System generates all activities, sets planned dates, creates governance gates with prep actions, initialises the bid dashboard. Setup is complete.</div>
+  </div>
+</div>
+
+<div class="sh">Post-Setup — First 24 Hours</div>
+<div class="sop-step">
+  <div class="sop-num ai">15</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Upload and extract ITT documents</div>
+    <div class="sop-desc">Upload the ITT pack (PDF/Word). Run the ITT Extraction skill (Agent 1). AI extracts response sections, evaluation framework, compliance requirements, procurement context. Review the extraction for accuracy — correct any misparses.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">16</div>
+  <div class="sop-body">
+    <div class="sop-title">Send kickoff communication</div>
+    <div class="sop-desc">Email the team: bid name, key dates, their role and assigned activities, link to the bid dashboard, kickoff meeting invite. Template available in platform.</div>
+  </div>
+</div>
+
+<div class="co co-v">
+  <div class="co-l">Setup Complete — Quality Check</div>
+  <div class="co-t">
+    Before moving on, verify:<br>
+    &check; All core team roles assigned<br>
+    &check; Governance gates configured with dates and approving bodies<br>
+    &check; Feasibility check passed (or infeasibility acknowledged by Bid Director)<br>
+    &check; ITT documents uploaded and extracted<br>
+    &check; Kickoff communication sent
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   DEVELOPMENT PHASE
+   ═══════════════════════════════════════════════════════════════════ */
+develop: `
+<div class="sl">Phase 1</div>
+<div class="st">Development Phase — Operator Procedures</div>
+<div class="sd">
+  The Development phase runs 7 workstreams (SAL, SOL, COM, LEG, DEL, SUP, BM) with 68 activities.
+  The operator does not do the substantive work on these activities — the workstream leads and their teams do.
+  The operator's job is to ensure activities start on time, progress is tracked, blockers are surfaced, and the two methodology gates are respected.
+</div>
+
+<div class="sh">Operator's Daily Rhythm — Development Phase</div>
+<div class="bt">This is what the operator does every working day during the development phase.</div>
+
+<div class="sop-step">
+  <div class="sop-num">1</div>
+  <div class="sop-body">
+    <div class="sop-title">Check the dashboard (morning)</div>
+    <div class="sop-desc">Open the bid dashboard. Check overall readiness score, health status (green/amber/red), and any new nudges. The dashboard is your single source of truth.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num ai">2</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Run Standup Priorities (UC3)</div>
+    <div class="sop-desc">Run the standup priorities skill. AI analyses all activities, deadlines, blockers, and risks and produces a prioritised list of the top 5 actions for today. Use this list to structure your standup meeting or chase actions.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">3</div>
+  <div class="sop-body">
+    <div class="sop-title">Process nudges</div>
+    <div class="sop-desc">
+      The platform generates nudges automatically. For each nudge:<br><br>
+      <strong>Stale activity (amber):</strong> Contact the activity owner. Ask: "Is this still in progress, or is there a blocker?" Update status or log blocker.<br>
+      <strong>Unblocked item (green):</strong> Contact the activity owner. Confirm they can start. Click "Start now" to transition to in_progress.<br>
+      <strong>Approaching deadline (amber/red):</strong> Contact the activity owner. If at risk, flag it. If red (&le;2 days), escalate to workstream lead.<br>
+      <strong>Gate approaching (purple):</strong> Check entry criteria status. If any criteria unmet, escalate immediately. See Gate Management tab.
+    </div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">4</div>
+  <div class="sop-body">
+    <div class="sop-title">Update activity statuses</div>
+    <div class="sop-desc">
+      Based on information from the team, update activity statuses:<br>
+      <strong>not_started &rarr; in_progress:</strong> Work has begun. System sets actualStart.<br>
+      <strong>in_progress &rarr; draft_complete:</strong> First complete version exists.<br>
+      <strong>draft_complete &rarr; final:</strong> Output finalised.<br><br>
+      <strong>Never skip a state.</strong> You cannot go from not_started to final. The platform will reject it.
+    </div>
+    <div class="sop-warn"><strong>Rule:</strong> "final" does NOT mean "assured". An activity can be final (complete) but unassured (not reviewed). Assurance is tracked separately and requires a review cycle.</div>
+  </div>
+</div>
+
+<div class="sh">Workstream-by-Workstream Operator Role</div>
+<div class="bt">For each workstream, this table defines what the operator does vs. what the workstream lead does.</div>
+
+<table class="tb">
+  <tr><th>Workstream</th><th>Operator Does</th><th>Workstream Lead Does</th><th>AI Does</th></tr>
+  <tr>
+    <td><span class="fe fe-gl">SAL</span></td>
+    <td>Track status of 8 activities. Chase updates. Ensure SAL-01 starts day 1. Monitor SAL-06 progress toward assured status (methodology gate).</td>
+    <td>Runs customer intelligence, builds win themes, develops capture plan, leads stakeholder engagement. Makes all strategic decisions.</td>
+    <td>Client profiling, competitor profiling, incumbent assessment, PWIN scoring, win theme mapping. All via skills triggered by operator.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-b">SOL</span></td>
+    <td>Track status of 12 activities. Coordinate dependencies (SOL-01 needs SAL-06 first). Ensure SOL-11 completes before production starts. Flag compression on SOL-03 (45 person-days, critical path).</td>
+    <td>Designs target operating model, delivery model, staffing, transition plan. Owns SOL-11 (solution lock). Makes all design decisions.</td>
+    <td>Operating model support, staffing model, technology architecture, transition planning, solution consolidation. All via skills triggered by operator.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-g">COM</span></td>
+    <td>Track status of 7 activities. Ensure COM-01 doesn't start until SOL-04 and SOL-06 are at draft_complete. Monitor COM-06 for pricing lock.</td>
+    <td>Builds cost model, runs price-to-win, negotiates partner pricing, finalises margins. Owns COM-06 (pricing lock). All commercial decisions.</td>
+    <td>Cost modelling, pricing scenarios, sensitivity analysis, risk-premium validation. Via skills.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-pk">LEG</span></td>
+    <td>Track 6 activities. LEG-01 starts day 1 (no dependencies). Ensure LEG-04 (TUPE) has SOL-06 input before completing.</td>
+    <td>Reviews contract, maps risk allocation, assesses TUPE, reviews data protection. All legal judgements.</td>
+    <td>Contract analysis skill extracts obligations and flags risk positions.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-a">DEL</span></td>
+    <td>Track 6 activities. DEL-01 (risk register) is living — remind owner to update weekly. DEL-06 cannot complete until COM-06 is locked.</td>
+    <td>Owns delivery risk register, mobilisation planning, KPI/SLA framework. All delivery design decisions.</td>
+    <td>Delivery risk assessment, performance framework design, delivery readiness scoring.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-c">SUP</span></td>
+    <td>Track 6 activities. SUP-01 starts after SOL-01. SUP-02 (partner inputs, 10 days, 2 people) is on the critical path to SOL-05. Chase partner responses.</td>
+    <td>Identifies partners, negotiates teaming agreements, manages partner pricing, agrees back-to-back terms.</td>
+    <td>Partner sourcing, partner coordination skills.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-lm">BM</span></td>
+    <td><strong>This is YOUR workstream.</strong> BM-01 to BM-16 are your responsibility. You produce the kickoff pack, BMP, progress reports. You manage clarifications. You coordinate BM-10 (storyboard — methodology gate).</td>
+    <td>Bid Director approves BMP, storyboard, and oversees quality plan. Senior BM provides guidance on complex situations.</td>
+    <td>Timeline analysis, compliance coverage, gate readiness assessment, bid progress reports, workstream weekly briefs. All via skills you trigger.</td>
+  </tr>
+</table>
+
+<div class="sh">Methodology Gate 1: Win Strategy Lock (SAL-06)</div>
+<div class="co co-r">
+  <div class="co-l">Non-Negotiable Gate</div>
+  <div class="co-t">
+    SAL-06 must reach <strong>assured</strong> status before SOL-01 can be finalised. This gate prevents solution design proceeding without a confirmed win strategy.<br><br>
+    <strong>What the operator monitors:</strong> SAL-06 status in the activity tracker. When SAL-06 reaches "final", confirm with the Sales Lead that a review cycle has been initiated. When the review cycle closes with zero critical actions, SAL-06 transitions to "assured".<br><br>
+    <strong>If SAL-06 is late:</strong> Escalate to Bid Director. This is the single most common cause of bid timeline compression. Every day SAL-06 is late cascades through the entire schedule.
+  </div>
+</div>
+
+<div class="sh">Methodology Gate 2: Storyboard Sign-off (BM-10)</div>
+<div class="co co-r">
+  <div class="co-l">Non-Negotiable Gate</div>
+  <div class="co-t">
+    BM-10 must reach <strong>assured</strong> status before PRD-02 (section drafting) can begin. This gate prevents writers starting before the response structure is approved.<br><br>
+    <strong>What the operator does:</strong> BM-10 depends on SAL-06 (locked), SAL-05 (evaluation mapping), and SOL-11 (solution locked). Monitor all three. When all inputs are ready, coordinate the storyboard development session (BM-10, 5 person-days, 2 people). After storyboard is complete, initiate the pink review (PRD-05).<br><br>
+    <strong>If BM-10 is late:</strong> Production cannot start. Every day of delay here compresses the writing, review, and QA cycle. Escalate immediately.
+  </div>
+</div>
+
+<div class="sh">Development Phase Completion Checklist</div>
+<div class="co co-v">
+  <div class="co-l">Phase Exit — Verify All</div>
+  <div class="co-t">
+    &check; SAL-06 (Win Strategy) — assured<br>
+    &check; SOL-11 (Solution Design) — final and assured<br>
+    &check; COM-06 (Pricing) — final and assured<br>
+    &check; DEL-06 (Risk Mitigation) — final<br>
+    &check; BM-10 (Storyboard) — assured<br>
+    &check; All relevant governance gates — passed or scheduled<br>
+    &check; Compliance matrix populated (PRD-01 at draft_complete minimum)<br>
+    &check; Development readiness score &ge; 70% (green)<br><br>
+    If any of these are not met, the bid is entering production with known gaps. Escalate to Bid Director for explicit acknowledgment.
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRODUCTION PHASE
+   ═══════════════════════════════════════════════════════════════════ */
+produce: `
+<div class="sl">Phase 2</div>
+<div class="st">Production Phase — Operator Procedures</div>
+<div class="sd">
+  The Production phase runs 9 PRD activities. This is the most operationally intensive phase for the operator.
+  You are managing multiple writers, coordinating three review cycles (pink, red, gold), tracking compliance coverage, and ensuring quality before submission.
+  The response item lifecycle has 10 stages — you must know them.
+</div>
+
+<div class="sh">Response Item Lifecycle</div>
+<div class="bt">Every response item (question/section) moves through these 10 stages. The operator's job is to ensure each item progresses and review cycles are coordinated.</div>
+
+<div class="fl">
+  <div class="fl-n"><div class="fl-nl">1</div><div class="fl-nt">Not Started</div><div class="fl-nd">0%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">2</div><div class="fl-nt">Storyboard</div><div class="fl-nd">10%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">3</div><div class="fl-nt">Storyboard Approved</div><div class="fl-nd">20%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">4</div><div class="fl-nt">First Draft</div><div class="fl-nd">35%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n fl-on"><div class="fl-nl">5</div><div class="fl-nt">Pink Ready</div><div class="fl-nd">45%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">6</div><div class="fl-nt">Pink Reviewed</div><div class="fl-nd">55%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">7</div><div class="fl-nt">Red Ready</div><div class="fl-nd">65%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">8</div><div class="fl-nt">Red Reviewed</div><div class="fl-nd">75%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">9</div><div class="fl-nt">Gold Ready</div><div class="fl-nd">85%</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">10</div><div class="fl-nt">Final</div><div class="fl-nd">100%</div></div>
+</div>
+
+<div class="sh">Procedure: Managing Writers (PRD-02)</div>
+<div class="bt">PRD-02 (Section Drafting) is 60 person-days with a team of 4. This is the largest single activity. The operator coordinates the writers.</div>
+
+<div class="sop-step">
+  <div class="sop-num">1</div>
+  <div class="sop-body">
+    <div class="sop-title">Assign sections to writers</div>
+    <div class="sop-desc">Each response item gets an owner (writer). Assign based on workstream expertise. Use the compliance matrix to ensure every mandatory requirement is covered. No response item should be unassigned.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num ai">2</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Generate storyboard outlines</div>
+    <div class="sop-desc">Run the Storyboard Generation skill (Agent 5) for each section. AI produces a structured outline showing: question interpretation, key messages, win themes to weave in, evidence to include, evaluation criteria mapped, word budget. Writers start from this outline, not a blank page.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">3</div>
+  <div class="sop-body">
+    <div class="sop-title">Track writer progress daily</div>
+    <div class="sop-desc">Check each response item's status. If any item has been at "first_draft" for more than 3 working days, contact the writer. Use the production pipeline view to see the entire portfolio at a glance.</div>
+    <div class="sop-check"><strong>Target pace:</strong> All items at "pink_ready" by the pink review date. Work backward from the review date to set writer deadlines.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num ai">4</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Draft assistance for writers</div>
+    <div class="sop-desc">Writers can use the Response Drafting skill (Agent 5) to generate a first draft mapped to evaluation criteria with win themes integrated. The writer refines — they don't write from scratch. Operator ensures writers know this tool exists and are using it.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Review Cycles (PRD-05, PRD-06, PRD-07)</div>
+<div class="bt">Three formal reviews, each progressively more demanding. The operator coordinates logistics — scheduling, reviewer assignment, action tracking.</div>
+
+<table class="tb">
+  <tr><th>Review</th><th>Stage</th><th>Pass Threshold</th><th>What Reviewers Score</th><th>Operator's Job</th></tr>
+  <tr>
+    <td><span class="fe fe-pk">PINK</span></td>
+    <td>Storyboard / outline</td>
+    <td>Average &ge; 2.0</td>
+    <td>Response structure, question interpretation, win theme coverage, evidence plan</td>
+    <td>Schedule review session. Assign reviewers. Ensure all sections at "pink_ready". Distribute review packs. Collect scorecards. Track action resolution.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-r">RED</span></td>
+    <td>Full draft</td>
+    <td>Average &ge; 3.0</td>
+    <td>All 8 quality dimensions: answers question, structure, responsiveness, evidence, credentials, win themes, readability, differentiation</td>
+    <td>Same logistics. Ensure all items at "red_ready". Allow 5 person-days for review. Track critical action resolution (2-day deadline). Cycle cannot close until all critical actions resolved.</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-gl">GOLD</span></td>
+    <td>Final / executive</td>
+    <td>Average &ge; 3.5</td>
+    <td>Submission-readiness. Executive sign-off quality.</td>
+    <td>Same logistics. Ensure all items at "gold_ready". This is the last review before submission. Any item below 3.5 must be flagged to Bid Director.</td>
+  </tr>
+</table>
+
+<div class="sop-step">
+  <div class="sop-num">5</div>
+  <div class="sop-body">
+    <div class="sop-title">Create review cycle in the platform</div>
+    <div class="sop-desc">For each review (pink/red/gold): create a review cycle entity, assign reviewers, set the target date, link the response items being reviewed. Platform generates the review scorecard template.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">6</div>
+  <div class="sop-body">
+    <div class="sop-title">Track review action resolution</div>
+    <div class="sop-desc">
+      After each review, actions are raised at three severities:<br>
+      <strong>Critical:</strong> Must be resolved within 2 working days. Blocks review cycle closure.<br>
+      <strong>Major:</strong> Must be resolved within 3 working days. Does not block closure.<br>
+      <strong>Minor:</strong> Must be resolved within 5 working days. Does not block closure.<br><br>
+      The operator chases critical actions daily. A review cycle CANNOT close until all critical actions are resolved or accepted.
+    </div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num esc">7</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: Response below threshold</div>
+    <div class="sop-desc">If any response item scores below the review threshold, escalate to the Bid Director with the reviewer's feedback. The Bid Director decides: rework, accept with risk, or reallocate the section to a different writer.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Compliance Tracking (PRD-01)</div>
+<div class="sop-step">
+  <div class="sop-num">8</div>
+  <div class="sop-body">
+    <div class="sop-title">Monitor compliance coverage weekly</div>
+    <div class="sop-desc">Check the compliance matrix for: unmapped requirements (no response item linked), gaps (mandatory requirements not covered), non-compliant items (assessed as non-compliant — showstopper).</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num ai">9</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Run Compliance Coverage analysis (UC4)</div>
+    <div class="sop-desc">AI analyses coverage, identifies gaps, flags disqualification risks, checks hurdle score exposure. Produces a gap matrix that the operator presents to the Bid Director.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num esc">10</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: Mandatory compliance gaps within 10 days of submission</div>
+    <div class="sop-desc">If any mandatory requirement has no approved response within 10 working days of submission, the platform escalates to practice portfolio level as a red alert. This is a hard rule — readiness is capped at 50%. The operator cannot override this.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Final QA &amp; Submission (PRD-08, PRD-09)</div>
+<div class="sop-step">
+  <div class="sop-num">11</div>
+  <div class="sop-body">
+    <div class="sop-title">Run final QA checklist</div>
+    <div class="sop-desc">After gold review closure: verify word/page limits met, formatting consistent, all attachments present, cross-references correct, pricing schedules match response narrative, all artefacts (CVs, case studies, certificates) uploaded and confirmed.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num esc">12</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: Final Submission Authority (GOV-05)</div>
+    <div class="sop-desc">The Bid Director (or designated authority) must formally approve submission. The operator prepares the submission pack and presents the readiness dashboard. Approval is recorded in the governance gate.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">13</div>
+  <div class="sop-body">
+    <div class="sop-title">Submit and confirm</div>
+    <div class="sop-desc">Upload to portal / send by email as required. Record submission confirmation (timestamp, portal receipt, email confirmation). Mark PRD-09 as final. System transitions bid to "submitted" status.</div>
+    <div class="sop-check"><strong>Immediately after submission:</strong> Schedule the hot debrief (BM-11) for within 2 working days. The platform auto-generates this standup action.</div>
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   POST-SUBMISSION
+   ═══════════════════════════════════════════════════════════════════ */
+post: `
+<div class="sl">Phase 3</div>
+<div class="st">Post-Submission — Operator Procedures</div>
+<div class="sd">
+  8 activities across presentations, clarifications, BAFO, contract negotiation, and award processing. Not all apply to every bid — the operator activates based on the procurement process.
+</div>
+
+<div class="sh">Post-Submission Activation</div>
+<div class="sop-step">
+  <div class="sop-num plat">1</div>
+  <div class="sop-body">
+    <div class="sop-title">PLATFORM: Activates post-submission activities based on bid flags</div>
+    <div class="sop-desc">When bid status transitions to "submitted", the platform activates POST activities based on flags set during setup: has presentation &rarr; POST-01/02/03, has BAFO &rarr; POST-05/06, has negotiation &rarr; POST-07.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Hot Debrief (BM-11)</div>
+<div class="sop-step">
+  <div class="sop-num">2</div>
+  <div class="sop-body">
+    <div class="sop-title">Facilitate hot debrief within 48 hours</div>
+    <div class="sop-desc">30-minute session with the core team. Capture: what went well, what we would do differently, what was rushed, what was the strongest/weakest section. This is fresh memory — it deteriorates fast. Record in BM-11 output.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Presentation (POST-01, 02, 03)</div>
+<div class="sop-step">
+  <div class="sop-num ai">3</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Run Presentation Intelligence (UC15)</div>
+    <div class="sop-desc">AI analyses the submitted responses and evaluation criteria to recommend: key message sequencing, visual design approach, Q&A preparation areas, panel member concerns. Operator provides the output to the presentation lead.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">4</div>
+  <div class="sop-body">
+    <div class="sop-title">Coordinate presentation development</div>
+    <div class="sop-desc">Track POST-01 (design, 10 person-days, team of 2), POST-02 (rehearsals), POST-03 (delivery). Schedule rehearsal sessions. Ensure presenters have Q&A preparation packs.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Clarifications (POST-04)</div>
+<div class="sop-step">
+  <div class="sop-num">5</div>
+  <div class="sop-body">
+    <div class="sop-title">Manage post-submission clarifications</div>
+    <div class="sop-desc">Client clarification requests arrive. Log each one. Assign to the relevant workstream lead for response. Track deadlines. Ensure responses are reviewed before submission. Use BM-14/15 pattern from development phase.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num ai">6</div>
+  <div class="sop-body">
+    <div class="sop-title">AI: Run Clarification Impact analysis (UC13)</div>
+    <div class="sop-desc">AI analyses clarification questions against the submitted response to flag which sections may need amendment and what the compliance impact is. Operator presents impact assessment to Bid Director.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: BAFO (POST-05, 06)</div>
+<div class="sop-step">
+  <div class="sop-num esc">7</div>
+  <div class="sop-body">
+    <div class="sop-title">ESCALATE: BAFO requires governance approval (POST-06)</div>
+    <div class="sop-desc">Any revised pricing requires board-approved BAFO mandate. The operator prepares the BAFO pack (POST-05, 10 person-days, team of 2) and coordinates the governance approval. The Commercial Lead owns the pricing revision; the operator manages the process.</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Award &amp; Handover (POST-08)</div>
+<div class="sop-step">
+  <div class="sop-num">8</div>
+  <div class="sop-body">
+    <div class="sop-title">Process award and initiate handover</div>
+    <div class="sop-desc">On contract award: produce handover pack, brief delivery team, create PID outline, complete lessons learned (BM-12). Transition bid status to "won". On loss: complete lessons learned, capture debrief feedback, transition to "lost".</div>
+  </div>
+</div>
+
+<div class="sh">Procedure: Lessons Learned (BM-12)</div>
+<div class="sop-step">
+  <div class="sop-num">9</div>
+  <div class="sop-body">
+    <div class="sop-title">Complete lessons report</div>
+    <div class="sop-desc">Compile from: hot debrief notes (BM-11), review action patterns, timeline compression points, what AI tools were most/least useful, team feedback. Submit to practice portfolio for knowledge capture. Update content library with reusable content.</div>
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   DAILY OPERATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+daily: `
+<div class="sl">Recurring Procedures</div>
+<div class="st">Daily Operations — The Operator's Cadence</div>
+<div class="sd">
+  These procedures run regardless of bid phase. They are the operator's standing rhythm — the things you do every day, every week, and at specific trigger points.
+</div>
+
+<div class="sh">Daily Procedures (Every Working Day)</div>
+
+<table class="tb">
+  <tr><th>Time</th><th>Action</th><th>Duration</th><th>Detail</th></tr>
+  <tr>
+    <td>Morning</td>
+    <td>Dashboard check</td>
+    <td>5 min</td>
+    <td>Overall readiness, health status, new nudges. If health has deteriorated overnight (someone updated a status), investigate.</td>
+  </tr>
+  <tr>
+    <td>Morning</td>
+    <td>AI standup priorities</td>
+    <td>2 min</td>
+    <td>Run UC3. Get top 5 actions. This structures your day.</td>
+  </tr>
+  <tr>
+    <td>Morning</td>
+    <td>Process nudges</td>
+    <td>10–15 min</td>
+    <td>Work through each nudge. Contact owners. Update statuses. Log blockers. Maximum 10 nudges shown — if all 10 are active, the bid has systemic issues.</td>
+  </tr>
+  <tr>
+    <td>Standing</td>
+    <td>Standup meeting (if held)</td>
+    <td>15 min</td>
+    <td>Use AI standup priorities as the agenda. Each workstream lead reports: done yesterday, doing today, blockers. Operator captures actions.</td>
+  </tr>
+  <tr>
+    <td>Afternoon</td>
+    <td>Status update sweep</td>
+    <td>10 min</td>
+    <td>Update any activity statuses based on information received during the day. Ensure no activity is stale (>3 days without update).</td>
+  </tr>
+  <tr>
+    <td>End of day</td>
+    <td>Standup action closure</td>
+    <td>5 min</td>
+    <td>Mark completed actions as "done". Escalate any overdue actions. Completed actions remain visible for 48 hours then archive.</td>
+  </tr>
+</table>
+
+<div class="sh">Weekly Procedures</div>
+<table class="tb">
+  <tr><th>Day</th><th>Action</th><th>Duration</th><th>Detail</th></tr>
+  <tr>
+    <td>Monday</td>
+    <td>AI weekly progress report</td>
+    <td>5 min</td>
+    <td>Run Bid Progress Report skill (Agent 5). Generates snapshot: activity status summary, production pipeline, risks, critical actions. Distribute to team and Bid Director.</td>
+  </tr>
+  <tr>
+    <td>Monday</td>
+    <td>AI workstream briefs</td>
+    <td>5 min</td>
+    <td>Run Workstream Weekly Brief skill for each active workstream. Send to workstream leads. They get a 1-page summary of their domain.</td>
+  </tr>
+  <tr>
+    <td>Wednesday</td>
+    <td>AI timeline analysis (UC1)</td>
+    <td>5 min</td>
+    <td>Run timeline analysis. Check for new gaps, compression, cascade risks. If critical path has degraded, escalate to Bid Director.</td>
+  </tr>
+  <tr>
+    <td>Wednesday</td>
+    <td>Compliance coverage check</td>
+    <td>10 min</td>
+    <td>Review compliance matrix. Check for new gaps or regressions. During production phase, run UC4 (compliance coverage analysis).</td>
+  </tr>
+  <tr>
+    <td>Friday</td>
+    <td>Cost-to-bid check</td>
+    <td>5 min</td>
+    <td>Review bid cost tracker (BM-05). If actual cost exceeds 120% of budget, flag to Bid Director. Run UC11 (bid cost forecast) if trajectory concerning.</td>
+  </tr>
+  <tr>
+    <td>Friday</td>
+    <td>Gate readiness preview</td>
+    <td>10 min</td>
+    <td>Check upcoming gates. How many days away? How many entry criteria met? If any gate is within prep lead time with unmet criteria, escalate immediately.</td>
+  </tr>
+</table>
+
+<div class="sh">Trigger-Based Procedures</div>
+<div class="bt">These procedures fire when specific events occur, not on a schedule.</div>
+<table class="tb">
+  <tr><th>Trigger</th><th>Action</th><th>Urgency</th></tr>
+  <tr><td>Activity reaches "final"</td><td>Check if downstream activities are now unblocked. Process unblocked nudges. Contact downstream owners.</td><td>Same day</td></tr>
+  <tr><td>Clarification received from client</td><td>Log in BM-14. Run UC13 (clarification impact). Assign to workstream lead. Set response deadline.</td><td>Immediate</td></tr>
+  <tr><td>ITT amendment received</td><td>Run UC14 (amendment detection). Flag impacted sections. Escalate to Bid Director for impact assessment.</td><td>Immediate</td></tr>
+  <tr><td>Team member becomes unavailable</td><td>Update unavailability in team tracker. Check for scheduling conflicts. Reassign activities if needed.</td><td>Same day</td></tr>
+  <tr><td>Health status transitions to red</td><td>Escalate to Bid Director. Run AI timeline analysis. Identify root cause (which signal is dragging?).</td><td>Immediate</td></tr>
+  <tr><td>Methodology gate not assured at production entry</td><td>Platform displays warning. Operator escalates to Bid Director. Production should not start — this is the operator's most important enforcement responsibility.</td><td>Immediate</td></tr>
+</table>
+
+<div class="sh">AI Skill Schedule</div>
+<div class="bt">Which AI skills to run and when. The operator triggers these — they are not automatic in V1.</div>
+<table class="tb">
+  <tr><th>Skill</th><th>Agent</th><th>When to Run</th><th>What to Do with Output</th></tr>
+  <tr><td>Standup Priorities (UC3)</td><td>3</td><td>Daily (morning)</td><td>Use as standup agenda. Act on top 5.</td></tr>
+  <tr><td>Timeline Analysis (UC1)</td><td>3</td><td>2&times; weekly</td><td>Check for new gaps. Escalate if critical path degraded.</td></tr>
+  <tr><td>Compliance Coverage (UC4)</td><td>3</td><td>Weekly (production phase)</td><td>Review gap matrix. Escalate mandatory gaps.</td></tr>
+  <tr><td>Gate Readiness (UC9)</td><td>3</td><td>T-5 days before each gate</td><td>Present assessment to gate chair. Escalate NO-GO recommendation.</td></tr>
+  <tr><td>Bid Progress Report</td><td>5</td><td>Weekly (Monday)</td><td>Distribute to team + Bid Director.</td></tr>
+  <tr><td>Win Theme Audit (UC5)</td><td>3</td><td>After red review</td><td>Check win theme coverage across all sections. Flag gaps to Sales Lead.</td></tr>
+  <tr><td>Marks Allocation (UC6)</td><td>3</td><td>Mid-production</td><td>Check effort vs marks alignment. Flag over/under-invested sections to Bid Director.</td></tr>
+  <tr><td>Bid Cost Forecast (UC11)</td><td>4</td><td>Weekly (if budget &gt; 80%)</td><td>Present forecast to Bid Director. Flag break-even PWIN.</td></tr>
+</table>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   GATE MANAGEMENT
+   ═══════════════════════════════════════════════════════════════════ */
+gates: `
+<div class="sl">Governance</div>
+<div class="st">Gate Management — Operator Procedures</div>
+<div class="sd">
+  Governance gates are the operator's most visible responsibility. The Bid Director and executive panel make the decisions — the operator ensures the process runs flawlessly. A well-prepared gate review demonstrates operational maturity. A poorly prepared one signals a poorly managed bid.
+</div>
+
+<div class="sh">Gate Preparation Timeline</div>
+<div class="bt">The platform auto-generates prep actions at the configured lead time. The operator executes each one.</div>
+
+<div class="sh2">Functional Review (T-3 Lead Time)</div>
+<div class="sop-step">
+  <div class="sop-num">T-3</div>
+  <div class="sop-body">
+    <div class="sop-title">Pre-check entry criteria</div>
+    <div class="sop-desc">Run the gate readiness assessment (UC9). Check each entry criterion: which activities have reached the required assurance level? Flag any that cannot be met by T-0. If criteria cannot be met, escalate immediately — do not wait until T-0 to discover the problem.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">T-2</div>
+  <div class="sop-body">
+    <div class="sop-title">Assemble review pack</div>
+    <div class="sop-desc">Run Governance Pack skill (Agent 5). AI generates: executive summary, entry criteria assessment, readiness dashboard snapshot, risk summary, decisions required. Review the pack for accuracy — AI assembles, you verify.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">T-1</div>
+  <div class="sop-body">
+    <div class="sop-title">Circulate pack to review panel</div>
+    <div class="sop-desc">Send the pack to the approving body. Confirm attendance. Ensure they have time to read before the session.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">T-0</div>
+  <div class="sop-body">
+    <div class="sop-title">Conduct gate review</div>
+    <div class="sop-desc">Facilitate the session. Present readiness dashboard. Record the decision: Approve / Approve with conditions / Revise / Reject / Defer. Record any risk premium applied. Record conditions.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num">T+1</div>
+  <div class="sop-body">
+    <div class="sop-title">Distribute decision and actions</div>
+    <div class="sop-desc">Email the team: gate decision, any conditions, action owners, deadlines. Update the gate status in the platform. If approved: linked activities transition to "accepted at gate". If conditions: create standup actions for each condition.</div>
+  </div>
+</div>
+
+<div class="sh2">Executive Review (T-5 or T-7 Lead Time)</div>
+<div class="bt">Same process but with additional steps: T-5 pre-check, T-3 assemble board pack, T-2 circulate, T-1 brief presenters / pre-meeting with chair, T-0 conduct, T+1 distribute.</div>
+
+<div class="sh">Gate Decision Processing</div>
+<table class="tb">
+  <tr><th>Decision</th><th>Operator Action</th></tr>
+  <tr><td>Approved</td><td>Update gate status to "passed". All linked activities transition to "accepted at gate" assurance. Celebrate briefly. Move on.</td></tr>
+  <tr><td>Approved with conditions</td><td>Update gate status to "passed". Record conditions as standup actions with owners and deadlines. Record any risk premium (% of TCV). Track condition resolution.</td></tr>
+  <tr><td>Revise</td><td>Gate status stays "in_progress". Create actions for required revisions. Schedule re-presentation date. The bid continues but the gate is not cleared.</td></tr>
+  <tr><td>Reject</td><td>Update gate status to "failed". Escalate to Bid Director for no-bid decision. This typically ends the bid. Ensure lessons are captured (BM-12).</td></tr>
+  <tr><td>Defer</td><td>Update gate status to "deferred". Set new planned date. Revert to "upcoming" when rescheduled. Recalculate downstream impacts.</td></tr>
+</table>
+
+<div class="sh">Risk Premium Tracking</div>
+<div class="sop-step">
+  <div class="sop-num">1</div>
+  <div class="sop-body">
+    <div class="sop-title">Record risk premium at each gate</div>
+    <div class="sop-desc">If the review panel applies a risk premium (additional % on price due to unmitigated risks), record: percentage, value (TCV &times; %), cause (which criteria were weak), approver. Platform aggregates across all gates: total premium = sum of all gate premiums.</div>
+  </div>
+</div>
+<div class="sop-step">
+  <div class="sop-num plat">2</div>
+  <div class="sop-body">
+    <div class="sop-title">PLATFORM: Calculates cumulative premium impact</div>
+    <div class="sop-desc">System displays: "{total}% premium on £{TCV} = £{value} added to price". This is visible on the pricing dashboard. If cumulative premium makes the bid uncompetitive, the operator flags to the Commercial Lead.</div>
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   ESCALATION RULES
+   ═══════════════════════════════════════════════════════════════════ */
+escalation: `
+<div class="sl">Decision Boundaries</div>
+<div class="st">Escalation Rules — When the Operator Stops and a Senior Person Decides</div>
+<div class="sd">
+  The most important section of this SOP. The operator follows process, but there are clear boundaries where a senior person must decide.
+  Getting this wrong in either direction is costly: escalating too much wastes senior time; escalating too little risks the bid.
+</div>
+
+<div class="sh">Escalation Matrix</div>
+<div class="bt">For each situation, who the operator escalates to, what information to provide, and how urgently.</div>
+
+<table class="tb">
+  <tr><th>Situation</th><th>Escalate To</th><th>Provide</th><th>Urgency</th></tr>
+  <tr>
+    <td>Feasibility check returns "infeasible"</td>
+    <td>Bid Director</td>
+    <td>Deficit days, critical path analysis, system recommendations</td>
+    <td><span class="fe fe-r">IMMEDIATE</span></td>
+  </tr>
+  <tr>
+    <td>SAL-06 (win strategy) not assured and production approaching</td>
+    <td>Bid Director + Sales Lead</td>
+    <td>SAL-06 status, blocking items, days until production must start</td>
+    <td><span class="fe fe-r">IMMEDIATE</span></td>
+  </tr>
+  <tr>
+    <td>BM-10 (storyboard) not assured and writers waiting</td>
+    <td>Bid Director</td>
+    <td>BM-10 status, writer availability, production timeline impact</td>
+    <td><span class="fe fe-r">IMMEDIATE</span></td>
+  </tr>
+  <tr>
+    <td>Health status transitions to red</td>
+    <td>Bid Director</td>
+    <td>Which readiness signal is dragging, root cause, AI timeline analysis</td>
+    <td><span class="fe fe-r">IMMEDIATE</span></td>
+  </tr>
+  <tr>
+    <td>Mandatory compliance gap within 10 days of submission</td>
+    <td>Bid Director + relevant workstream lead</td>
+    <td>Gap details, impact on disqualification risk, AI compliance coverage analysis</td>
+    <td><span class="fe fe-r">IMMEDIATE</span></td>
+  </tr>
+  <tr>
+    <td>Gate entry criteria cannot be met by planned date</td>
+    <td>Bid Director + gate chair</td>
+    <td>AI gate readiness assessment, unmet criteria, remediation options</td>
+    <td><span class="fe fe-a">SAME DAY</span></td>
+  </tr>
+  <tr>
+    <td>Response item below review threshold</td>
+    <td>Bid Director</td>
+    <td>Reviewer feedback, score, threshold, section importance (marks %)</td>
+    <td><span class="fe fe-a">SAME DAY</span></td>
+  </tr>
+  <tr>
+    <td>Critical review action overdue (&gt; 2 days)</td>
+    <td>Section owner's workstream lead</td>
+    <td>Action description, days overdue, impact on review cycle closure</td>
+    <td><span class="fe fe-a">SAME DAY</span></td>
+  </tr>
+  <tr>
+    <td>Cost-to-bid exceeds 120% of budget</td>
+    <td>Bid Director</td>
+    <td>AI bid cost forecast, budget burn rate, projected final cost</td>
+    <td><span class="fe fe-a">SAME DAY</span></td>
+  </tr>
+  <tr>
+    <td>ITT amendment received</td>
+    <td>Bid Director + Sales Lead</td>
+    <td>AI amendment impact analysis, affected sections, timeline impact</td>
+    <td><span class="fe fe-a">SAME DAY</span></td>
+  </tr>
+  <tr>
+    <td>Team member unexpectedly unavailable (&ge; 3 days)</td>
+    <td>Bid Director</td>
+    <td>Impact on owned activities, rescheduling options, replacement candidates</td>
+    <td><span class="fe fe-b">NEXT STANDUP</span></td>
+  </tr>
+  <tr>
+    <td>Activity stale for &gt; 5 days (no owner response)</td>
+    <td>Workstream lead</td>
+    <td>Activity details, days stale, owner contacted (when, how), no response</td>
+    <td><span class="fe fe-b">NEXT STANDUP</span></td>
+  </tr>
+  <tr>
+    <td>Governance gate decision = Reject</td>
+    <td>Bid Director</td>
+    <td>Gate decision record, reasons, whether appeal/re-presentation is possible</td>
+    <td><span class="fe fe-r">IMMEDIATE</span></td>
+  </tr>
+</table>
+
+<div class="sh">What the Operator Does NOT Decide</div>
+<div class="co co-r">
+  <div class="co-l">Hard Boundaries</div>
+  <div class="co-t">
+    The operator <strong>never</strong> makes these decisions, regardless of urgency:<br><br>
+    &cross; Go / no-go on the bid<br>
+    &cross; Win theme selection or modification<br>
+    &cross; Solution design choices<br>
+    &cross; Pricing levels or commercial terms<br>
+    &cross; Risk acceptance (accepting unmitigated risks)<br>
+    &cross; Gate approval decisions<br>
+    &cross; Deactivating methodology gates (SAL-06, BM-10)<br>
+    &cross; Overriding readiness caps (compliance gaps, non-compliance)<br>
+    &cross; Accepting a response below review threshold for submission<br><br>
+    If pressured to make any of these decisions, the operator's response is: <em>"I need the Bid Director to confirm that decision."</em>
+  </div>
+</div>
+
+<div class="sh">What the Operator DOES Decide</div>
+<div class="co co-v">
+  <div class="co-l">Operator Authority</div>
+  <div class="co-t">
+    The operator has authority to make these decisions without escalation:<br><br>
+    &check; Activity status updates (based on workstream lead confirmation)<br>
+    &check; Standup action creation and closure<br>
+    &check; Nudge processing (dismiss, acknowledge, start activity)<br>
+    &check; Meeting scheduling and logistics<br>
+    &check; Document management and version control<br>
+    &check; Writer assignment to response sections (within agreed resource allocation)<br>
+    &check; Review cycle creation and reviewer assignment (within agreed panel)<br>
+    &check; Progress report distribution<br>
+    &check; AI skill execution (running analysis, generating drafts, producing reports)<br>
+    &check; Chasing overdue actions (escalating if no response)
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   SOP MATURITY
+   ═══════════════════════════════════════════════════════════════════ */
+maturity: `
+<div class="sl">Living Document</div>
+<div class="st">SOP Maturity Tracker</div>
+<div class="sd">
+  This SOP is built alongside the platform. Each section has a maturity level indicating how complete and tested it is.
+  As features are built and bids are run, each section is refined to match reality.
+</div>
+
+<div class="sh">Maturity Levels</div>
+<div class="leg">
+  <div class="leg-item"><span class="maturity m-full">COMPLETE</span> Procedure is detailed, tested against platform, validated by an operator</div>
+  <div class="leg-item"><span class="maturity m-part">DRAFTED</span> Procedure is written but not yet tested against live platform behaviour</div>
+  <div class="leg-item"><span class="maturity m-plan">PLANNED</span> Section exists with structure and intent but procedure detail is pending feature build</div>
+  <div class="leg-item"><span class="maturity m-none">PLACEHOLDER</span> Section identified as needed but not yet started</div>
+</div>
+
+<div class="sh">Section Maturity</div>
+<table class="tb">
+  <tr><th>Section</th><th>Tab</th><th>Maturity</th><th>Depends On</th><th>Notes</th></tr>
+  <tr><td>Purpose &amp; Operating Model</td><td>Purpose</td><td><span class="maturity m-full">COMPLETE</span></td><td>—</td><td>Stable. Three-tier model defined.</td></tr>
+  <tr><td>Bid Setup Wizard</td><td>Bid Setup</td><td><span class="maturity m-part">DRAFTED</span></td><td>Bid Execution app build</td><td>Wizard stages documented from architecture. Detail refined when UI is built.</td></tr>
+  <tr><td>Development Phase — Overview</td><td>Development</td><td><span class="maturity m-part">DRAFTED</span></td><td>Activity tracker build</td><td>Daily rhythm and workstream-by-workstream role defined. Activity-level procedures pending.</td></tr>
+  <tr><td>Development Phase — SAL Procedures</td><td>—</td><td><span class="maturity m-plan">PLANNED</span></td><td>SAL module + Agent 2 skills</td><td>Each SAL activity needs step-by-step procedure with AI skill integration</td></tr>
+  <tr><td>Development Phase — SOL Procedures</td><td>—</td><td><span class="maturity m-plan">PLANNED</span></td><td>SOL module + Agent 6 skills</td><td>12 activities. Archetype-variant procedures needed for SOL-05, SOL-08</td></tr>
+  <tr><td>Development Phase — COM Procedures</td><td>—</td><td><span class="maturity m-plan">PLANNED</span></td><td>COM module + Agent 4 skills</td><td>7 activities. Pricing lock procedure is highest priority.</td></tr>
+  <tr><td>Development Phase — LEG/DEL/SUP Procedures</td><td>—</td><td><span class="maturity m-none">PLACEHOLDER</span></td><td>Respective module builds</td><td>18 activities. Lower operator involvement — workstream lead heavy.</td></tr>
+  <tr><td>Development Phase — BM Procedures</td><td>—</td><td><span class="maturity m-plan">PLANNED</span></td><td>BM module build</td><td>16 activities. Operator's primary workstream — highest priority for detailed SOP.</td></tr>
+  <tr><td>Production Phase — Response Lifecycle</td><td>Production</td><td><span class="maturity m-part">DRAFTED</span></td><td>Production pipeline build</td><td>10-stage lifecycle documented. Writer management and review coordination procedures drafted.</td></tr>
+  <tr><td>Production Phase — Review Procedures</td><td>Production</td><td><span class="maturity m-part">DRAFTED</span></td><td>Review module build</td><td>Pink/red/gold procedures drafted with thresholds. Detail refined when UI is built.</td></tr>
+  <tr><td>Production Phase — Compliance</td><td>Production</td><td><span class="maturity m-plan">PLANNED</span></td><td>Compliance matrix build</td><td>UC4 integration documented. Manual compliance tracking procedures pending.</td></tr>
+  <tr><td>Post-Submission</td><td>Post-Sub</td><td><span class="maturity m-part">DRAFTED</span></td><td>POST module build</td><td>8 activities. Lighter procedures — post-submission is less operationally complex.</td></tr>
+  <tr><td>Daily Operations</td><td>Daily Ops</td><td><span class="maturity m-full">COMPLETE</span></td><td>—</td><td>Daily/weekly cadence defined. AI skill schedule mapped. Trigger-based procedures listed.</td></tr>
+  <tr><td>Gate Management</td><td>Gates</td><td><span class="maturity m-part">DRAFTED</span></td><td>Governance module build</td><td>Prep timeline, decision processing, risk premium tracking documented.</td></tr>
+  <tr><td>Escalation Rules</td><td>Escalation</td><td><span class="maturity m-full">COMPLETE</span></td><td>—</td><td>Stable. Escalation matrix and decision boundaries defined.</td></tr>
+</table>
+
+<div class="sh">Build-to-SOP Pipeline</div>
+<div class="bt">As each product feature is built, the corresponding SOP section is refined. This is the sequence.</div>
+
+<table class="tb">
+  <tr><th>Priority</th><th>Feature Being Built</th><th>SOP Sections Refined</th></tr>
+  <tr><td>1</td><td>Bid Setup Wizard</td><td>Bid Setup (all 5 stages), post-setup checklist</td></tr>
+  <tr><td>2</td><td>Activity Tracker</td><td>Development Phase (all workstreams), status management, nudge processing</td></tr>
+  <tr><td>3</td><td>ITT Ingestion (F4 / Agent 1)</td><td>Post-setup ITT extraction, compliance matrix setup</td></tr>
+  <tr><td>4</td><td>Production Pipeline</td><td>Production Phase (writer management, response lifecycle tracking)</td></tr>
+  <tr><td>5</td><td>Review Module</td><td>Production Phase (review coordination, action tracking, threshold enforcement)</td></tr>
+  <tr><td>6</td><td>Governance Module</td><td>Gate Management (prep automation, decision recording, risk premium)</td></tr>
+  <tr><td>7</td><td>AI Insight Skills (UC1-15)</td><td>Daily Operations (AI skill schedule), all phases (skill integration points)</td></tr>
+  <tr><td>8</td><td>Scheduling Engine</td><td>Bid Setup (feasibility), Development Phase (dependency enforcement, compression alerts)</td></tr>
+  <tr><td>9</td><td>Practice Portfolio</td><td>New tab: multi-bid operations, capacity management, portfolio health</td></tr>
+</table>
+
+<div class="co co-g">
+  <div class="co-l">Living Document Principle</div>
+  <div class="co-t">
+    This SOP is never "finished". It is refined every time:<br>
+    &bull; A platform feature is built (procedure matches reality)<br>
+    &bull; A bid is run (lessons learned feed back into SOP)<br>
+    &bull; An operator makes a mistake (procedure is clarified to prevent recurrence)<br>
+    &bull; A new AI skill is deployed (integration point documented)<br><br>
+    The SOP maturity tracker is the honest assessment of where we are. Sections at "planned" or "placeholder" are acknowledged gaps, not hidden ones.
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   NEXT SESSION
+   ═══════════════════════════════════════════════════════════════════ */
+next: `
+<div class="sl">Session Protocol</div>
+<div class="st">Next Session</div>
+<div class="sd">Summary of what was decided, what to work on next, and open questions.</div>
+
+<div class="sh">What Was Decided</div>
+<div class="bt">
+  <strong>1.</strong> Three-tier staffing model: Bid Coordinator (operator, follows SOP), AI Agents (55 skills, analysis and drafting), Workstream Leads (senior, decisions).<br>
+  <strong>2.</strong> SOP is a living document — built alongside the platform, never speculative. Maturity tracker shows what is complete vs. planned.<br>
+  <strong>3.</strong> Every procedure uses a 4-colour coding: gold (operator), blue (AI), green (platform), red (escalate).<br>
+  <strong>4.</strong> Bid Setup wizard procedure documented — 5 stages, 16 steps, pre-setup checklist.<br>
+  <strong>5.</strong> Development Phase operator role defined — daily rhythm, workstream-by-workstream separation of duties, methodology gate enforcement.<br>
+  <strong>6.</strong> Production Phase operator role defined — writer management, 10-stage response lifecycle, 3 review cycles with thresholds, compliance tracking.<br>
+  <strong>7.</strong> Daily Operations cadence defined — morning dashboard, AI standup, nudge processing, weekly reports, trigger-based procedures, AI skill schedule.<br>
+  <strong>8.</strong> Gate Management procedures documented — T-3/T-5/T-7 prep timelines, decision processing, risk premium tracking.<br>
+  <strong>9.</strong> Escalation matrix defined — 13 situations, escalation targets, information to provide, urgency levels.<br>
+  <strong>10.</strong> Hard decision boundaries — operator never decides go/no-go, win themes, pricing, risk acceptance, gate approval.
+</div>
+
+<div class="sh">What to Work on Next</div>
+<div class="bt">
+  <strong>1.</strong> BM workstream detailed procedures — the operator's own workstream. 16 activities, each needs step-by-step procedure. Highest priority for operator enablement.<br>
+  <strong>2.</strong> SAL activity procedures — how the operator tracks and supports Sales & Capture activities, integrated with Agent 2 (Market Intelligence) and Agent 3 (Strategy) skills.<br>
+  <strong>3.</strong> SOL activity procedures with archetype variants — 12 activities, with specific L2/L3 procedures varying by Services/Technology/Advisory archetype.<br>
+  <strong>4.</strong> COM pricing lock procedure — COM-06 is on the critical path. The operator needs a detailed walkthrough of how to coordinate the pricing finalisation sequence.<br>
+  <strong>5.</strong> Compliance matrix detailed procedure — step-by-step for CSV import, requirement-to-response linking, compliance declaration, gap management.<br>
+  <strong>6.</strong> Standup facilitation guide — how to run an effective 15-minute standup using AI priorities. Talking points, decision frameworks, action capture.<br>
+  <strong>7.</strong> Training materials — onboarding guide for a new Bid Coordinator (first week checklist, platform orientation, practice bid exercise).
+</div>
+
+<div class="sh">Open Questions</div>
+<table class="tb">
+  <tr><th>Q#</th><th>Question</th><th>Impact</th><th>Owner</th></tr>
+  <tr><td>Q1</td><td>What is the target Bid Coordinator profile? Graduate entry, experienced PA/PMO, or junior bid professional?</td><td>Determines SOP language complexity and assumed knowledge level</td><td>Paul</td></tr>
+  <tr><td>Q2</td><td>Should the SOP include a "practice bid" exercise — a simulated bid that a new operator runs through the platform to learn?</td><td>Accelerates onboarding of new operators. Requires seed data and a scripted scenario.</td><td>Design decision</td></tr>
+  <tr><td>Q3</td><td>How much of the operator's job should the platform eventually automate? (e.g. auto-processing nudges, auto-running weekly AI skills, auto-generating progress reports)</td><td>V1 = operator triggers everything manually. V2 = scheduled automation. V3 = event-driven. Each level reduces operator effort but increases platform complexity.</td><td>Roadmap decision</td></tr>
+  <tr><td>Q4</td><td>Should there be a "Bid Coordinator dashboard" — a simplified view that shows only the operator's tasks, nudges, and escalation items, not the full bid management interface?</td><td>Would reduce cognitive load for junior operators. Separates "my job" from "the bid".</td><td>UX decision</td></tr>
+  <tr><td>Q5</td><td>Can one Bid Coordinator run multiple bids concurrently? If so, what is the maximum? This affects the daily operations cadence — 3+ bids changes the morning rhythm significantly.</td><td>Determines staffing model for portfolio-level operations</td><td>Paul</td></tr>
+</table>
+`
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAVIGATION & RENDERING
+   ═══════════════════════════════════════════════════════════════════ */
+const nav=document.getElementById('nav');
+const app=document.getElementById('app');
+let activeTab=TABS[0].id;
+
+function render(){
+  nav.innerHTML=TABS.map(t=>'<button class="nav-b'+(t.id===activeTab?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>').join('');
+  app.innerHTML=TABS.map(t=>'<div class="ct'+(t.id===activeTab?' active':'')+'" id="tab-'+t.id+'">'+CONTENT[t.id]+'</div>').join('');
+  nav.querySelectorAll('.nav-b').forEach(b=>{b.addEventListener('click',()=>{activeTab=b.dataset.t;render();});});
+  // Expandable activity sections
+  document.querySelectorAll('.act-hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.nextElementSibling;
+      const tog=h.querySelector('.tog');
+      if(body)body.classList.toggle('open');
+      if(tog)tog.classList.toggle('op');
+    });
+  });
+}
+render();
+</script>
+</body>
+</html>

@@ -220,7 +220,7 @@ p { max-width: 640px; }
 }
 
 /* ─── TIER CARDS ─── */
-.tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; }
+.tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
 .tier-card {
   background: var(--white); padding: 40px 32px;
   box-shadow: 0 2px 12px rgba(2,23,68,0.06);
@@ -244,6 +244,57 @@ p { max-width: 640px; }
 .tier-card li::before { content: '\2014'; color: var(--teal); margin-right: 8px; }
 @media (max-width: 768px) {
   .tier-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── VERDICT TIER CARD ─── */
+.tier-card--verdict { border-top: 4px solid var(--bright-aqua); }
+
+.poa-badge--verdict {
+  color: var(--bright-aqua);
+  border-color: var(--bright-aqua);
+}
+
+/* ─── VERDICT PRICING TIERS (inside card) ─── */
+.verdict-tiers {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin: 20px 0;
+  padding: 20px 0;
+  border-top: 1px solid var(--pale-aqua);
+  border-bottom: 1px solid var(--pale-aqua);
+}
+.verdict-tier { text-align: center; }
+.verdict-tier__name {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 4px;
+}
+.verdict-tier__price {
+  font-family: var(--font-heading); font-weight: 700;
+  font-size: 1.6rem; color: var(--navy); line-height: 1.2;
+  margin-bottom: 4px;
+}
+.verdict-tier__desc {
+  font-size: 0.8rem; color: #2A3B5C; opacity: 0.8;
+  max-width: none;
+}
+
+@media (max-width: 480px) {
+  .verdict-tiers { grid-template-columns: 1fr; }
+}
+
+/* ─── CTA BUTTON PAIR ─── */
+.cta-strip__buttons {
+  display: flex; gap: 16px; justify-content: center;
+  flex-wrap: wrap;
+}
+.hero__cta--outline {
+  background: transparent;
+  border: 2px solid var(--coral);
+  color: var(--sand);
+}
+.hero__cta--outline:hover,
+.hero__cta--outline:focus-visible {
+  background: var(--coral); color: var(--sand);
 }
 
 /* ─── QUALIFY STEPS ─── */

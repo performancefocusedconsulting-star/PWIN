@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Architect — Client Onboarding Design & Implementation v1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#080E1A;--bg1:#0F1724;--bg2:#162032;--bg3:#1D2B40;--bg4:#25354E;
+  --bdr:#253551;--bdr-s:#1A2844;
+  --gold:#C49438;--gold-d:rgba(196,148,56,.12);--gold-g:rgba(196,148,56,.06);
+  --t1:#E8ECF1;--t2:#94A3B8;--t3:#64748B;--t4:#475569;
+  --grn:#34D399;--grn-d:rgba(52,211,153,.10);
+  --red:#F87171;--red-d:rgba(248,113,113,.10);
+  --amb:#FBBF24;--amb-d:rgba(251,191,36,.10);
+  --blu:#60A5FA;--blu-d:rgba(96,165,250,.10);
+  --pur:#A78BFA;--pur-d:rgba(167,139,250,.10);
+  --cyn:#22D3EE;--cyn-d:rgba(34,211,238,.10);
+  --pink:#F472B6;--pink-d:rgba(244,114,182,.10);
+  --lime:#A3E635;--lime-d:rgba(163,230,53,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.hdr{padding:16px 28px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:space-between;background:var(--bg1);}
+.hdr-l{display:flex;align-items:baseline;gap:12px;}
+.hdr-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+.hdr-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.hdr-v{font-family:'DM Mono',monospace;font-size:10px;color:var(--t4);background:var(--bg2);padding:3px 8px;border:1px solid var(--bdr);}
+.nav{display:flex;gap:1px;padding:0 28px;background:var(--bg1);border-bottom:1px solid var(--bdr-s);overflow-x:auto;}
+.nav-b{padding:9px 12px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-b:hover{color:var(--t2);}.nav-b.on{color:var(--gold);border-bottom-color:var(--gold);}
+.ct{padding:22px 28px;max-width:1440px;margin:0 auto;display:none;}
+.ct.active{display:block;animation:fi .2s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:5px;line-height:1.2;}
+.sd{color:var(--t2);font-size:12.5px;max-width:820px;margin-bottom:22px;line-height:1.7;}
+.sh{font-size:15px;font-weight:700;color:var(--t1);margin:20px 0 8px;}
+.sh2{font-size:13px;font-weight:600;color:var(--t1);margin:14px 0 6px;}
+.bt{color:var(--t2);font-size:12.5px;line-height:1.7;margin-bottom:8px;max-width:820px;}
+.cg{display:grid;gap:10px;margin-bottom:18px;}
+.c2{grid-template-columns:repeat(2,1fr);}.c3{grid-template-columns:repeat(3,1fr);}.c4{grid-template-columns:repeat(4,1fr);}.c5{grid-template-columns:repeat(5,1fr);}
+@media(max-width:1100px){.c4,.c5{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.c2,.c3,.c4,.c5{grid-template-columns:1fr;}}
+.cd{background:var(--bg2);border:1px solid var(--bdr);padding:14px;position:relative;overflow:hidden;transition:all .15s;}
+.cd:hover{background:var(--bg3);border-color:var(--gold);}
+.cd::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.cd.a-gold::before{background:var(--gold)}.cd.a-grn::before{background:var(--grn)}.cd.a-blu::before{background:var(--blu)}.cd.a-pur::before{background:var(--pur)}.cd.a-red::before{background:var(--red)}.cd.a-amb::before{background:var(--amb)}.cd.a-cyn::before{background:var(--cyn)}.cd.a-pink::before{background:var(--pink)}.cd.a-lime::before{background:var(--lime)}
+.cd-n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);opacity:.3;position:absolute;top:8px;right:10px;}
+.cd-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.cd-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.cd-b{color:var(--t2);font-size:11.5px;line-height:1.6;}
+.co{padding:12px 14px;margin:12px 0;border-left:3px solid;background:var(--bg2);}
+.co.co-g{border-color:var(--gold)}.co.co-v{border-color:var(--grn)}.co.co-b{border-color:var(--blu)}.co.co-r{border-color:var(--red)}.co.co-a{border-color:var(--amb)}
+.co-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.co.co-g .co-l{color:var(--gold)}.co.co-v .co-l{color:var(--grn)}.co.co-b .co-l{color:var(--blu)}.co.co-r .co-l{color:var(--red)}.co.co-a .co-l{color:var(--amb)}
+.co-t{color:var(--t2);font-size:12px;line-height:1.7;}
+.tb{width:100%;border-collapse:collapse;margin:6px 0 16px;}
+.tb th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);background:var(--bg4);}
+.tb td{padding:6px 8px;font-size:11.5px;color:var(--t2);border-bottom:1px solid var(--bdr-s);vertical-align:top;line-height:1.5;}
+.tb td:first-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);white-space:nowrap;}
+.tb tr:hover td{background:var(--bg3);}
+.fe{font-family:'DM Mono',monospace;font-size:9px;padding:1px 5px;border-radius:2px;display:inline-block;margin:1px 1px;}
+.fe-g{color:var(--grn);background:var(--grn-d)}.fe-r{color:var(--red);background:var(--red-d)}.fe-a{color:var(--amb);background:var(--amb-d)}.fe-b{color:var(--blu);background:var(--blu-d)}.fe-p{color:var(--pur);background:var(--pur-d)}.fe-c{color:var(--cyn);background:var(--cyn-d)}.fe-pk{color:var(--pink);background:var(--pink-d)}.fe-gl{color:var(--gold);background:var(--gold-d)}.fe-lm{color:var(--lime);background:var(--lime-d)}
+.ph{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;padding:2px 5px;border:1px solid;border-radius:2px;display:inline-block;}
+.ph-crit{color:var(--red);border-color:var(--red)}.ph-high{color:var(--amb);border-color:var(--amb)}.ph-med{color:var(--blu);border-color:var(--blu)}.ph-low{color:var(--grn);border-color:var(--grn)}
+.fl{display:flex;align-items:stretch;gap:0;margin:14px 0;overflow-x:auto;}
+.fl-n{flex:1;min-width:110px;background:var(--bg2);border:1px solid var(--bdr);padding:10px 8px;text-align:center;}
+.fl-n.fl-on{border-color:var(--gold);background:var(--gold-g);}
+.fl-a{display:flex;align-items:center;color:var(--t4);font-size:13px;padding:0 2px;}
+.fl-nl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:1px;}
+.fl-nt{font-size:10px;font-weight:600;color:var(--t1);margin-bottom:1px;}
+.fl-nd{font-size:9px;color:var(--t2);line-height:1.2;}
+.wiz-step{display:flex;gap:12px;margin:12px 0;align-items:flex-start;}
+.wiz-num{min-width:38px;height:38px;background:var(--gold-d);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.wiz-body{flex:1;}
+.wiz-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:3px;}
+.wiz-desc{color:var(--t2);font-size:12px;line-height:1.6;}
+.dep-row{display:flex;gap:6px;margin:4px 0;align-items:center;}
+.dep-from{font-family:'DM Mono',monospace;font-size:10px;color:var(--cyn);min-width:48px;}
+.dep-arrow{color:var(--t4);font-size:11px;}
+.dep-to{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);}
+.dep-note{font-size:10px;color:var(--t3);margin-left:8px;}
+.stat-box{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border:1px solid;border-radius:2px;font-family:'DM Mono',monospace;font-size:9px;margin:2px;}
+.stat-not{color:var(--t3);border-color:var(--t4);}.stat-wip{color:var(--amb);border-color:var(--amb);}.stat-done{color:var(--grn);border-color:var(--grn);}.stat-block{color:var(--red);border-color:var(--red);}
+.sg{display:grid;grid-template-columns:160px 1fr;gap:0;margin:10px 0;border:1px solid var(--bdr);}
+.sg-k{padding:7px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);background:var(--bg4);border-bottom:1px solid var(--bdr-s);}
+.sg-v{padding:7px 10px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bdr-s);line-height:1.5;}
+.timeline{position:relative;margin:16px 0 16px 20px;padding-left:20px;border-left:2px solid var(--bdr);}
+.timeline-item{position:relative;margin-bottom:16px;}
+.timeline-item::before{content:'';position:absolute;left:-25px;top:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--gold);background:var(--bg0);}
+.timeline-item.done::before{background:var(--grn);border-color:var(--grn);}
+.timeline-item.crit::before{background:var(--red);border-color:var(--red);}
+.timeline-week{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.timeline-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.timeline-desc{font-size:11.5px;color:var(--t2);line-height:1.5;}
+.matrix-cell{text-align:center;font-family:'DM Mono',monospace;font-size:10px;}
+.matrix-h{color:var(--red);font-weight:700;}.matrix-m{color:var(--amb);}.matrix-l{color:var(--grn);}
+.print-only{display:none;}
+@media print{body{background:#fff;color:#1a1a1a;font-size:11px;}.hdr,.nav{display:none;}.ct{display:block!important;padding:10px;break-inside:avoid-page;}.print-only{display:block;}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-brand">PWIN Architect</div>
+    <div class="hdr-sub">Client Onboarding Design & Implementation</div>
+  </div>
+  <div class="hdr-v">v1.0 &mdash; April 2026</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="app"></div>
+
+<script>
+const TABS = [
+  {id:'overview', l:'Overview'},
+  {id:'prelaunch', l:'Pre-Launch'},
+  {id:'sop', l:'Client SOP'},
+  {id:'features', l:'Platform Features'},
+  {id:'deps', l:'Dependencies'},
+  {id:'gaps', l:'Gap Closure'},
+  {id:'priority', l:'Prioritisation'},
+  {id:'friction', l:'Friction Reduction'},
+  {id:'next', l:'Next Session'}
+];
+
+const CONTENT = {
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 1: OVERVIEW
+   ═══════════════════════════════════════════════════════════════════ */
+overview: `
+<div class="sl">Document Purpose</div>
+<div class="st">Client Onboarding — Design & Implementation</div>
+<div class="sd">
+  This document takes the Onboarding Inventory (29 activities, 3 service variants, 13 risks) and transforms it into an actionable implementation plan.
+  It separates one-time BIP infrastructure from repeatable per-client process, identifies platform features that should replace manual effort,
+  establishes sequencing with dependencies and done criteria, and raises feature prioritisation across all PWIN products.
+</div>
+
+<div class="sh">Three Workstreams</div>
+<div class="bt">The inventory conflates three distinct categories of work. This document separates them so each can be planned, resourced, and tracked independently.</div>
+
+<div class="cg c3">
+  <div class="cd a-red">
+    <div class="cd-n">1</div>
+    <div class="cd-l">Workstream 1</div>
+    <div class="cd-t">BIP Pre-Launch Prerequisites</div>
+    <div class="cd-b">Things BIP must build or obtain <strong>once</strong>, before the first paying client. Security certifications, infrastructure, legal templates, API proxy architecture. These are go-to-market gates with real lead times — not per-client onboarding.</div>
+  </div>
+  <div class="cd a-gold">
+    <div class="cd-n">2</div>
+    <div class="cd-l">Workstream 2</div>
+    <div class="cd-t">Per-Client Onboarding SOP</div>
+    <div class="cd-b">The repeatable consulting process executed for each new client. Sequenced activities with dependencies, acceptance criteria, variant-aware scoping, and measurable "onboarding complete" definition. Runs differently for Consulting, BPO, and SI archetypes.</div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-n">3</div>
+    <div class="cd-l">Workstream 3</div>
+    <div class="cd-t">Platform Onboarding Features</div>
+    <div class="cd-b">Inventory activities that should become product, not process. AI-assisted ingestion, archetype-driven configuration, onboarding progress tracking, governance mapping tools. These reduce client effort, compress timelines, and justify the setup fee.</div>
+  </div>
+</div>
+
+<div class="sh">Source Documents</div>
+<div class="bt">This document is derived from and cross-references:</div>
+<table class="tb">
+  <tr><th>Document</th><th>Role</th><th>Location</th></tr>
+  <tr><td>Onboarding Inventory</td><td>29 activities scored across 5 dimensions, 3 service variant columns</td><td>pwin-platform/docs/PWIN_Onboarding_Inventory.xlsx</td></tr>
+  <tr><td>Variant Analysis</td><td>10 dimensions across Consulting / BPO / SI archetypes</td><td>Sheet 2 of above</td></tr>
+  <tr><td>Risk Register</td><td>13 onboarding risks with mitigations</td><td>Sheet 3 of above</td></tr>
+  <tr><td>Bid Execution Architecture v6</td><td>Product architecture — 3 archetypes, methodology, modules</td><td>pwin-bid-execution/docs/bid_execution_architecture_v6.html</td></tr>
+  <tr><td>MCP Server Architecture</td><td>Platform architecture — tools, skills, data model</td><td>pwin-bid-execution/docs/mcp_server_architecture.md</td></tr>
+  <tr><td>Plugin Architecture v1.5</td><td>Agent specs, skill definitions, plugin model</td><td>pwin-bid-execution/docs/pwin_architect_plugin_architecture.md</td></tr>
+  <tr><td>API Cost Model</td><td>Per-skill and per-lifecycle API cost projections</td><td>pwin-platform/docs/BidEquity_API_Cost_Model.xlsx</td></tr>
+</table>
+
+<div class="sh">Inventory-to-Workstream Mapping</div>
+<div class="bt">Every OB-xx from the inventory is assigned to exactly one workstream. No activity is left unowned.</div>
+<table class="tb">
+  <tr><th>Workstream</th><th>Activities</th><th>Count</th></tr>
+  <tr>
+    <td><span class="fe fe-r">PRE-LAUNCH</span></td>
+    <td>OB-23 Cyber Essentials &bull; OB-24 SC Clearance &bull; OB-25 API Proxy Architecture &bull; OB-26 DPA Template &bull; OB-27 Data Residency Assurance &bull; OB-28 Zero Data Retention &bull; OB-29 Client Cloud Tenancy</td>
+    <td>7</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-gl">CLIENT SOP</span></td>
+    <td>OB-01 Pipeline Extraction &bull; OB-02 Win/Loss Data &bull; OB-03 Financial Profile &bull; OB-04 Rebid Pipeline &bull; OB-05 Competitive Intelligence &bull; OB-06 Stakeholder Map &bull; OB-08 Benchmark Calibration &bull; OB-09 Weight Profile &bull; OB-10 AI Persona Config &bull; OB-11 Template Alignment &bull; OB-12 Executive Sponsor &bull; OB-13 Team Training &bull; OB-14 Governance Mapping &bull; OB-15 Security Framework &bull; OB-16 Content Library &bull; OB-17 Commercial Agreement &bull; OB-18 Pilot Selection &bull; OB-19 Procurement Docs &bull; OB-20 Buyer Intelligence &bull; OB-21 Contract Performance &bull; OB-22 Capture Meeting Notes</td>
+    <td>21</td>
+  </tr>
+  <tr>
+    <td><span class="fe fe-b">PLATFORM FEATURES</span></td>
+    <td>OB-07 CRM Integration &bull; OB-01* AI Pipeline Extraction &bull; OB-06* AI Stakeholder Extraction &bull; OB-16* AI Content Library Indexing &bull; OB-19* AI Document Ingestion &bull; OB-14* Governance Mapping Tool</td>
+    <td>6 (4 are AI-assisted versions of SOP activities)</td>
+  </tr>
+</table>
+<div class="co co-g">
+  <div class="co-l">Design Note</div>
+  <div class="co-t">Activities marked with * appear in both Workstream 2 (manual SOP) and Workstream 3 (platform feature). The SOP defines the manual process that works from day one. The platform feature replaces or accelerates the manual step once built. This ensures no client engagement is blocked by incomplete platform features.</div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 2: PRE-LAUNCH
+   ═══════════════════════════════════════════════════════════════════ */
+prelaunch: `
+<div class="sl">Workstream 1</div>
+<div class="st">BIP Pre-Launch Prerequisites</div>
+<div class="sd">
+  These 7 activities must be completed before the first paying client. They are BIP infrastructure investments — done once, amortised across all clients.
+  Each has a real lead time and must be sequenced against the go-to-market timeline.
+</div>
+
+<div class="sh">Pre-Launch Timeline</div>
+<div class="bt">Target: all critical-path items complete before first enterprise pitch. Items ordered by lead time and dependency.</div>
+
+<div class="timeline">
+  <div class="timeline-item crit">
+    <div class="timeline-week">Immediate — Start Now</div>
+    <div class="timeline-title">OB-24: SC Clearance Application</div>
+    <div class="timeline-desc">3–6 month lead time. Paul to begin personal SC application. Identify 1–2 BIP colleagues for parallel applications. Critical path for Defence/Justice sector clients. <span class="ph ph-crit">CRITICAL PATH</span></div>
+  </div>
+  <div class="timeline-item crit">
+    <div class="timeline-week">Immediate — Start Now</div>
+    <div class="timeline-title">OB-23: Cyber Essentials Certification</div>
+    <div class="timeline-desc">6–8 week process. Begin self-assessment immediately (£320+VAT). CE v3.3 'Danzell' effective 27 April 2026 — certify under current version if possible, renew under v3.3. Plan CE Plus within 6 months. <span class="ph ph-crit">CRITICAL PATH</span></div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-week">Weeks 1–4</div>
+    <div class="timeline-title">OB-26: Data Processing Agreement Template</div>
+    <div class="timeline-desc">Create formal DPA covering: data categories, processing locations, retention, AI training exclusions, lawful basis, incident notification, sub-processor list. Must reference architecture tier. Pre-approve with BIP legal. Required before first pitch.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-week">Weeks 1–4</div>
+    <div class="timeline-title">OB-27: Data Residency & Sovereignty Documentation</div>
+    <div class="timeline-desc">One-page data handling summary for InfoSec teams: processing location by tier, retention period, training exclusion, sub-processors. Document AWS Bedrock eu-west-2, Google Vertex europe-west2, Anthropic API residency positions. Can be drafted in parallel with DPA.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-week">Weeks 2–8</div>
+    <div class="timeline-title">OB-25: API Proxy Architecture</div>
+    <div class="timeline-desc">Provider-agnostic proxy routing to Anthropic direct (Tier 1), AWS Bedrock eu-west-2 (Tier 2), Google Vertex UK (Tier 2+). Same Claude model across all three. Proxy enables per-client routing, audit logging, access control. Build must be demonstrable, not theoretical, before enterprise pitch.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-week">Weeks 4–8</div>
+    <div class="timeline-title">OB-28: Zero Data Retention Eligibility</div>
+    <div class="timeline-desc">Confirm ZDR eligibility with Anthropic account team. Document which endpoints support ZDR. Understand Bedrock/Vertex equivalent retention controls. Needed for Defence/Justice positioning — unlikely for consulting clients.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-week">Deferred — Build on Demand</div>
+    <div class="timeline-title">OB-29: Client Cloud Tenancy Deployment</div>
+    <div class="timeline-desc">Deploy API proxy within client's own AWS/GCP tenancy. Only relevant for largest enterprise clients with strict data governance (e.g. Serco, Capita). Do not build speculatively — design the architecture now, build when first client requires it.</div>
+  </div>
+</div>
+
+<div class="sh">Acceptance Criteria</div>
+<div class="bt">Each pre-launch item has a clear "done" definition.</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Done When</th><th>Evidence</th></tr>
+  <tr><td>OB-23</td><td>Cyber Essentials</td><td>Certificate issued, valid for 12 months</td><td>CE certificate PDF, listed on NCSC directory</td></tr>
+  <tr><td>OB-24</td><td>SC Clearance</td><td>At least one BIP team member holds active SC</td><td>Clearance confirmation from UKSV</td></tr>
+  <tr><td>OB-25</td><td>API Proxy</td><td>Proxy routes requests to all 3 providers with audit logging; demonstrated in test environment</td><td>Test log showing Anthropic, Bedrock, Vertex routing; latency benchmarks</td></tr>
+  <tr><td>OB-26</td><td>DPA Template</td><td>Template reviewed by BIP legal, ready for client signature</td><td>Signed-off DPA template document</td></tr>
+  <tr><td>OB-27</td><td>Data Residency</td><td>One-page summary produced and reviewed; can answer any InfoSec question on processing location</td><td>Data handling summary document</td></tr>
+  <tr><td>OB-28</td><td>ZDR Eligibility</td><td>Confirmed with Anthropic; documented which tiers/endpoints support ZDR</td><td>Anthropic confirmation email/docs; internal ZDR policy note</td></tr>
+  <tr><td>OB-29</td><td>Client Tenancy</td><td>Architecture documented; build deferred until first client requirement</td><td>Architecture diagram; deployment runbook (untested)</td></tr>
+</table>
+
+<div class="sh">Risk Cross-References</div>
+<div class="bt">Pre-launch items mitigate the highest-severity onboarding risks.</div>
+<table class="tb">
+  <tr><th>Risk</th><th>Description</th><th>Pre-Launch Mitigation</th></tr>
+  <tr><td>R-11</td><td>No CE certification — rejected before commercial discussion</td><td>OB-23: certify before first pitch</td></tr>
+  <tr><td>R-12</td><td>SC clearance delays — 3–6 month block for Defence clients</td><td>OB-24: start application immediately</td></tr>
+  <tr><td>R-13</td><td>Data residency objection blocks engagement</td><td>OB-25 + OB-26 + OB-27: demonstrable multi-tier, documented</td></tr>
+</table>
+
+<div class="co co-r">
+  <div class="co-l">Critical Decision</div>
+  <div class="co-t">OB-23 (Cyber Essentials) and OB-24 (SC Clearance) are on the critical path. Every week of delay narrows the market window. OB-23 should be in progress already. OB-24 has a 3–6 month lead time that cannot be compressed — if Defence/Justice is a target market, this must start immediately.</div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 3: PER-CLIENT SOP
+   ═══════════════════════════════════════════════════════════════════ */
+sop: `
+<div class="sl">Workstream 2</div>
+<div class="st">Per-Client Onboarding SOP</div>
+<div class="sd">
+  The repeatable process executed for each new client engagement. 21 activities across 5 phases, with dependencies, variant-aware effort, acceptance criteria, and a measurable "onboarding complete" definition.
+  This SOP runs identically in structure but differs in depth across Consulting, BPO, and SI archetypes.
+</div>
+
+<div class="sh">Phased Onboarding Sequence</div>
+<div class="bt">Activities are grouped into 5 phases that must be executed in order. Within each phase, activities can run in parallel. A phase is not complete until all its activities meet their acceptance criteria.</div>
+
+<div class="fl">
+  <div class="fl-n fl-on"><div class="fl-nl">Phase 1</div><div class="fl-nt">Engage</div><div class="fl-nd">Weeks 1–2</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">Phase 2</div><div class="fl-nt">Scope</div><div class="fl-nd">Weeks 2–3</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">Phase 3</div><div class="fl-nt">Configure</div><div class="fl-nd">Weeks 3–5</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">Phase 4</div><div class="fl-nt">Ingest</div><div class="fl-nd">Weeks 4–6</div></div>
+  <div class="fl-a">&rarr;</div>
+  <div class="fl-n"><div class="fl-nl">Phase 5</div><div class="fl-nt">Prove</div><div class="fl-nd">Weeks 5–8</div></div>
+</div>
+
+<div class="sh2">Phase 1 — Engage</div>
+<div class="bt">Secure commitment and agree commercial terms. No technical work. Owner: BIP Partner / Paul.</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Done When</th><th>Variant Notes</th></tr>
+  <tr><td>OB-12</td><td>Executive Sponsor Identification & Buy-in</td><td>Named sponsor confirmed in writing; sponsor has allocated pursuit team time for onboarding</td><td>BPO/SI may need dual sponsors (commercial + operational)</td></tr>
+  <tr><td>OB-17</td><td>Commercial Agreement & Fee Structure</td><td>MSA + SOW signed; onboarding fee, retainer, and success fee agreed</td><td>BPO/SI: allow 4–8 weeks for procurement. Consulting: typically faster</td></tr>
+  <tr><td>OB-15</td><td>Data Security & Confidentiality Framework</td><td>NDA executed; data handling protocol agreed (referencing DPA from OB-26)</td><td>BPO Defence/Justice: may need SC-level protocols. SI: may need IL3+ handling</td></tr>
+</table>
+
+<div class="sh2">Phase 2 — Scope</div>
+<div class="bt">Discover the client's maturity, select archetype, calibrate benchmarks. Owner: BIP Lead.</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Done When</th><th>Variant Notes</th></tr>
+  <tr><td>OB-09</td><td>Category Weight Profile Selection</td><td>Archetype selected (Services / Technology / Advisory); any intra-question weight customisations documented</td><td>SI may need customisation for mixed deals</td></tr>
+  <tr><td>OB-02</td><td>Historical Win/Loss Data & Rates</td><td>3–5 year win rate data obtained by sector, deal type, value band; data quality assessed</td><td>BPO: may need reconciliation across legacy systems</td></tr>
+  <tr><td>OB-03</td><td>Financial Profile Data</td><td>Revenue, margins, SG&A, bid cost estimates received; sufficient for margin impact modelling</td><td>Private firms may resist disclosure — agree scope in Phase 1</td></tr>
+  <tr><td>OB-08</td><td>PWIN Benchmark Calibration</td><td>Client-specific benchmark bands set (by deal type and stage); defaults replaced with empirical data</td><td>BPO: rebid vs new business bands differ. SI: multiple delivery models need separate bands</td></tr>
+  <tr><td>OB-18</td><td>Pilot Pursuit Selection</td><td>1–2 pilot pursuits selected meeting criteria: genuinely competitive, mid-value (£50–250m), at capture or early bid stage, visible intelligence gaps</td><td>BPO: prefer a rebid with known gaps. SI: prefer complex multi-partner deal</td></tr>
+</table>
+
+<div class="sh2">Phase 3 — Configure</div>
+<div class="bt">Set up the platform for this client. Map governance, configure AI, align templates. Owner: BIP Lead + Client Bid Director.</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Done When</th><th>Variant Notes</th></tr>
+  <tr><td>OB-14</td><td>Governance Mapping</td><td>PWIN stage-gate mapped to client's existing bid/no-bid framework; outputs positioned as inputs to client gates, not replacements</td><td>BPO: high effort — institutional governance. Consulting: usually Shipley-like</td></tr>
+  <tr><td>OB-10</td><td>AI Persona & Assurance Configuration</td><td>Alex Mercer calibrated for client's sector, language patterns, common inflation signals; enrichment blocks selected</td><td>SI: may need custom enrichment for multi-supplier scenarios</td></tr>
+  <tr><td>OB-11</td><td>Output Template Alignment</td><td>PWIN reports, gate packs, assurance outputs mapped to client's existing governance templates</td><td>BPO: heavy governance — rigid bid frameworks. SI: variable</td></tr>
+  <tr><td>OB-13</td><td>Pursuit Team Training</td><td>Bid teams briefed on 6-category framework, scoring rubric, evidence standards, Alex's role; training materials delivered</td><td>Consulting/SI: quick uptake. BPO: may need repeat sessions for larger teams</td></tr>
+</table>
+
+<div class="sh2">Phase 4 — Ingest</div>
+<div class="bt">Extract and load the client's data into the platform. Heaviest client effort phase. Owner: BIP Lead + Client Pursuit Lead.</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Done When</th><th>Variant Notes</th></tr>
+  <tr><td>OB-01</td><td>Pipeline / Portfolio Data Extraction</td><td>Active pursuit pipeline populated in Portfolio Dashboard; all active pursuits visible with basic metadata (stage, sector, TCV)</td><td>Consulting: typically spreadsheet. BPO: fragmented across divisions. SI: multi-partner</td></tr>
+  <tr><td>OB-04</td><td>Rebid Pipeline & Contract Expiry Dates</td><td>Renewal contracts identified with dates, values, performance status; rebid module activated for relevant pursuits</td><td>BPO: critical path — rebid volumes dominate. Consulting: smaller exercise</td></tr>
+  <tr><td>OB-05</td><td>Competitive Intelligence Baseline</td><td>Known competitors mapped by sector and framework; historical win patterns documented; key personnel identified</td><td>All: CI baseline workshop delivered. BPO: incumbent-challenger framing. SI: multi-partner mapping</td></tr>
+  <tr><td>OB-06</td><td>Stakeholder & Relationship Map</td><td>Key buyers, decision-makers, influencers mapped for pilot pursuits; sufficient for PWIN Coach Stakeholder Strength category</td><td>Consulting: lighter. BPO/SI: full stakeholder map including procurement/political layer</td></tr>
+  <tr><td>OB-19</td><td>Procurement Document Ingestion</td><td>ITT/RFP, evaluation criteria, contract terms loaded for pilot pursuits; documents normalised and indexed</td><td>Consulting: shorter docs. BPO: 500+ page ITTs. SI: technical annexes, security schedules</td></tr>
+  <tr><td>OB-20</td><td>Buyer Intelligence</td><td>Org charts, decision structures, policy context captured for pilot pursuits; sufficient for Win Strategy Phase 2 elicitation</td><td>All: relationship-dependent. BPO: weak on procurement/political. SI: strong technical, weak commercial</td></tr>
+  <tr><td>OB-21</td><td>Historical Contract Performance (Rebids)</td><td>KPI dashboards, service credits, satisfaction scores loaded for rebid pursuits; rebid decay risk assessment possible</td><td>BPO: critical — often contested/unavailable. Consulting: rarely relevant. SI: relevant for managed services</td></tr>
+  <tr><td>OB-22</td><td>Capture Meeting Notes & CRM History</td><td>Historical capture activity, meeting notes, engagement records ingested for pilot pursuits</td><td>All: quality depends on CRM discipline</td></tr>
+</table>
+
+<div class="sh2">Phase 5 — Prove</div>
+<div class="bt">Run the pilot pursuit through the full PWIN process. Demonstrate value. Convert to retainer. Owner: BIP Lead.</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Done When</th><th>Variant Notes</th></tr>
+  <tr><td>OB-16</td><td>Content Library / Bid Library Access</td><td>Existing case studies, CVs, past submissions accessible; library quality assessed; gaps documented</td><td>Consulting: often informal. BPO: formal but may be outdated. SI: typically stronger</td></tr>
+  <tr><td>OB-07</td><td>CRM Integration / Data Bridge</td><td>Pipeline data syncing (manual CSV or API); Dashboard operating with live data, not seed data</td><td>All: manual CSV is the standard path. API integration is Phase 2 enhancement</td></tr>
+  <tr><td>&mdash;</td><td>Pilot Pursuit Completion</td><td>Full PWIN cycle completed for 1–2 selected pursuits: qualification, win strategy, gate review outputs delivered</td><td>This is the proof-of-value milestone. Output quality determines retainer conversion</td></tr>
+</table>
+
+<div class="sh">Onboarding Complete — Definition</div>
+<div class="co co-v">
+  <div class="co-l">Exit Criteria</div>
+  <div class="co-t">
+    Onboarding is complete when ALL of the following are true:<br><br>
+    <strong>1.</strong> Platform configured — archetype selected, benchmarks calibrated, Alex Mercer configured, governance mapped, templates aligned<br>
+    <strong>2.</strong> Data loaded — pipeline populated, pilot pursuit data ingested, stakeholder maps created<br>
+    <strong>3.</strong> Team trained — bid teams briefed and have completed at least one assessment cycle<br>
+    <strong>4.</strong> Pilot delivered — full PWIN cycle completed for 1–2 pursuits with gate review outputs accepted by client<br>
+    <strong>5.</strong> Retainer agreed — commercial terms for ongoing engagement confirmed (or explicit decision not to proceed)<br>
+  </div>
+</div>
+
+<div class="sh">Variant Effort Matrix</div>
+<div class="bt">Estimated elapsed time by phase and archetype. Consulting is the baseline; BPO and SI add complexity primarily in Phase 3 (governance) and Phase 4 (ingestion).</div>
+<table class="tb">
+  <tr><th>Phase</th><th>Consulting</th><th>BPO / Outsourcing</th><th>Systems Integration</th></tr>
+  <tr><td>1. Engage</td><td>1–2 weeks</td><td>2–4 weeks (procurement)</td><td>2–4 weeks (procurement)</td></tr>
+  <tr><td>2. Scope</td><td>1 week</td><td>1–2 weeks</td><td>1–2 weeks</td></tr>
+  <tr><td>3. Configure</td><td>1 week</td><td>2–3 weeks (governance)</td><td>1–2 weeks</td></tr>
+  <tr><td>4. Ingest</td><td>1–2 weeks</td><td>3–4 weeks (volume)</td><td>2–3 weeks (complexity)</td></tr>
+  <tr><td>5. Prove</td><td>1–2 weeks</td><td>2–3 weeks</td><td>2–3 weeks</td></tr>
+  <tr style="font-weight:700;"><td>Total Elapsed</td><td>4–8 weeks</td><td>8–14 weeks</td><td>7–12 weeks</td></tr>
+</table>
+
+<div class="co co-a">
+  <div class="co-l">Commercial Implication</div>
+  <div class="co-t">The variant effort matrix justifies tiered onboarding pricing. Consulting setup: standard fee. BPO/SI setup: enhanced fee (1.5–2x). The inventory scoring data provides the evidence to defend the differential in commercial negotiations. The <strong>Speed to First Value</strong> difference — Consulting sees value in 4 weeks, BPO/SI in 8–14 weeks — must be set as an expectation during Phase 1.</div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 4: PLATFORM FEATURES
+   ═══════════════════════════════════════════════════════════════════ */
+features: `
+<div class="sl">Workstream 3</div>
+<div class="st">Platform Onboarding Features</div>
+<div class="sd">
+  Six features that should be built into the PWIN platform to replace manual onboarding effort. Each is mapped to the SOP activity it accelerates,
+  the product it belongs to, and the value it delivers. These are product enhancements — they reduce time-to-value, lower client effort,
+  and create switching cost.
+</div>
+
+<div class="sh">Feature Inventory</div>
+
+<div class="cg c2">
+  <div class="cd a-blu">
+    <div class="cd-n">F1</div>
+    <div class="cd-l">Replaces OB-01 manual extraction</div>
+    <div class="cd-t">AI Pipeline Extraction</div>
+    <div class="cd-b">
+      Ingest CSV/Excel pipeline exports from client CRM. AI normalises column mappings, deduplicates, maps to PWIN pursuit schema.
+      Replaces the manual data entry that currently blocks Portfolio Dashboard population.<br><br>
+      <span class="fe fe-pk">PORTFOLIO</span> <span class="fe fe-gl">PLATFORM</span>
+    </div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-n">F2</div>
+    <div class="cd-l">Replaces OB-06 manual mapping</div>
+    <div class="cd-t">AI Stakeholder Extraction</div>
+    <div class="cd-b">
+      Extract stakeholder names, roles, and relationships from meeting notes, org charts, CRM exports.
+      Populate the stakeholder map for PWIN Coach Stakeholder Strength category and Win Strategy Phase 2.<br><br>
+      <span class="fe fe-gl">QUALIFY</span> <span class="fe fe-a">STRATEGY</span>
+    </div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-n">F3</div>
+    <div class="cd-l">Replaces OB-16 manual audit</div>
+    <div class="cd-t">AI Content Library Indexing</div>
+    <div class="cd-b">
+      Index client's existing bid library (case studies, CVs, past submissions). AI tags by sector, capability, recency, quality.
+      Enables reuse recommendations during managed proposal production. Also assesses library health and identifies gaps.<br><br>
+      <span class="fe fe-r">EXECUTION</span> <span class="fe fe-gl">PLATFORM</span>
+    </div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-n">F4</div>
+    <div class="cd-l">Replaces OB-19 manual ingestion</div>
+    <div class="cd-t">AI Procurement Document Ingestion</div>
+    <div class="cd-b">
+      Parse ITT/RFP documents. Extract questions, evaluation criteria, compliance requirements, word limits, submission format.
+      This is the existing ITT ingestion capability (ResponseSection, EvaluationFramework, ITTDocument) applied to onboarding context.<br><br>
+      <span class="fe fe-r">EXECUTION</span>
+    </div>
+  </div>
+  <div class="cd a-gold">
+    <div class="cd-n">F5</div>
+    <div class="cd-l">Replaces OB-14 manual workshop</div>
+    <div class="cd-t">Governance Mapping Tool</div>
+    <div class="cd-b">
+      Interactive mapping interface: client's bid stages on the left, PWIN stages on the right, drag-to-map with AI-suggested mappings.
+      Produces a governance alignment document that slots PWIN outputs into client gates. Reduces a 2-day workshop to a 2-hour session.<br><br>
+      <span class="fe fe-r">EXECUTION</span> <span class="fe fe-gl">PLATFORM</span>
+    </div>
+  </div>
+  <div class="cd a-gold">
+    <div class="cd-n">F6</div>
+    <div class="cd-l">New — not in inventory</div>
+    <div class="cd-t">Onboarding Progress Tracker</div>
+    <div class="cd-b">
+      The SOP itself, built into the platform. Per-client onboarding plan showing phase, activity status, acceptance criteria, owner, variant configuration.
+      Client sees their data flowing in. BIP tracks progress without a separate spreadsheet. First touchpoint where client uses the platform.<br><br>
+      <span class="fe fe-gl">PLATFORM</span>
+    </div>
+  </div>
+</div>
+
+<div class="sh">Feature-to-Product Mapping</div>
+<div class="bt">Each feature belongs to a specific product and may create cross-product data flows.</div>
+<table class="tb">
+  <tr><th>Feature</th><th>Primary Product</th><th>Data Flows To</th><th>Skill / Tool Exists?</th></tr>
+  <tr><td>F1 AI Pipeline Extraction</td><td>pwin-portfolio</td><td>shared.json (all products)</td><td>No — new skill needed</td></tr>
+  <tr><td>F2 AI Stakeholder Extraction</td><td>pwin-qualify / pwin-strategy</td><td>shared.json stakeholder map</td><td>Partial — Win Strategy Phase 1 has ingestion, needs stakeholder-specific extraction</td></tr>
+  <tr><td>F3 AI Content Library Indexing</td><td>pwin-bid-execution</td><td>Content library index (new data file)</td><td>Partial — Content Library Management plugin skill exists but lacks indexing</td></tr>
+  <tr><td>F4 AI Procurement Doc Ingestion</td><td>pwin-bid-execution</td><td>ResponseSection, EvaluationFramework</td><td>Yes — ITT ingestion already designed (V1 scope: ResponseSection, EvaluationFramework, ITTDocument)</td></tr>
+  <tr><td>F5 Governance Mapping Tool</td><td>pwin-bid-execution / pwin-platform</td><td>Governance config per client</td><td>No — new UI and data model needed</td></tr>
+  <tr><td>F6 Onboarding Progress Tracker</td><td>pwin-platform</td><td>Onboarding status per client</td><td>No — new module needed</td></tr>
+</table>
+
+<div class="sh">Value Drivers</div>
+<div class="bt">Why these features matter beyond efficiency.</div>
+<div class="cg c3">
+  <div class="cd a-grn">
+    <div class="cd-l">Time Compression</div>
+    <div class="cd-t">Faster First Value</div>
+    <div class="cd-b">F1 + F4 compress Phase 4 (Ingest) from weeks to days. BPO onboarding drops from 8–14 weeks to 6–10 weeks. Consulting drops from 4–8 weeks to 3–5 weeks. This is the primary commercial differentiator.</div>
+  </div>
+  <div class="cd a-grn">
+    <div class="cd-l">Client Effort</div>
+    <div class="cd-t">Lower Barrier to Engage</div>
+    <div class="cd-b">The highest-scoring inventory items (OB-01, OB-06, OB-16, OB-21) score high because they demand client effort. F1, F2, F3 shift that effort from the client to the platform. Client provides raw data; AI does the structuring.</div>
+  </div>
+  <div class="cd a-grn">
+    <div class="cd-l">Switching Cost</div>
+    <div class="cd-t">Embedded Data Asset</div>
+    <div class="cd-b">Once pipeline, stakeholders, content library, and governance mapping are in the platform, the client has a structured data asset they didn't have before. Leaving PWIN means losing that structure — a natural retention mechanism.</div>
+  </div>
+</div>
+
+<div class="co co-b">
+  <div class="co-l">Design Principle</div>
+  <div class="co-t">Every platform feature has a manual SOP fallback (Workstream 2). No client engagement is blocked by incomplete platform features. The SOP is the floor; the platform features are the ceiling. Build features that replace the most painful SOP steps first.</div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 5: DEPENDENCIES
+   ═══════════════════════════════════════════════════════════════════ */
+deps: `
+<div class="sl">Sequencing</div>
+<div class="st">Dependency Map</div>
+<div class="sd">
+  Activities have hard dependencies (must complete before), soft dependencies (benefits from), and phase constraints.
+  This map closes the gap identified in the inventory review: activities were listed but not sequenced.
+</div>
+
+<div class="sh">Hard Dependencies</div>
+<div class="bt">These are blocking — the downstream activity cannot start until the upstream is complete.</div>
+
+<table class="tb">
+  <tr><th>Upstream</th><th></th><th>Downstream</th><th>Reason</th></tr>
+  <tr><td>OB-12 Executive Sponsor</td><td>&rarr;</td><td>OB-17 Commercial Agreement</td><td>Cannot negotiate terms without sponsor commitment</td></tr>
+  <tr><td>OB-17 Commercial Agreement</td><td>&rarr;</td><td>OB-15 Security Framework</td><td>NDA/DPA terms depend on commercial scope</td></tr>
+  <tr><td>OB-15 Security Framework</td><td>&rarr;</td><td>Phase 2–5 (all)</td><td>Cannot exchange client data without agreed protocols</td></tr>
+  <tr><td>OB-02 Win/Loss Data</td><td>&rarr;</td><td>OB-08 Benchmark Calibration</td><td>Benchmarks require historical win rates as input</td></tr>
+  <tr><td>OB-09 Weight Profile</td><td>&rarr;</td><td>OB-10 AI Persona Config</td><td>Alex Mercer enrichment blocks depend on selected archetype</td></tr>
+  <tr><td>OB-18 Pilot Selection</td><td>&rarr;</td><td>OB-19 Procurement Docs</td><td>Must know which pursuits before ingesting documents</td></tr>
+  <tr><td>OB-18 Pilot Selection</td><td>&rarr;</td><td>OB-06 Stakeholder Map</td><td>Stakeholder mapping is per-pursuit — need to know which pursuits</td></tr>
+  <tr><td>OB-18 Pilot Selection</td><td>&rarr;</td><td>OB-20 Buyer Intelligence</td><td>Same — per-pursuit</td></tr>
+  <tr><td>OB-01 Pipeline Data</td><td>&rarr;</td><td>OB-04 Rebid Pipeline</td><td>Rebid identification requires the portfolio to be loaded first</td></tr>
+  <tr><td>OB-14 Governance Mapping</td><td>&rarr;</td><td>OB-11 Template Alignment</td><td>Templates must align to the mapped governance, not the raw PWIN defaults</td></tr>
+</table>
+
+<div class="sh">Soft Dependencies</div>
+<div class="bt">These benefit from completion but are not blocked.</div>
+<table class="tb">
+  <tr><th>Upstream</th><th></th><th>Downstream</th><th>Benefit</th></tr>
+  <tr><td>OB-05 Competitive Intel</td><td>&rarr;</td><td>OB-10 AI Persona Config</td><td>Alex Mercer more effective when CI baseline is loaded</td></tr>
+  <tr><td>OB-03 Financial Profile</td><td>&rarr;</td><td>OB-08 Benchmark Calibration</td><td>Financial data improves margin impact modelling precision</td></tr>
+  <tr><td>OB-16 Content Library</td><td>&rarr;</td><td>Pilot Pursuit (Phase 5)</td><td>Better library = better proposal production in pilot, but pilot can proceed without it</td></tr>
+  <tr><td>OB-22 CRM History</td><td>&rarr;</td><td>OB-06 Stakeholder Map</td><td>CRM notes enrich stakeholder mapping but stakeholders can be mapped independently</td></tr>
+</table>
+
+<div class="sh">Pre-Launch &rarr; Client SOP Dependencies</div>
+<div class="bt">Workstream 1 gates Workstream 2 for specific client types.</div>
+<table class="tb">
+  <tr><th>Pre-Launch Item</th><th>Gates</th><th>Client Types Affected</th></tr>
+  <tr><td>OB-23 Cyber Essentials</td><td>Phase 1 (Engage) for enterprise clients</td><td>All enterprise — mandatory for G-Cloud, most framework routes</td></tr>
+  <tr><td>OB-24 SC Clearance</td><td>Phase 4 (Ingest) for classified data</td><td>Defence, Justice BPO and SI only</td></tr>
+  <tr><td>OB-25 API Proxy</td><td>Phase 3 (Configure) for Tier 2+ clients</td><td>BPO and SI with data residency requirements</td></tr>
+  <tr><td>OB-26 DPA Template</td><td>Phase 1 (Engage) — part of OB-15</td><td>All clients — DPA is a component of the security framework</td></tr>
+</table>
+
+<div class="sh">Dependency Diagram</div>
+<div class="bt">Read left-to-right. Each column represents a phase. Arrows show hard dependencies.</div>
+<div style="background:var(--bg2);border:1px solid var(--bdr);padding:18px;margin:10px 0;overflow-x:auto;">
+<pre style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);line-height:1.8;">
+PHASE 1 (ENGAGE)          PHASE 2 (SCOPE)           PHASE 3 (CONFIGURE)        PHASE 4 (INGEST)           PHASE 5 (PROVE)
+
+OB-12 Sponsor ─────────┬─ OB-17 Commercial          OB-14 Governance ────────── OB-11 Templates
+                        │                            Mapping                     Alignment
+                        └─ OB-15 Security ──────────────────────────────────────────────────── (gates all)
+
+                           OB-09 Weight ───────────── OB-10 AI Persona
+                           Profile                    Config
+
+                           OB-02 Win/Loss ──────────── OB-08 Benchmarks
+                           OB-03 Financial ···········&gt; OB-08 (soft)
+
+                           OB-18 Pilot ──────────────────────────────────────── OB-19 Procurement Docs
+                           Selection                                            OB-06 Stakeholder Map
+                                                                                OB-20 Buyer Intel
+
+                                                                                OB-01 Pipeline ──────────── OB-07 CRM Bridge
+                                                                                OB-04 Rebid (needs OB-01)  OB-16 Content Library
+                                                                                OB-05 Competitive Intel    Pilot Completion
+                                                                                OB-21 Contract Perf
+                                                                                OB-22 CRM History
+</pre>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 6: GAP CLOSURE
+   ═══════════════════════════════════════════════════════════════════ */
+gaps: `
+<div class="sl">Gap Closure</div>
+<div class="st">Inventory Gaps — Resolution Tracker</div>
+<div class="sd">
+  The inventory review identified three structural gaps. This section documents each gap, the resolution approach, and current status.
+</div>
+
+<div class="cg c3">
+  <div class="cd a-amb">
+    <div class="cd-n">G1</div>
+    <div class="cd-l">Gap Identified</div>
+    <div class="cd-t">No Sequencing / Dependencies</div>
+    <div class="cd-b">The inventory listed 29 activities without specifying which must happen before others. Without this, onboarding cannot be planned as a timeline.</div>
+  </div>
+  <div class="cd a-amb">
+    <div class="cd-n">G2</div>
+    <div class="cd-l">Gap Identified</div>
+    <div class="cd-t">No "Done" Criteria</div>
+    <div class="cd-b">Activities had descriptions but no acceptance criteria. Without measurable done-when conditions, onboarding drags and completion is subjective.</div>
+  </div>
+  <div class="cd a-amb">
+    <div class="cd-n">G3</div>
+    <div class="cd-l">Gap Identified</div>
+    <div class="cd-t">No Platform Readiness Column</div>
+    <div class="cd-b">The inventory did not distinguish between activities the platform can support today and those that need features built. This makes it unclear what is sellable now vs. what is roadmap.</div>
+  </div>
+</div>
+
+<div class="sh">Resolution Status</div>
+<table class="tb">
+  <tr><th>Gap</th><th>Resolution</th><th>Where in This Document</th><th>Status</th></tr>
+  <tr>
+    <td>G1 — Sequencing</td>
+    <td>5-phase model with hard and soft dependencies. Dependency diagram. Phase exit criteria.</td>
+    <td>Dependencies tab — full dependency map with diagram</td>
+    <td><span class="stat-box stat-done">RESOLVED</span></td>
+  </tr>
+  <tr>
+    <td>G2 — Done Criteria</td>
+    <td>Every activity has a "Done When" column in the SOP tables. Onboarding Complete definition with 5 measurable exit criteria.</td>
+    <td>Client SOP tab — every phase table + Onboarding Complete definition</td>
+    <td><span class="stat-box stat-done">RESOLVED</span></td>
+  </tr>
+  <tr>
+    <td>G3 — Platform Readiness</td>
+    <td>Feature-to-Product mapping with "Skill / Tool Exists?" column. Clear separation of what exists, what is partial, and what needs building.</td>
+    <td>Platform Features tab — Feature-to-Product Mapping table</td>
+    <td><span class="stat-box stat-done">RESOLVED</span></td>
+  </tr>
+</table>
+
+<div class="sh">Additional Gaps Identified During Design</div>
+<div class="bt">Creating this document surfaced further gaps that should be tracked.</div>
+<table class="tb">
+  <tr><th>Gap</th><th>Description</th><th>Impact</th><th>Resolution</th><th>Status</th></tr>
+  <tr>
+    <td>G4</td>
+    <td>No onboarding-specific MCP tools</td>
+    <td>Platform features F1, F2, F5, F6 need new MCP tools to read/write onboarding state</td>
+    <td>Design onboarding data model (onboarding.json per client) and MCP tool surface as part of platform feature build</td>
+    <td><span class="stat-box stat-not">OPEN</span></td>
+  </tr>
+  <tr>
+    <td>G5</td>
+    <td>No onboarding skill definitions</td>
+    <td>F1 (pipeline extraction) and F2 (stakeholder extraction) need YAML skill configs for the skill runner</td>
+    <td>Write skill configs following existing skill patterns once data model is agreed</td>
+    <td><span class="stat-box stat-not">OPEN</span></td>
+  </tr>
+  <tr>
+    <td>G6</td>
+    <td>No archetype-to-onboarding configuration mapping</td>
+    <td>The three archetypes (Services/Technology/Advisory) should pre-configure which onboarding activities are required, recommended, or optional — this mapping does not yet exist in the platform data model</td>
+    <td>Add archetype-onboarding matrix to platform knowledge files</td>
+    <td><span class="stat-box stat-not">OPEN</span></td>
+  </tr>
+  <tr>
+    <td>G7</td>
+    <td>Onboarding fee model not stress-tested against variant effort</td>
+    <td>Standard £10k setup fee may be inadequate for BPO (8–14 weeks effort). Tiered pricing needed.</td>
+    <td>Use variant effort matrix to model BIP cost per archetype and set tiered setup fees</td>
+    <td><span class="stat-box stat-not">OPEN</span></td>
+  </tr>
+</table>
+
+<div class="sh">Risk Register — Cross-Reference to Design Decisions</div>
+<div class="bt">Every risk from the inventory register is now mitigated by a specific design decision in this document.</div>
+<table class="tb">
+  <tr><th>Risk</th><th>Description</th><th>Design Mitigation</th></tr>
+  <tr><td>R-01</td><td>Poor CRM data quality</td><td>SOP Phase 4 accepts manual entry as baseline. F1 (AI Pipeline Extraction) adds smart normalisation. OB-07 CRM integration deferred to Phase 5.</td></tr>
+  <tr><td>R-02</td><td>Sponsor loses interest</td><td>Phase 5 (Prove) delivers tangible output within 4–8 weeks. Phase structure creates visible momentum milestones.</td></tr>
+  <tr><td>R-03</td><td>Governance resistance</td><td>Phase 3 includes explicit OB-14 (Governance Mapping) before any outputs are produced. Positioned as complementary, not competing.</td></tr>
+  <tr><td>R-04</td><td>CI IP exposure</td><td>Phase 1 security framework separates "client intelligence" from "PWIN methodology". NDA with specific CI clauses.</td></tr>
+  <tr><td>R-05</td><td>SC clearance delays</td><td>Pre-launch OB-24 starts immediately. SOP Phase 4 designed to work with redacted data until clearance confirmed.</td></tr>
+  <tr><td>R-06</td><td>Blank-equals-zero resistance</td><td>Phase 3 training (OB-13) explains rationale. Alex's tone is diagnostic, not adversarial. Scores improve naturally through capture process.</td></tr>
+  <tr><td>R-07</td><td>CRM API blocked</td><td>Manual CSV is the standard path throughout SOP. API integration (OB-07) is Phase 5 enhancement, not a dependency.</td></tr>
+  <tr><td>R-08</td><td>Content library unusable</td><td>Library audit (OB-16) in Phase 5 assesses quality. F3 (AI Content Library Indexing) adds automated quality tagging. Library improvement positioned as retainer deliverable.</td></tr>
+  <tr><td>R-09</td><td>Onboarding overruns (BPO/SI)</td><td>Variant effort matrix with tiered pricing. Enhanced fee for BPO/SI reflects 2x effort. Measurable "onboarding complete" definition prevents scope creep.</td></tr>
+  <tr><td>R-10</td><td>Wrong pilot selection</td><td>Phase 2 includes explicit pilot selection criteria (OB-18): genuinely competitive, mid-value, visible intelligence gaps. BIP guides selection.</td></tr>
+  <tr><td>R-11</td><td>No Cyber Essentials</td><td>Pre-launch OB-23 on critical path. Must be complete before first enterprise pitch.</td></tr>
+  <tr><td>R-12</td><td>SC clearance 3–6 month delay</td><td>Pre-launch OB-24 starts immediately. Parallel applications for 1–2 colleagues.</td></tr>
+  <tr><td>R-13</td><td>Data residency objection</td><td>Pre-launch OB-25 + OB-26 + OB-27: demonstrable multi-tier architecture, pre-built DPA, one-page data handling summary.</td></tr>
+</table>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 7: PRIORITISATION
+   ═══════════════════════════════════════════════════════════════════ */
+priority: `
+<div class="sl">Product Roadmap Impact</div>
+<div class="st">Feature Prioritisation Across Products</div>
+<div class="sd">
+  The onboarding design surfaces features that should be prioritised across all PWIN products.
+  This section ranks them by urgency (how soon they block a client engagement) and value (how much they reduce onboarding friction).
+</div>
+
+<div class="sh">Priority Matrix</div>
+<table class="tb">
+  <tr><th>Priority</th><th>Feature</th><th>Product</th><th>Urgency</th><th>Value</th><th>Effort</th><th>Rationale</th></tr>
+  <tr>
+    <td><span class="ph ph-crit">P0</span></td>
+    <td>F4 — AI Procurement Document Ingestion</td>
+    <td>pwin-bid-execution</td>
+    <td>Immediate</td>
+    <td>Very High</td>
+    <td>Low (design exists)</td>
+    <td>ITT ingestion is already designed (V1 scope). This is the single feature that most dramatically proves value in the pilot pursuit. Without it, Phase 4 is entirely manual.</td>
+  </tr>
+  <tr>
+    <td><span class="ph ph-crit">P0</span></td>
+    <td>API Proxy Architecture (OB-25)</td>
+    <td>pwin-platform</td>
+    <td>Immediate</td>
+    <td>High</td>
+    <td>Medium</td>
+    <td>Must be demonstrable before first enterprise pitch. Blocks all Tier 2+ client engagements. Pre-launch critical path.</td>
+  </tr>
+  <tr>
+    <td><span class="ph ph-high">P1</span></td>
+    <td>F1 — AI Pipeline Extraction</td>
+    <td>pwin-portfolio</td>
+    <td>Pre-first-client</td>
+    <td>High</td>
+    <td>Medium</td>
+    <td>Highest-scoring inventory item (OB-01). Every client engagement starts with pipeline data. AI extraction compresses the most painful Phase 4 step.</td>
+  </tr>
+  <tr>
+    <td><span class="ph ph-high">P1</span></td>
+    <td>F6 — Onboarding Progress Tracker</td>
+    <td>pwin-platform</td>
+    <td>Pre-first-client</td>
+    <td>High</td>
+    <td>Low–Medium</td>
+    <td>The client's first interaction with the platform. Demonstrates professionalism and makes the onboarding process tangible. Can be lightweight — checklist with status tracking.</td>
+  </tr>
+  <tr>
+    <td><span class="ph ph-med">P2</span></td>
+    <td>F2 — AI Stakeholder Extraction</td>
+    <td>pwin-qualify / pwin-strategy</td>
+    <td>Within 3 months</td>
+    <td>Medium–High</td>
+    <td>Medium</td>
+    <td>Reduces client effort on OB-06 (second-highest client effort score). Feeds both Qualify and Win Strategy. Build after F1 proves the extraction pattern.</td>
+  </tr>
+  <tr>
+    <td><span class="ph ph-med">P2</span></td>
+    <td>F5 — Governance Mapping Tool</td>
+    <td>pwin-bid-execution</td>
+    <td>Within 3 months</td>
+    <td>Medium</td>
+    <td>Medium</td>
+    <td>Addresses R-03 (governance resistance). Compresses Phase 3 for BPO clients. But the manual workshop works — this is an optimisation, not a blocker.</td>
+  </tr>
+  <tr>
+    <td><span class="ph ph-low">P3</span></td>
+    <td>F3 — AI Content Library Indexing</td>
+    <td>pwin-bid-execution</td>
+    <td>Within 6 months</td>
+    <td>Medium</td>
+    <td>Medium–High</td>
+    <td>Phase 5 activity — not needed until pilot pursuit reaches managed proposal production. Highest value for retainer retention (switching cost), but not an onboarding blocker.</td>
+  </tr>
+</table>
+
+<div class="sh">Product-Level Impact Summary</div>
+<div class="bt">Each product receives specific feature requests from this onboarding design.</div>
+
+<div class="cg c2">
+  <div class="cd a-red">
+    <div class="cd-l">pwin-bid-execution</div>
+    <div class="cd-t">3 Features Raised</div>
+    <div class="cd-b">
+      <strong>P0:</strong> F4 ITT Ingestion — already designed, build it<br>
+      <strong>P2:</strong> F5 Governance Mapping Tool — interactive stage-gate mapping<br>
+      <strong>P3:</strong> F3 Content Library Indexing — AI tagging and gap analysis<br><br>
+      <em>Execution is the product most impacted by onboarding. It is where clients spend the most time and where AI assistance has the most visible effect.</em>
+    </div>
+  </div>
+  <div class="cd a-pink">
+    <div class="cd-l">pwin-portfolio</div>
+    <div class="cd-t">1 Feature Raised</div>
+    <div class="cd-b">
+      <strong>P1:</strong> F1 AI Pipeline Extraction — CSV/Excel normalisation and mapping<br><br>
+      <em>Portfolio Dashboard is the first thing clients see working. Getting pipeline data in fast is the "quick win" that builds sponsor momentum (mitigates R-02).</em>
+    </div>
+  </div>
+  <div class="cd a-gold">
+    <div class="cd-l">pwin-qualify / pwin-strategy</div>
+    <div class="cd-t">1 Feature Raised</div>
+    <div class="cd-b">
+      <strong>P2:</strong> F2 AI Stakeholder Extraction — from meeting notes, org charts, CRM<br><br>
+      <em>Stakeholder data feeds both Qualify (questions 9–12) and Strategy (Phase 2 elicitation). One extraction, two products benefit.</em>
+    </div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-l">pwin-platform</div>
+    <div class="cd-t">2 Features + 1 Infrastructure</div>
+    <div class="cd-b">
+      <strong>P0:</strong> API Proxy Architecture — multi-tier routing (pre-launch)<br>
+      <strong>P1:</strong> F6 Onboarding Progress Tracker — client-facing SOP in platform<br>
+      <strong>Open:</strong> G4 Onboarding data model and MCP tools<br><br>
+      <em>Platform is the enabling layer. Its pre-launch items gate all enterprise sales. Its onboarding tracker is the first client touchpoint.</em>
+    </div>
+  </div>
+</div>
+
+<div class="sh">Archetype Priority Overlay</div>
+<div class="bt">Feature priority shifts depending on which archetype the first clients are.</div>
+<table class="tb">
+  <tr><th>If First Client Is...</th><th>Raise Priority</th><th>Can Defer</th></tr>
+  <tr><td>Consulting</td><td>F4 (ITT Ingestion), F6 (Tracker)</td><td>F5 (Governance Mapping), F3 (Content Library) — lighter governance, smaller libraries</td></tr>
+  <tr><td>BPO / Outsourcing</td><td>F1 (Pipeline Extraction), F5 (Governance Mapping)</td><td>F2 (Stakeholder) — BPO has operational contacts mapped already</td></tr>
+  <tr><td>Systems Integration</td><td>F2 (Stakeholder Extraction), F4 (ITT Ingestion)</td><td>F1 (Pipeline) — SI portfolios are smaller, manual entry is manageable</td></tr>
+</table>
+
+<div class="co co-g">
+  <div class="co-l">Strategic Guidance</div>
+  <div class="co-t">
+    The safest go-to-market sequence is: <strong>Consulting first</strong> (fastest time to value, lowest onboarding complexity, smallest feature dependency), then <strong>BPO</strong> (largest commercial opportunity, needs F1 and F5 built), then <strong>SI</strong> (most complex, benefits from all features being mature).
+    This gives the platform 2–3 consulting engagements to stabilise before encountering BPO-scale complexity.
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 8: FRICTION REDUCTION
+   ═══════════════════════════════════════════════════════════════════ */
+friction: `
+<div class="sl">The Exam Question</div>
+<div class="st">How Does BidEquity Reduce Onboarding Friction & Cost?</div>
+<div class="sd">
+  The full SOP runs 21 activities across 5 phases. For a BPO client, that is 8–14 weeks and significant client effort.
+  This section systematically examines every onboarding activity and asks: what is the minimum viable version?
+  Where can BidEquity absorb cost? Where is degraded quality acceptable? Where does AI eliminate the step entirely?
+</div>
+
+<div class="sh">Five Friction Reduction Strategies</div>
+<div class="bt">Each strategy is a different lever. Most activities benefit from more than one.</div>
+
+<div class="cg c5">
+  <div class="cd a-grn">
+    <div class="cd-l">Strategy A</div>
+    <div class="cd-t">BIP Absorbs</div>
+    <div class="cd-b">BidEquity does the work using public/purchased data. Client provides nothing or just confirms. Shifts effort from client to BIP.</div>
+  </div>
+  <div class="cd a-blu">
+    <div class="cd-l">Strategy B</div>
+    <div class="cd-t">AI Replaces</div>
+    <div class="cd-b">AI ingests raw, unstructured client data (exports, docs, notes) and produces structured output. Client provides dumps, not curated data.</div>
+  </div>
+  <div class="cd a-amb">
+    <div class="cd-l">Strategy C</div>
+    <div class="cd-t">Degrade Gracefully</div>
+    <div class="cd-b">Accept lower quality at onboarding. System works with partial data and improves over time through use. Not everything needs to be complete on day one.</div>
+  </div>
+  <div class="cd a-pur">
+    <div class="cd-l">Strategy D</div>
+    <div class="cd-t">Template &amp; Default</div>
+    <div class="cd-b">Pre-built templates, industry defaults, and archetype presets mean most configuration is selection not creation. Client picks from a menu, not a blank page.</div>
+  </div>
+  <div class="cd a-cyn">
+    <div class="cd-l">Strategy E</div>
+    <div class="cd-t">Defer to Usage</div>
+    <div class="cd-b">Don't collect it at onboarding — collect it when the client first needs it. Let the natural pursuit lifecycle generate the data through normal platform use.</div>
+  </div>
+</div>
+
+<div class="sh">Activity-by-Activity Friction Analysis</div>
+<div class="bt">Every SOP activity assessed against the five strategies. The "Minimum Viable" column defines what is actually needed to start — not the gold-plated version.</div>
+
+<div class="sh2">Phase 1 — Engage</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Current Friction</th><th>Strategy</th><th>Minimum Viable</th><th>Quality Trade-off</th></tr>
+  <tr>
+    <td>OB-12</td>
+    <td>Executive Sponsor</td>
+    <td>Requires senior client time and internal political capital</td>
+    <td><span class="fe fe-a">C DEGRADE</span></td>
+    <td>A named contact who can authorise data sharing and allocate 1–2 pursuit leads. Formal executive sponsorship can follow once value is demonstrated in Phase 5.</td>
+    <td>Lower initial authority. Acceptable because Phase 5 pilot output creates the business case the sponsor needs. Trying to secure full executive buy-in before showing value is the wrong sequence for sceptical organisations.</td>
+  </tr>
+  <tr>
+    <td>OB-17</td>
+    <td>Commercial Agreement</td>
+    <td>BPO/SI procurement adds 4–8 weeks</td>
+    <td><span class="fe fe-a">C DEGRADE</span> <span class="fe fe-p">D TEMPLATE</span></td>
+    <td><strong>Proof-of-value engagement:</strong> a fixed-price, time-boxed sprint (e.g. £5k for 2-week qualification of 3 pursuits) that bypasses full procurement. Standard SOW template, no MSA negotiation. Convert to retainer only after value proven.</td>
+    <td>Lower commercial commitment upfront. But it also lowers the client's risk, which is often the real barrier. A £5k sprint goes through discretionary spend, not procurement. The 4–8 week procurement cycle only triggers when the client has already seen the output.</td>
+  </tr>
+  <tr>
+    <td>OB-15</td>
+    <td>Security Framework</td>
+    <td>NDA + DPA negotiation, InfoSec review of AI data handling</td>
+    <td><span class="fe fe-p">D TEMPLATE</span> <span class="fe fe-g">A ABSORB</span></td>
+    <td>Pre-built DPA (OB-26) and data handling summary (OB-27) ready for signature. One-page AI data handling factsheet that answers the 5 questions every InfoSec team asks. BIP does the drafting; client just reviews and signs.</td>
+    <td>None — this is a friction reduction through preparation, not quality reduction. Having the DPA and factsheet ready before the conversation means InfoSec review takes days, not weeks.</td>
+  </tr>
+</table>
+
+<div class="sh2">Phase 2 — Scope</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Current Friction</th><th>Strategy</th><th>Minimum Viable</th><th>Quality Trade-off</th></tr>
+  <tr>
+    <td>OB-09</td>
+    <td>Weight Profile Selection</td>
+    <td>Requires client to understand PWIN model before choosing</td>
+    <td><span class="fe fe-p">D TEMPLATE</span></td>
+    <td>BIP selects the archetype based on client description. Three pre-built profiles already exist (Services / Technology / Advisory). Client confirms, not decides. Intra-question tuning deferred to after first assessment cycle.</td>
+    <td>None — the pre-built profiles are already the right answer for 90% of cases. Custom tuning is a refinement, not a prerequisite.</td>
+  </tr>
+  <tr>
+    <td>OB-02</td>
+    <td>Historical Win/Loss Data</td>
+    <td>Client must extract 3–5 years of bid outcomes from CRM or spreadsheets</td>
+    <td><span class="fe fe-g">A ABSORB</span> <span class="fe fe-a">C DEGRADE</span></td>
+    <td><strong>BIP builds a first-pass from public data:</strong> contract award notices (Contracts Finder, TED, Find a Tender), Companies House filings, framework positions. This gives sector-level win rates and a list of known wins. Client then confirms, corrects, and fills gaps — reviewing is faster than creating from scratch.</td>
+    <td>Public data misses losses (only awards are published) and private-sector pursuits. Win rates will be directionally correct but not precise. Acceptable because PWIN benchmarks are calibrated iteratively — first-pass data is refined through use.</td>
+  </tr>
+  <tr>
+    <td>OB-03</td>
+    <td>Financial Profile Data</td>
+    <td>Revenue, margins, SG&A — commercially sensitive, clients resist</td>
+    <td><span class="fe fe-g">A ABSORB</span> <span class="fe fe-a">C DEGRADE</span></td>
+    <td><strong>Listed companies:</strong> BIP extracts from annual reports, investor presentations, analyst notes — all public. <strong>Private companies:</strong> use sector averages from industry benchmarks (e.g. MCA for consulting, NOA for outsourcing). Client only needs to confirm or correct band-level data, not share exact figures.</td>
+    <td>Sector averages instead of actuals. Margin impact modelling is less precise but directionally valid. Most clients will correct band-level estimates voluntarily once they see the model working — it's easier to say "actually our SG&A is closer to 14%" than to provide a full P&L from scratch.</td>
+  </tr>
+  <tr>
+    <td>OB-08</td>
+    <td>Benchmark Calibration</td>
+    <td>Requires win/loss data (OB-02) plus understanding of PWIN bands</td>
+    <td><span class="fe fe-p">D TEMPLATE</span> <span class="fe fe-c">E DEFER</span></td>
+    <td>Start with BidEquity's sector-level defaults (already built into platform knowledge). Refine to client-specific bands after 5–10 assessments generate enough data for statistical calibration.</td>
+    <td>Generic benchmarks for first 2–3 months. Acceptable because the scoring model is comparative (pursuit vs pursuit), not absolute. Even imprecise benchmarks identify the weakest pursuits correctly — the rank order is more robust than the absolute numbers.</td>
+  </tr>
+  <tr>
+    <td>OB-18</td>
+    <td>Pilot Pursuit Selection</td>
+    <td>Requires client to evaluate portfolio and select candidates</td>
+    <td><span class="fe fe-g">A ABSORB</span></td>
+    <td>BIP proposes candidates based on the pipeline data (even partial). Selection criteria are known: genuinely competitive, mid-value, at capture stage, visible intelligence gaps. BIP presents 2–3 options with rationale. Client picks.</td>
+    <td>None — this is how consulting works. The client should not be doing BIP's job. Presenting curated options is faster and demonstrates expertise.</td>
+  </tr>
+</table>
+
+<div class="sh2">Phase 3 — Configure</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Current Friction</th><th>Strategy</th><th>Minimum Viable</th><th>Quality Trade-off</th></tr>
+  <tr>
+    <td>OB-14</td>
+    <td>Governance Mapping</td>
+    <td>Workshop to map PWIN gates to client governance. BPO: heavy institutional frameworks</td>
+    <td><span class="fe fe-p">D TEMPLATE</span> <span class="fe fe-g">A ABSORB</span></td>
+    <td><strong>Pre-built governance templates</strong> for common frameworks (Shipley, client-specific variants for top 5 BPOs). BIP produces a draft mapping before the workshop based on client bid governance documents. Workshop becomes a 90-minute review-and-confirm session, not a 2-day creation exercise.</td>
+    <td>Template may not capture client-specific nuances. But 80% of governance frameworks follow predictable patterns. The remaining 20% is discovered in the first real gate review, not in an abstract mapping workshop.</td>
+  </tr>
+  <tr>
+    <td>OB-10</td>
+    <td>AI Persona Configuration</td>
+    <td>Calibrate Alex Mercer for client's sector and language</td>
+    <td><span class="fe fe-p">D TEMPLATE</span> <span class="fe fe-c">E DEFER</span></td>
+    <td>Alex already adapts via opportunity type selection — the enrichment blocks are pre-built. Zero client effort. Fine-tuning to client-specific language patterns deferred to after 3–5 assessments when Alex has seen enough client-specific scoring to self-calibrate.</td>
+    <td>Alex may miss client-specific jargon in early assessments. Acceptable — Alex's value is in challenging scoring rationale, not in matching client vocabulary. The calibration happens naturally through use.</td>
+  </tr>
+  <tr>
+    <td>OB-11</td>
+    <td>Output Template Alignment</td>
+    <td>PWIN outputs must match client's gate pack formats</td>
+    <td><span class="fe fe-a">C DEGRADE</span> <span class="fe fe-c">E DEFER</span></td>
+    <td>Use PWIN's standard output format for the pilot. Offer to reformat for client governance after the pilot proves value. The content is what matters in Phase 5, not the template chrome.</td>
+    <td>Pilot outputs don't match client templates. Acceptable for a proof-of-value sprint — the client is evaluating the intelligence, not the formatting. Template alignment becomes a retainer deliverable.</td>
+  </tr>
+  <tr>
+    <td>OB-13</td>
+    <td>Pursuit Team Training</td>
+    <td>Briefing session for bid teams on methodology</td>
+    <td><span class="fe fe-a">C DEGRADE</span> <span class="fe fe-g">A ABSORB</span></td>
+    <td><strong>BIP facilitates the first assessment live</strong> with the pursuit team, teaching by doing. A 30-minute primer video + the first facilitated PWIN session replaces a formal training programme. Teams learn the methodology by using it on their own pursuit.</td>
+    <td>No formal certification or methodology deep-dive. Acceptable because bid teams are assessment-literate — they don't need theory, they need to see the tool working on their data. Formal training (if needed) happens during retainer, not onboarding.</td>
+  </tr>
+</table>
+
+<div class="sh2">Phase 4 — Ingest (Highest Friction Phase)</div>
+<div class="co co-g">
+  <div class="co-l">Key Insight</div>
+  <div class="co-t">Phase 4 is where 70% of onboarding friction lives. Every activity requires the client to extract data from their own systems and hand it over in a usable form. The single biggest lever is: <strong>accept raw dumps and let AI do the structuring</strong>. The client's job becomes "give us access" not "curate and format your data for our system".</div>
+</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Current Friction</th><th>Strategy</th><th>Minimum Viable</th><th>Quality Trade-off</th></tr>
+  <tr>
+    <td>OB-01</td>
+    <td>Pipeline Extraction</td>
+    <td>Extract from CRM, normalise to PWIN schema. BPO: fragmented across divisions</td>
+    <td><span class="fe fe-b">B AI</span> <span class="fe fe-a">C DEGRADE</span></td>
+    <td><strong>"Give us your spreadsheet."</strong> Client exports whatever they have — Salesforce report, Excel tracker, even a PDF pipeline review slide. AI (F1) normalises column mappings, deduplicates, maps to pursuit schema. Client reviews the result, not the input. For the proof-of-value sprint, even 5–10 manually entered pursuits is enough — full portfolio comes later.</td>
+    <td>Partial pipeline. Missing pursuits, inconsistent data quality. Acceptable because the Portfolio Dashboard works with partial data and progressively improves. Five pursuits in the system is infinitely more useful than a perfect dataset that takes 6 weeks to curate.</td>
+  </tr>
+  <tr>
+    <td>OB-04</td>
+    <td>Rebid Pipeline</td>
+    <td>Identify contracts due for renewal with dates, values, performance status</td>
+    <td><span class="fe fe-g">A ABSORB</span> <span class="fe fe-b">B AI</span></td>
+    <td><strong>BIP scrapes public contract registers</strong> (Contracts Finder, Find a Tender) for the client's awarded contracts and known expiry dates. Cross-reference with pipeline data from OB-01. Present the draft rebid schedule to the client for correction. This is faster than asking the client to compile it — they often don't have it centralised either.</td>
+    <td>Public registers don't cover all contracts (sub-threshold, private sector, framework call-offs). But for BPO clients where rebids are the dominant pipeline, the largest contracts are publicly visible. Missing contracts are identified when the client reviews the draft.</td>
+  </tr>
+  <tr>
+    <td>OB-05</td>
+    <td>Competitive Intelligence</td>
+    <td>Requires structured CI that most clients don't have</td>
+    <td><span class="fe fe-g">A ABSORB</span> <span class="fe fe-c">E DEFER</span></td>
+    <td><strong>BIP builds the first CI layer from public sources:</strong> framework award lists, contract award notices, Companies House filings, annual reports for listed competitors. Produces a competitor matrix per sector with known framework positions and recent wins. Client enriches with internal knowledge (relationships, pricing intelligence, teaming patterns) over time.</td>
+    <td>No proprietary intelligence at onboarding. Acceptable because the public-data CI layer is something most clients don't have in structured form at all. Internal intelligence is the highest-value addition but it accretes through pursuit activity, not through an onboarding exercise.</td>
+  </tr>
+  <tr>
+    <td>OB-06</td>
+    <td>Stakeholder Map</td>
+    <td>Key buyers, decision-makers, influencers — often in people's heads</td>
+    <td><span class="fe fe-b">B AI</span> <span class="fe fe-c">E DEFER</span></td>
+    <td><strong>Collect during first facilitated assessment, not before it.</strong> When BIP facilitates the pilot PWIN assessment (questions 9–12 cover stakeholder strength), the pursuit team names the stakeholders as part of the scoring discussion. AI captures and structures in real time. No separate "please fill in the stakeholder map" exercise.</td>
+    <td>Stakeholder map only exists for pilot pursuits, not full portfolio. Acceptable — stakeholder maps are pursuit-specific anyway. They are built per-pursuit as each pursuit enters active capture. Trying to map stakeholders across all pursuits at onboarding is wasted effort for pursuits that may never be pursued.</td>
+  </tr>
+  <tr>
+    <td>OB-19</td>
+    <td>Procurement Docs</td>
+    <td>ITT/RFP ingestion — can be 500+ pages for BPO</td>
+    <td><span class="fe fe-b">B AI</span></td>
+    <td><strong>Client uploads the document. AI does the rest.</strong> F4 (ITT Ingestion, already designed) extracts questions, evaluation criteria, compliance requirements, word limits, submission format. Client reviews extracted structure — correcting is faster than re-entering. This is the single highest-impact AI enablement in the entire onboarding.</td>
+    <td>AI extraction may misparse complex table structures or cross-referenced schedules. Acceptable — even 80% accuracy saves days of manual work. The 20% that needs correction is identified during the review step, and the pursuit team is the right reviewer because they need to read the ITT anyway.</td>
+  </tr>
+  <tr>
+    <td>OB-20</td>
+    <td>Buyer Intelligence</td>
+    <td>Org charts, decision structures, policy context</td>
+    <td><span class="fe fe-g">A ABSORB</span> <span class="fe fe-c">E DEFER</span></td>
+    <td><strong>BIP builds a public-source buyer profile:</strong> GOV.UK org structure, ministerial responsibilities, published strategies, recent NAO/PAC reports, CCS framework strategies. For the pilot pursuit only, not all pursuits. Client enriches with internal relationship knowledge during facilitated assessment.</td>
+    <td>No proprietary relationship intelligence. But the public buyer profile is often more structured than what the pursuit team has in their heads. It provides the scaffolding for the client to add the relationships they know — a populated template is easier to enrich than a blank one.</td>
+  </tr>
+  <tr>
+    <td>OB-21</td>
+    <td>Contract Performance (Rebids)</td>
+    <td>KPI dashboards, service credits, satisfaction scores — often contested or unavailable</td>
+    <td><span class="fe fe-a">C DEGRADE</span> <span class="fe fe-c">E DEFER</span></td>
+    <td><strong>Skip at onboarding unless the pilot pursuit is a rebid.</strong> If it is, accept a qualitative self-assessment using the rebid module's 12 questions — the pursuit team scores their own performance perception without needing structured KPI data. Hard data (service credits, CSAT) added later if available.</td>
+    <td>Subjective performance assessment instead of evidence-based. Acceptable because the rebid module is designed to surface decay risk, not to audit contract performance. Self-assessment reveals what the team knows they are worried about — which is often more actionable than a KPI dashboard they have been managing around.</td>
+  </tr>
+  <tr>
+    <td>OB-22</td>
+    <td>CRM History</td>
+    <td>Meeting notes, engagement records — quality depends on CRM discipline</td>
+    <td><span class="fe fe-c">E DEFER</span></td>
+    <td><strong>Don't collect at onboarding.</strong> CRM history is useful context but never blocking. The facilitated PWIN assessment captures current team knowledge directly. Historical CRM data is ingested later (if available) to enrich the intelligence baseline. Most clients' CRM notes are too sparse or too formulaic to be useful at the structuring quality AI would need.</td>
+    <td>No historical context for pilot pursuits beyond what the team remembers. Acceptable — the team that is pursuing the opportunity is the authoritative source of current intelligence. CRM notes are a supplement, not a substitute.</td>
+  </tr>
+</table>
+
+<div class="sh2">Phase 5 — Prove</div>
+<table class="tb">
+  <tr><th>Ref</th><th>Activity</th><th>Current Friction</th><th>Strategy</th><th>Minimum Viable</th><th>Quality Trade-off</th></tr>
+  <tr>
+    <td>OB-16</td>
+    <td>Content Library</td>
+    <td>Access to case studies, CVs, past submissions</td>
+    <td><span class="fe fe-c">E DEFER</span></td>
+    <td><strong>Not needed for proof-of-value.</strong> The pilot demonstrates qualification and win strategy, not proposal production. Content library access is a retainer activity (Stage 4–5). Raising it during onboarding adds effort without contributing to the pilot outcome.</td>
+    <td>No content library at pilot completion. Acceptable — the pilot proves the upstream methodology (qualification, strategy, gate review), not the downstream production. Content library becomes relevant when the first pursuit reaches proposal writing stage.</td>
+  </tr>
+  <tr>
+    <td>OB-07</td>
+    <td>CRM Integration</td>
+    <td>Technical connection to sync pipeline data</td>
+    <td><span class="fe fe-c">E DEFER</span></td>
+    <td><strong>Manual CSV import for the entire proof-of-value period.</strong> CRM integration is a retainer optimisation — it saves time on data refresh, not on initial onboarding. Never make the engagement dependent on client IT delivery timelines.</td>
+    <td>Manual pipeline updates instead of automated sync. Acceptable because the portfolio is small enough during onboarding that manual updates take minutes. Automation becomes valuable at scale (20+ active pursuits with weekly status changes).</td>
+  </tr>
+</table>
+
+<div class="sh">The Minimum Viable Onboarding</div>
+<div class="bt">Applying all five strategies, the minimum viable onboarding looks dramatically different from the full SOP.</div>
+
+<div class="cg c2">
+  <div class="cd a-gold">
+    <div class="cd-l">Full SOP</div>
+    <div class="cd-t">21 Activities, 5 Phases</div>
+    <div class="cd-b">
+      <strong>Consulting:</strong> 4–8 weeks<br>
+      <strong>BPO:</strong> 8–14 weeks<br>
+      <strong>SI:</strong> 7–12 weeks<br><br>
+      Client effort: <strong>High</strong> — extract, curate, format, present data across multiple systems and teams.
+    </div>
+  </div>
+  <div class="cd a-grn">
+    <div class="cd-l">Minimum Viable</div>
+    <div class="cd-t">Fast-Track Sprint</div>
+    <div class="cd-b">
+      <strong>Consulting:</strong> 2–3 weeks<br>
+      <strong>BPO:</strong> 3–5 weeks<br>
+      <strong>SI:</strong> 3–5 weeks<br><br>
+      Client effort: <strong>Low</strong> — provide raw exports, attend 2–3 facilitated sessions, review BIP-prepared outputs.
+    </div>
+  </div>
+</div>
+
+<div class="sh">Fast-Track Sprint — What the Client Actually Does</div>
+<div class="bt">Reducing onboarding to the client's actual effort, stripped of everything BIP absorbs, AI handles, or gets deferred.</div>
+
+<div class="wiz-step">
+  <div class="wiz-num">1</div>
+  <div class="wiz-body">
+    <div class="wiz-title">Day 1 — Kick-off Call (1 hour)</div>
+    <div class="wiz-desc">Sign NDA + lightweight SOW. Name a contact and 1–2 pursuit leads. Provide a pipeline export (any format). Send ITT/RFP documents for 2–3 pilot pursuits. Done.</div>
+  </div>
+</div>
+<div class="wiz-step">
+  <div class="wiz-num">2</div>
+  <div class="wiz-body">
+    <div class="wiz-title">Days 2–5 — BIP Works (Client Does Nothing)</div>
+    <div class="wiz-desc">BIP builds public-data baseline: financial profile, contract register, competitor matrix, buyer intelligence. AI ingests pipeline export and ITT documents. BIP selects archetype, sets default benchmarks, prepares pilot pursuit packs.</div>
+  </div>
+</div>
+<div class="wiz-step">
+  <div class="wiz-num">3</div>
+  <div class="wiz-body">
+    <div class="wiz-title">Week 2 — First Facilitated PWIN Assessment (2 hours per pursuit)</div>
+    <div class="wiz-desc">BIP facilitates live PWIN assessment with each pilot pursuit team. Stakeholder maps, buyer values, competitive positioning, and scoring all captured during the session — not as homework beforehand. This IS the training — teams learn by doing.</div>
+  </div>
+</div>
+<div class="wiz-step">
+  <div class="wiz-num">4</div>
+  <div class="wiz-body">
+    <div class="wiz-title">Week 3 — AI Assurance Review & Gate Output</div>
+    <div class="wiz-desc">Alex Mercer reviews the assessments. BIP produces gate review outputs. Client receives the first tangible deliverable: a PWIN score, category-level diagnosis, and recommended actions per pilot pursuit.</div>
+  </div>
+</div>
+<div class="wiz-step">
+  <div class="wiz-num">5</div>
+  <div class="wiz-body">
+    <div class="wiz-title">Week 3–4 — Review & Convert</div>
+    <div class="wiz-desc">Client reviews outputs. BIP presents findings to sponsor (or named contact). Commercial conversation shifts from "do you want this?" to "how do you want to continue?" — because the value is demonstrated, not promised.</div>
+  </div>
+</div>
+
+<div class="co co-g">
+  <div class="co-l">Client Effort Total</div>
+  <div class="co-t">
+    <strong>1 hour</strong> kick-off call + <strong>30 minutes</strong> finding and sending raw exports + <strong>2 hours per pursuit</strong> facilitated assessment + <strong>1 hour</strong> output review.<br><br>
+    For a 2-pursuit pilot: approximately <strong>7 hours of client time</strong> over 3 weeks. Compare with the full SOP: weeks of data extraction, governance workshops, training sessions, and template alignment across multiple teams.<br><br>
+    The difference is who does the work. In the full SOP, the client curates. In the fast-track sprint, BIP and AI curate — the client confirms.
+  </div>
+</div>
+
+<div class="sh">What Fills In Later</div>
+<div class="bt">The fast-track sprint is not the end of onboarding — it is the beginning of a progressive enrichment cycle. Activities deferred during onboarding are completed naturally through platform use.</div>
+
+<table class="tb">
+  <tr><th>Deferred Item</th><th>When It Fills In</th><th>How</th></tr>
+  <tr><td>Full portfolio pipeline</td><td>Weeks 4–8</td><td>Client adds pursuits as they enter capture. Manual at first, CRM sync later.</td></tr>
+  <tr><td>Client-specific benchmarks</td><td>After 5–10 assessments</td><td>Platform auto-calculates client-specific bands from accumulated scoring data.</td></tr>
+  <tr><td>Stakeholder maps (non-pilot)</td><td>As pursuits activate</td><td>Each facilitated assessment captures stakeholders for that pursuit.</td></tr>
+  <tr><td>Competitive intelligence (proprietary)</td><td>Ongoing</td><td>Pursuit teams add competitor intel during assessments. AI enriches from capture notes.</td></tr>
+  <tr><td>Content library indexing</td><td>When proposal production starts</td><td>F3 indexes library at point of need, not point of onboarding.</td></tr>
+  <tr><td>Governance mapping refinement</td><td>After first real gate review</td><td>First live gate review reveals mapping gaps. Fix in situ, not in abstract.</td></tr>
+  <tr><td>Output template alignment</td><td>During retainer</td><td>Client provides templates when they need outputs in their format. BIP aligns on demand.</td></tr>
+  <tr><td>Contract performance data</td><td>When rebid pursuits activate</td><td>Rebid module collects performance data per-pursuit at point of need.</td></tr>
+</table>
+
+<div class="sh">Cost Reduction Summary</div>
+<div class="bt">Impact of friction reduction strategies on BIP's cost to onboard and the client's cost to engage.</div>
+
+<table class="tb">
+  <tr><th>Cost Driver</th><th>Full SOP</th><th>Fast-Track Sprint</th><th>Reduction</th></tr>
+  <tr><td>BIP consultant days (Consulting)</td><td>8–12 days</td><td>4–5 days</td><td>~55%</td></tr>
+  <tr><td>BIP consultant days (BPO)</td><td>15–25 days</td><td>6–8 days</td><td>~65%</td></tr>
+  <tr><td>Client staff hours</td><td>40–80 hours (across multiple people)</td><td>7–10 hours</td><td>~85%</td></tr>
+  <tr><td>Calendar elapsed (Consulting)</td><td>4–8 weeks</td><td>2–3 weeks</td><td>~55%</td></tr>
+  <tr><td>Calendar elapsed (BPO)</td><td>8–14 weeks</td><td>3–5 weeks</td><td>~65%</td></tr>
+  <tr><td>AI API cost (onboarding)</td><td>N/A (manual)</td><td>~£15–30 (pipeline + ITT + assessment)</td><td>New cost, but trivial vs. consultant time saved</td></tr>
+  <tr><td>Revenue at risk during onboarding</td><td>High — long onboarding without visible output</td><td>Low — tangible output by week 3</td><td>Sponsor patience is the real currency</td></tr>
+</table>
+
+<div class="sh">Architectural Enablers</div>
+<div class="bt">The fast-track sprint depends on platform capabilities that must exist. These are the non-negotiable build requirements.</div>
+
+<div class="cg c3">
+  <div class="cd a-red">
+    <div class="cd-l">Must Have for Sprint</div>
+    <div class="cd-t">F4 — ITT Ingestion</div>
+    <div class="cd-b">Without this, the client must manually re-enter every ITT question and evaluation criterion. This is the single largest friction point. Already designed — just needs to be built.</div>
+  </div>
+  <div class="cd a-red">
+    <div class="cd-l">Must Have for Sprint</div>
+    <div class="cd-t">PWIN Qualify — Working</div>
+    <div class="cd-b">The facilitated assessment IS the sprint's core activity. Qualify must work end-to-end: scoring, Alex assurance review, output generation. This is the product, not a feature.</div>
+  </div>
+  <div class="cd a-amb">
+    <div class="cd-l">Should Have for Sprint</div>
+    <div class="cd-t">F1 — Pipeline Extraction</div>
+    <div class="cd-b">AI normalisation of CSV/Excel exports. Without this, BIP manually maps columns — adds ~1 day per client. Buildable as a skill config.</div>
+  </div>
+</div>
+
+<div class="co co-r">
+  <div class="co-l">The Exam Answer</div>
+  <div class="co-t">
+    BidEquity reduces onboarding friction by <strong>inverting who does the work</strong>. Instead of asking the client to extract, curate, and present their data, BIP builds the first layer from public sources and AI-processed raw exports. The client's role shifts from <em>data provider</em> to <em>data reviewer</em>. The proof-of-value sprint is 7 hours of client time and 3 weeks elapsed. Everything else fills in through use. The cost is £15–30 in API calls and 5 BIP consultant days — paid for by the setup fee, justified by the output.
+  </div>
+</div>
+`,
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB 9: NEXT SESSION
+   ═══════════════════════════════════════════════════════════════════ */
+next: `
+<div class="sl">Session Protocol</div>
+<div class="st">Next Session</div>
+<div class="sd">
+  Summary of what was decided, what to work on next, and open questions.
+</div>
+
+<div class="sh">What Was Decided</div>
+<div class="bt">
+  <strong>1.</strong> The 29-activity onboarding inventory is split into three workstreams: Pre-Launch Prerequisites (7), Per-Client SOP (21), Platform Features (6).<br>
+  <strong>2.</strong> A 5-phase onboarding sequence (Engage → Scope → Configure → Ingest → Prove) with hard dependencies and variant-aware effort estimates.<br>
+  <strong>3.</strong> Every activity has acceptance criteria ("Done When").<br>
+  <strong>4.</strong> Six platform features identified to replace or accelerate manual SOP steps, with product ownership and build priority.<br>
+  <strong>5.</strong> Feature prioritisation: F4 (ITT Ingestion) and API Proxy are P0. F1 (Pipeline Extraction) and F6 (Tracker) are P1.<br>
+  <strong>6.</strong> Go-to-market sequence recommendation: Consulting → BPO → SI.<br>
+  <strong>7.</strong> All 13 inventory risks mapped to specific design mitigations.<br>
+  <strong>8.</strong> Three original gaps (sequencing, done criteria, platform readiness) resolved. Four new gaps identified (G4–G7).<br>
+  <strong>9.</strong> Five friction reduction strategies defined (Absorb, AI Replace, Degrade Gracefully, Template/Default, Defer to Usage).<br>
+  <strong>10.</strong> Fast-Track Sprint designed: 7 hours client effort, 3 weeks elapsed, 5 BIP consultant days. Inverts the work — BIP and AI curate, client confirms.<br>
+  <strong>11.</strong> Minimum viable onboarding reduces BPO calendar time from 8–14 weeks to 3–5 weeks (65% reduction) and client effort from 40–80 hours to 7–10 hours (85% reduction).<br>
+  <strong>12.</strong> Progressive enrichment model: deferred items fill in through natural platform use, not separate onboarding exercises.
+</div>
+
+<div class="sh">What to Work on Next</div>
+<div class="bt">
+  <strong>1.</strong> Pre-launch critical path — begin OB-23 (Cyber Essentials) and OB-24 (SC Clearance) immediately.<br>
+  <strong>2.</strong> DPA template (OB-26) and data residency summary (OB-27) — draft documents for legal review.<br>
+  <strong>3.</strong> API Proxy Architecture (OB-25) — design and build the provider-agnostic routing layer.<br>
+  <strong>4.</strong> F4 ITT Ingestion — this is already designed in V1 scope. Prioritise build as the onboarding proof-of-value feature.<br>
+  <strong>5.</strong> F6 Onboarding Tracker — lightweight platform module (can be simple checklist). Design data model (G4).<br>
+  <strong>6.</strong> F1 Pipeline Extraction — design the AI skill config for CSV/Excel normalisation.<br>
+  <strong>7.</strong> Onboarding fee model (G7) — stress-test £10k against variant effort matrix, propose tiered pricing.<br>
+  <strong>8.</strong> Fast-track sprint commercial model — design the £5k proof-of-value sprint as a packaged product with fixed scope and deliverables.<br>
+  <strong>9.</strong> Public data source inventory — identify which APIs and data sources to integrate for the "BIP Absorbs" strategy (Contracts Finder, Companies House, Find a Tender, framework award lists).<br>
+  <strong>10.</strong> Sector intelligence reusability analysis — assess how much of the public-data baseline (competitor matrix, buyer profiles, contract registers) is reusable across clients in the same sector.
+</div>
+
+<div class="sh">Open Questions</div>
+<table class="tb">
+  <tr><th>Q#</th><th>Question</th><th>Impact</th><th>Owner</th></tr>
+  <tr><td>Q1</td><td>Which archetype is the first target client? This determines which features to build first.</td><td>Feature priority order changes based on answer</td><td>Paul</td></tr>
+  <tr><td>Q2</td><td>Is Defence/Justice a launch market or a 6-month target? Determines urgency of SC clearance.</td><td>If launch market, SC is already late. If 6-month target, current timeline is acceptable.</td><td>Paul</td></tr>
+  <tr><td>Q3</td><td>What is the target date for first enterprise pitch? All pre-launch items must be complete by this date.</td><td>Determines the critical path deadline for OB-23, OB-25, OB-26, OB-27</td><td>Paul</td></tr>
+  <tr><td>Q4</td><td>Should the onboarding tracker (F6) be a standalone platform module or a section within an existing product (e.g. Portfolio)?</td><td>Affects data model design (G4) and MCP tool surface</td><td>Design decision</td></tr>
+  <tr><td>Q5</td><td>What is the appetite for tiered onboarding pricing vs. single fee with scope variations?</td><td>Affects commercial positioning and variant effort disclosure</td><td>Paul</td></tr>
+  <tr><td>Q6</td><td>Is the fast-track sprint (£5k proof-of-value, 2–3 pursuits, 3 weeks) the right entry product, or should the full SOP remain the default?</td><td>Determines whether BIP leads with a low-commitment sprint or a full onboarding engagement. Sprint is faster to close but lower initial revenue.</td><td>Paul</td></tr>
+  <tr><td>Q7</td><td>Which public data sources should BIP invest in for the "BIP Absorbs" strategy? (Contracts Finder API, TED API, Companies House API, framework award lists)</td><td>Determines build effort for the pre-built intelligence layer that replaces client data extraction. Some sources need API integration, others are manual.</td><td>Paul / BIP Tech</td></tr>
+  <tr><td>Q8</td><td>How much of the "BIP Absorbs" intelligence layer is reusable across clients in the same sector?</td><td>If Serco competitor matrix is 80% reusable for Capita, the second BPO onboarding is dramatically cheaper. This affects the economics of sector specialisation.</td><td>Design decision</td></tr>
+</table>
+`
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAVIGATION & RENDERING
+   ═══════════════════════════════════════════════════════════════════ */
+const nav = document.getElementById('nav');
+const app = document.getElementById('app');
+let activeTab = TABS[0].id;
+
+function render() {
+  nav.innerHTML = TABS.map(t =>
+    '<button class="nav-b' + (t.id === activeTab ? ' on' : '') + '" data-t="' + t.id + '">' + t.l + '</button>'
+  ).join('');
+
+  app.innerHTML = TABS.map(t =>
+    '<div class="ct' + (t.id === activeTab ? ' active' : '') + '" id="tab-' + t.id + '">' + CONTENT[t.id] + '</div>'
+  ).join('');
+
+  nav.querySelectorAll('.nav-b').forEach(b => {
+    b.addEventListener('click', () => { activeTab = b.dataset.t; render(); });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
