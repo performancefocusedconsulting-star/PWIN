@@ -44,10 +44,21 @@ async function main() {
     process.exit(1);
   }
 
-  // Find all test files
-  const testFiles = readdirSync(TEST_DIR)
-    .filter(f => f.startsWith('test-') && f.endsWith('.js'))
-    .sort();
+  // Test execution order follows the skill dependency chain (see WORKFLOW.md)
+  // Tier 1 runs first (no dependencies), Tier 2 depends on Tier 1 output, etc.
+  const testFiles = [
+    // Tier 1: Document Ingestion (no dependencies)
+    'test-itt-extraction.js',
+    'test-procurement-briefing.js',
+    // Tier 2: Analysis of Extracted Data (depends on Tier 1)
+    'test-compliance-coverage.js',
+    // Tier 3: Seeded Data Tests (depends on Tier 1 + seed data)
+    // test-timeline-analysis.js — TODO
+    // test-win-theme-audit.js — TODO
+    // test-gate-readiness.js — TODO
+  ].filter(f => {
+    try { readdirSync(TEST_DIR).includes(f); return true; } catch { return false; }
+  });
 
   console.log(`\n  Found ${testFiles.length} tests:\n`);
   testFiles.forEach((f, i) => console.log(`    ${i + 1}. ${f}`));
