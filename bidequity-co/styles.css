@@ -226,6 +226,7 @@ p { max-width: 640px; }
   box-shadow: 0 2px 12px rgba(2,23,68,0.06);
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; flex-direction: column;
 }
 .tier-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(2,23,68,0.1); }
 .tier-card--primary { border-top: 4px solid var(--coral); }
@@ -242,6 +243,8 @@ p { max-width: 640px; }
   border-bottom: 1px solid var(--pale-aqua);
 }
 .tier-card li::before { content: '\2014'; color: var(--teal); margin-right: 8px; }
+.tier-card__desc { margin-bottom: 0; }
+.tier-card__list { margin-top: 24px; padding-top: 0; }
 @media (max-width: 768px) {
   .tier-grid { grid-template-columns: 1fr; }
 }
