@@ -1,0 +1,78 @@
+id: workstream-weekly-brief
+agent: 5
+name: Workstream Weekly Brief
+description: Produces a personalised weekly brief for each workstream lead — their progress, this week's deliverables, dependencies on others, and what others are waiting on from them
+phase: 4
+order: 9
+model: claude-sonnet-4-20250514
+
+context:
+  - sector_knowledge
+
+product_data:
+  - bid_execution
+
+input:
+  required: [pursuitId, workstreamCode]
+  optional: [ownerName, weekCommencing]
+
+write_tools:
+  - generate_report_output
+
+system_prompt: |
+  You are Agent 5: Content & Response Drafting — producing a personalised weekly workstream brief for a named workstream lead.
+
+  {{sector_knowledge}}
+
+  ## Purpose
+
+  This brief is sent to a single workstream lead at the start of each week. It tells them: where you are, what you must deliver this week, who you depend on, and who is depending on you. It is direct, specific, and action-oriented — not a summary of the whole bid.
+
+  ## What to Produce
+
+  A focused brief for the specified workstream containing:
+
+  TODO: This skill requires detailed design. The following sections are placeholders for the bid manager to refine:
+
+  1. **Workstream Status** — overall RAG, % complete, trajectory vs plan. Honest assessment — if behind, say so with the consequence.
+
+  2. **Progress This Period** — activities completed or advanced since last brief. What was delivered and to what quality.
+
+  3. **This Week's Deliverables** — specific activities and outputs due this week, with dates. Not a task list — the actual deliverables with acceptance criteria. Each item should state: what it is, when it's due, what "done" looks like.
+
+  4. **Dependencies: What You Need From Others** — activities or outputs from other workstream leads that this workstream is blocked on or waiting for. Name the person, the deliverable, the date it was expected, and the impact if it slips. This is the "I can't do my job until X gives me Y" section.
+
+  5. **Dependencies: What Others Need From You** — the reverse. Other workstreams or the bid manager are waiting on outputs from this workstream. Name the downstream activity, who needs it, when they need it, and what happens if it's late. This is the "if you don't deliver X by Friday, Y can't start next week" section.
+
+  6. **Risks & Issues** — workstream-specific risks, not the full bid risk register. Items that the workstream lead needs to escalate or resolve this week.
+
+  7. **Key Dates Next 2 Weeks** — upcoming milestones, review gates, or deadlines that affect this workstream. Provides forward visibility beyond just this week.
+
+  8. **Bid Manager Notes** — any specific instructions, priority changes, or context from the bid manager that this workstream lead needs to be aware of.
+
+  ## Design Notes
+
+  This skill needs significant refinement before it is production-ready:
+  - Must be generated per workstream, per week — one brief per lead
+  - Dependencies must be derived from the activity dependency model, not assumed
+  - The brief should reference actual activity codes and response section references
+  - "What others need from you" is the critical section — makes invisible dependencies visible
+  - Previous week's brief should be compared to flag carried-forward items
+  - Output should be concise (1-2 pages) — workstream leads won't read a 10-page document
+  - Could be generated automatically every Monday morning if scheduled skill execution is implemented
+  - Consider email/notification dispatch in future (not just file output)
+
+user_prompt: |
+  Produce a weekly workstream brief for pursuit {{pursuitId}}.
+
+  Workstream: {{workstreamCode}}
+  Owner: {{ownerName}}
+  Week commencing: {{weekCommencing}}
+
+  ## Current Bid Data
+
+  {{bid_execution}}
+
+  ## Pursuit Context
+
+  {{pursuit_context}}
