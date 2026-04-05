@@ -8216,50 +8216,87 @@ Use this checklist before marking any activity as mapping-complete:
   phase: 'DEV',
   role: 'Delivery Director',
   output: 'BC/exit plan',
-  dependencies: [],                        // Day-1 start
+  dependencies: [],
   effortDays: 3,
   teamSize: 1,
   parallelisationType: 'S',
-  // Note: unique to DEL — no SOL equivalent. Required in most government contracts.
-  // BC/DR addresses service resilience during the contract.
-  // Exit/handback addresses what happens when the contract ends.
-
   inputs: [
-    { from: 'SOL-03', artifact: 'Target operating model', note: 'What needs to be resilient / handed back' },
-    { from: 'SOL-05', artifact: 'Technology solution design', note: 'Systems that need DR and data that needs to be returned' },
-    { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule', note: 'Workforce that reverse-TUPEs on exit' },
-    { external: true, artifact: 'ITT documentation — BC/DR requirements, exit provisions, handback obligations' },
-    { external: true, artifact: 'Contract documentation — exit schedule, termination provisions, data return obligations' },
-    { external: true, artifact: 'Corporate BC/DR standards and frameworks' }
+    {
+      from: 'SOL-03',
+      artifact: 'Target operating model',
+      note: 'What needs to be resilient / handed back'
+    },
+    {
+      from: 'SOL-05',
+      artifact: 'Technology solution design',
+      note: 'Systems that need DR and data that needs to be returned'
+    },
+    {
+      from: 'SOL-06',
+      artifact: 'Staffing model with TUPE schedule',
+      note: 'Workforce that reverse-TUPEs on exit'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — BC/DR requirements, exit provisions, handback obligations'
+    },
+    {
+      external: true,
+      artifact: 'Contract documentation — exit schedule, termination provisions, data return obligations'
+    },
+    {
+      external: true,
+      artifact: 'Corporate BC/DR standards and frameworks'
+    }
   ],
-
   subs: [
     {
       id: 'DEL-05.1',
       name: 'Business Continuity & Disaster Recovery',
-      description: 'Design how the service continues during major disruption',
-
+      description: 'Design the BCDR approach for the proposed service',
       tasks: [
         {
           id: 'DEL-05.1.1',
-          name: 'Design business continuity and disaster recovery approach — how the service continues during major disruption, site loss, technology failure, or pandemic',
-          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Technical Lead / Solution Architect', i: 'Commercial Lead' },
-          inputs: [
-            { from: 'SOL-03', artifact: 'Target operating model' },
-            { from: 'SOL-05', artifact: 'Technology solution design' },
-            { external: true, artifact: 'ITT documentation — BC/DR requirements' },
-            { external: true, artifact: 'Corporate BC/DR standards and frameworks' }
-          ],
+          name: 'Identify BCDR requirements from ITT — contractual obligations, RTO/RPO targets, specific scenarios the client requires coverage for',
+          raci: {
+            r: 'Delivery Director',
+            a: 'Bid Director',
+            c: 'Solution Architect / IT',
+            i: 'Legal Lead'
+          },
           outputs: [
             {
-              name: 'Business continuity and disaster recovery plan',
-              format: 'Structured BC/DR document',
+              name: 'BCDR requirements register',
+              format: 'Requirements list',
               quality: [
-                'Key services and critical processes identified with recovery time objectives (RTO) and recovery point objectives (RPO)',
-                'BC scenarios covered — site loss, technology failure, supply chain failure, pandemic, key person loss',
-                'DR approach for technology designed — failover, backup, replication, restoration',
-                'BC invocation and communication procedures outlined',
-                'Testing and exercising approach defined — how BC/DR will be validated'
+                'All contractual BCDR requirements extracted from ITT',
+                'RTO and RPO targets documented per service element',
+                'Specific scenarios identified — site loss, technology failure, pandemic, supply chain disruption',
+                'Client expectations clear — not just contractual but what they actually need'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-05.1.2',
+          name: 'Design BCDR approach — how the service continues during major disruption, aligned to contractual requirements and proportionate to risk',
+          raci: {
+            r: 'Delivery Director',
+            a: 'Bid Director',
+            c: 'Solution Architect / Technology SMEs',
+            i: 'Commercial Lead'
+          },
+          outputs: [
+            {
+              name: 'BCDR plan',
+              format: 'Plan document',
+              quality: [
+                'BCDR approach covers all identified scenarios',
+                'RTO/RPO targets achievable with proposed approach',
+                'Cost of BCDR proportionate to risk and included in financial model',
+                'Testing and exercising approach defined'
               ]
             }
           ],
@@ -8271,29 +8308,52 @@ Use this checklist before marking any activity as mapping-complete:
     {
       id: 'DEL-05.2',
       name: 'Exit & Handback Planning',
-      description: 'Design how the contract ends — reverse TUPE, data return, knowledge transfer, asset handback',
-
+      description: 'Design the exit and handback plan for contract end',
       tasks: [
         {
           id: 'DEL-05.2.1',
-          name: 'Design exit and handback plan — reverse TUPE, data return, knowledge transfer, asset handback, service continuity during exit period',
-          raci: { r: 'Delivery Director', a: 'Bid Director', c: 'Legal / HR Lead / Technical Lead', i: 'Commercial Lead' },
-          inputs: [
-            { from: 'SOL-06', artifact: 'Staffing model with TUPE schedule' },
-            { from: 'SOL-05', artifact: 'Technology solution design' },
-            { external: true, artifact: 'Contract documentation — exit schedule, termination provisions, data return obligations' }
-          ],
+          name: 'Identify exit obligations from ITT — TUPE reverse transfer, data return, knowledge transfer, asset handback, service continuity during exit',
+          raci: {
+            r: 'Delivery Director',
+            a: 'Bid Director',
+            c: 'Legal Lead / HR Lead',
+            i: 'Commercial Lead'
+          },
           outputs: [
             {
-              name: 'BC/exit plan (validated — activity primary output)',
-              format: 'Comprehensive BC/DR and exit document',
+              name: 'Exit obligations register',
+              format: 'Requirements list',
               quality: [
-                'Exit timeline and phasing designed — aligned to contract termination provisions',
-                'Reverse TUPE process outlined — workforce transfer to successor or client',
-                'Data return and system decommission approach designed — what data, what format, what timeline',
-                'Knowledge transfer approach designed — documentation, shadowing, handover period',
-                'Asset handback identified — property, equipment, IP, licences',
-                'Service continuity during exit period assured — no degradation while handing back'
+                'All contractual exit obligations extracted',
+                'TUPE reverse transfer requirements documented',
+                'Data return and destruction obligations identified',
+                'Asset handback schedule requirements noted',
+                'Service continuity during exit period defined'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'DEL-05.2.2',
+          name: 'Design exit and handback plan — reverse TUPE, data return, knowledge transfer, asset handback, service continuity during exit period',
+          raci: {
+            r: 'Delivery Director',
+            a: 'Bid Director',
+            c: 'HR Lead / Legal Lead',
+            i: 'Solution Architect'
+          },
+          outputs: [
+            {
+              name: 'BC/exit plan (activity primary output)',
+              format: 'Combined BC and exit plan',
+              quality: [
+                'Exit timeline realistic — typically 6-12 months for complex services',
+                'Knowledge transfer approach designed — not just data handover',
+                'Asset handback schedule aligned to exit timeline',
+                'Service continuity guaranteed throughout exit period',
+                'Exit costs included in financial model'
               ]
             }
           ],
@@ -8303,24 +8363,34 @@ Use this checklist before marking any activity as mapping-complete:
       ]
     }
   ],
-
   outputs: [
     {
       name: 'BC/exit plan',
-      format: 'Comprehensive BC/DR and exit document',
+      format: 'Combined BCDR and exit plan',
       quality: [
-        'BC/DR approach designed with RTO/RPO per critical service',
-        'DR technology approach defined — failover, backup, restoration',
-        'Exit and handback plan designed — reverse TUPE, data, knowledge, assets',
-        'Service continuity assured during both disruption and exit'
+        'BCDR covers all contractual scenarios with achievable RTO/RPO',
+        'Exit plan covers TUPE, data, knowledge, assets, and service continuity',
+        'Costs included in financial model',
+        'Proportionate to contract value and risk'
       ]
     }
   ],
-
   consumers: [
-    { activity: 'PRD-02', consumes: 'BC/exit plan', usage: 'Proposal drafting references BC/DR and exit plan for relevant response sections' },
-    { activity: 'COM-01', consumes: 'BC/exit plan', usage: 'Should-cost model includes BC/DR infrastructure costs' },
-    { activity: 'LEG-01', consumes: 'BC/exit plan', usage: 'Contract review validates exit provisions align with our plan' }
+    {
+      activity: 'PRD-02',
+      consumes: 'BC/exit plan',
+      usage: 'Proposal drafting references BC/DR and exit plan for relevant response sections'
+    },
+    {
+      activity: 'COM-01',
+      consumes: 'BC/exit plan',
+      usage: 'Should-cost model includes BC/DR infrastructure costs'
+    },
+    {
+      activity: 'LEG-01',
+      consumes: 'BC/exit plan',
+      usage: 'Contract review validates exit provisions align with our plan'
+    }
   ]
 }
 ```
@@ -8865,65 +8935,109 @@ Use this checklist before marking any activity as mapping-complete:
   phase: 'DEV',
   role: 'Supply Chain Lead',
   output: 'Partner pricing schedules',
-  dependencies: ['SUP-02', 'SOL-04'],
+  dependencies: [
+    'SUP-02',
+    'SOL-04'
+  ],
   effortDays: 8,
   teamSize: 1,
   parallelisationType: 'S',
-  // Note: SUP-04 manages the partner side of the pricing process.
-  // COM-03 manages the commercial side (structure, negotiation, integration).
-  // SUP-04 ensures partners submit on time, in format, and resolves issues.
-
   inputs: [
-    { from: 'SUP-02', artifact: 'Partner solution inputs pack', note: 'Confirmed partner scope — what they are pricing' },
-    { from: 'COM-03.1.2', artifact: 'Partner pricing request packs', note: 'The structured pricing requests issued by COM-03' },
-    { from: 'SOL-04', artifact: 'Service delivery model', note: 'Delivery context for partner pricing' }
+    {
+      from: 'SUP-02',
+      artifact: 'Partner solution inputs pack',
+      note: 'Confirmed partner scope — what they are pricing'
+    },
+    {
+      from: 'COM-03.1.2',
+      artifact: 'Partner pricing request packs',
+      note: 'The structured pricing requests issued by COM-03'
+    },
+    {
+      from: 'SOL-04',
+      artifact: 'Service delivery model',
+      note: 'Delivery context for partner pricing'
+    }
   ],
-
   subs: [
     {
       id: 'SUP-04.1',
-      name: 'Partner Pricing Management',
-      description: 'Manage the partner pricing submission process — ensure timely, complete, and aligned submissions',
-
+      name: 'Partner Pricing Collection',
+      description: 'Manage the collection of partner pricing inputs',
       tasks: [
         {
           id: 'SUP-04.1.1',
-          name: 'Manage partner pricing submission process — ensure partners respond to COM-03 pricing requests on time and in the required format',
-          raci: { r: 'Supply Chain Lead', a: 'Commercial Lead', c: 'Bid Manager', i: 'Partner Leads' },
-          inputs: [
-            { from: 'COM-03.1.2', artifact: 'Partner pricing request packs' },
-            { from: 'SUP-02', artifact: 'Partner solution inputs pack' }
-          ],
+          name: 'Issue pricing requirements to partners — scope, format, assumptions, deadline, and alignment to our commercial model structure',
+          raci: {
+            r: 'Supply Chain Lead',
+            a: 'Bid Director',
+            c: 'Commercial Lead',
+            i: 'Partner'
+          },
           outputs: [
             {
-              name: 'Partner pricing submissions',
-              format: 'Per-partner pricing schedules',
+              name: 'Partner pricing brief',
+              format: 'Pricing request document',
               quality: [
-                'All partners have submitted pricing by the deadline',
-                'Submissions are in the required format — aligned to our pricing structure',
-                'Late or non-compliant submissions flagged and escalated immediately'
+                'Scope clearly defined — what exactly are partners pricing?',
+                'Format specified — aligns to our cost model structure',
+                'Assumptions shared — volume, duration, indexation, risk allocation',
+                'Deadline clear with contingency for iteration'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'SUP-04.1.2',
+          name: 'Collect and validate partner pricing submissions — check completeness, alignment to scope, and reasonableness',
+          raci: {
+            r: 'Supply Chain Lead',
+            a: 'Bid Director',
+            c: 'Commercial Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Validated partner pricing',
+              format: 'Reviewed pricing submissions',
+              quality: [
+                'All partner pricing received by deadline',
+                'Completeness checked — all scope items priced, no gaps',
+                'Alignment verified — partner assumptions match our assumptions',
+                'Reasonableness checked — pricing in line with market expectations'
               ]
             }
           ],
           effort: 'Medium',
-          type: 'Parallel'
-        },
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'SUP-04.2',
+      name: 'Partner Pricing Alignment',
+      description: 'Resolve pricing gaps and align partner pricing with our commercial model',
+      tasks: [
         {
-          id: 'SUP-04.1.2',
-          name: 'Facilitate pricing clarification and iteration — resolve gaps, align assumptions between partners and our commercial model',
-          raci: { r: 'Supply Chain Lead', a: 'Commercial Lead', c: 'Finance / Solution Architect', i: 'Partner Leads' },
-          inputs: [
-            { from: 'SUP-04.1.1', artifact: 'Partner pricing submissions' },
-            { from: 'COM-03.2.1', artifact: 'Partner pricing validation assessment', note: 'Issues identified by COM-03 review' }
-          ],
+          id: 'SUP-04.2.1',
+          name: 'Facilitate pricing clarification and iteration — resolve gaps, misalignments, and assumption mismatches between partners and our model',
+          raci: {
+            r: 'Supply Chain Lead',
+            a: 'Bid Director',
+            c: 'Commercial Lead / Partner',
+            i: null
+          },
           outputs: [
             {
-              name: 'Partner pricing schedules (clarified — activity primary output)',
-              format: 'Final partner pricing submissions',
+              name: 'Partner pricing schedules (activity primary output)',
+              format: 'Finalised partner pricing for integration into COM-03',
               quality: [
-                'All pricing queries resolved — gaps closed, assumptions aligned',
-                'Partner pricing ready for COM-03 negotiation and integration',
-                'Any outstanding issues or caveats documented for COM-03'
+                'All gaps and misalignments resolved',
+                'Partner pricing integrated into our cost model structure',
+                'Assumptions aligned between partner and our model',
+                'Final partner pricing locked and feeds COM-03'
               ]
             }
           ],
@@ -8933,21 +9047,24 @@ Use this checklist before marking any activity as mapping-complete:
       ]
     }
   ],
-
   outputs: [
     {
       name: 'Partner pricing schedules',
-      format: 'Per-partner pricing submissions (clarified)',
+      format: 'Finalised partner pricing',
       quality: [
-        'All partners have submitted complete pricing on time',
-        'Queries resolved and assumptions aligned',
-        'Ready for COM-03 negotiation and integration'
+        'All partners priced their scope completely',
+        'Assumptions aligned with our commercial model',
+        'Pricing validated for reasonableness',
+        'Feeds COM-03 for integration into overall pricing'
       ]
     }
   ],
-
   consumers: [
-    { activity: 'COM-03', consumes: 'Partner pricing schedules', usage: 'Commercial structure and pricing integration' }
+    {
+      activity: 'COM-03',
+      consumes: 'Partner pricing schedules',
+      usage: 'Commercial structure and pricing integration'
+    }
   ]
 }
 ```
@@ -8964,42 +9081,55 @@ Use this checklist before marking any activity as mapping-complete:
   phase: 'DEV',
   role: 'Supply Chain Lead',
   output: 'Partner case studies & CVs',
-  dependencies: ['SUP-01'],
+  dependencies: [
+    'SUP-01'
+  ],
   effortDays: 5,
   teamSize: 2,
   parallelisationType: 'P',
-
   inputs: [
-    { from: 'SUP-01', artifact: 'Partner shortlist with rationale' },
-    { from: 'SOL-10', artifact: 'Evidence requirements matrix', note: 'What evidence is needed from partners — case studies, CVs, credentials' },
-    { from: 'SOL-10.1.3', artifact: 'Prioritised evidence gap register', note: 'Which gaps require partner evidence to close' },
-    { external: true, artifact: 'ITT documentation — evidence requirements, CV format, case study format' }
+    {
+      from: 'SUP-01',
+      artifact: 'Partner shortlist with rationale'
+    },
+    {
+      from: 'SOL-10',
+      artifact: 'Evidence requirements matrix',
+      note: 'What evidence is needed from partners — case studies, CVs, credentials'
+    },
+    {
+      from: 'SOL-10.1.3',
+      artifact: 'Prioritised evidence gap register',
+      note: 'Which gaps require partner evidence to close'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — evidence requirements, CV format, case study format'
+    }
   ],
-
   subs: [
     {
       id: 'SUP-05.1',
-      name: 'Partner Evidence Collection',
-      description: 'Collect, review, and prepare partner evidence for the bid',
-
+      name: 'Evidence Requirements',
+      description: 'Issue evidence requirements to partners and manage collection',
       tasks: [
         {
           id: 'SUP-05.1.1',
           name: 'Issue evidence requirements to partners — case studies, CVs, credentials, certifications required per SOL-10 evidence matrix',
-          raci: { r: 'Supply Chain Lead', a: 'Bid Manager', c: 'Bid Coordinator', i: 'Partner Leads' },
-          inputs: [
-            { from: 'SOL-10', artifact: 'Evidence requirements matrix' },
-            { from: 'SOL-10.1.3', artifact: 'Prioritised evidence gap register' },
-            { external: true, artifact: 'ITT documentation — evidence requirements, CV format, case study format' }
-          ],
+          raci: {
+            r: 'Supply Chain Lead',
+            a: 'Bid Director',
+            c: 'Bid Manager',
+            i: 'Partner'
+          },
           outputs: [
             {
-              name: 'Partner evidence briefs',
-              format: 'Per-partner evidence request',
+              name: 'Partner evidence brief',
+              format: 'Evidence requirements per partner',
               quality: [
-                'Each partner has a clear brief — what evidence, in what format, by when',
-                'Priority evidence flagged — items that close scoring gaps are urgent',
-                'Format requirements specified — aligned to ITT submission requirements'
+                'Specific evidence items requested per SOL-10 matrix — not vague \'send us some case studies\'',
+                'Format and quality standards specified',
+                'Deadline clear with contingency for revision'
               ]
             }
           ],
@@ -9008,47 +9138,85 @@ Use this checklist before marking any activity as mapping-complete:
         },
         {
           id: 'SUP-05.1.2',
-          name: 'Collect, review, and adapt partner evidence — quality, relevance, format aligned to ITT requirements',
-          raci: { r: 'Supply Chain Lead', a: 'Bid Manager', c: 'Bid Coordinator', i: 'Partner Leads' },
-          inputs: [
-            { from: 'SUP-05.1.1', artifact: 'Partner evidence briefs' }
-          ],
+          name: 'Collect partner evidence and conduct initial quality review — relevance, currency, format compliance',
+          raci: {
+            r: 'Supply Chain Lead',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Manager'
+          },
           outputs: [
             {
-              name: 'Partner case studies & CVs (validated — activity primary output)',
-              format: 'Per-partner evidence pack',
+              name: 'Raw partner evidence',
+              format: 'Collected evidence items',
               quality: [
-                'All partner evidence collected and reviewed for quality and relevance',
-                'Case studies adapted for this bid context — not generic partner marketing material',
-                'CVs aligned to ITT format and relevant to the roles partners will fill',
-                'Evidence gaps that partners could not fill documented — feeds back to SOL-10',
-                'Evidence pack ready for PRD-03 (evidence assembly)'
+                'All requested items received or gaps identified',
+                'Initial quality review completed — relevance, currency, format',
+                'Items needing revision identified and fed back to partners'
               ]
             }
           ],
-          effort: 'High',
+          effort: 'Medium',
           type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'SUP-05.2',
+      name: 'Evidence Adaptation',
+      description: 'Adapt partner evidence for submission quality',
+      tasks: [
+        {
+          id: 'SUP-05.2.1',
+          name: 'Adapt partner evidence for submission — align to our brand standards, tailor to this opportunity, anonymise where required',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'Supply Chain Lead',
+            i: 'Partner'
+          },
+          outputs: [
+            {
+              name: 'Partner case studies & CVs (activity primary output)',
+              format: 'Submission-ready partner evidence',
+              quality: [
+                'Partner evidence formatted to our standards — consistent with internal evidence',
+                'Tailored to this opportunity — generic partner brochures not acceptable',
+                'Anonymisation applied where ITT requires',
+                'Win themes reinforced through evidence selection and framing',
+                'Feeds PRD-03 for integration into evidence pack'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
         }
       ]
     }
   ],
-
   outputs: [
     {
       name: 'Partner case studies & CVs',
-      format: 'Per-partner evidence pack (reviewed and adapted)',
+      format: 'Submission-ready partner evidence',
       quality: [
         'All required partner evidence collected',
-        'Quality and relevance reviewed — adapted for this bid',
-        'Format aligned to ITT requirements',
-        'Ready for PRD-03 evidence assembly'
+        'Quality reviewed for relevance and currency',
+        'Adapted to our brand standards',
+        'Feeds PRD-03 evidence assembly'
       ]
     }
   ],
-
   consumers: [
-    { activity: 'PRD-03', consumes: 'Partner case studies & CVs', usage: 'Evidence assembly includes partner evidence in the submission pack' },
-    { activity: 'SOL-10', consumes: 'Partner case studies & CVs', usage: 'Evidence matrix updated with confirmed partner evidence (feedback loop)' }
+    {
+      activity: 'PRD-03',
+      consumes: 'Partner case studies & CVs',
+      usage: 'Evidence assembly includes partner evidence in the submission pack'
+    },
+    {
+      activity: 'SOL-10',
+      consumes: 'Partner case studies & CVs',
+      usage: 'Evidence matrix updated with confirmed partner evidence (feedback loop)'
+    }
   ]
 }
 ```
@@ -9198,42 +9366,56 @@ Use this checklist before marking any activity as mapping-complete:
   phase: 'DEV',
   role: 'Bid Manager',
   output: 'Kickoff pack: strategy summary, RACI, timeline, comms plan',
-  dependencies: ['SAL-06'],
+  dependencies: [
+    'SAL-06'
+  ],
   effortDays: 3,
   teamSize: 1,
   parallelisationType: 'C',
-
   inputs: [
-    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Win strategy, consortium, commercial framework — the strategy briefing' },
-    { from: 'SAL-06.4.2', artifact: 'Bid Mandate document', note: 'Approved resources and budget' },
-    { external: true, artifact: 'ITT documentation — timeline, submission deadline, key milestones' },
-    { external: true, artifact: 'Corporate bid governance framework — standard RACI, reporting cadence' }
+    {
+      from: 'SAL-06',
+      artifact: 'Capture plan (locked)',
+      note: 'Win strategy, consortium, commercial framework — the strategy briefing'
+    },
+    {
+      from: 'SAL-06.4.2',
+      artifact: 'Bid Mandate document',
+      note: 'Approved resources and budget'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — timeline, submission deadline, key milestones'
+    },
+    {
+      external: true,
+      artifact: 'Corporate bid governance framework — standard RACI, reporting cadence'
+    }
   ],
-
   subs: [
     {
       id: 'BM-01.1',
-      name: 'Bid Kickoff',
-      description: 'Establish the bid team, brief the strategy, and agree the master programme',
-
+      name: 'Kickoff Preparation',
+      description: 'Prepare the kickoff briefing pack, war room, and pre-meeting materials',
       tasks: [
         {
           id: 'BM-01.1.1',
-          name: 'Confirm bid team structure, assign roles and RACI across all workstreams, brief the locked win strategy',
-          raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: 'Bid Board' },
-          inputs: [
-            { from: 'SAL-06', artifact: 'Capture plan (locked)' },
-            { from: 'SAL-06.4.2', artifact: 'Bid Mandate document' }
-          ],
+          name: 'Prepare kickoff briefing pack — win strategy summary, client context, evaluation framework overview, key risks, and timeline constraints',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: 'All Workstream Leads'
+          },
           outputs: [
             {
-              name: 'RACI matrix and bid team register',
-              format: 'Structured RACI with team contact list',
+              name: 'Kickoff briefing pack',
+              format: 'Presentation / document',
               quality: [
-                'Every workstream has named lead with clear accountability',
-                'RACI covers all activities — no orphan activities without owners',
-                'Win strategy briefed to all team members — everyone understands what we are trying to win and how',
-                'Comms plan established — meeting cadence, reporting lines, escalation'
+                'Win strategy distilled to actionable messages for each workstream',
+                'Client context and evaluation framework summarised',
+                'Key risks and constraints identified for team awareness',
+                'Timeline constraints and non-negotiable milestones highlighted'
               ]
             }
           ],
@@ -9242,36 +9424,169 @@ Use this checklist before marking any activity as mapping-complete:
         },
         {
           id: 'BM-01.1.2',
-          name: 'Agree master bid programme with milestones, review points, governance gates, and submission deadline — backward-planned from submission',
-          raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: 'Commercial Lead' },
-          inputs: [
-            { external: true, artifact: 'ITT documentation — timeline, submission deadline, key milestones' }
-          ],
+          name: 'Set up bid war room — physical or virtual collaboration space, information radiators, shared drive, communication channels',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: 'All'
+          },
           outputs: [
             {
-              name: 'Kickoff pack (activity primary output)',
-              format: 'Kickoff document with RACI, programme, and comms plan',
+              name: 'War room / collaboration environment',
+              format: 'Physical or virtual workspace',
               quality: [
-                'Master bid programme backward-planned from submission deadline',
-                'Key milestones identified — solution lock, pricing lock, review cycles, governance gates',
-                'Critical path identified — what activities drive the timeline',
+                'Central workspace established — physical room or virtual equivalent',
+                'Information radiators visible — timeline, RAG status, key dates',
+                'Shared drive and communication channels operational',
+                'Access provisioned for all confirmed team members'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'BM-01.2',
+      name: 'Kickoff Execution',
+      description: 'Run the kickoff meeting, confirm team structure, brief strategy, and baseline the programme',
+      tasks: [
+        {
+          id: 'BM-01.2.1',
+          name: 'Confirm bid team structure — assign roles and RACI across all workstreams, confirm named individuals, identify gaps and contingencies',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'All Workstream Leads',
+            i: 'HR / Resource Pool'
+          },
+          outputs: [
+            {
+              name: 'RACI matrix and bid team register',
+              format: 'Structured RACI with team contact list',
+              quality: [
+                'Every workstream has named lead with clear accountability',
+                'RACI covers all 84 activities — no orphan activities without owners',
+                'Security clearance requirements identified per role',
+                'Contingency plan for key-person risk documented'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-01.2.2',
+          name: 'Brief locked win strategy to full team — ensure every team member understands what we are trying to win, how, and why',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: 'All'
+          },
+          outputs: [
+            {
+              name: 'Strategy briefing record',
+              format: 'Meeting record with attendees',
+              quality: [
+                'Win themes articulated and understood by all workstream leads',
+                'Competitive positioning explained — what differentiates us',
+                'Buyer values communicated — what the client cares about beyond the scoring',
+                'Team questions addressed and recorded'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-01.2.3',
+          name: 'Agree master bid programme — backward-plan from submission deadline, set milestones, review points, governance gates, and critical path',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: 'Commercial Lead'
+          },
+          outputs: [
+            {
+              name: 'Master bid programme (baselined)',
+              format: 'Gantt / programme plan',
+              quality: [
+                'Backward-planned from submission deadline with all key milestones',
+                'Critical path identified — activities that drive the timeline',
+                'Review cycle dates set — pink, red, gold, governance gates',
+                'Workstream leads have confirmed their activity timelines are achievable',
                 'Programme baselined — this is the reference against which progress is tracked'
               ]
             }
           ],
           effort: 'Medium',
           type: 'Sequential'
+        },
+        {
+          id: 'BM-01.2.4',
+          name: 'Establish communications plan — meeting cadence, reporting lines, escalation procedures, decision log format',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Kickoff pack (activity primary output)',
+              format: 'Kickoff document with RACI, programme, and comms plan',
+              quality: [
+                'Weekly standup cadence and format agreed',
+                'Reporting lines and escalation path documented',
+                'Decision log format established',
+                'Communications plan covers both internal team and governance stakeholders'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
         }
       ]
     }
   ],
-
-  outputs: [{ name: 'Kickoff pack: strategy summary, RACI, timeline, comms plan', format: 'Kickoff document', quality: ['Team RACI established', 'Win strategy briefed', 'Master programme backward-planned', 'Comms plan agreed'] }],
+  outputs: [
+    {
+      name: 'Kickoff pack: strategy summary, RACI, timeline, comms plan',
+      format: 'Kickoff document',
+      quality: [
+        'Team RACI established with named individuals for all activities',
+        'Win strategy briefed to full team with understanding confirmed',
+        'Master programme backward-planned and baselined',
+        'Communications plan and meeting cadence agreed',
+        'War room / collaboration environment operational'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'BM-02', consumes: 'Kickoff pack', usage: 'BMP builds on kickoff outputs' },
-    { activity: 'BM-03', consumes: 'Kickoff pack', usage: 'Repository setup follows team structure' },
-    { activity: 'BM-04', consumes: 'Kickoff pack', usage: 'Resource tracking starts from confirmed team' },
-    { activity: 'BM-06', consumes: 'Kickoff pack', usage: 'Progress reporting baseline is the master programme' }
+    {
+      activity: 'BM-02',
+      consumes: 'Kickoff pack',
+      usage: 'BMP builds on kickoff outputs'
+    },
+    {
+      activity: 'BM-03',
+      consumes: 'Kickoff pack',
+      usage: 'Repository setup follows team structure'
+    },
+    {
+      activity: 'BM-04',
+      consumes: 'Kickoff pack',
+      usage: 'Resource tracking starts from confirmed team'
+    },
+    {
+      activity: 'BM-06',
+      consumes: 'Kickoff pack',
+      usage: 'Progress reporting baseline is the master programme'
+    }
   ]
 }
 ```
@@ -9282,32 +9597,133 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-02', name: 'Bid management plan production', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Bid management plan (BMP)', dependencies: ['BM-01'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'BM-01', artifact: 'Kickoff pack' },
-    { from: 'SAL-06', artifact: 'Capture plan (locked)' },
-    { external: true, artifact: 'Corporate bid management templates and standards' }
+  id: 'BM-02',
+  name: 'Bid management plan production',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Bid management plan (BMP)',
+  dependencies: [
+    'BM-01'
   ],
-
-  subs: [{
-    id: 'BM-02.1', name: 'BMP Production', description: 'Produce the authoritative bid management plan',
-    tasks: [{
-      id: 'BM-02.1.1',
-      name: 'Produce bid management plan covering scope, governance, quality approach, risk management, communications, review schedule, and submission plan',
-      raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: 'Legal / Partner' },
-      inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }, { from: 'SAL-06', artifact: 'Capture plan (locked)' }],
-      outputs: [{
-        name: 'Bid management plan (activity primary output)', format: 'Comprehensive BMP document',
-        quality: ['Covers: scope, governance, quality, risk, comms, reviews, submission plan', 'Review schedule mapped to master programme milestones', 'Quality approach aligned to SAL-05 scoring strategy', 'BMP accepted by Bid Director as the operational reference for the bid']
-      }],
-      effort: 'High', type: 'Sequential'
-    }]
-  }],
-
-  outputs: [{ name: 'Bid management plan (BMP)', format: 'Comprehensive BMP', quality: ['Scope, governance, quality, risk, comms, reviews, submission all covered', 'Accepted by Bid Director'] }],
-  consumers: [{ activity: 'BM-06', consumes: 'BMP', usage: 'Progress reporting follows the BMP governance framework' }]
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'BM-01',
+      artifact: 'Kickoff pack'
+    },
+    {
+      from: 'SAL-06',
+      artifact: 'Capture plan (locked)'
+    },
+    {
+      external: true,
+      artifact: 'Corporate bid management templates and standards'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-02.1',
+      name: 'BMP Development',
+      description: 'Produce the authoritative bid management plan that governs the entire bid',
+      tasks: [
+        {
+          id: 'BM-02.1.1',
+          name: 'Draft bid management plan — scope definition, governance framework, quality approach, risk management, and review schedule',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'All Workstream Leads',
+            i: 'Legal'
+          },
+          outputs: [
+            {
+              name: 'BMP draft',
+              format: 'Document',
+              quality: [
+                'Scope: what is in and out of this bid response',
+                'Governance: decision rights, escalation, gate schedule',
+                'Quality: page budgets, writing standards, review criteria',
+                'Risk: bid process risk approach, who owns what'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-02.1.2',
+          name: 'Define submission plan — portal logistics, file formats, packaging requirements, naming conventions, submission timeline',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Bid Coordinator',
+            i: 'IT Support'
+          },
+          outputs: [
+            {
+              name: 'Submission plan',
+              format: 'Section within BMP',
+              quality: [
+                'Portal access tested and confirmed',
+                'File format and size constraints documented',
+                'Naming conventions for all submission documents agreed',
+                'Submission timeline allows 48 hours contingency before deadline'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-02.1.3',
+          name: 'Review and baseline BMP — Bid Director sign-off, distribute to team as the operational reference for the bid',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Bid management plan (activity primary output)',
+              format: 'Comprehensive BMP document',
+              quality: [
+                'BMP reviewed and signed off by Bid Director',
+                'Distributed to all workstream leads as authoritative reference',
+                'Review schedule mapped to master programme milestones',
+                'Quality approach aligned to SAL-05 scoring strategy'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Bid management plan (BMP)',
+      format: 'Comprehensive BMP document',
+      quality: [
+        'Covers: scope, governance, quality, risk, comms, reviews, submission plan',
+        'Review schedule mapped to master programme milestones',
+        'Quality approach aligned to SAL-05 scoring strategy',
+        'Submission plan with portal logistics and contingency',
+        'BMP accepted by Bid Director as the operational reference for the bid'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-06',
+      consumes: 'BMP',
+      usage: 'Progress reporting follows the BMP governance framework'
+    }
+  ]
 }
 ```
 
@@ -9317,28 +9733,128 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-03', name: 'Document management & version control setup', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Repository structure, naming conventions, collaboration platform', dependencies: ['BM-01'], effortDays: 1, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'BM-01', artifact: 'Kickoff pack', note: 'Team structure determines access permissions' }, { external: true, artifact: 'Corporate IT platform — SharePoint, Teams, or equivalent' }],
-
-  subs: [{
-    id: 'BM-03.1', name: 'Collaboration Setup', description: 'Establish the bid collaboration infrastructure',
-    tasks: [{
-      id: 'BM-03.1.1',
-      name: 'Establish document repository, folder structure, naming conventions, version control, access permissions, and collaboration platform',
-      raci: { r: 'Bid Manager', a: 'Bid Director', c: 'IT / Bid Support', i: 'All Team' },
-      inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }],
-      outputs: [{
-        name: 'Repository and collaboration setup (activity primary output)', format: 'Configured platform with conventions guide',
-        quality: ['Folder structure mirrors workstreams and deliverables', 'Naming convention documented and communicated', 'Version control enforced — no uncontrolled document proliferation', 'Access permissions set — security-appropriate for this bid classification']
-      }],
-      effort: 'Low', type: 'Sequential'
-    }]
-  }],
-
-  outputs: [{ name: 'Repository structure, naming conventions, collaboration platform', format: 'Configured platform', quality: ['Structure, naming, version control, access all established'] }],
-  consumers: [{ activity: 'All workstreams', consumes: 'Collaboration platform', usage: 'All bid team members use the established structure' }]
+  id: 'BM-03',
+  name: 'Document management & version control setup',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Repository structure, naming conventions, collaboration platform',
+  dependencies: [
+    'BM-01'
+  ],
+  effortDays: 1,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'BM-01',
+      artifact: 'Kickoff pack',
+      note: 'Team structure determines access permissions'
+    },
+    {
+      external: true,
+      artifact: 'Corporate IT platform — SharePoint, Teams, or equivalent'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-03.1',
+      name: 'Collaboration Setup',
+      description: 'Establish the document management infrastructure for the bid',
+      tasks: [
+        {
+          id: 'BM-03.1.1',
+          name: 'Establish document repository with folder structure mirroring workstream and activity hierarchy',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Repository structure',
+              format: 'Folder hierarchy',
+              quality: [
+                'Folder structure mirrors workstream/activity hierarchy',
+                'Top-level folders for each workstream plus cross-cutting (governance, reviews, submission)',
+                'Template documents pre-loaded where corporate standards exist'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-03.1.2',
+          name: 'Define and enforce naming conventions and version control procedures',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: 'All'
+          },
+          outputs: [
+            {
+              name: 'Naming and versioning standards',
+              format: 'Reference document',
+              quality: [
+                'Naming convention documented and communicated — e.g. [ActivityID]_[DocumentName]_v[X.Y]',
+                'Version control procedure clear — who can create versions, how to handle concurrent edits',
+                'Archive procedure for superseded documents'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-03.1.3',
+          name: 'Configure access permissions and collaboration platform — ensure security, partner access, and audit trail',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'IT',
+            i: 'Partner Lead'
+          },
+          outputs: [
+            {
+              name: 'Collaboration platform operational (activity primary output)',
+              format: 'Configured platform',
+              quality: [
+                'Access permissions set per role — internal, partner, read-only, edit',
+                'Security classification enforced — commercial in confidence, official sensitive as required',
+                'Audit trail enabled — who changed what, when',
+                'Partner access configured with appropriate restrictions'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Repository structure, naming conventions, platform',
+      format: 'Configured collaboration platform',
+      quality: [
+        'Folder structure mirrors workstream hierarchy',
+        'Naming conventions enforced',
+        'Version control operational',
+        'Access permissions and security configured',
+        'Partner access provisioned'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'All workstreams',
+      consumes: 'Collaboration platform',
+      usage: 'All bid team members use the established structure'
+    }
+  ]
 }
 ```
 
@@ -9348,27 +9864,163 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-04', name: 'Resource management & tracking', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Resource tracker, security clearance log, availability register', dependencies: ['BM-01'], effortDays: 0, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }, { from: 'SAL-06.4.2', artifact: 'Bid Mandate document', note: 'Approved resource budget' }, { external: true, artifact: 'Corporate HR and security clearance systems' }],
-
-  subs: [{
-    id: 'BM-04.1', name: 'Bid Team Resource Management', description: 'Ongoing bid team resource tracking — availability, clearances, changes',
-    tasks: [
-      { id: 'BM-04.1.1', name: 'Confirm and mobilise full bid team — internal, partner, and contingency resources', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'HR / Resource Pool', i: 'Partner Leads' },
-        inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }],
-        outputs: [{ name: 'Confirmed team roster', format: 'Resource register', quality: ['Every role filled or plan to fill documented', 'Partner resources confirmed with availability', 'Contingency identified for key person risk'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'BM-04.1.2', name: 'Track resource availability, manage security clearance applications, handle resource changes throughout the bid', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'HR / Security Manager', i: 'Workstream Leads' },
-        inputs: [{ from: 'BM-04.1.1', artifact: 'Confirmed team roster' }],
-        outputs: [{ name: 'Resource tracker with clearance log (activity primary output — living document)', format: 'Living tracker', quality: ['Availability tracked and updated weekly', 'Clearance applications initiated and status tracked', 'Resource changes logged with impact on programme assessed'] }],
-        effort: 'Low', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Resource tracker, security clearance log, availability register', format: 'Living tracker', quality: ['Team confirmed and mobilised', 'Clearance status tracked', 'Changes managed with programme impact assessed'] }],
-  consumers: [{ activity: 'BM-06', consumes: 'Resource tracker', usage: 'Progress reporting includes resource status' }]
+  id: 'BM-04',
+  name: 'Resource management & tracking',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Resource tracker, security clearance log, availability register',
+  dependencies: [
+    'BM-01'
+  ],
+  effortDays: 0,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'BM-01',
+      artifact: 'Kickoff pack'
+    },
+    {
+      from: 'SAL-06.4.2',
+      artifact: 'Bid Mandate document',
+      note: 'Approved resource budget'
+    },
+    {
+      external: true,
+      artifact: 'Corporate HR and security clearance systems'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-04.1',
+      name: 'Resource Mobilisation',
+      description: 'Confirm and mobilise the full bid team at bid start',
+      tasks: [
+        {
+          id: 'BM-04.1.1',
+          name: 'Confirm and mobilise full bid team — internal resources, partner resources, and contingency bench',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'HR / Resource Pool',
+            i: 'Partner Lead'
+          },
+          outputs: [
+            {
+              name: 'Confirmed team roster',
+              format: 'Team register',
+              quality: [
+                'All named roles from RACI have confirmed individuals',
+                'Start dates and availability confirmed per person',
+                'Security clearance requirements identified and applications initiated',
+                'Partner resource confirmations received'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-04.1.2',
+          name: 'Identify resource gaps and key-person risks — develop mitigation plan for critical roles',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: 'HR'
+          },
+          outputs: [
+            {
+              name: 'Resource risk register',
+              format: 'Risk register',
+              quality: [
+                'Every unfilled role identified with target fill date',
+                'Key-person risks assessed — what happens if Solution Architect or Commercial Lead is unavailable?',
+                'Contingency resources identified for critical roles',
+                'Escalation path for persistent resource gaps documented'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-04.2',
+      name: 'Ongoing Resource Tracking',
+      description: 'Track resource availability and manage changes throughout the bid',
+      tasks: [
+        {
+          id: 'BM-04.2.1',
+          name: 'Track resource availability and utilisation — weekly update of who is on the bid, their allocation, and any changes',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Resource tracker (living document)',
+              format: 'Tracker / register',
+              quality: [
+                'Updated at least weekly',
+                'Allocation percentage per person tracked',
+                'Upcoming availability changes flagged in advance',
+                'Included in weekly progress report'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-04.2.2',
+          name: 'Manage security clearance applications — track submissions, chase outstanding, escalate blockers',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'Security Manager',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Security clearance log',
+              format: 'Tracker',
+              quality: [
+                'All clearance applications submitted within first week',
+                'Status tracked weekly — submitted, in progress, cleared, rejected',
+                'Blockers escalated immediately — clearance delays can block site access and data room access'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Resource tracker, security clearance log, availability register',
+      format: 'Living documents',
+      quality: [
+        'Full team mobilised with confirmed individuals',
+        'Resource gaps identified with mitigation plans',
+        'Security clearance applications tracked to completion',
+        'Availability tracked weekly throughout the bid'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-06',
+      consumes: 'Resource tracker',
+      usage: 'Progress reporting includes resource status'
+    }
+  ]
 }
 ```
 
@@ -9378,23 +10030,135 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-05', name: 'Bid cost management', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Cost-to-bid tracker', dependencies: ['BM-01'], effortDays: 0, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'SAL-06.4.2', artifact: 'Bid Mandate document', note: 'Approved bid budget' }, { external: true, artifact: 'Corporate finance systems — timesheets, expense tracking' }],
-
-  subs: [{
-    id: 'BM-05.1', name: 'Cost-to-Bid Tracking', description: 'Track bid investment against approved budget',
-    tasks: [
-      { id: 'BM-05.1.1', name: 'Track bid investment against budget — actual vs forecast, by workstream, with variance reporting', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Finance', i: 'Workstream Leads' },
-        inputs: [{ from: 'SAL-06.4.2', artifact: 'Bid Mandate document' }],
-        outputs: [{ name: 'Cost-to-bid tracker (activity primary output — living document)', format: 'Financial tracker', quality: ['Actual spend tracked by workstream against budget', 'Forecast to complete updated weekly', 'Overruns flagged with approval workflow — Bid Director authorises overspend', 'Cost-to-bid reported to Bid Board at governance gates'] }],
-        effort: 'Low', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Cost-to-bid tracker', format: 'Financial tracker', quality: ['Budget vs actual tracked', 'Overruns flagged and approved', 'Reported at governance gates'] }],
-  consumers: [{ activity: 'BM-06', consumes: 'Cost-to-bid tracker', usage: 'Progress reporting includes bid investment status' }]
+  id: 'BM-05',
+  name: 'Bid cost management',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Cost-to-bid tracker',
+  dependencies: [
+    'BM-01'
+  ],
+  effortDays: 0,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'SAL-06.4.2',
+      artifact: 'Bid Mandate document',
+      note: 'Approved bid budget'
+    },
+    {
+      external: true,
+      artifact: 'Corporate finance systems — timesheets, expense tracking'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-05.1',
+      name: 'Budget Setup',
+      description: 'Establish bid cost baseline and tracking framework',
+      tasks: [
+        {
+          id: 'BM-05.1.1',
+          name: 'Establish bid cost baseline — approved budget from bid mandate, broken down by workstream and cost category',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Bid cost baseline',
+              format: 'Budget tracker',
+              quality: [
+                'Budget broken down by workstream and cost category (people, travel, external, production)',
+                'Baseline aligned to bid mandate approval',
+                'Cost categories match corporate cost-to-bid reporting'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-05.2',
+      name: 'Ongoing Cost Tracking',
+      description: 'Track bid investment against budget throughout the bid lifecycle',
+      tasks: [
+        {
+          id: 'BM-05.2.1',
+          name: 'Track actuals vs budget by workstream — weekly or fortnightly, with variance analysis',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Cost-to-bid report',
+              format: 'Tracker with variance analysis',
+              quality: [
+                'Actuals captured per workstream and cost category',
+                'Variance against baseline highlighted — over/under/on track',
+                'Forecast to completion updated at each reporting cycle',
+                'Material variances explained with root cause'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-05.2.2',
+          name: 'Report bid cost position at governance gates — actual spend, forecast to complete, any budget increase requests',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Governance cost summary (activity primary output)',
+              format: 'Summary for governance pack',
+              quality: [
+                'Cost position presented at every governance gate',
+                'Forecast to complete realistic — not optimistic',
+                'Budget increase requests flagged early with justification',
+                'Cost-to-bid included in governance pack'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Cost-to-bid tracker',
+      format: 'Living tracker with governance summaries',
+      quality: [
+        'Baseline established from bid mandate',
+        'Actuals tracked weekly by workstream',
+        'Variance analysis with root cause for material variances',
+        'Cost position reported at every governance gate'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-06',
+      consumes: 'Cost-to-bid tracker',
+      usage: 'Progress reporting includes bid investment status'
+    }
+  ]
 }
 ```
 
@@ -9404,27 +10168,169 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-06', name: 'Progress reporting', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Weekly progress reports, milestone achievement reports', dependencies: ['BM-01'], effortDays: 0, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'BM-01', artifact: 'Kickoff pack', note: 'Master programme is the baseline' }, { from: 'BM-02', artifact: 'Bid management plan (BMP)', note: 'Reporting framework' }, { from: 'BM-04', artifact: 'Resource tracker' }, { from: 'BM-05', artifact: 'Cost-to-bid tracker' }],
-
-  subs: [{
-    id: 'BM-06.1', name: 'Programme Reporting', description: 'Weekly reporting cycle throughout the bid',
-    tasks: [
-      { id: 'BM-06.1.1', name: 'Conduct weekly standups with workstream leads — progress, blockers, actions, RAG status per activity', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: null },
-        inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }],
-        outputs: [{ name: 'Standup action log', format: 'Living action tracker', quality: ['Every workstream reports RAG status weekly', 'Blockers identified and escalated within 24 hours', 'Actions assigned with owners and deadlines'] }],
-        effort: 'Low', type: 'Iterative' },
-      { id: 'BM-06.1.2', name: 'Produce weekly progress reports and milestone achievement tracking — programme status against baseline', raci: { r: 'Bid Manager', a: 'Bid Director', c: null, i: 'Bid Board' },
-        inputs: [{ from: 'BM-06.1.1', artifact: 'Standup action log' }, { from: 'BM-04', artifact: 'Resource tracker' }, { from: 'BM-05', artifact: 'Cost-to-bid tracker' }],
-        outputs: [{ name: 'Weekly progress reports (activity primary output — recurring)', format: 'Progress report', quality: ['Programme status against baseline — on track, at risk, or slipped', 'Milestone achievement tracked — what is complete, what is due', 'Resource and cost status summarised', 'Key risks and escalations highlighted'] }],
-        effort: 'Low', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Weekly progress reports, milestone achievement reports', format: 'Recurring reports', quality: ['Programme tracked against baseline weekly', 'Blockers escalated', 'Milestones tracked'] }],
-  consumers: [{ activity: 'BM-13', consumes: 'Progress reports', usage: 'Bid risk register updated with programme risks from reporting' }]
+  id: 'BM-06',
+  name: 'Progress reporting',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Weekly progress reports, milestone achievement reports',
+  dependencies: [
+    'BM-01'
+  ],
+  effortDays: 0,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'BM-01',
+      artifact: 'Kickoff pack',
+      note: 'Master programme is the baseline'
+    },
+    {
+      from: 'BM-02',
+      artifact: 'Bid management plan (BMP)',
+      note: 'Reporting framework'
+    },
+    {
+      from: 'BM-04',
+      artifact: 'Resource tracker'
+    },
+    {
+      from: 'BM-05',
+      artifact: 'Cost-to-bid tracker'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-06.1',
+      name: 'Weekly Programme Cadence',
+      description: 'Run the weekly operational rhythm of the bid',
+      tasks: [
+        {
+          id: 'BM-06.1.1',
+          name: 'Conduct weekly standups with workstream leads — progress against plan, blockers, actions, RAG status per activity',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Standup action log',
+              format: 'Meeting record with actions',
+              quality: [
+                'Every workstream lead reports status against their activities',
+                'Blockers identified with owners and target resolution dates',
+                'Actions captured with owners — not just discussed',
+                'RAG status per activity updated'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-06.1.2',
+          name: 'Produce weekly progress report — programme status against baseline, milestone tracking, RAG dashboard',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Weekly progress report',
+              format: 'Report / dashboard',
+              quality: [
+                'Programme status shown against baselined plan',
+                'Milestones tracked — achieved, on track, at risk, missed',
+                'RAG dashboard per workstream and per critical activity',
+                'Key decisions needed and escalations highlighted'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'BM-06.2',
+      name: 'Milestone & Escalation Reporting',
+      description: 'Report significant milestones and manage escalations',
+      tasks: [
+        {
+          id: 'BM-06.2.1',
+          name: 'Track critical path and flag slippage — any activity on the critical path that is behind schedule triggers immediate escalation',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Critical path status',
+              format: 'Programme update',
+              quality: [
+                'Critical path recalculated at each reporting cycle',
+                'Slippage on critical path activities flagged immediately — not at next weekly meeting',
+                'Impact assessment provided — how much float has been consumed, what is the deadline risk'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-06.2.2',
+          name: 'Prepare milestone achievement reports for governance — formal record of key deliverables completed',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Milestone achievement reports (activity primary output)',
+              format: 'Governance report',
+              quality: [
+                'Each key milestone formally recorded when achieved',
+                'Evidence of completion linked — e.g. solution locked, pricing approved, red review completed',
+                'Late milestones documented with root cause and impact assessment',
+                'Feeds governance pack preparation'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Weekly progress reports, milestone achievement reports',
+      format: 'Reports and dashboards',
+      quality: [
+        'Weekly cadence maintained throughout bid',
+        'Programme status tracked against baseline',
+        'Critical path monitored with immediate escalation on slippage',
+        'Milestone achievements formally recorded',
+        'Feeds governance pack at every gate'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-13',
+      consumes: 'Progress reports',
+      usage: 'Bid risk register updated with programme risks from reporting'
+    }
+  ]
 }
 ```
 
@@ -9434,40 +10340,172 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-07', name: 'Quality management approach', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Quality plan: evaluation weighting analysis, page budgets, scoring strategy', dependencies: ['SAL-05', 'BM-01'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
-  // ARCHETYPE NOTES:
-  // Consulting/Advisory: MODIFIED emphasis — quality plan shifts. Evaluation emphasis is on
-  //   team quality, methodology credibility, and past performance rather than solution depth.
-  //   Review criteria should assess CV quality, methodology clarity, and evidence relevance.
-  //   Page budgets may allocate more space to team credentials sections.
-
-  inputs: [
-    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Where the marks are — drives page budgets and quality focus' },
-    { from: 'SAL-05.2.3', artifact: 'Per-section scoring strategy', note: 'What each response must demonstrate' },
-    { from: 'BM-01', artifact: 'Kickoff pack' },
-    { external: true, artifact: 'ITT documentation — submission format requirements, word/page limits' }
+  id: 'BM-07',
+  name: 'Quality management approach',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Quality plan: evaluation weighting analysis, page budgets, scoring strategy',
+  dependencies: [
+    'SAL-05',
+    'BM-01'
   ],
-
-  subs: [{
-    id: 'BM-07.1', name: 'Quality Planning', description: 'Develop the quality plan that governs how responses are written and reviewed',
-    tasks: [
-      { id: 'BM-07.1.1', name: 'Develop quality plan — page budgets per section based on marks concentration, writing standards, review criteria, compliance checklist', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: 'Writers' },
-        inputs: [{ from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' }, { external: true, artifact: 'ITT documentation — submission format requirements, word/page limits' }],
-        outputs: [{ name: 'Quality plan', format: 'Bid quality management document', quality: ['Page/word budgets allocated per section — proportionate to marks available', 'Writing standards defined — tone, voice, structure, evidence citation', 'Review criteria aligned to evaluation criteria — reviewers assess what evaluators will assess', 'Compliance checklist prepared — every mandatory requirement tracked'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'BM-07.1.2', name: 'Design review cycle schedule — pink, red, gold review timing, reviewer allocation, feedback turnaround expectations', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: 'Reviewers' },
-        inputs: [{ from: 'BM-07.1.1', artifact: 'Quality plan' }, { from: 'BM-01', artifact: 'Kickoff pack' }],
-        outputs: [{ name: 'Quality plan with review schedule (activity primary output)', format: 'Quality management document', quality: ['Pink/red/gold review dates set against master programme', 'Reviewers identified per section — SME alignment to content area', 'Feedback turnaround expectations set — tight enough to maintain programme', 'Review criteria distributed to reviewers before reviews begin'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Quality plan: evaluation weighting analysis, page budgets, scoring strategy', format: 'Quality management document', quality: ['Page budgets proportionate to marks', 'Writing standards defined', 'Review cycle scheduled with named reviewers'] }],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'SAL-05',
+      artifact: 'Evaluation criteria matrix with scoring approach',
+      note: 'Where the marks are — drives page budgets and quality focus'
+    },
+    {
+      from: 'SAL-05.2.3',
+      artifact: 'Per-section scoring strategy',
+      note: 'What each response must demonstrate'
+    },
+    {
+      from: 'BM-01',
+      artifact: 'Kickoff pack'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — submission format requirements, word/page limits'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-07.1',
+      name: 'Quality Framework Design',
+      description: 'Establish the quality standards and review framework for the bid response',
+      tasks: [
+        {
+          id: 'BM-07.1.1',
+          name: 'Develop page budgets per response section based on marks concentration from SAL-05 — highest marks = most pages',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Page budget allocation',
+              format: 'Structured allocation table',
+              quality: [
+                'Every scored section has an allocated page budget',
+                'Budget proportional to marks weight — high-value sections get more space',
+                'Total pages within ITT limit (if applicable)',
+                'Buffer allocated for executive summary and cross-references'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-07.1.2',
+          name: 'Define writing standards — tone, structure, language rules, evidence citation approach, visual guidelines',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Senior Bid Writer',
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Writing standards guide',
+              format: 'Reference document',
+              quality: [
+                'Tone defined — matches client culture and evaluation expectations',
+                'Structure template per section type (method statement, case study, CV)',
+                'Evidence citation approach agreed — how to reference case studies, data, credentials',
+                'Visual guidelines — diagram style, table format, callout boxes'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-07.1.3',
+          name: 'Design review cycle schedule — pink, red, gold review timing, reviewer allocation, feedback turnaround expectations',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: 'Reviewers'
+          },
+          outputs: [
+            {
+              name: 'Review cycle schedule',
+              format: 'Schedule within master programme',
+              quality: [
+                'Pink, red, gold review dates set and aligned to master programme',
+                'Reviewers allocated per section — independent of writing team',
+                'Feedback turnaround time agreed — typically 48 hours for pink/red, 24 for gold',
+                'Action resolution windows built into programme'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-07.1.4',
+          name: 'Create compliance checklist and review scorecards — tools for reviewers to assess against evaluation criteria',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Quality Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Quality plan (activity primary output)',
+              format: 'Quality plan with tools',
+              quality: [
+                'Compliance checklist covers all mandatory requirements from PRD-01',
+                'Review scorecards mirror evaluation criteria — reviewers score as the evaluator would',
+                'Assessment scale defined and consistent across all reviews',
+                'Quality plan signed off by Bid Director'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Quality plan: evaluation weighting analysis, page budgets',
+      format: 'Quality plan document with review tools',
+      quality: [
+        'Page budgets aligned to marks concentration',
+        'Writing standards defined and communicated',
+        'Review cycle scheduled and resourced',
+        'Compliance checklist and review scorecards ready for use'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'BM-10', consumes: 'Quality plan', usage: 'Storyboard development uses page budgets and scoring strategy' },
-    { activity: 'PRD-02', consumes: 'Quality plan', usage: 'Writers use quality standards and page budgets' },
-    { activity: 'PRD-05', consumes: 'Quality plan', usage: 'Pink review uses review criteria from quality plan' }
+    {
+      activity: 'BM-10',
+      consumes: 'Quality plan',
+      usage: 'Storyboard development uses page budgets and scoring strategy'
+    },
+    {
+      activity: 'PRD-02',
+      consumes: 'Quality plan',
+      usage: 'Writers use quality standards and page budgets'
+    },
+    {
+      activity: 'PRD-05',
+      consumes: 'Quality plan',
+      usage: 'Pink review uses review criteria from quality plan'
+    }
   ]
 }
 ```
@@ -9478,25 +10516,158 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-08', name: 'Stakeholder & communications management', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Stakeholder comms plan, decision log', dependencies: ['BM-01'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-  // Note: this is INTERNAL stakeholder management — bid-phase communications, decision
-  // tracking, escalation. Distinct from SAL-10 (client stakeholder strategy).
-
-  inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }, { from: 'SAL-10', artifact: 'Stakeholder relationship map & engagement plan', note: 'Client stakeholder context — BM-08 manages internal comms around it' }],
-
-  subs: [{
-    id: 'BM-08.1', name: 'Internal Stakeholder Management', description: 'Manage bid-phase communications, decisions, and escalations',
-    tasks: [
-      { id: 'BM-08.1.1', name: 'Establish bid-phase communications plan — internal reporting, stakeholder updates, decision log, escalation procedures', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: 'Bid Board' },
-        inputs: [{ from: 'BM-01', artifact: 'Kickoff pack' }],
-        outputs: [{ name: 'Comms plan and decision log (activity primary output — living document)', format: 'Communications framework with decision register', quality: ['Communications plan covers all internal stakeholders — bid team, Bid Board, executive sponsors', 'Decision log tracks all material decisions with rationale and owner', 'Escalation procedures defined — what gets escalated, to whom, in what timeframe'] }],
-        effort: 'Medium', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Stakeholder comms plan, decision log', format: 'Living communications framework', quality: ['Internal comms plan established', 'Decision log maintained', 'Escalation procedures defined'] }],
-  consumers: [{ activity: 'BM-06', consumes: 'Decision log', usage: 'Progress reporting references key decisions' }]
+  id: 'BM-08',
+  name: 'Stakeholder & communications management',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Stakeholder comms plan, decision log',
+  dependencies: [
+    'BM-01'
+  ],
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'BM-01',
+      artifact: 'Kickoff pack'
+    },
+    {
+      from: 'SAL-10',
+      artifact: 'Stakeholder relationship map & engagement plan',
+      note: 'Client stakeholder context — BM-08 manages internal comms around it'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-08.1',
+      name: 'Communications Setup',
+      description: 'Establish internal stakeholder communications for the bid',
+      tasks: [
+        {
+          id: 'BM-08.1.1',
+          name: 'Map bid stakeholders — sponsors, governance panel, subject matter experts, partner contacts — and define communications approach per stakeholder',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Account Manager',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Stakeholder communications map',
+              format: 'Stakeholder register',
+              quality: [
+                'All internal stakeholders identified — sponsors, governance, SMEs, partners',
+                'Communication frequency and channel defined per stakeholder',
+                'Escalation path clear — who can make what decisions'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-08.1.2',
+          name: 'Establish decision log — format, ownership, circulation, and review cadence',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Decision log (living document)',
+              format: 'Log / register',
+              quality: [
+                'Format agreed — date, decision, rationale, owner, impact',
+                'Circulation list defined — who sees decisions',
+                'Accessible to all bid team members',
+                'Referenced in governance packs as audit trail'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-08.2',
+      name: 'Ongoing Stakeholder Communications',
+      description: 'Maintain stakeholder engagement throughout the bid',
+      tasks: [
+        {
+          id: 'BM-08.2.1',
+          name: 'Deliver scheduled stakeholder updates — progress, decisions needed, risks, and upcoming milestones',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Stakeholder update records',
+              format: 'Update log',
+              quality: [
+                'Updates delivered per stakeholder communications map cadence',
+                'Key decisions and escalations highlighted — not buried',
+                'Senior stakeholders kept informed without requiring their daily involvement'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-08.2.2',
+          name: 'Maintain decision log — capture all significant bid decisions with rationale, owner, and downstream impact',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Maintained decision log (activity primary output)',
+              format: 'Living document',
+              quality: [
+                'Every significant decision captured within 24 hours',
+                'Rationale recorded — not just the decision but why',
+                'Impact on downstream activities noted',
+                'Governance-ready — can be presented at any gate review'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Stakeholder comms plan, decision log',
+      format: 'Living documents',
+      quality: [
+        'Internal stakeholder map maintained',
+        'Communications delivered per agreed cadence',
+        'Decision log current and governance-ready',
+        'Escalation path operational'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-06',
+      consumes: 'Decision log',
+      usage: 'Progress reporting references key decisions'
+    }
+  ]
 }
 ```
 
@@ -9506,36 +10677,176 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-09', name: 'Competitive dialogue management (if applicable)', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Dialogue prep packs, session records, iteration tracker per round', dependencies: ['SAL-06', 'SOL-03'], effortDays: 0, teamSize: 2, parallelisationType: 'P',
-  // Note: only activated for competitive dialogue or competitive procedure with negotiation
-  // procurement routes. Set during bid setup based on procurement type.
-
-  inputs: [
-    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'Win strategy and negotiation positions' },
-    { from: 'SAL-07', artifact: 'Clarification question register (prioritised)', note: 'Strategic questions and competitive gaming approach' },
-    { from: 'SOL-03', artifact: 'Target operating model', note: 'Solution to present and iterate' },
-    { from: 'LEG-01.2.2', artifact: 'Contract markup with positions log', note: 'Negotiation positions for contract discussions' }
+  id: 'BM-09',
+  name: 'Competitive dialogue management (if applicable)',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Dialogue prep packs, session records, iteration tracker per round',
+  dependencies: [
+    'SAL-06',
+    'SOL-03'
   ],
-
-  subs: [{
-    id: 'BM-09.1', name: 'Competitive Dialogue', description: 'Manage dialogue sessions — preparation, execution, recording, and solution iteration per round',
-    tasks: [
-      { id: 'BM-09.1.1', name: 'Prepare dialogue packs per round — presentation materials, discussion topics, questions, negotiation positions, team briefing', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Solution Architect / Commercial Lead / Legal Lead', i: 'Capture Lead' },
-        inputs: [{ from: 'SAL-06', artifact: 'Capture plan (locked)' }, { from: 'SOL-03', artifact: 'Target operating model' }, { from: 'LEG-01.2.2', artifact: 'Contract markup with positions log' }],
-        outputs: [{ name: 'Dialogue preparation packs', format: 'Per-round preparation document', quality: ['Presentation materials aligned to win strategy and client feedback from previous rounds', 'Discussion topics and questions prepared — strategic, not reactive', 'Negotiation positions confirmed with fallbacks per LEG-01', 'Team briefed on objectives and boundaries for each session'] }],
-        effort: 'High', type: 'Iterative' },
-      { id: 'BM-09.1.2', name: 'Record dialogue outcomes, track iterations, and update solution/commercial per round', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All attending leads', i: 'Bid Team' },
-        inputs: [{ from: 'BM-09.1.1', artifact: 'Dialogue preparation packs' }],
-        outputs: [{ name: 'Dialogue session records and iteration tracker (activity primary output)', format: 'Session notes with action register', quality: ['Every session recorded — what was discussed, agreed, and action items', 'Client feedback captured and distributed to relevant workstreams', 'Solution and commercial iterations tracked per round — what changed and why', 'Impact on programme and timeline assessed per iteration'] }],
-        effort: 'High', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Dialogue prep packs, session records, iteration tracker', format: 'Per-round dialogue management pack', quality: ['Sessions prepared with strategic intent', 'Outcomes recorded and distributed', 'Iterations tracked with programme impact'] }],
+  effortDays: 0,
+  teamSize: 2,
+  parallelisationType: 'P',
+  inputs: [
+    {
+      from: 'SAL-06',
+      artifact: 'Capture plan (locked)',
+      note: 'Win strategy and negotiation positions'
+    },
+    {
+      from: 'SAL-07',
+      artifact: 'Clarification question register (prioritised)',
+      note: 'Strategic questions and competitive gaming approach'
+    },
+    {
+      from: 'SOL-03',
+      artifact: 'Target operating model',
+      note: 'Solution to present and iterate'
+    },
+    {
+      from: 'LEG-01.2.2',
+      artifact: 'Contract markup with positions log',
+      note: 'Negotiation positions for contract discussions'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-09.1',
+      name: 'Dialogue Preparation',
+      description: 'Prepare for each round of competitive dialogue',
+      tasks: [
+        {
+          id: 'BM-09.1.1',
+          name: 'Develop dialogue strategy per round — objectives, negotiation positions, topics to test, red lines, and desired client reactions',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead / Commercial Lead',
+            i: 'Solution Architect'
+          },
+          outputs: [
+            {
+              name: 'Dialogue strategy document',
+              format: 'Strategy brief per round',
+              quality: [
+                'Objectives for each dialogue session defined — what do we want to learn/achieve?',
+                'Negotiation positions pre-agreed with governance where required',
+                'Topics mapped to evaluation criteria — what client feedback will improve our score?',
+                'Red lines identified — positions we will not concede'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-09.1.2',
+          name: 'Prepare dialogue pack — presentation materials, discussion topics, questions for the client, team briefing and role assignments',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'All Workstream Leads',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Dialogue preparation pack',
+              format: 'Presentation and briefing materials',
+              quality: [
+                'Materials tailored to this session\'s objectives',
+                'Team roles assigned — who presents, who listens, who takes notes',
+                'Questions for the client prepared and prioritised',
+                'Dry run completed before each session'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-09.2',
+      name: 'Dialogue Execution & Iteration',
+      description: 'Execute dialogue sessions and manage the iterative solution/commercial cycle',
+      tasks: [
+        {
+          id: 'BM-09.2.1',
+          name: 'Record dialogue outcomes — client feedback, positions tested, agreements reached, and open items per session',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Dialogue session record',
+              format: 'Structured record per session',
+              quality: [
+                'All client feedback captured verbatim where possible',
+                'Agreements and positions reached documented',
+                'Open items tracked with owners and deadlines',
+                'Record distributed to all workstream leads within 24 hours'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-09.2.2',
+          name: 'Drive solution and commercial iteration per dialogue round — update SOL, COM, LEG positions based on dialogue outcomes',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads (SOL/COM/LEG)',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Iteration tracker (activity primary output)',
+              format: 'Tracker across rounds',
+              quality: [
+                'Each dialogue round\'s impact on solution and commercial positions tracked',
+                'Workstream leads confirm updates to their positions after each round',
+                'Changes auditable — what changed, why, which dialogue session drove it',
+                'Cumulative position evolution visible across all rounds'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Dialogue prep packs, session records, iteration tracker',
+      format: 'Living documents across rounds',
+      quality: [
+        'Strategy prepared per round with pre-agreed positions',
+        'Session outcomes recorded and distributed within 24 hours',
+        'Solution and commercial iterations tracked across rounds',
+        'Governance re-check triggered when positions change materially'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'SOL-03', consumes: 'Dialogue outcomes', usage: 'Solution design iterated based on client feedback (feedback loop)' },
-    { activity: 'COM-04', consumes: 'Dialogue outcomes', usage: 'Commercial model iterated based on contract discussions' }
+    {
+      activity: 'SOL-03',
+      consumes: 'Dialogue outcomes',
+      usage: 'Solution design iterated based on client feedback (feedback loop)'
+    },
+    {
+      activity: 'COM-04',
+      consumes: 'Dialogue outcomes',
+      usage: 'Commercial model iterated based on contract discussions'
+    }
   ]
 }
 ```
@@ -9603,24 +10914,104 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-11', name: 'Hot debrief (post-submission)', workstream: 'BM', phase: 'POST', role: 'Bid Manager',
-  output: 'Hot debrief notes, immediate lessons log', dependencies: ['PRD-09'], effortDays: 1, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ external: true, artifact: 'Submission confirmation record' }, { external: true, artifact: 'Team availability for debrief within 48 hours' }],
-
-  subs: [{
-    id: 'BM-11.1', name: 'Submission Debrief', description: 'Capture immediate lessons while the bid is fresh',
-    tasks: [{
-      id: 'BM-11.1.1', name: 'Conduct internal hot debrief within 48 hours of submission — what went well, what didn\'t, immediate process lessons, team feedback',
-      raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: null },
-      inputs: [{ external: true, artifact: 'Submission confirmation record' }],
-      outputs: [{ name: 'Hot debrief notes (activity primary output)', format: 'Structured debrief notes', quality: ['Conducted within 48 hours — while memory is fresh', 'What went well captured — repeat these things', 'What didn\'t go well captured — honest, no blame', 'Immediate process improvement suggestions noted'] }],
-      effort: 'Low', type: 'Sequential'
-    }]
-  }],
-
-  outputs: [{ name: 'Hot debrief notes, immediate lessons log', format: 'Debrief notes', quality: ['Within 48 hours', 'Honest assessment', 'Improvement suggestions captured'] }],
-  consumers: [{ activity: 'BM-12', consumes: 'Hot debrief notes', usage: 'Lessons learned builds on immediate debrief' }]
+  id: 'BM-11',
+  name: 'Hot debrief (post-submission)',
+  workstream: 'BM',
+  phase: 'POST',
+  role: 'Bid Manager',
+  output: 'Hot debrief notes, immediate lessons log',
+  dependencies: [
+    'PRD-09'
+  ],
+  effortDays: 1,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      external: true,
+      artifact: 'Submission confirmation record'
+    },
+    {
+      external: true,
+      artifact: 'Team availability for debrief within 48 hours'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-11.1',
+      name: 'Submission Debrief',
+      description: 'Capture immediate lessons and team feedback within 48 hours of submission',
+      tasks: [
+        {
+          id: 'BM-11.1.1',
+          name: 'Conduct structured hot debrief — facilitated session covering what went well, what didn\'t, process bottlenecks, and team wellbeing',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'All attending leads',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Hot debrief notes',
+              format: 'Structured meeting record',
+              quality: [
+                'Held within 48 hours of submission while memory is fresh',
+                'All workstream leads contribute — not just bid management perspective',
+                'Covers: process, quality, timeline, team dynamics, tools, client interaction',
+                'Honest assessment — not a celebration, a learning exercise'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-11.1.2',
+          name: 'Capture immediate process lessons — specific, actionable items that should change for the next bid',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Quality Lead'
+          },
+          outputs: [
+            {
+              name: 'Immediate lessons log (activity primary output)',
+              format: 'Lessons register',
+              quality: [
+                'Each lesson is specific and actionable — not vague \'do better next time\'',
+                'Lessons categorised: process, tooling, resourcing, client management, quality',
+                'Owner assigned for each lesson — who takes it forward',
+                'Feeds BM-12 for formal lessons learned analysis'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Hot debrief notes, immediate lessons log',
+      format: 'Meeting record and lessons register',
+      quality: [
+        'Debrief held within 48 hours',
+        'All workstream perspectives captured',
+        'Lessons specific and actionable with owners',
+        'Feeds formal lessons learned process'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-12',
+      consumes: 'Hot debrief notes',
+      usage: 'Lessons learned builds on immediate debrief'
+    }
+  ]
 }
 ```
 
@@ -9664,38 +11055,174 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-13', name: 'Bid risk & assumptions register', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Bid risk register (process risks, scheduling assumptions, resource risks)', dependencies: [], effortDays: 0, teamSize: 1, parallelisationType: 'C',
-  // Note: this is the BID-LEVEL consolidated risk register — the Bid Manager's view.
-  // Distinct from SOL-12 (solution risk), COM-07 (commercial risk), DEL-01 (delivery risk).
-  // BM-13 consolidates all of these PLUS bid process risks (scheduling, resourcing, quality).
-
+  id: 'BM-13',
+  name: 'Bid risk & assumptions register',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Bid risk register (process risks, scheduling assumptions, resource risks)',
+  dependencies: [],
+  effortDays: 0,
+  teamSize: 1,
+  parallelisationType: 'C',
   inputs: [
-    { from: 'SOL-12', artifact: 'Solution risk register' },
-    { from: 'COM-07', artifact: 'Commercial risk register' },
-    { from: 'DEL-01', artifact: 'Delivery risk & assumptions register' },
-    { from: 'DEL-06', artifact: 'Mitigated risk register (assured)' },
-    { from: 'BM-06', artifact: 'Weekly progress reports', note: 'Programme risks surfaced through reporting' }
+    {
+      from: 'SOL-12',
+      artifact: 'Solution risk register'
+    },
+    {
+      from: 'COM-07',
+      artifact: 'Commercial risk register'
+    },
+    {
+      from: 'DEL-01',
+      artifact: 'Delivery risk & assumptions register'
+    },
+    {
+      from: 'DEL-06',
+      artifact: 'Mitigated risk register (assured)'
+    },
+    {
+      from: 'BM-06',
+      artifact: 'Weekly progress reports',
+      note: 'Programme risks surfaced through reporting'
+    }
   ],
-
-  subs: [{
-    id: 'BM-13.1', name: 'Bid Risk Consolidation', description: 'The single consolidated bid risk register — all risks from all workstreams plus bid process risks',
-    tasks: [
-      { id: 'BM-13.1.1', name: 'Consolidate all workstream risk registers into the single bid risk register — solution, commercial, delivery, legal, plus bid process risks', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: null },
-        inputs: [{ from: 'SOL-12', artifact: 'Solution risk register' }, { from: 'COM-07', artifact: 'Commercial risk register' }, { from: 'DEL-01', artifact: 'Delivery risk & assumptions register' }],
-        outputs: [{ name: 'Consolidated bid risk register', format: 'Comprehensive risk register', quality: ['All workstream risks consolidated', 'Bid process risks added — scheduling, resourcing, quality, submission logistics', 'Duplicates removed, cross-cutting risks identified', 'Single view for Bid Director and governance gates'] }],
-        effort: 'Medium', type: 'Iterative' },
-      { id: 'BM-13.1.2', name: 'Maintain and prepare for governance — living document, updated at key milestones, governance-ready summary', raci: { r: 'Bid Manager', a: 'Bid Director', c: null, i: 'All Workstream Leads' },
-        inputs: [{ from: 'BM-13.1.1', artifact: 'Consolidated bid risk register' }, { from: 'DEL-06', artifact: 'Mitigated risk register (assured)' }],
-        outputs: [{ name: 'Bid risk register (activity primary output — living document)', format: 'Governance-ready risk register', quality: ['Updated at key milestones — post solution lock, post pricing lock, pre-governance', 'Top bid risks summarised for executive audience', 'Feeds all governance gates as entry criterion'] }],
-        effort: 'Low', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Bid risk register', format: 'Consolidated governance-ready register', quality: ['All workstream risks consolidated', 'Bid process risks included', 'Living document updated at milestones', 'Governance-ready'] }],
+  subs: [
+    {
+      id: 'BM-13.1',
+      name: 'Risk Register Setup',
+      description: 'Establish the consolidated bid risk register at bid start',
+      tasks: [
+        {
+          id: 'BM-13.1.1',
+          name: 'Establish bid risk register — combining process risks, scheduling risks, resource risks, and initial workstream risks from SAL-06',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Risk Manager',
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Initial bid risk register',
+              format: 'Risk register',
+              quality: [
+                'All risk categories covered: process, schedule, resource, solution, commercial, delivery, legal',
+                'Risks scored for probability and impact',
+                'Risk owners assigned',
+                'Mitigation actions identified for all high/critical risks'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-13.2',
+      name: 'Ongoing Risk Management',
+      description: 'Maintain the risk register as a living document throughout the bid',
+      tasks: [
+        {
+          id: 'BM-13.2.1',
+          name: 'Consolidate workstream risk registers into the single bid risk register at key milestones',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'All Workstream Leads',
+            i: 'Risk Manager'
+          },
+          outputs: [
+            {
+              name: 'Consolidated risk register',
+              format: 'Living document',
+              quality: [
+                'All workstream risks consolidated — solution (SOL-12), commercial (COM-07), delivery (DEL-01/06), legal (LEG-02)',
+                'No duplicate risks across workstreams',
+                'Cross-workstream risks identified — risks that span solution + commercial + delivery'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-13.2.2',
+          name: 'Update risk register at each governance gate — refresh scores, close mitigated risks, add new risks, prepare governance summary',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Risk Manager',
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Governance-ready risk summary',
+              format: 'Summary for governance pack',
+              quality: [
+                'Risk register refreshed before every governance gate',
+                'Top risks highlighted with mitigation status',
+                'New risks since last gate identified',
+                'Risk trend shown — improving, stable, or deteriorating'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-13.2.3',
+          name: 'Manage risk escalation — risks exceeding threshold trigger immediate Bid Director review, not next weekly cycle',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Risk register (activity primary output)',
+              format: 'Living risk register with escalation log',
+              quality: [
+                'Escalation threshold defined — high probability + high impact = immediate escalation',
+                'Escalated risks have documented Bid Director decision',
+                'Risk register feeds all governance packs',
+                'Archived at bid close as part of lessons learned'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Bid risk & assumptions register (living document)',
+      format: 'Living risk register',
+      quality: [
+        'All workstream risks consolidated',
+        'Risk register refreshed at every governance gate',
+        'Escalation procedure operational',
+        'Top risks visible in weekly progress reports',
+        'Feeds governance pack at every gate'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'GOV-02', consumes: 'Bid risk register', usage: 'Solution & strategy review examines risk position' },
-    { activity: 'GOV-03', consumes: 'Bid risk register', usage: 'Pricing & risk review examines consolidated risk position' }
+    {
+      activity: 'GOV-02',
+      consumes: 'Bid risk register',
+      usage: 'Solution & strategy review examines risk position'
+    },
+    {
+      activity: 'GOV-03',
+      consumes: 'Bid risk register',
+      usage: 'Pricing & risk review examines consolidated risk position'
+    }
   ]
 }
 ```
@@ -9706,30 +11233,157 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-14', name: 'Clarification submission & response management', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Clarification response log with impact assessment', dependencies: ['SAL-07'], effortDays: 5, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'SAL-07', artifact: 'Clarification question register (prioritised)', note: 'The approved questions with strategic timing plan' },
-    { external: true, artifact: 'Procurement portal access and submission procedures' }
+  id: 'BM-14',
+  name: 'Clarification submission & response management',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Clarification response log with impact assessment',
+  dependencies: [
+    'SAL-07'
   ],
-
-  subs: [{
-    id: 'BM-14.1', name: 'Clarification Operations', description: 'Operationally manage the clarification submission and response process',
-    tasks: [
-      { id: 'BM-14.1.1', name: 'Submit clarification questions per SAL-07 strategy and timing plan — manage portal submissions, track deadlines', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: null },
-        inputs: [{ from: 'SAL-07', artifact: 'Clarification question register (prioritised)' }],
-        outputs: [{ name: 'Submitted questions log', format: 'Tracking register', quality: ['All approved questions submitted on time per the timing plan', 'Submission confirmation recorded per question', 'Any questions held back per strategic timing plan tracked'] }],
-        effort: 'Low', type: 'Sequential' },
-      { id: 'BM-14.1.2', name: 'Track and distribute clarification responses — log all responses, distribute to relevant workstreams, flag responses that change assumptions', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: null },
-        inputs: [{ from: 'BM-14.1.1', artifact: 'Submitted questions log' }],
-        outputs: [{ name: 'Clarification response log (activity primary output)', format: 'Comprehensive response tracker', quality: ['Every response logged — date, question reference, response summary, impact assessment', 'Responses distributed to relevant workstream leads within 24 hours', 'Responses that change assumptions or requirements flagged for BM-15 impact analysis', 'Client-published responses from other bidders also captured and assessed'] }],
-        effort: 'Medium', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Clarification response log with impact assessment', format: 'Response tracker', quality: ['All responses logged and distributed', 'Impact flagged for analysis', 'Competitor questions captured if published'] }],
-  consumers: [{ activity: 'BM-15', consumes: 'Clarification response log', usage: 'Impact analysis triages responses that affect the bid' }]
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'SAL-07',
+      artifact: 'Clarification question register (prioritised)',
+      note: 'The approved questions with strategic timing plan'
+    },
+    {
+      external: true,
+      artifact: 'Procurement portal access and submission procedures'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-14.1',
+      name: 'Clarification Submission',
+      description: 'Submit clarification questions per the agreed strategy',
+      tasks: [
+        {
+          id: 'BM-14.1.1',
+          name: 'Prepare clarification submissions — format questions per portal requirements, obtain Bid Director approval for strategic questions',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Formatted clarification submissions',
+              format: 'Portal-ready questions',
+              quality: [
+                'Questions formatted per client portal requirements',
+                'Strategic questions approved by Bid Director before submission',
+                'Timing aligned to SAL-07 strategy — not all questions submitted at once if staggered approach agreed'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-14.1.2',
+          name: 'Submit clarifications via client portal — manage deadlines, confirm receipt, log submission',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Submission log',
+              format: 'Log entry',
+              quality: [
+                'Submitted before client deadline with margin',
+                'Receipt confirmed — screenshot or confirmation reference',
+                'Submission logged in clarification register'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-14.2',
+      name: 'Response Distribution',
+      description: 'Track and distribute clarification responses to workstream leads',
+      tasks: [
+        {
+          id: 'BM-14.2.1',
+          name: 'Monitor for client responses — check portal regularly, download and log all responses including other bidders\' published questions',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Response download log',
+              format: 'Log',
+              quality: [
+                'Portal checked at agreed frequency (minimum daily during active clarification periods)',
+                'All responses downloaded and logged — including answers to other bidders\' questions',
+                'Version control applied — responses may be updated by client'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'BM-14.2.2',
+          name: 'Triage and distribute responses to relevant workstream leads — flag responses that change assumptions or create new risks',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Clarification response log (activity primary output)',
+              format: 'Distributed response log with impact flags',
+              quality: [
+                'Every response assigned to one or more workstream leads',
+                'Responses that change material assumptions flagged for BM-15 impact analysis',
+                'Distribution within 24 hours of response receipt',
+                'Impact assessment requested from affected workstreams'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Clarification response log with impact assessment',
+      format: 'Living log',
+      quality: [
+        'All submissions tracked with receipt confirmation',
+        'Responses distributed within 24 hours',
+        'Impact flags assigned to assumption-changing responses',
+        'Register feeds BM-15 impact analysis'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-15',
+      consumes: 'Clarification response log',
+      usage: 'Impact analysis triages responses that affect the bid'
+    }
+  ]
 }
 ```
 
@@ -9739,32 +11393,164 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-15', name: 'Clarification impact analysis & workstream updates', workstream: 'BM', phase: 'DEV', role: 'Bid Manager',
-  output: 'Updated requirements/assumptions across workstreams', dependencies: ['BM-14'], effortDays: 3, teamSize: 2, parallelisationType: 'P',
-
-  inputs: [
-    { from: 'BM-14', artifact: 'Clarification response log', note: 'Responses flagged as having impact' },
-    { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'Current requirements baseline to assess against' }
+  id: 'BM-15',
+  name: 'Clarification impact analysis & workstream updates',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Manager',
+  output: 'Updated requirements/assumptions across workstreams',
+  dependencies: [
+    'BM-14'
   ],
-
-  subs: [{
-    id: 'BM-15.1', name: 'Impact Triage', description: 'Triage clarification responses that affect the bid and drive workstream updates',
-    tasks: [
-      { id: 'BM-15.1.1', name: 'Triage flagged clarification responses — assess impact on solution, commercial, delivery, legal, and compliance workstreams', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: null },
-        inputs: [{ from: 'BM-14', artifact: 'Clarification response log' }],
-        outputs: [{ name: 'Clarification impact assessment', format: 'Per-response impact record', quality: ['Each flagged response assessed for impact — which workstreams affected, what changes', 'Impact categorised: no impact, minor update, significant rework, showstopper', 'Affected compliance requirements and response items flagged in the product'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'BM-15.1.2', name: 'Drive workstream updates — ensure affected solution, commercial, or legal positions are updated and track resolution', raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Affected Workstream Leads', i: null },
-        inputs: [{ from: 'BM-15.1.1', artifact: 'Clarification impact assessment' }],
-        outputs: [{ name: 'Updated requirements/assumptions across workstreams (activity primary output)', format: 'Impact resolution tracker', quality: ['Every impacted item has an assigned owner and resolution action', 'Updates tracked to completion — no flagged-but-unresolved items at submission', 'Programme impact assessed — does the clarification change the timeline?', 'Unreviewed clarification impacts shown as action items in the product workspace'] }],
-        effort: 'High', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Updated requirements/assumptions across workstreams', format: 'Impact resolution tracker', quality: ['All flagged responses triaged', 'Workstream updates assigned and tracked', 'No unresolved impacts at submission'] }],
+  effortDays: 3,
+  teamSize: 2,
+  parallelisationType: 'P',
+  inputs: [
+    {
+      from: 'BM-14',
+      artifact: 'Clarification response log',
+      note: 'Responses flagged as having impact'
+    },
+    {
+      from: 'SOL-01',
+      artifact: 'Requirements interpretation document',
+      note: 'Current requirements baseline to assess against'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-15.1',
+      name: 'Impact Assessment',
+      description: 'Assess the impact of clarification responses on bid workstreams',
+      tasks: [
+        {
+          id: 'BM-15.1.1',
+          name: 'Triage flagged clarification responses — assess which workstreams are affected and severity of impact',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Impact triage assessment',
+              format: 'Assessment per flagged response',
+              quality: [
+                'Each flagged response assessed for: scope change, assumption change, risk change, timeline impact',
+                'Affected workstreams identified — may be multiple per response',
+                'Severity rated — minor (update text), moderate (revise approach), major (fundamental change)',
+                'Major impacts escalated to Bid Director immediately'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-15.1.2',
+          name: 'Assess cumulative impact of all clarification responses — do the collective changes alter the bid\'s competitive position or feasibility?',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead / Commercial Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Cumulative impact assessment',
+              format: 'Assessment',
+              quality: [
+                'Cumulative effect assessed — are we still competitive after these changes?',
+                'PWIN impact considered — do clarifications change our win probability?',
+                'Timeline impact assessed — can we still meet submission deadline with these changes?',
+                'If cumulative impact is material, triggers BM-16 win strategy refresh'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-15.2',
+      name: 'Workstream Updates',
+      description: 'Drive updates across affected workstreams and track resolution',
+      tasks: [
+        {
+          id: 'BM-15.2.1',
+          name: 'Issue update instructions to affected workstreams — specific changes required, deadline for update, impact on downstream activities',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Affected Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Update instructions',
+              format: 'Instruction per workstream',
+              quality: [
+                'Specific changes described — not vague \'please review\'',
+                'Deadline for update aligned to master programme',
+                'Downstream dependencies identified — what else changes if this changes'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-15.2.2',
+          name: 'Track resolution of all clarification-driven updates — confirm workstream positions updated, compliance matrix adjusted, risks reassessed',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Updated requirements/assumptions across workstreams (activity primary output)',
+              format: 'Resolution tracker',
+              quality: [
+                'Every update instruction tracked to closure',
+                'Compliance matrix (PRD-01) updated to reflect changed requirements',
+                'Risk register (BM-13) updated if new risks identified',
+                'All updates complete before next governance gate'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Updated requirements/assumptions across workstreams',
+      format: 'Resolution tracker and updated workstream documents',
+      quality: [
+        'Every clarification impact assessed and triaged',
+        'Cumulative impact on competitive position evaluated',
+        'Workstream updates tracked to closure',
+        'Compliance matrix and risk register updated'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'SOL-01', consumes: 'Updated requirements', usage: 'Requirements interpretation updated with clarification responses (feedback loop)' },
-    { activity: 'BM-13', consumes: 'Clarification impact assessment', usage: 'Bid risk register updated with clarification-driven risks' }
+    {
+      activity: 'SOL-01',
+      consumes: 'Updated requirements',
+      usage: 'Requirements interpretation updated with clarification responses (feedback loop)'
+    },
+    {
+      activity: 'BM-13',
+      consumes: 'Clarification impact assessment',
+      usage: 'Bid risk register updated with clarification-driven risks'
+    }
   ]
 }
 ```
@@ -9775,38 +11561,180 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'BM-16', name: 'Win strategy refresh (post-ITT)', workstream: 'BM', phase: 'DEV', role: 'Bid Director',
-  output: 'Updated win strategy, refreshed PWIN score', dependencies: ['BM-01', 'SOL-01'], effortDays: 2, teamSize: 1, parallelisationType: 'S',
-  // Note: NEW activity from playbook B4 (Qualification). Formal mid-bid recheck:
-  // is the win strategy still valid after ITT analysis and early solution work?
-  // Has the competitive landscape changed? Should we still bid?
-
-  inputs: [
-    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'The original strategy to revalidate' },
-    { from: 'SOL-01', artifact: 'Requirements interpretation document', note: 'What we now know about the requirement' },
-    { from: 'SAL-06.1.1', artifact: 'Capture effectiveness assessment', note: 'How well capture influenced the ITT' },
-    { from: 'BM-15', artifact: 'Updated requirements/assumptions across workstreams', note: 'Clarification responses that may have changed the picture' },
-    { external: true, artifact: 'Updated competitive intelligence — any new information about competitors since SAL-06' }
+  id: 'BM-16',
+  name: 'Win strategy refresh (post-ITT)',
+  workstream: 'BM',
+  phase: 'DEV',
+  role: 'Bid Director',
+  output: 'Updated win strategy, refreshed PWIN score',
+  dependencies: [
+    'BM-01',
+    'SOL-01'
   ],
-
-  subs: [{
-    id: 'BM-16.1', name: 'Strategy Revalidation', description: 'Formal mid-bid recheck of the win strategy',
-    tasks: [
-      { id: 'BM-16.1.1', name: 'Refresh win strategy assessment — has anything changed since SAL-06 that affects our competitive position, win themes, or approach?', raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Capture Lead / Solution Architect / Commercial Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'SAL-06', artifact: 'Capture plan (locked)' }, { from: 'SOL-01', artifact: 'Requirements interpretation document' }, { external: true, artifact: 'Updated competitive intelligence' }],
-        outputs: [{ name: 'Win strategy refresh assessment', format: 'Structured revalidation', quality: ['Each element of the win strategy assessed: still valid, needs adjustment, or invalidated', 'Competitive landscape rechecked — any new intelligence?', 'Win themes revalidated against actual requirements from SOL-01'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'BM-16.1.2', name: 'Refresh PWIN score and confirm continue/stop decision — formal re-qualification checkpoint', raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Capture Lead', i: 'Bid Board' },
-        inputs: [{ from: 'BM-16.1.1', artifact: 'Win strategy refresh assessment' }],
-        outputs: [{ name: 'Updated win strategy and refreshed PWIN score (activity primary output)', format: 'Updated strategy document with PWIN', quality: ['PWIN score refreshed with current intelligence — has it improved or deteriorated?', 'Continue/stop recommendation stated with rationale', 'If strategy adjustments needed, updated win strategy documented and communicated to bid team', 'Win Strategy Re-confirmation recorded — formal checkpoint passed'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Updated win strategy, refreshed PWIN score', format: 'Strategy update with PWIN', quality: ['Strategy revalidated against current intelligence', 'PWIN refreshed', 'Continue/stop decision confirmed'] }],
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'S',
+  inputs: [
+    {
+      from: 'SAL-06',
+      artifact: 'Capture plan (locked)',
+      note: 'The original strategy to revalidate'
+    },
+    {
+      from: 'SOL-01',
+      artifact: 'Requirements interpretation document',
+      note: 'What we now know about the requirement'
+    },
+    {
+      from: 'SAL-06.1.1',
+      artifact: 'Capture effectiveness assessment',
+      note: 'How well capture influenced the ITT'
+    },
+    {
+      from: 'BM-15',
+      artifact: 'Updated requirements/assumptions across workstreams',
+      note: 'Clarification responses that may have changed the picture'
+    },
+    {
+      external: true,
+      artifact: 'Updated competitive intelligence — any new information about competitors since SAL-06'
+    }
+  ],
+  subs: [
+    {
+      id: 'BM-16.1',
+      name: 'Strategy Assessment',
+      description: 'Reassess the win strategy in light of ITT-phase intelligence',
+      tasks: [
+        {
+          id: 'BM-16.1.1',
+          name: 'Assess changes since strategy lock — new intelligence from clarifications, dialogue, competitor signals, client behaviour, solution evolution',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Strategy change assessment',
+              format: 'Assessment document',
+              quality: [
+                'All changes since SAL-06 strategy lock catalogued',
+                'Impact on win themes assessed — are they still valid?',
+                'Competitive position reassessed — new intelligence about competitors',
+                'Client behaviour signals noted — what has the client revealed through clarifications and dialogue?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-16.1.2',
+          name: 'Refresh win themes and competitive positioning if required — update messaging, solution emphasis, or commercial strategy',
+          raci: {
+            r: 'Capture Lead',
+            a: 'Bid Director',
+            c: 'Solution Architect / Commercial Lead',
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Updated win strategy (if changed)',
+              format: 'Strategy update brief',
+              quality: [
+                'Win themes revalidated or updated with rationale for change',
+                'Changes cascaded to all workstream leads',
+                'Storyboards (BM-10) updated if win themes changed',
+                'Response drafts assessed for alignment to updated themes'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'BM-16.2',
+      name: 'PWIN Requalification',
+      description: 'Formal re-qualification checkpoint — confirm continue or stop',
+      tasks: [
+        {
+          id: 'BM-16.2.1',
+          name: 'Refresh PWIN score based on current intelligence — update qualification assessment with ITT-phase evidence',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Updated PWIN assessment',
+              format: 'Qualification scorecard',
+              quality: [
+                'PWIN score recalculated with current evidence — not the original pre-ITT assessment',
+                'Each category reassessed — customer intimacy, competitive position, solution strength, etc.',
+                'Score movement explained — what changed and why',
+                'Honest assessment — if PWIN has dropped, say so'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'BM-16.2.2',
+          name: 'Confirm continue/stop decision — formal checkpoint with Bid Director, may trigger governance escalation if PWIN has materially changed',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Continue/stop decision record (activity primary output)',
+              format: 'Decision record',
+              quality: [
+                'Formal continue/stop decision documented with rationale',
+                'If PWIN has materially declined, governance escalation triggered',
+                'If continuing, any strategy adjustments confirmed',
+                'Decision record feeds next governance pack'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Win strategy refresh and continue/stop decision',
+      format: 'Strategy update and decision record',
+      quality: [
+        'Strategy reassessed against ITT-phase intelligence',
+        'Win themes revalidated or updated',
+        'PWIN score refreshed with current evidence',
+        'Formal continue/stop decision documented'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'BM-10', consumes: 'Updated win strategy', usage: 'Storyboard development uses the refreshed strategy if adjustments were made' },
-    { activity: 'SAL-04', consumes: 'Updated win strategy', usage: 'Win themes refined if strategy refresh identified changes needed (feedback loop)' }
+    {
+      activity: 'BM-10',
+      consumes: 'Updated win strategy',
+      usage: 'Storyboard development uses the refreshed strategy if adjustments were made'
+    },
+    {
+      activity: 'SAL-04',
+      consumes: 'Updated win strategy',
+      usage: 'Win themes refined if strategy refresh identified changes needed (feedback loop)'
+    }
   ]
 }
 ```
@@ -9826,34 +11754,164 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-01', name: 'Compliance matrix & requirements mapping', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
-  output: 'Compliance matrix (live)', dependencies: ['SOL-01'], effortDays: 3, teamSize: 1, parallelisationType: 'S',
-
-  inputs: [
-    { from: 'SOL-01', artifact: 'Requirements interpretation document' },
-    { external: true, artifact: 'ITT documentation — all mandatory and scored requirements' }
+  id: 'PRD-01',
+  name: 'Compliance matrix & requirements mapping',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Manager',
+  output: 'Compliance matrix (live)',
+  dependencies: [
+    'SOL-01'
   ],
-
-  subs: [{
-    id: 'PRD-01.1', name: 'Compliance Assurance', description: 'Map every ITT requirement to the response and maintain compliance position throughout the bid',
-    tasks: [
-      { id: 'PRD-01.1.1', name: 'Map every ITT mandatory and scored requirement to the response section that addresses it — identify compliance position per requirement',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Legal / Solution Architect', i: 'Workstream Leads' },
-        inputs: [{ from: 'SOL-01', artifact: 'Requirements interpretation document' }, { external: true, artifact: 'ITT documentation — all mandatory and scored requirements' }],
-        outputs: [{ name: 'Compliance matrix (draft)', format: 'Requirements-to-response mapping', quality: ['Every mandatory requirement mapped to a response section', 'Compliance position per requirement: compliant, partial, non-compliant, not yet assessed', 'Non-compliant items flagged with risk and mitigation approach', 'Matrix structured to match client expected format if specified'] }],
-        effort: 'High', type: 'Sequential' },
-      { id: 'PRD-01.1.2', name: 'Maintain compliance matrix as a living document throughout the bid — update as solution, commercial, and clarification responses evolve',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Workstream Leads', i: null },
-        inputs: [{ from: 'PRD-01.1.1', artifact: 'Compliance matrix (draft)' }],
-        outputs: [{ name: 'Compliance matrix (live — activity primary output)', format: 'Living compliance register', quality: ['Updated at key milestones — post solution lock, post pricing, pre-governance', 'Non-compliant items tracked to resolution', 'Compliance status reported at governance gates', 'Final compliance check feeds PRD-09 (submission)'] }],
-        effort: 'Low', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Compliance matrix (live)', format: 'Living requirements-to-response mapping', quality: ['All requirements mapped', 'Compliance position tracked', 'Non-compliance flagged and mitigated'] }],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',
+  inputs: [
+    {
+      from: 'SOL-01',
+      artifact: 'Requirements interpretation document'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — all mandatory and scored requirements'
+    }
+  ],
+  subs: [
+    {
+      id: 'PRD-01.1',
+      name: 'Initial Compliance Mapping',
+      description: 'Map all ITT requirements to response sections at bid start',
+      tasks: [
+        {
+          id: 'PRD-01.1.1',
+          name: 'Extract every mandatory and scored requirement from the ITT — pass/fail, scored, informational, contractual',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Legal Lead',
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Requirements register',
+              format: 'Structured register',
+              quality: [
+                'Every requirement extracted — not just the obvious scored questions',
+                'Requirement type classified — mandatory pass/fail, scored quality, scored price, informational',
+                'Cross-references captured — where requirements appear in multiple ITT documents',
+                'Nothing missed — two-person review of ITT documents'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-01.1.2',
+          name: 'Map each requirement to the response section that addresses it — identify compliance position per requirement',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Solution Architect',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Initial compliance matrix',
+              format: 'Matrix — requirement × response section',
+              quality: [
+                'Every requirement mapped to at least one response section',
+                'Compliance position assessed: compliant, partially compliant, non-compliant, TBD',
+                'Non-compliant items flagged immediately to Bid Director',
+                'Cross-cutting requirements (e.g. security) mapped to all relevant sections'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-01.2',
+      name: 'Ongoing Compliance Maintenance',
+      description: 'Maintain the compliance matrix as a living document throughout the bid',
+      tasks: [
+        {
+          id: 'PRD-01.2.1',
+          name: 'Update compliance positions as solution, commercial, and legal workstreams evolve — TBD items resolved, new issues identified',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Updated compliance matrix',
+              format: 'Living matrix',
+              quality: [
+                'Updated at least weekly during active solution development',
+                'TBD positions resolved progressively — target zero TBDs before red review',
+                'New requirements from clarifications incorporated',
+                'Version controlled — changes tracked'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'PRD-01.2.2',
+          name: 'Report compliance status at governance gates — overall position, outstanding non-compliances, and mitigation plan',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Compliance matrix (activity primary output)',
+              format: 'Governance-ready compliance summary',
+              quality: [
+                'Compliance position summarised for governance — % compliant, % TBD, % non-compliant',
+                'Non-compliant items have documented mitigation or acceptance rationale',
+                'Zero TBDs at final governance gate — everything resolved',
+                'Compliance matrix submitted as part of final QA'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Compliance matrix (live)',
+      format: 'Living compliance matrix',
+      quality: [
+        'Every ITT requirement mapped to response section',
+        'Compliance position tracked — compliant, partial, non-compliant, TBD',
+        'Updated continuously throughout bid',
+        'Zero TBDs at submission',
+        'Governance-ready summary at every gate'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'PRD-09', consumes: 'Compliance matrix', usage: 'Final compliance check before submission' },
-    { activity: 'GOV-05', consumes: 'Compliance matrix', usage: 'Final submission authority requires compliance confirmation' }
+    {
+      activity: 'PRD-09',
+      consumes: 'Compliance matrix',
+      usage: 'Final compliance check before submission'
+    },
+    {
+      activity: 'GOV-05',
+      consumes: 'Compliance matrix',
+      usage: 'Final submission authority requires compliance confirmation'
+    }
   ]
 }
 ```
@@ -9916,39 +11974,175 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-03', name: 'Evidence, case studies & CV assembly', workstream: 'PRD', phase: 'PROD', role: 'Bid Coordinator',
-  // ARCHETYPE NOTES:
-  // Consulting/Advisory: MODIFIED — evidence pack is CV-dominated. Case studies focus on
-  //   advisory outcomes, not service delivery. The assembly task is fundamentally "package
-  //   the CVs and case studies" — the team IS the evidence.
-  output: 'Evidence pack', dependencies: ['SUP-05', 'SOL-10'], effortDays: 16, teamSize: 2, parallelisationType: 'P',
-
-  inputs: [
-    { from: 'SOL-10', artifact: 'Evidence requirements matrix', note: 'What evidence is needed per section' },
-    { from: 'SOL-10.2.1', artifact: 'Adapted evidence pack (existing)', note: 'Evidence already sourced and adapted' },
-    { from: 'SOL-10.2.2', artifact: 'Evidence commission register', note: 'New evidence being produced — track delivery' },
-    { from: 'SUP-05', artifact: 'Partner case studies & CVs', note: 'Partner evidence' },
-    { external: true, artifact: 'ITT documentation — evidence format requirements, CV templates, case study templates' }
+  id: 'PRD-03',
+  name: 'Evidence, case studies & CV assembly',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Coordinator',
+  output: 'Evidence pack',
+  dependencies: [
+    'SUP-05',
+    'SOL-10'
   ],
-
-  subs: [{
-    id: 'PRD-03.1', name: 'Evidence Assembly', description: 'Compile, format, and quality-assure the complete evidence pack for submission',
-    tasks: [
-      { id: 'PRD-03.1.1', name: 'Compile all evidence items — case studies, CVs, credentials, certifications, reference letters — from SOL-10 sourcing and SUP-05 partner evidence',
-        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'SMEs / Partner Leads', i: 'Writers' },
-        inputs: [{ from: 'SOL-10.2.1', artifact: 'Adapted evidence pack (existing)' }, { from: 'SUP-05', artifact: 'Partner case studies & CVs' }, { from: 'SOL-10.2.2', artifact: 'Evidence commission register' }],
-        outputs: [{ name: 'Compiled evidence items', format: 'Per-item evidence documents', quality: ['All items from SOL-10 evidence matrix accounted for — sourced, commissioned, or gap documented', 'Commissioned evidence that has been delivered collected and reviewed', 'Outstanding items tracked with delivery date'] }],
-        effort: 'Medium', type: 'Parallel' },
-      { id: 'PRD-03.1.2', name: 'Format evidence to ITT requirements and quality-assure — consistent style, correct templates, word limits, anonymisation where required',
-        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'DTP', i: null },
-        inputs: [{ from: 'PRD-03.1.1', artifact: 'Compiled evidence items' }, { external: true, artifact: 'ITT documentation — evidence format requirements' }],
-        outputs: [{ name: 'Evidence pack (activity primary output)', format: 'Submission-ready evidence pack', quality: ['All evidence formatted to ITT requirements — correct templates, within word limits', 'Client-sensitive information anonymised where required', 'Evidence cross-referenced to response sections — reviewers can trace claims to evidence', 'Evidence pack complete and ready for red review alongside response drafts'] }],
-        effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Evidence pack', format: 'Submission-ready evidence documents', quality: ['All evidence compiled, formatted, and quality-assured', 'Gaps documented', 'Cross-referenced to response sections'] }],
-  consumers: [{ activity: 'PRD-06', consumes: 'Evidence pack', usage: 'Red review includes evidence alongside response drafts' }]
+  effortDays: 16,
+  teamSize: 2,
+  parallelisationType: 'P',
+  inputs: [
+    {
+      from: 'SOL-10',
+      artifact: 'Evidence requirements matrix',
+      note: 'What evidence is needed per section'
+    },
+    {
+      from: 'SOL-10.2.1',
+      artifact: 'Adapted evidence pack (existing)',
+      note: 'Evidence already sourced and adapted'
+    },
+    {
+      from: 'SOL-10.2.2',
+      artifact: 'Evidence commission register',
+      note: 'New evidence being produced — track delivery'
+    },
+    {
+      from: 'SUP-05',
+      artifact: 'Partner case studies & CVs',
+      note: 'Partner evidence'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — evidence format requirements, CV templates, case study templates'
+    }
+  ],
+  subs: [
+    {
+      id: 'PRD-03.1',
+      name: 'Evidence Collection',
+      description: 'Compile all evidence items from internal and partner sources',
+      tasks: [
+        {
+          id: 'PRD-03.1.1',
+          name: 'Compile internal evidence — case studies, CVs, credentials, certifications from evidence library and SOL-10 commissioning',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'SMEs',
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Internal evidence pack',
+              format: 'Compiled evidence items',
+              quality: [
+                'All evidence items from SOL-10 matrix sourced or commissioned',
+                'Case studies relevant to this opportunity — not generic corporate brochures',
+                'CVs current and tailored to this bid\'s requirements',
+                'Credentials and certifications verified as current'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'PRD-03.1.2',
+          name: 'Collect partner evidence from SUP-05 — partner case studies, CVs, credentials, references',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'Supply Chain Lead',
+            i: 'Partner Lead'
+          },
+          outputs: [
+            {
+              name: 'Partner evidence pack',
+              format: 'Compiled partner evidence',
+              quality: [
+                'All partner evidence items received per SOL-10 requirements',
+                'Quality reviewed — partner evidence meets our standards, not just theirs',
+                'Gaps identified and chased — partner evidence often arrives late'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'PRD-03.2',
+      name: 'Evidence Formatting & QA',
+      description: 'Format and quality-assure all evidence for submission',
+      tasks: [
+        {
+          id: 'PRD-03.2.1',
+          name: 'Format all evidence to ITT requirements — consistent style, correct templates, word/page limits, anonymisation where required',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'DTP',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Formatted evidence pack',
+              format: 'Submission-ready evidence',
+              quality: [
+                'Consistent formatting across all evidence items — one brand voice',
+                'ITT template requirements met (if specified)',
+                'Word/page limits respected',
+                'Client names anonymised where required by ITT rules'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-03.2.2',
+          name: 'Quality-assure evidence — relevance, accuracy, currency, and alignment to win themes',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Quality Lead',
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Evidence pack (activity primary output)',
+              format: 'QA-complete evidence pack',
+              quality: [
+                'Every evidence item reviewed for relevance to this specific opportunity',
+                'Factual accuracy verified — dates, values, outcomes confirmed with source',
+                'Currency confirmed — evidence not older than policy threshold (typically 5 years)',
+                'Win themes reinforced through evidence selection and presentation'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Evidence pack',
+      format: 'QA-complete evidence pack',
+      quality: [
+        'All required evidence sourced — internal and partner',
+        'Formatted to ITT requirements',
+        'Quality assured for relevance, accuracy, and currency',
+        'Win themes reinforced through evidence selection'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-06',
+      consumes: 'Evidence pack',
+      usage: 'Red review includes evidence alongside response drafts'
+    }
+  ]
 }
 ```
 
@@ -9958,39 +12152,143 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-04', name: 'Pricing schedules & commercial response', workstream: 'PRD', phase: 'PROD', role: 'Commercial Lead',
-  // ARCHETYPE NOTES:
-  // Technology/Digital: MODIFIED — milestone-based pricing schedules, not annual service charge.
-  // Consulting/Advisory: MODIFIED — rate card / day-rate schedules, much simpler pricing documents.
-  //   Commercial narrative is lighter — "here are our rates" not complex pricing explanation.
-  output: 'Pricing response documents', dependencies: ['COM-06'], effortDays: 5, teamSize: 1, parallelisationType: 'S',
-  // Note: COM-06 locks the pricing model and populates schedules.
-  // PRD-04 packages them for submission — formatting, compliance check, assembly with the rest of the response.
-
-  inputs: [
-    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'The locked pricing schedules' },
-    { from: 'COM-04', artifact: 'Commercial model document', note: 'Commercial narrative to accompany pricing' },
-    { external: true, artifact: 'ITT documentation — pricing submission format, required supporting narrative' }
+  id: 'PRD-04',
+  name: 'Pricing schedules & commercial response',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Commercial Lead',
+  output: 'Pricing response documents',
+  dependencies: [
+    'COM-06'
   ],
-
-  subs: [{
-    id: 'PRD-04.1', name: 'Pricing Response Production', description: 'Package the locked pricing for submission',
-    tasks: [
-      { id: 'PRD-04.1.1', name: 'Produce commercial response narrative — explain the pricing approach, payment mechanism, value proposition in the format the ITT requires',
-        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Finance / Bid Manager', i: 'Legal' },
-        inputs: [{ from: 'COM-04', artifact: 'Commercial model document' }, { external: true, artifact: 'ITT documentation — pricing submission format' }],
-        outputs: [{ name: 'Commercial response narrative', format: 'Written commercial response sections', quality: ['Explains the pricing approach clearly for evaluators', 'Value-for-money argument articulated', 'Payment mechanism and commercial terms described in evaluator-friendly language'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'PRD-04.1.2', name: 'Assemble and format pricing response documents — schedules, narrative, supporting documents packaged for submission',
-        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'Commercial Lead', i: null },
-        inputs: [{ from: 'COM-06', artifact: 'Pricing model (locked & assured)' }, { from: 'PRD-04.1.1', artifact: 'Commercial response narrative' }],
-        outputs: [{ name: 'Pricing response documents (activity primary output)', format: 'Submission-ready pricing pack', quality: ['Pricing schedules formatted per ITT requirements', 'Commercial narrative assembled with pricing', 'Cross-references between narrative and schedules confirmed', 'Ready for red/gold review alongside quality response'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Pricing response documents', format: 'Submission-ready pricing pack', quality: ['Pricing schedules formatted', 'Commercial narrative written', 'Ready for review'] }],
-  consumers: [{ activity: 'PRD-06', consumes: 'Pricing response documents', usage: 'Red review includes pricing alongside quality response' }]
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  inputs: [
+    {
+      from: 'COM-06',
+      artifact: 'Pricing model (locked & assured)',
+      note: 'The locked pricing schedules'
+    },
+    {
+      from: 'COM-04',
+      artifact: 'Commercial model document',
+      note: 'Commercial narrative to accompany pricing'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — pricing submission format, required supporting narrative'
+    }
+  ],
+  subs: [
+    {
+      id: 'PRD-04.1',
+      name: 'Commercial Narrative',
+      description: 'Produce the written commercial response elements',
+      tasks: [
+        {
+          id: 'PRD-04.1.1',
+          name: 'Draft commercial response narrative — pricing approach, value proposition, payment mechanism explanation, investment commitment',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Bid Manager',
+            i: 'Solution Architect'
+          },
+          outputs: [
+            {
+              name: 'Commercial response narrative',
+              format: 'Draft document',
+              quality: [
+                'Explains pricing approach in client-friendly language — not just numbers',
+                'Value proposition articulated — why this price represents best value',
+                'Payment mechanism described clearly',
+                'Investment commitments and efficiency trajectory explained'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-04.1.2',
+          name: 'Assemble pricing schedules from COM-06 locked model — populate ITT pricing templates, cross-reference to narrative',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Completed pricing schedules',
+              format: 'ITT pricing templates',
+              quality: [
+                'All ITT pricing templates populated correctly',
+                'Numbers reconcile between schedules and financial model',
+                'Cross-references to narrative sections correct',
+                'Arithmetic verified independently'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-04.2',
+      name: 'Commercial Response Package',
+      description: 'Package and quality-assure the complete commercial submission',
+      tasks: [
+        {
+          id: 'PRD-04.2.1',
+          name: 'Quality-assure complete commercial response — narrative consistency with pricing, compliance with ITT commercial requirements, no contradictions',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Legal Lead'
+          },
+          outputs: [
+            {
+              name: 'Pricing response documents (activity primary output)',
+              format: 'Complete commercial submission package',
+              quality: [
+                'Narrative and numbers tell the same story',
+                'All ITT commercial requirements addressed',
+                'No contradictions between commercial response and technical response',
+                'Independent arithmetic check completed',
+                'Commercial response signed off by Commercial Lead and Bid Director'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Pricing response documents',
+      format: 'Complete commercial submission package',
+      quality: [
+        'Narrative explains pricing approach clearly',
+        'All pricing schedules populated and verified',
+        'Narrative and numbers consistent',
+        'ITT commercial requirements met',
+        'Independently checked'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-06',
+      consumes: 'Pricing response documents',
+      usage: 'Red review includes pricing alongside quality response'
+    }
+  ]
 }
 ```
 
@@ -10000,45 +12298,172 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-05', name: 'Pink review (storyboard/outline)', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
-  output: 'Pink review scorecard & actions', dependencies: ['BM-10'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
-  // Note: the pink review is a review of the STORYBOARD — the plan for what will be
-  // written. It validates the response structure, key messages, win theme placement,
-  // and evidence strategy BEFORE writers invest time drafting.
-  // This is NOT a review of early drafts.
-
-  inputs: [
-    { from: 'BM-10', artifact: 'Approved storyboard', note: 'The storyboards to review' },
-    { from: 'SAL-05.2.3', artifact: 'Per-section scoring strategy', note: 'What each section must demonstrate to score' },
-    { from: 'SAL-04', artifact: 'Win theme document', note: 'Win themes that must be integrated' },
-    { from: 'BM-07', artifact: 'Quality plan', note: 'Review criteria' }
+  id: 'PRD-05',
+  name: 'Pink review (storyboard/outline)',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Manager',
+  output: 'Pink review scorecard & actions',
+  dependencies: [
+    'BM-10'
   ],
-
-  subs: [
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
     {
-      id: 'PRD-05.1', name: 'Pink Team Review', description: 'Independent review of storyboards against evaluation criteria and win strategy',
-      tasks: [{
-        id: 'PRD-05.1.1', name: 'Conduct pink team review of storyboards — assess response structure, key messages, win theme integration, evidence placement, and scoring potential per section',
-        raci: { r: 'Independent Reviewers', a: 'Bid Director', c: 'Capture Lead', i: 'Writers' },
-        inputs: [{ from: 'BM-10', artifact: 'Approved storyboard' }, { from: 'SAL-05.2.3', artifact: 'Per-section scoring strategy' }, { from: 'SAL-04', artifact: 'Win theme document' }],
-        outputs: [{ name: 'Pink review scorecard', format: 'Per-section review assessment', quality: ['Every storyboard section reviewed against evaluation criteria', 'Win theme integration assessed — are differentiators placed where marks are?', 'Response structure assessed — will this structure score or is it missing key elements?', 'Evidence placement assessed — is the right evidence planned for the right sections?', 'Actions raised per section — what must change before writers start drafting'] }],
-        effort: 'High', type: 'Sequential'
-      }]
+      from: 'BM-10',
+      artifact: 'Approved storyboard',
+      note: 'The storyboards to review'
     },
     {
-      id: 'PRD-05.2', name: 'Pink Action Resolution', description: 'Resolve pink review actions before drafting begins',
-      tasks: [{
-        id: 'PRD-05.2.1', name: 'Resolve pink review actions — update storyboards, adjust structure, reallocate evidence, brief writers on changes',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Writers / Solution Architect', i: null },
-        inputs: [{ from: 'PRD-05.1.1', artifact: 'Pink review scorecard' }],
-        outputs: [{ name: 'Pink review scorecard & actions (resolved — activity primary output)', format: 'Updated storyboards with action resolution record', quality: ['All critical and major actions resolved before drafting begins', 'Updated storyboards issued to writers as revised briefs', 'Minor actions communicated to writers for incorporation during drafting', 'Pink review closure recorded — methodology checkpoint passed'] }],
-        effort: 'Medium', type: 'Sequential'
-      }]
+      from: 'SAL-05.2.3',
+      artifact: 'Per-section scoring strategy',
+      note: 'What each section must demonstrate to score'
+    },
+    {
+      from: 'SAL-04',
+      artifact: 'Win theme document',
+      note: 'Win themes that must be integrated'
+    },
+    {
+      from: 'BM-07',
+      artifact: 'Quality plan',
+      note: 'Review criteria'
     }
   ],
-
-  outputs: [{ name: 'Pink review scorecard & actions', format: 'Review record with resolved actions', quality: ['Storyboards reviewed by independent panel', 'Actions resolved before drafting', 'Writers briefed on any changes'] }],
-  consumers: [{ activity: 'PRD-02', consumes: 'Pink-reviewed storyboards', usage: 'Writers draft against the pink-reviewed and updated storyboards' }]
+  subs: [
+    {
+      id: 'PRD-05.1',
+      name: 'Pink Review Execution',
+      description: 'Conduct the pink review — assessing storyboard quality and win theme integration',
+      tasks: [
+        {
+          id: 'PRD-05.1.1',
+          name: 'Brief review panel — evaluation criteria, scoring approach, win themes, what to look for, scorecard format',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Reviewers'
+          },
+          outputs: [
+            {
+              name: 'Reviewer briefing record',
+              format: 'Briefing document',
+              quality: [
+                'Reviewers understand the evaluation criteria they are simulating',
+                'Win themes communicated — reviewers check for theme penetration',
+                'Scorecard format explained — consistent scoring across all reviewers',
+                'Review timeline and feedback format agreed'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-05.1.2',
+          name: 'Conduct pink review — reviewers assess storyboard structure, key messages, win theme integration, evidence placement, and scoring potential',
+          raci: {
+            r: 'Independent Reviewers',
+            a: 'Bid Director',
+            c: 'Bid Manager',
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Pink review scorecards',
+              format: 'Scorecard per section',
+              quality: [
+                'Every section scored against evaluation criteria',
+                'Win theme penetration assessed — are themes landing where the marks are?',
+                'Evidence gaps identified — where is the response weak on proof?',
+                'Structural issues flagged — does the response flow logically?',
+                'Scores benchmarked — would this score well against evaluation criteria?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-05.2',
+      name: 'Pink Action Resolution',
+      description: 'Resolve pink review actions before writers begin drafting',
+      tasks: [
+        {
+          id: 'PRD-05.2.1',
+          name: 'Consolidate and prioritise pink review actions — categorise by severity and impact on scoring potential',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Prioritised action list',
+              format: 'Action tracker',
+              quality: [
+                'All reviewer feedback consolidated — duplicates merged',
+                'Actions prioritised: critical (blocks drafting), important (improves score), minor (nice to have)',
+                'Owner assigned per action',
+                'Deadline set — all critical actions resolved before writers begin'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-05.2.2',
+          name: 'Resolve pink actions — update storyboards, adjust structure, reallocate evidence, brief writers on changes',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Pink review scorecard & actions resolved (activity primary output)',
+              format: 'Updated storyboards with action closure record',
+              quality: [
+                'All critical actions resolved and verified',
+                'Storyboards updated to reflect changes',
+                'Writers briefed on revised approach per section',
+                'Action closure confirmed — not just marked done, but change verified'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Pink review scorecard & actions',
+      format: 'Scorecards and updated storyboards',
+      quality: [
+        'All sections reviewed against evaluation criteria',
+        'Win theme integration assessed',
+        'Actions prioritised and resolved before drafting begins',
+        'Writers briefed on review outcomes'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-02',
+      consumes: 'Pink-reviewed storyboards',
+      usage: 'Writers draft against the pink-reviewed and updated storyboards'
+    }
+  ]
 }
 ```
 
@@ -10048,44 +12473,180 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-06', name: 'Red review (full draft)', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
-  output: 'Red review scorecard & actions resolved', dependencies: ['PRD-02', 'PRD-03', 'PRD-04'], effortDays: 5, teamSize: 1, parallelisationType: 'C',
-  // Note: the red review is an EVALUATOR SIMULATION — reviewers score the near-complete
-  // draft as if they were the client evaluation panel.
-
-  inputs: [
-    { from: 'PRD-02', artifact: 'Draft response sections', note: 'Near-complete drafts (80-90%)' },
-    { from: 'PRD-03', artifact: 'Evidence pack', note: 'Evidence reviewed alongside responses' },
-    { from: 'PRD-04', artifact: 'Pricing response documents', note: 'Commercial response included in red review' },
-    { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach', note: 'Scoring criteria reviewers assess against' },
-    { from: 'BM-07', artifact: 'Quality plan', note: 'Review criteria and scoring methodology' }
+  id: 'PRD-06',
+  name: 'Red review (full draft)',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Manager',
+  output: 'Red review scorecard & actions resolved',
+  dependencies: [
+    'PRD-02',
+    'PRD-03',
+    'PRD-04'
   ],
-
-  subs: [
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
     {
-      id: 'PRD-06.1', name: 'Red Team Review', description: 'Evaluator simulation — independent panel scores the draft as the client would',
-      tasks: [{
-        id: 'PRD-06.1.1', name: 'Conduct red team review — evaluator simulation scoring each section against evaluation criteria, assessing win theme penetration, evidence strength, and compliance',
-        raci: { r: 'Senior Independent Review Panel', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'PRD-02', artifact: 'Draft response sections' }, { from: 'PRD-03', artifact: 'Evidence pack' }, { from: 'PRD-04', artifact: 'Pricing response documents' }, { from: 'SAL-05', artifact: 'Evaluation criteria matrix with scoring approach' }],
-        outputs: [{ name: 'Red review scorecard', format: 'Per-section scored assessment', quality: ['Every section scored against evaluation criteria — predicted client score', 'Win theme integration assessed — are differentiators landing?', 'Evidence strength assessed — are claims substantiated?', 'Compliance confirmed per section — any non-compliance flagged as critical', 'Actions raised with severity: critical (must fix), major (should fix), minor (improve if time)'] }],
-        effort: 'High', type: 'Sequential'
-      }]
+      from: 'PRD-02',
+      artifact: 'Draft response sections',
+      note: 'Near-complete drafts (80-90%)'
     },
     {
-      id: 'PRD-06.2', name: 'Red Action Resolution', description: 'Resolve red review actions — critical actions must be resolved before gold review',
-      tasks: [{
-        id: 'PRD-06.2.1', name: 'Resolve red review actions — writers revise sections, bid manager tracks to closure, critical actions must be resolved before gold review',
-        raci: { r: 'Writers (per section)', a: 'Bid Manager', c: 'Reviewers', i: 'Bid Director' },
-        inputs: [{ from: 'PRD-06.1.1', artifact: 'Red review scorecard' }],
-        outputs: [{ name: 'Red review scorecard & actions resolved (activity primary output)', format: 'Action resolution record with revised drafts', quality: ['All critical actions resolved — no unaddressed critical issues at gold review', 'Major actions resolved or accepted with rationale', 'Revised sections demonstrate score improvement vs red review assessment', 'Red review closure recorded — ready for gold review'] }],
-        effort: 'High', type: 'Sequential'
-      }]
+      from: 'PRD-03',
+      artifact: 'Evidence pack',
+      note: 'Evidence reviewed alongside responses'
+    },
+    {
+      from: 'PRD-04',
+      artifact: 'Pricing response documents',
+      note: 'Commercial response included in red review'
+    },
+    {
+      from: 'SAL-05',
+      artifact: 'Evaluation criteria matrix with scoring approach',
+      note: 'Scoring criteria reviewers assess against'
+    },
+    {
+      from: 'BM-07',
+      artifact: 'Quality plan',
+      note: 'Review criteria and scoring methodology'
     }
   ],
-
-  outputs: [{ name: 'Red review scorecard & actions resolved', format: 'Scored review with resolved actions', quality: ['Evaluator simulation scores per section', 'Critical/major actions resolved', 'Score improvement demonstrated', 'Ready for gold review'] }],
-  consumers: [{ activity: 'PRD-07', consumes: 'Red-reviewed response', usage: 'Gold review assesses the final revised response' }]
+  subs: [
+    {
+      id: 'PRD-06.1',
+      name: 'Red Review Execution',
+      description: 'Conduct evaluator-simulation review of complete draft response',
+      tasks: [
+        {
+          id: 'PRD-06.1.1',
+          name: 'Brief red team reviewers — provide evaluation criteria, scoring methodology, competitor intelligence, and win themes for context',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: 'Reviewers'
+          },
+          outputs: [
+            {
+              name: 'Red team briefing',
+              format: 'Briefing pack',
+              quality: [
+                'Reviewers briefed on evaluation methodology — they must score as the client would',
+                'Competitor context provided — what are we competing against?',
+                'Win themes reinforced — reviewers check if themes are compelling and differentiated',
+                'Scoring scale aligned to ITT evaluation scale'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-06.1.2',
+          name: 'Conduct red review — evaluator simulation scoring each section, assessing compliance, win theme penetration, evidence strength, and readability',
+          raci: {
+            r: 'Independent Reviewers',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Red review scorecards',
+              format: 'Scorecard per section with comments',
+              quality: [
+                'Every section scored using the client\'s evaluation methodology',
+                'Compliance check — does the response address every requirement?',
+                'Win theme assessment — are differentiators compelling and evidenced?',
+                'Evidence strength assessed — proof points credible and relevant?',
+                'Readability check — can a non-specialist evaluator understand and score this?',
+                'Overall predicted score per section provided'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-06.2',
+      name: 'Red Action Resolution',
+      description: 'Resolve red review actions — writers revise, bid manager tracks to closure',
+      tasks: [
+        {
+          id: 'PRD-06.2.1',
+          name: 'Consolidate red review feedback and prioritise actions — critical actions must be resolved before gold review',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Red review action plan',
+              format: 'Prioritised action tracker',
+              quality: [
+                'All feedback consolidated across reviewers',
+                'Actions categorised: score-critical (must fix), score-improving (should fix), cosmetic (if time permits)',
+                'Realistic timeline for resolution — aligned to gold review date',
+                'No action without an owner and deadline'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-06.2.2',
+          name: 'Drive section revisions — writers update based on red review feedback, bid manager verifies critical actions are genuinely resolved',
+          raci: {
+            r: 'Writers',
+            a: 'Bid Manager',
+            c: null,
+            i: 'Reviewers'
+          },
+          outputs: [
+            {
+              name: 'Red review scorecard & actions resolved (activity primary output)',
+              format: 'Revised sections with action closure record',
+              quality: [
+                'All score-critical actions resolved and verified — not just marked done',
+                'Revised sections checked against original reviewer comments',
+                'Score improvement validated — does the revision address the reviewer\'s concern?',
+                'Action closure record maintained for governance audit trail'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Red review scorecard & actions resolved',
+      format: 'Scorecards, revised sections, action closure record',
+      quality: [
+        'Evaluator-simulation review completed for all sections',
+        'Predicted scores per section documented',
+        'All score-critical actions resolved before gold review',
+        'Revisions verified against original feedback'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-07',
+      consumes: 'Red-reviewed response',
+      usage: 'Gold review assesses the final revised response'
+    }
+  ]
 }
 ```
 
@@ -10095,27 +12656,140 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-07', name: 'Gold review (final/executive)', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
-  output: 'Gold review scorecard & sign-off', dependencies: ['PRD-06', 'COM-06'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'PRD-06', artifact: 'Red review scorecard & actions resolved', note: 'Red-reviewed and revised response' },
-    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'Final pricing confirmed' }
+  id: 'PRD-07',
+  name: 'Gold review (final/executive)',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Manager',
+  output: 'Gold review scorecard & sign-off',
+  dependencies: [
+    'PRD-06',
+    'COM-06'
   ],
-
-  subs: [{
-    id: 'PRD-07.1', name: 'Gold Team Review', description: 'Final executive quality and compliance review — the last check before formatting and submission',
-    tasks: [{
-      id: 'PRD-07.1.1', name: 'Conduct gold team review — executive quality check: compliance, completeness, tone, win strategy coherence, and final sign-off to proceed to submission',
-      raci: { r: 'Bid Board / Partner level', a: 'Senior Responsible Executive', c: 'Commercial Lead / Legal Lead', i: 'Bid Manager' },
-      inputs: [{ from: 'PRD-06', artifact: 'Red review scorecard & actions resolved' }, { from: 'COM-06', artifact: 'Pricing model (locked & assured)' }],
-      outputs: [{ name: 'Gold review scorecard & sign-off (activity primary output)', format: 'Executive review with sign-off', quality: ['Compliance confirmed — all mandatory requirements addressed', 'Completeness confirmed — no missing sections or annexes', 'Tone and quality confirmed — executive-level presentation standard', 'Win strategy coherence confirmed — the response tells a winning story', 'Gold review sign-off recorded — approved for formatting and submission', 'Any final actions are minor only — no material changes at this stage'] }],
-      effort: 'High', type: 'Sequential'
-    }]
-  }],
-
-  outputs: [{ name: 'Gold review scorecard & sign-off', format: 'Executive sign-off record', quality: ['Compliance, completeness, tone, strategy confirmed', 'Executive sign-off recorded', 'Approved for formatting and submission'] }],
-  consumers: [{ activity: 'PRD-08', consumes: 'Gold-reviewed response', usage: 'Final QA and formatting of approved response' }]
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'PRD-06',
+      artifact: 'Red review scorecard & actions resolved',
+      note: 'Red-reviewed and revised response'
+    },
+    {
+      from: 'COM-06',
+      artifact: 'Pricing model (locked & assured)',
+      note: 'Final pricing confirmed'
+    }
+  ],
+  subs: [
+    {
+      id: 'PRD-07.1',
+      name: 'Gold Review Preparation',
+      description: 'Prepare the complete response for executive quality review',
+      tasks: [
+        {
+          id: 'PRD-07.1.1',
+          name: 'Assemble complete response document for gold review — all sections including executive summary, evidence, pricing, and appendices',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Bid Coordinator',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Gold review package',
+              format: 'Complete assembled response',
+              quality: [
+                'All sections present and in final order',
+                'Red review actions confirmed as resolved',
+                'Executive summary drafted and included',
+                'Cross-references checked — no broken references between sections'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-07.2',
+      name: 'Gold Review Execution & Sign-off',
+      description: 'Executive review and final sign-off to proceed to submission',
+      tasks: [
+        {
+          id: 'PRD-07.2.1',
+          name: 'Conduct gold review — executive assessment of compliance, completeness, tone, win strategy coherence, and overall quality',
+          raci: {
+            r: 'Senior Independent Review Panel',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Gold review assessment',
+              format: 'Executive assessment',
+              quality: [
+                'Compliance confirmed — all requirements addressed',
+                'Completeness verified — no missing sections or documents',
+                'Tone appropriate — consistent, professional, client-appropriate',
+                'Win strategy coherent throughout — themes land consistently across all sections',
+                'Commercial and technical narrative aligned — no contradictions'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-07.2.2',
+          name: 'Resolve gold review actions and obtain sign-off — any remaining issues must be resolved or accepted before proceeding',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Writers'
+          },
+          outputs: [
+            {
+              name: 'Gold review scorecard & sign-off (activity primary output)',
+              format: 'Sign-off record with any residual actions',
+              quality: [
+                'All gold review actions resolved or formally accepted by Bid Director',
+                'Sign-off obtained — Bid Director confirms response is ready for final QA',
+                'Any conditions noted — e.g. \'proceed subject to executive summary revision\'',
+                'Sign-off feeds GOV-04 executive approval'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Gold review scorecard & sign-off',
+      format: 'Executive sign-off record',
+      quality: [
+        'Executive quality review completed',
+        'Compliance and completeness confirmed',
+        'Win strategy coherence validated',
+        'All actions resolved or formally accepted',
+        'Bid Director sign-off obtained'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-08',
+      consumes: 'Gold-reviewed response',
+      usage: 'Final QA and formatting of approved response'
+    }
+  ]
 }
 ```
 
@@ -10125,33 +12799,167 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-08', name: 'Final QA & formatting', workstream: 'PRD', phase: 'PROD', role: 'Bid Coordinator',
-  output: 'QA checklist complete', dependencies: ['PRD-07'], effortDays: 3, teamSize: 1, parallelisationType: 'S',
-
-  inputs: [
-    { from: 'PRD-07', artifact: 'Gold review scorecard & sign-off', note: 'Gold-approved content' },
-    { external: true, artifact: 'ITT documentation — formatting requirements, branding guidelines, page limits, file format requirements' },
-    { external: true, artifact: 'Corporate branding templates and style guide' }
+  id: 'PRD-08',
+  name: 'Final QA & formatting',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Coordinator',
+  output: 'QA checklist complete',
+  dependencies: [
+    'PRD-07'
   ],
-
-  subs: [{
-    id: 'PRD-08.1', name: 'Document Production', description: 'Format, proof-read, and quality-assure the final submission documents',
-    tasks: [
-      { id: 'PRD-08.1.1', name: 'Apply formatting, branding, and layout — corporate template, page limits, headers/footers, table of contents, cross-references, graphics',
-        raci: { r: 'Bid Coordinator / DTP', a: 'Bid Manager', c: 'Brand/Design', i: 'Bid Director' },
-        inputs: [{ from: 'PRD-07', artifact: 'Gold review scorecard & sign-off' }, { external: true, artifact: 'Corporate branding templates and style guide' }],
-        outputs: [{ name: 'Formatted proposal documents', format: 'Submission-ready documents', quality: ['Corporate branding applied consistently', 'Page/word limits met per section', 'Table of contents, cross-references, and figure numbering correct', 'Graphics and diagrams formatted to print quality'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'PRD-08.1.2', name: 'Proof-read, spell-check, and cross-reference — final quality assurance pass before submission',
-        raci: { r: 'Bid Coordinator', a: 'Bid Manager', c: 'Senior Bid Writer', i: null },
-        inputs: [{ from: 'PRD-08.1.1', artifact: 'Formatted proposal documents' }],
-        outputs: [{ name: 'QA checklist complete (activity primary output)', format: 'QA sign-off with error-free documents', quality: ['Proof-read complete — spelling, grammar, punctuation', 'Cross-references verified — all internal references correct', 'Page/word counts confirmed within limits', 'Print test completed — formatting survives PDF conversion', 'QA checklist signed off — documents are submission-ready'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'QA checklist complete', format: 'QA sign-off with formatted documents', quality: ['Formatted, proof-read, cross-referenced, print-tested', 'QA checklist signed off'] }],
-  consumers: [{ activity: 'PRD-09', consumes: 'Formatted documents', usage: 'Submission packaging uses the QA-approved documents' }]
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'S',
+  inputs: [
+    {
+      from: 'PRD-07',
+      artifact: 'Gold review scorecard & sign-off',
+      note: 'Gold-approved content'
+    },
+    {
+      external: true,
+      artifact: 'ITT documentation — formatting requirements, branding guidelines, page limits, file format requirements'
+    },
+    {
+      external: true,
+      artifact: 'Corporate branding templates and style guide'
+    }
+  ],
+  subs: [
+    {
+      id: 'PRD-08.1',
+      name: 'Document Formatting',
+      description: 'Apply professional formatting, branding, and layout to the final document',
+      tasks: [
+        {
+          id: 'PRD-08.1.1',
+          name: 'Apply corporate template, branding, and professional layout — headers, footers, table of contents, page numbering, graphics',
+          raci: {
+            r: 'DTP',
+            a: 'Bid Manager',
+            c: 'Brand/Design',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Formatted document',
+              format: 'Professionally formatted response',
+              quality: [
+                'Corporate template applied consistently',
+                'Table of contents generated and page-accurate',
+                'Headers/footers include document reference, version, page numbers',
+                'Graphics and diagrams professionally rendered and correctly placed',
+                'Page limits met (if applicable)'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-08.1.2',
+          name: 'Verify all cross-references, hyperlinks, and figure/table numbering are correct',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Cross-reference check',
+              format: 'Checklist',
+              quality: [
+                'All internal cross-references resolve correctly',
+                'Figure and table numbering sequential and accurate',
+                'Hyperlinks functional (if electronic submission)',
+                'Appendix references correct'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-08.2',
+      name: 'Final Quality Assurance',
+      description: 'Final proof-read and quality check before submission',
+      tasks: [
+        {
+          id: 'PRD-08.2.1',
+          name: 'Proof-read complete document — spelling, grammar, consistency of terminology, factual accuracy of repeated numbers/dates',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Proof-read checklist',
+              format: 'Checklist',
+              quality: [
+                'Full document proof-read by someone who did not write it',
+                'Terminology consistent throughout — same thing called the same name everywhere',
+                'Numbers and dates consistent — TCV, contract dates, headcount match across all mentions',
+                'Company and client names correct throughout'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-08.2.2',
+          name: 'Final compliance verification — every mandatory requirement addressed, all documents present, all formats correct',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'QA checklist complete (activity primary output)',
+              format: 'Signed QA checklist',
+              quality: [
+                'Compliance matrix verified — every requirement addressed in the response',
+                'All required documents present in submission package',
+                'File formats match ITT requirements (PDF, Excel, etc.)',
+                'File sizes within portal limits',
+                'QA checklist signed by Bid Manager and Bid Director'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'QA checklist complete',
+      format: 'Signed QA checklist with formatted document',
+      quality: [
+        'Professional formatting applied',
+        'Cross-references verified',
+        'Proof-read completed by independent reviewer',
+        'Compliance verified against full requirements list',
+        'QA checklist signed off by Bid Manager and Bid Director'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-09',
+      consumes: 'Formatted documents',
+      usage: 'Submission packaging uses the QA-approved documents'
+    }
+  ]
 }
 ```
 
@@ -10161,36 +12969,176 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'PRD-09', name: 'Submission packaging & upload', workstream: 'PRD', phase: 'PROD', role: 'Bid Manager',
-  output: 'Submission confirmation receipt', dependencies: ['PRD-08', 'GOV-05'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'PRD-08', artifact: 'QA checklist complete', note: 'Formatted, QA-approved documents' },
-    { from: 'PRD-01', artifact: 'Compliance matrix (live)', note: 'Final compliance check' },
-    { from: 'GOV-05', artifact: 'Submission authority confirmation', note: 'Formal authority to submit' },
-    { external: true, artifact: 'Procurement portal access, credentials, and submission instructions' }
+  id: 'PRD-09',
+  name: 'Submission packaging & upload',
+  workstream: 'PRD',
+  phase: 'PROD',
+  role: 'Bid Manager',
+  output: 'Submission confirmation receipt',
+  dependencies: [
+    'PRD-08',
+    'GOV-05'
   ],
-
-  subs: [{
-    id: 'PRD-09.1', name: 'Final Submission', description: 'Final compliance check, package, upload, and confirm',
-    tasks: [
-      { id: 'PRD-09.1.1', name: 'Conduct final compliance check — verify all mandatory requirements addressed, all documents present, all formats correct',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Legal / Commercial Lead', i: null },
-        inputs: [{ from: 'PRD-01', artifact: 'Compliance matrix (live)' }, { from: 'PRD-08', artifact: 'QA checklist complete' }],
-        outputs: [{ name: 'Final compliance sign-off', format: 'Compliance confirmation', quality: ['Every mandatory requirement confirmed as addressed', 'All required documents present and in correct format', 'File sizes within portal limits', 'Compliance sign-off recorded'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'PRD-09.1.2', name: 'Package and upload submission — portal upload, confirmation receipt obtained, submission archived',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'IT Support', i: 'All Workstream Leads' },
-        inputs: [{ from: 'PRD-09.1.1', artifact: 'Final compliance sign-off' }, { from: 'GOV-05', artifact: 'Submission authority confirmation' }, { external: true, artifact: 'Procurement portal access and submission instructions' }],
-        outputs: [{ name: 'Submission confirmation receipt (activity primary output)', format: 'Portal confirmation with archive', quality: ['Submission uploaded to portal before deadline — with contingency time', 'Portal confirmation receipt obtained and recorded', 'Complete submission archived — all documents, pricing, evidence, supporting materials', 'Bid team notified of successful submission', 'BM-11 (hot debrief) triggered'] }],
-        effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Submission confirmation receipt', format: 'Portal confirmation with submission archive', quality: ['Submitted before deadline', 'Confirmation receipt obtained', 'Complete archive created', 'Hot debrief triggered'] }],
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'PRD-08',
+      artifact: 'QA checklist complete',
+      note: 'Formatted, QA-approved documents'
+    },
+    {
+      from: 'PRD-01',
+      artifact: 'Compliance matrix (live)',
+      note: 'Final compliance check'
+    },
+    {
+      from: 'GOV-05',
+      artifact: 'Submission authority confirmation',
+      note: 'Formal authority to submit'
+    },
+    {
+      external: true,
+      artifact: 'Procurement portal access, credentials, and submission instructions'
+    }
+  ],
+  subs: [
+    {
+      id: 'PRD-09.1',
+      name: 'Pre-Submission Checks',
+      description: 'Final checks before upload',
+      tasks: [
+        {
+          id: 'PRD-09.1.1',
+          name: 'Conduct final pre-submission check — all documents present, correct versions, file names per ITT requirements, sizes within limits',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Bid Coordinator',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Pre-submission checklist',
+              format: 'Checklist',
+              quality: [
+                'Document inventory matches ITT requirements — nothing missing',
+                'File versions are final — no draft watermarks, no tracked changes',
+                'File names match ITT naming requirements',
+                'File sizes within portal upload limits'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-09.1.2',
+          name: 'Obtain final submission authority — confirm all governance approvals in place (GOV-05), all sign-offs complete',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Submission authority confirmation',
+              format: 'Sign-off record',
+              quality: [
+                'GOV-05 final submission authority confirmed',
+                'All functional sign-offs verified',
+                'Any conditions from governance approvals confirmed as met',
+                'Authority to submit documented'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'PRD-09.2',
+      name: 'Submission Execution',
+      description: 'Upload and confirm receipt',
+      tasks: [
+        {
+          id: 'PRD-09.2.1',
+          name: 'Upload submission to client portal — manage upload process, handle any technical issues, obtain confirmation receipt',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: 'IT Support',
+            i: 'Bid Director'
+          },
+          outputs: [
+            {
+              name: 'Upload confirmation',
+              format: 'Portal receipt / screenshot',
+              quality: [
+                'Uploaded minimum 4 hours before deadline — contingency for technical issues',
+                'Confirmation receipt obtained from portal',
+                'Screenshot evidence of successful upload captured',
+                'All documents verified as uploaded and accessible'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'PRD-09.2.2',
+          name: 'Archive submission package — complete copy of everything submitted, stored per document management policy',
+          raci: {
+            r: 'Bid Coordinator',
+            a: 'Bid Manager',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Submission confirmation receipt (activity primary output)',
+              format: 'Archive with confirmation',
+              quality: [
+                'Complete submission archived — exact copies of what was submitted',
+                'Archive includes: confirmation receipt, document inventory, submission timestamp',
+                'Stored per corporate retention policy',
+                'Accessible for post-submission clarifications, BAFO preparation, and lessons learned'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Submission confirmation receipt',
+      format: 'Confirmation with archived submission',
+      quality: [
+        'All pre-submission checks passed',
+        'Submission authority confirmed',
+        'Uploaded with contingency time before deadline',
+        'Confirmation receipt obtained',
+        'Complete submission archived'
+      ]
+    }
+  ],
   consumers: [
-    { activity: 'BM-11', consumes: 'Submission confirmation', usage: 'Hot debrief triggered within 48 hours' },
-    { activity: 'POST-01', consumes: 'Submitted proposal', usage: 'Presentation preparation references the submitted response' }
+    {
+      activity: 'BM-11',
+      consumes: 'Submission confirmation',
+      usage: 'Hot debrief triggered within 48 hours'
+    },
+    {
+      activity: 'POST-01',
+      consumes: 'Submitted proposal',
+      usage: 'Presentation preparation references the submitted response'
+    }
   ]
 }
 ```
@@ -10209,33 +13157,166 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'GOV-01', name: 'Pursuit approval (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Bid Director',
-  output: 'Pursuit approval decision record', dependencies: ['SAL-06'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'SAL-06', artifact: 'Capture plan (locked)', note: 'The full capture plan and bid mandate' },
-    { from: 'SAL-06.4.2', artifact: 'Bid Mandate document', note: 'Go/no-go recommendation, budget, resource ask' },
-    { from: 'SAL-06.2.3', artifact: 'PWIN score and rationale', note: 'Probability of win for the governance panel' }
+  id: 'GOV-01',
+  name: 'Pursuit approval (configurable)',
+  workstream: 'GOV',
+  phase: 'DEV',
+  role: 'Bid Director',
+  output: 'Pursuit approval decision record',
+  dependencies: [
+    'SAL-06'
   ],
-
-  subs: [{
-    id: 'GOV-01.1', name: 'Pursuit Governance', description: 'Prepare and conduct the pursuit approval gate',
-    tasks: [
-      { id: 'GOV-01.1.1', name: 'Prepare pursuit approval review pack — capture plan summary, bid mandate, PWIN score, resource ask, key risks, go/no-go recommendation',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Capture Lead', i: null },
-        inputs: [{ from: 'SAL-06', artifact: 'Capture plan (locked)' }, { from: 'SAL-06.4.2', artifact: 'Bid Mandate document' }],
-        outputs: [{ name: 'Pursuit approval review pack', format: 'Executive summary for governance panel', quality: ['One-page executive summary plus supporting detail', 'PWIN score, key risks, resource ask, and recommendation clearly presented', 'Pack distributed to governance panel with adequate read-ahead time'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'GOV-01.1.2', name: 'Conduct pursuit approval review — present to governance panel, debate, capture decision (approve / approve with conditions / reject)',
-        raci: { r: 'Bid Director', a: 'Senior Responsible Executive / Bid Board', c: 'Capture Lead / Commercial Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'GOV-01.1.1', artifact: 'Pursuit approval review pack' }],
-        outputs: [{ name: 'Pursuit approval decision record (activity primary output)', format: 'Decision record with conditions', quality: ['Decision recorded: approved, approved with conditions, or rejected', 'Conditions documented with owners and deadlines if conditional approval', 'Budget and resource commitment confirmed', 'Decision communicated to bid team'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Pursuit approval decision record', format: 'Governance decision record', quality: ['Decision recorded', 'Conditions captured', 'Commitment confirmed'] }],
-  consumers: [{ activity: 'BM-01', consumes: 'Pursuit approval', usage: 'Kickoff proceeds on approval — conditions tracked' }]
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'SAL-06',
+      artifact: 'Capture plan (locked)',
+      note: 'The full capture plan and bid mandate'
+    },
+    {
+      from: 'SAL-06.4.2',
+      artifact: 'Bid Mandate document',
+      note: 'Go/no-go recommendation, budget, resource ask'
+    },
+    {
+      from: 'SAL-06.2.3',
+      artifact: 'PWIN score and rationale',
+      note: 'Probability of win for the governance panel'
+    }
+  ],
+  subs: [
+    {
+      id: 'GOV-01.1',
+      name: 'Pack Preparation',
+      description: 'Prepare the governance pack for pursuit approval',
+      tasks: [
+        {
+          id: 'GOV-01.1.1',
+          name: 'Assemble pursuit approval pack — capture plan summary, PWIN score, bid mandate, resource and cost estimate, key risks, competitive assessment',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Pursuit approval pack',
+              format: 'Governance pack (qualification tier)',
+              quality: [
+                'PWIN qualification assessment included with AI assurance findings',
+                'Bid mandate with resource and cost estimate',
+                'Key risks and mitigations summarised',
+                'Competitive landscape assessment included',
+                'IC trigger criteria assessed'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-01.1.2',
+          name: 'Prepare recommendation — pursue, pursue with conditions, or walk away — with supporting rationale',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: 'Capture Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Recommendation brief',
+              format: 'Section within governance pack',
+              quality: [
+                'Clear recommendation with rationale',
+                'Conditions specified if conditional approval sought',
+                'Risks acknowledged — not an optimistic pitch',
+                'Alternative scenarios considered — what happens if we don\'t pursue?'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'GOV-01.2',
+      name: 'Governance Review',
+      description: 'Present to governance panel and capture the decision',
+      tasks: [
+        {
+          id: 'GOV-01.2.1',
+          name: 'Present pursuit approval pack to governance panel — brief the opportunity, present recommendation, facilitate debate',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Governance presentation record',
+              format: 'Meeting record',
+              quality: [
+                'Presentation delivered to quorate governance panel',
+                'Key concerns from panel captured',
+                'Panel questions and challenges documented'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-01.2.2',
+          name: 'Capture governance decision — approve, approve with conditions, reject — with conditions and actions',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'Bid Board'
+          },
+          outputs: [
+            {
+              name: 'Pursuit approval decision record (activity primary output)',
+              format: 'Formal decision record',
+              quality: [
+                'Decision formally recorded — approve / approve with conditions / reject',
+                'Conditions specified with owners and deadlines',
+                'Actions from governance discussion captured',
+                'Decision communicated to bid team within 24 hours'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Pursuit approval decision record',
+      format: 'Formal decision record',
+      quality: [
+        'Governance pack presented to quorate panel',
+        'Clear decision recorded — approve / conditions / reject',
+        'Conditions have owners and deadlines',
+        'Decision communicated to bid team'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-01',
+      consumes: 'Pursuit approval',
+      usage: 'Kickoff proceeds on approval — conditions tracked'
+    }
+  ]
 }
 ```
 
@@ -10245,35 +13326,179 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'GOV-02', name: 'Solution & strategy review (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Bid Director',
-  output: 'Solution review decision record', dependencies: ['SAL-06', 'SOL-03', 'DEL-01', 'SUP-01'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)', note: 'The locked solution for governance review' },
-    { from: 'SOL-12', artifact: 'Solution risk register', note: 'Solution risk position' },
-    { from: 'DEL-01', artifact: 'Delivery risk & assumptions register', note: 'Delivery risk position' },
-    { from: 'BM-13', artifact: 'Bid risk register', note: 'Consolidated bid risk position' },
-    { from: 'SUP-01', artifact: 'Partner shortlist with rationale', note: 'Partner selection for governance review' }
+  id: 'GOV-02',
+  name: 'Solution & strategy review (configurable)',
+  workstream: 'GOV',
+  phase: 'DEV',
+  role: 'Bid Director',
+  output: 'Solution review decision record',
+  dependencies: [
+    'SAL-06',
+    'SOL-03',
+    'DEL-01',
+    'SUP-01'
   ],
-
-  subs: [{
-    id: 'GOV-02.1', name: 'Solution Governance', description: 'Prepare and conduct the solution & strategy review gate',
-    tasks: [
-      { id: 'GOV-02.1.1', name: 'Prepare solution review pack — solution summary, risk position, win strategy alignment, partner strategy, delivery readiness',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Solution Architect / Delivery Director', i: null },
-        inputs: [{ from: 'SOL-11', artifact: 'Solution design pack (locked & assured)' }, { from: 'SOL-12', artifact: 'Solution risk register' }, { from: 'BM-13', artifact: 'Bid risk register' }],
-        outputs: [{ name: 'Solution review pack', format: 'Executive summary for governance panel', quality: ['Solution summarised at executive level — TOM, delivery model, transition, innovation', 'Risk position presented — top risks with mitigations', 'Win strategy alignment confirmed — solution delivers the competitive narrative', 'Pack distributed with adequate read-ahead time'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'GOV-02.1.2', name: 'Conduct solution & strategy review — present, debate, capture decision',
-        raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Solution Architect / Delivery Director / Commercial Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'GOV-02.1.1', artifact: 'Solution review pack' }],
-        outputs: [{ name: 'Solution review decision record (activity primary output)', format: 'Decision record with conditions', quality: ['Decision recorded: approved, approved with conditions, or requires rework', 'Conditions documented with owners and deadlines', 'Solution baseline confirmed or rework scope defined', 'Decision communicated to bid team'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Solution review decision record', format: 'Governance decision record', quality: ['Decision recorded', 'Conditions captured', 'Solution baseline confirmed or rework defined'] }],
-  consumers: [{ activity: 'COM-01', consumes: 'Solution review decision', usage: 'Costing proceeds on approved solution — any conditions may affect cost model' }]
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'SOL-11',
+      artifact: 'Solution design pack (locked & assured)',
+      note: 'The locked solution for governance review'
+    },
+    {
+      from: 'SOL-12',
+      artifact: 'Solution risk register',
+      note: 'Solution risk position'
+    },
+    {
+      from: 'DEL-01',
+      artifact: 'Delivery risk & assumptions register',
+      note: 'Delivery risk position'
+    },
+    {
+      from: 'BM-13',
+      artifact: 'Bid risk register',
+      note: 'Consolidated bid risk position'
+    },
+    {
+      from: 'SUP-01',
+      artifact: 'Partner shortlist with rationale',
+      note: 'Partner selection for governance review'
+    }
+  ],
+  subs: [
+    {
+      id: 'GOV-02.1',
+      name: 'Solution Review Preparation',
+      description: 'Prepare governance pack for solution and strategy review',
+      tasks: [
+        {
+          id: 'GOV-02.1.1',
+          name: 'Assemble solution review pack — solution summary, win strategy alignment, risk position, partner strategy, delivery readiness, preliminary financials',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Solution Architect / Commercial Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Solution review pack',
+              format: 'Governance pack (solution tier)',
+              quality: [
+                'Solution approach summarised with key design decisions',
+                'Win strategy alignment demonstrated — solution reflects win themes',
+                'Risk position updated from GOV-01',
+                'Partner strategy and teaming status included',
+                'Preliminary financial position presented'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-02.1.2',
+          name: 'Prepare actions from GOV-01 status — demonstrate all conditions from pursuit approval have been met or addressed',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'GOV-01 action status',
+              format: 'Action tracker',
+              quality: [
+                'Every GOV-01 condition addressed — closed or with update',
+                'Open items have clear plan and timeline',
+                'Material changes since GOV-01 highlighted'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'GOV-02.2',
+      name: 'Solution Governance Review',
+      description: 'Present solution to governance panel and capture decision',
+      tasks: [
+        {
+          id: 'GOV-02.2.1',
+          name: 'Present solution and strategy to governance panel — demonstrate the solution is credible, competitive, and deliverable',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: 'Solution Architect',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Solution governance presentation',
+              format: 'Meeting record',
+              quality: [
+                'Solution credibility challenged and defended',
+                'Delivery feasibility assessed by panel',
+                'Competitive differentiation articulated',
+                'Panel concerns documented'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-02.2.2',
+          name: 'Capture solution review decision — approve solution direction, approve with conditions, or require redesign',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Solution review decision record (activity primary output)',
+              format: 'Formal decision record',
+              quality: [
+                'Decision recorded — approve / conditions / redesign',
+                'Conditions specific and actionable',
+                'If redesign required, scope and timeline agreed',
+                'Decision communicated to bid team'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Solution review decision record',
+      format: 'Formal decision record',
+      quality: [
+        'Solution credibility validated by governance panel',
+        'GOV-01 conditions addressed',
+        'Decision recorded with any new conditions',
+        'Communicated to bid team'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'COM-01',
+      consumes: 'Solution review decision',
+      usage: 'Costing proceeds on approved solution — any conditions may affect cost model'
+    }
+  ]
 }
 ```
 
@@ -10283,37 +13508,190 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'GOV-03', name: 'Pricing & risk review (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Bid Director',
-  output: 'Pricing decision record + approved price', dependencies: ['COM-06', 'DEL-06', 'LEG-02', 'SUP-06'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'The locked price for approval' },
-    { from: 'COM-05', artifact: 'Margin model with sensitivities', note: 'Margin, sensitivities, risk-adjusted view' },
-    { from: 'COM-07', artifact: 'Commercial risk register', note: 'Commercial risk position' },
-    { from: 'DEL-06', artifact: 'Mitigated risk register (assured)', note: 'Delivery risk position' },
-    { from: 'LEG-02', artifact: 'Risk allocation matrix', note: 'Contractual risk position' },
-    { from: 'SUP-06', artifact: 'Back-to-back terms agreed', note: 'Partner commercial terms confirmed' },
-    { from: 'BM-13', artifact: 'Bid risk register', note: 'Consolidated risk position' }
+  id: 'GOV-03',
+  name: 'Pricing & risk review (configurable)',
+  workstream: 'GOV',
+  phase: 'DEV',
+  role: 'Bid Director',
+  output: 'Pricing decision record + approved price',
+  dependencies: [
+    'COM-06',
+    'DEL-06',
+    'LEG-02',
+    'SUP-06'
   ],
-
-  subs: [{
-    id: 'GOV-03.1', name: 'Commercial Governance', description: 'Prepare and conduct the pricing & risk review gate — the executive pricing approval',
-    tasks: [
-      { id: 'GOV-03.1.1', name: 'Prepare pricing review pack — price position, margin, sensitivities, risk, partner terms, contract terms, recommendation',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Commercial Lead / Finance', i: null },
-        inputs: [{ from: 'COM-06', artifact: 'Pricing model (locked & assured)' }, { from: 'COM-05', artifact: 'Margin model with sensitivities' }, { from: 'COM-07', artifact: 'Commercial risk register' }, { from: 'DEL-06', artifact: 'Mitigated risk register (assured)' }],
-        outputs: [{ name: 'Pricing review pack', format: 'Executive pricing decision paper', quality: ['Price, margin, sensitivities presented clearly for executive decision', 'Risk position summarised — top commercial, delivery, and contractual risks', 'Partner terms status confirmed', 'Recommendation stated — proceed at this price, or adjust'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'GOV-03.1.2', name: 'Conduct pricing & risk review — present to governance panel, debate pricing position, capture pricing approval',
-        raci: { r: 'Bid Director', a: 'Senior Responsible Executive / Finance Director', c: 'Commercial Lead / Legal Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'GOV-03.1.1', artifact: 'Pricing review pack' }],
-        outputs: [{ name: 'Pricing decision record + approved price (activity primary output)', format: 'Pricing approval with decision record', quality: ['Price approved at specific level — or adjusted with rationale', 'Margin accepted at the approved price — executive commitment', 'Risk appetite confirmed — residual risks accepted by governance', 'Any pricing conditions documented — e.g. "hold price subject to partner confirmation"', 'Approved price is the authoritative figure for submission'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Pricing decision record + approved price', format: 'Governance pricing approval', quality: ['Price approved', 'Margin accepted', 'Risk appetite confirmed', 'Authoritative figure for submission'] }],
-  consumers: [{ activity: 'GOV-04', consumes: 'Pricing approval', usage: 'Executive approval builds on pricing decision' }]
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'COM-06',
+      artifact: 'Pricing model (locked & assured)',
+      note: 'The locked price for approval'
+    },
+    {
+      from: 'COM-05',
+      artifact: 'Margin model with sensitivities',
+      note: 'Margin, sensitivities, risk-adjusted view'
+    },
+    {
+      from: 'COM-07',
+      artifact: 'Commercial risk register',
+      note: 'Commercial risk position'
+    },
+    {
+      from: 'DEL-06',
+      artifact: 'Mitigated risk register (assured)',
+      note: 'Delivery risk position'
+    },
+    {
+      from: 'LEG-02',
+      artifact: 'Risk allocation matrix',
+      note: 'Contractual risk position'
+    },
+    {
+      from: 'SUP-06',
+      artifact: 'Back-to-back terms agreed',
+      note: 'Partner commercial terms confirmed'
+    },
+    {
+      from: 'BM-13',
+      artifact: 'Bid risk register',
+      note: 'Consolidated risk position'
+    }
+  ],
+  subs: [
+    {
+      id: 'GOV-03.1',
+      name: 'Commercial Review Preparation',
+      description: 'Prepare governance pack for pricing and risk review',
+      tasks: [
+        {
+          id: 'GOV-03.1.1',
+          name: 'Assemble pricing review pack — P&L, margin analysis, sensitivity analysis, risk tornado, partner terms, contract terms, price-to-win position',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Pricing review pack',
+              format: 'Governance pack (submission tier — commercial sections)',
+              quality: [
+                'Full financial model presentation — P&L, margins, NPV/IRR',
+                'Sensitivity analysis completed — margin at different scenarios',
+                'Risk tornado per category with probability-weighted outcomes',
+                'Contract terms summarised with negotiation positions',
+                'Price-to-win analysis included with competitor intelligence'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-03.1.2',
+          name: 'Prepare pricing recommendation — recommended price position with rationale, alternative scenarios considered',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Capture Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Pricing recommendation',
+              format: 'Recommendation brief',
+              quality: [
+                'Clear price recommendation with rationale',
+                'Alternative pricing scenarios presented with trade-offs',
+                'Risk-adjusted margin assessment included',
+                'Competitive position of recommended price assessed'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'GOV-03.2',
+      name: 'Commercial Governance Review',
+      description: 'Present pricing to governance panel and obtain pricing approval',
+      tasks: [
+        {
+          id: 'GOV-03.2.1',
+          name: 'Present pricing position to governance panel — defend margin, explain risk position, demonstrate competitive viability',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Finance Director',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Pricing governance presentation',
+              format: 'Meeting record',
+              quality: [
+                'Margin position defended with evidence',
+                'Risk position challenged and responded to',
+                'Competitive viability demonstrated',
+                'Panel concerns on contract terms addressed'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-03.2.2',
+          name: 'Capture pricing approval — approved price, margin parameters, any conditions, delegated authority for final adjustments',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'Commercial Lead'
+          },
+          outputs: [
+            {
+              name: 'Pricing decision record (activity primary output)',
+              format: 'Formal pricing approval record',
+              quality: [
+                'Approved price position documented',
+                'Margin floor confirmed — minimum acceptable margin',
+                'Conditions specified — e.g. subject to partner terms finalisation',
+                'Delegated authority for minor adjustments defined — who can approve what range without re-gate'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Pricing decision record + approved price',
+      format: 'Formal pricing approval',
+      quality: [
+        'Pricing reviewed with full financial analysis',
+        'Risk position challenged and accepted',
+        'Approved price and margin floor documented',
+        'Delegated authority for minor adjustments defined'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'GOV-04',
+      consumes: 'Pricing approval',
+      usage: 'Executive approval builds on pricing decision'
+    }
+  ]
 }
 ```
 
@@ -10323,35 +13701,143 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'GOV-04', name: 'Executive approval (configurable — may be multi-tier)', workstream: 'GOV', phase: 'PROD', role: 'Bid Director',
-  output: 'Executive approval decision record(s)', dependencies: ['GOV-03', 'PRD-06', 'PRD-07'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-  // Note: may be multi-tier — BU → ExCo → Board depending on TCV thresholds.
-  // Each tier is a separate review with escalating authority.
-
-  inputs: [
-    { from: 'GOV-03', artifact: 'Pricing decision record + approved price' },
-    { from: 'PRD-07', artifact: 'Gold review scorecard & sign-off', note: 'Quality of the response confirmed' },
-    { from: 'BM-13', artifact: 'Bid risk register', note: 'Final risk position' }
+  id: 'GOV-04',
+  name: 'Executive approval (configurable — may be multi-tier)',
+  workstream: 'GOV',
+  phase: 'PROD',
+  role: 'Bid Director',
+  output: 'Executive approval decision record(s)',
+  dependencies: [
+    'GOV-03',
+    'PRD-06',
+    'PRD-07'
   ],
-
-  subs: [{
-    id: 'GOV-04.1', name: 'Executive Governance', description: 'Multi-tier executive approval — escalates by TCV threshold',
-    tasks: [
-      { id: 'GOV-04.1.1', name: 'Prepare executive approval pack — bid summary, price, margin, risk, quality assessment, recommendation to submit',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Commercial Lead', i: null },
-        inputs: [{ from: 'GOV-03', artifact: 'Pricing decision record + approved price' }, { from: 'PRD-07', artifact: 'Gold review scorecard & sign-off' }, { from: 'BM-13', artifact: 'Bid risk register' }],
-        outputs: [{ name: 'Executive approval pack', format: 'Board-level decision paper', quality: ['One-page executive summary — bid, price, margin, PWIN, key risks, recommendation', 'Supporting detail available if requested', 'Tailored to each governance tier if multi-tier'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'GOV-04.1.2', name: 'Obtain executive approval — present at each required tier (BU / ExCo / Board), capture approval to submit',
-        raci: { r: 'Bid Director', a: 'Senior Responsible Executive / Board', c: 'Commercial Lead / Finance Director', i: 'Bid Manager' },
-        inputs: [{ from: 'GOV-04.1.1', artifact: 'Executive approval pack' }],
-        outputs: [{ name: 'Executive approval decision record(s) (activity primary output)', format: 'Per-tier approval records', quality: ['Approval obtained at every required tier', 'Any conditions from each tier documented and resolved', 'Authority to submit confirmed — the organisation commits to this bid', 'Approval records archived for audit trail'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Executive approval decision record(s)', format: 'Multi-tier approval records', quality: ['All required tiers approved', 'Conditions resolved', 'Authority to submit confirmed'] }],
-  consumers: [{ activity: 'GOV-05', consumes: 'Executive approval', usage: 'Final submission authority requires executive approval' }]
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'GOV-03',
+      artifact: 'Pricing decision record + approved price'
+    },
+    {
+      from: 'PRD-07',
+      artifact: 'Gold review scorecard & sign-off',
+      note: 'Quality of the response confirmed'
+    },
+    {
+      from: 'BM-13',
+      artifact: 'Bid risk register',
+      note: 'Final risk position'
+    }
+  ],
+  subs: [
+    {
+      id: 'GOV-04.1',
+      name: 'Executive Pack Preparation',
+      description: 'Prepare the comprehensive executive approval pack',
+      tasks: [
+        {
+          id: 'GOV-04.1.1',
+          name: 'Assemble executive approval pack — bid summary, approved price, margin, risk position, quality review outcomes, compliance status, recommendation to submit',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Commercial Lead / Legal Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Executive approval pack',
+              format: 'Governance pack (submission tier)',
+              quality: [
+                'All prior gate decisions referenced — GOV-01, GOV-02, GOV-03',
+                'Quality review outcomes summarised — pink, red, gold scores',
+                'Compliance status confirmed — from PRD-01 matrix',
+                'All outstanding actions and conditions from prior gates addressed',
+                'Functional sign-offs obtained'
+              ]
+            }
+          ],
+          effort: 'High',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'GOV-04.2',
+      name: 'Executive Approval',
+      description: 'Obtain executive sign-off at each required tier',
+      tasks: [
+        {
+          id: 'GOV-04.2.1',
+          name: 'Present at first approval tier (BU level) — secure business unit approval to submit',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'BU approval record',
+              format: 'Decision record',
+              quality: [
+                'BU-level approval obtained or conditions set',
+                'Concerns documented with agreed resolution plan',
+                'If conditional, conditions have deadlines before submission'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-04.2.2',
+          name: 'Present at additional tiers if required (ExCo / Board) — escalation for bids exceeding delegated authority thresholds',
+          raci: {
+            r: 'Bid Director',
+            a: 'Board',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Executive approval decision record(s) (activity primary output)',
+              format: 'Formal approval record per tier',
+              quality: [
+                'Approval obtained at all required tiers',
+                'If IC-trigger criteria met, Investment Committee approval obtained',
+                'All conditions across all tiers consolidated into single action tracker',
+                'Final approval authority to submit confirmed'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Executive approval decision record(s)',
+      format: 'Formal approval at all required tiers',
+      quality: [
+        'All required approval tiers completed',
+        'Conditions consolidated and tracked',
+        'Investment Committee approval obtained if triggered',
+        'Final authority to submit confirmed'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'GOV-05',
+      consumes: 'Executive approval',
+      usage: 'Final submission authority requires executive approval'
+    }
+  ]
 }
 ```
 
@@ -10361,28 +13847,135 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'GOV-05', name: 'Final submission authority (configurable)', workstream: 'GOV', phase: 'PROD', role: 'Bid Director',
-  output: 'Submission authority confirmation', dependencies: ['GOV-04', 'PRD-08'], effortDays: 1, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'GOV-04', artifact: 'Executive approval decision record(s)', note: 'All executive approvals obtained' },
-    { from: 'PRD-08', artifact: 'QA checklist complete', note: 'Documents are formatted and QA-approved' },
-    { from: 'PRD-01', artifact: 'Compliance matrix (live)', note: 'Final compliance confirmed' }
+  id: 'GOV-05',
+  name: 'Final submission authority (configurable)',
+  workstream: 'GOV',
+  phase: 'PROD',
+  role: 'Bid Director',
+  output: 'Submission authority confirmation',
+  dependencies: [
+    'GOV-04',
+    'PRD-08'
   ],
-
-  subs: [{
-    id: 'GOV-05.1', name: 'Submission Authority', description: 'The final gate — authority to press submit',
-    tasks: [{
-      id: 'GOV-05.1.1', name: 'Confirm final submission authority — all approvals obtained, documents QA-complete, compliance confirmed, authority to submit granted',
-      raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Bid Manager', i: null },
-      inputs: [{ from: 'GOV-04', artifact: 'Executive approval decision record(s)' }, { from: 'PRD-08', artifact: 'QA checklist complete' }, { from: 'PRD-01', artifact: 'Compliance matrix (live)' }],
-      outputs: [{ name: 'Submission authority confirmation (activity primary output)', format: 'Formal submission authority', quality: ['All governance approvals confirmed — pursuit, solution, pricing, executive, legal', 'Documents confirmed as QA-complete and compliant', 'Submission authority formally granted — the bid may be submitted', 'Authority recorded with timestamp for audit trail'] }],
-      effort: 'Low', type: 'Sequential'
-    }]
-  }],
-
-  outputs: [{ name: 'Submission authority confirmation', format: 'Formal authority record', quality: ['All approvals confirmed', 'Documents QA-complete', 'Authority granted'] }],
-  consumers: [{ activity: 'PRD-09', consumes: 'Submission authority', usage: 'Submission can proceed — portal upload authorised' }]
+  effortDays: 1,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'GOV-04',
+      artifact: 'Executive approval decision record(s)',
+      note: 'All executive approvals obtained'
+    },
+    {
+      from: 'PRD-08',
+      artifact: 'QA checklist complete',
+      note: 'Documents are formatted and QA-approved'
+    },
+    {
+      from: 'PRD-01',
+      artifact: 'Compliance matrix (live)',
+      note: 'Final compliance confirmed'
+    }
+  ],
+  subs: [
+    {
+      id: 'GOV-05.1',
+      name: 'Final Authority Check',
+      description: 'Confirm all approvals are in place before submission',
+      tasks: [
+        {
+          id: 'GOV-05.1.1',
+          name: 'Verify all governance approvals are complete — GOV-01 through GOV-04 decisions confirmed, all conditions met',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Governance completion checklist',
+              format: 'Checklist',
+              quality: [
+                'Every governance gate decision referenced',
+                'All conditions from all gates confirmed as met',
+                'No outstanding governance actions remain open',
+                'Checklist signed by Bid Manager'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-05.1.2',
+          name: 'Confirm QA is complete — PRD-08 final QA checklist signed, all documents submission-ready',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'QA confirmation',
+              format: 'Sign-off reference',
+              quality: [
+                'PRD-08 QA checklist signed and referenced',
+                'Compliance matrix shows 100% addressed',
+                'All documents in final format'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-05.1.3',
+          name: 'Grant final submission authority — Bid Director confirms everything is in place, authorises PRD-09 to proceed',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Submission authority confirmation (activity primary output)',
+              format: 'Formal authority record',
+              quality: [
+                'Bid Director grants submission authority',
+                'Timestamp recorded — authority granted before submission window opens',
+                'Any last-minute conditions acknowledged',
+                'Authority communicated to submission team (PRD-09)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Submission authority confirmation',
+      format: 'Formal authority record',
+      quality: [
+        'All governance approvals verified complete',
+        'QA confirmed complete',
+        'Final submission authority granted by Bid Director',
+        'Communicated to submission team'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'PRD-09',
+      consumes: 'Submission authority',
+      usage: 'Submission can proceed — portal upload authorised'
+    }
+  ]
 }
 ```
 
@@ -10392,37 +13985,173 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'GOV-06', name: 'Legal & contractual review (configurable)', workstream: 'GOV', phase: 'DEV', role: 'Legal Lead',
-  output: 'Legal review decision record', dependencies: ['LEG-01', 'LEG-02', 'LEG-04'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-  // Note: proposed in Session 10 — product has gate G4 (Legal & Contractual Review)
-  // but no corresponding GOV activity to prepare for it. This fills the gap.
-
-  inputs: [
-    { from: 'LEG-01', artifact: 'Contract markup with positions log' },
-    { from: 'LEG-02', artifact: 'Risk allocation matrix' },
-    { from: 'LEG-04', artifact: 'TUPE compliance assessment' },
-    { from: 'LEG-05', artifact: 'DPIA / security assessment' },
-    { from: 'LEG-06', artifact: 'Subcontract terms summary' }
+  id: 'GOV-06',
+  name: 'Legal & contractual review (configurable)',
+  workstream: 'GOV',
+  phase: 'DEV',
+  role: 'Legal Lead',
+  output: 'Legal review decision record',
+  dependencies: [
+    'LEG-01',
+    'LEG-02',
+    'LEG-04'
   ],
-
-  subs: [{
-    id: 'GOV-06.1', name: 'Legal Governance', description: 'Prepare and conduct the legal & contractual review gate',
-    tasks: [
-      { id: 'GOV-06.1.1', name: 'Prepare legal review pack — contract positions, risk allocation, TUPE, data protection, subcontractor terms summary',
-        raci: { r: 'Legal Lead', a: 'Bid Director', c: 'Commercial Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'LEG-01', artifact: 'Contract markup with positions log' }, { from: 'LEG-02', artifact: 'Risk allocation matrix' }, { from: 'LEG-04', artifact: 'TUPE compliance assessment' }, { from: 'LEG-05', artifact: 'DPIA / security assessment' }, { from: 'LEG-06', artifact: 'Subcontract terms summary' }],
-        outputs: [{ name: 'Legal review pack', format: 'Executive legal summary for governance', quality: ['Contract positions summarised — red lines, key risks, negotiation strategy', 'Risk allocation presented with acceptability assessment', 'TUPE and data protection compliance confirmed or risks flagged', 'Subcontractor terms status confirmed'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'GOV-06.1.2', name: 'Conduct legal & contractual review — present to governance panel, capture decision on contract positions and risk acceptance',
-        raci: { r: 'Legal Lead', a: 'Bid Director / Senior Responsible Executive', c: 'Commercial Lead', i: 'Bid Manager' },
-        inputs: [{ from: 'GOV-06.1.1', artifact: 'Legal review pack' }],
-        outputs: [{ name: 'Legal review decision record (activity primary output)', format: 'Decision record', quality: ['Contract positions approved or adjusted', 'Risk allocation accepted or further mitigation required', 'Red lines confirmed — what we will not accept in negotiation', 'Decision communicated to bid team and LEG workstream'] }],
-        effort: 'Medium', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Legal review decision record', format: 'Governance decision record', quality: ['Contract positions approved', 'Risk allocation accepted', 'Red lines confirmed'] }],
-  consumers: [{ activity: 'GOV-03', consumes: 'Legal review decision', usage: 'Pricing & risk review incorporates approved legal position' }]
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'LEG-01',
+      artifact: 'Contract markup with positions log'
+    },
+    {
+      from: 'LEG-02',
+      artifact: 'Risk allocation matrix'
+    },
+    {
+      from: 'LEG-04',
+      artifact: 'TUPE compliance assessment'
+    },
+    {
+      from: 'LEG-05',
+      artifact: 'DPIA / security assessment'
+    },
+    {
+      from: 'LEG-06',
+      artifact: 'Subcontract terms summary'
+    }
+  ],
+  subs: [
+    {
+      id: 'GOV-06.1',
+      name: 'Legal Review Preparation',
+      description: 'Prepare legal and contractual review pack',
+      tasks: [
+        {
+          id: 'GOV-06.1.1',
+          name: 'Assemble legal review pack — contract positions summary, risk allocation matrix, TUPE assessment, data protection, subcontractor terms, insurance',
+          raci: {
+            r: 'Legal Lead',
+            a: 'Bid Director',
+            c: 'Commercial Lead',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Legal review pack',
+              format: 'Legal summary pack',
+              quality: [
+                'Contract mark-up positions summarised per clause area',
+                'Risk allocation matrix showing accepted vs contested positions',
+                'TUPE, data protection, and insurance assessments included',
+                'Subcontractor terms alignment assessed — back-to-back status',
+                'Areas requiring negotiation or client dialogue identified'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-06.1.2',
+          name: 'Prepare legal risk summary — positions accepted, positions contested, residual legal risk, and recommendation',
+          raci: {
+            r: 'Legal Lead',
+            a: 'Bid Director',
+            c: null,
+            i: 'Commercial Lead'
+          },
+          outputs: [
+            {
+              name: 'Legal risk summary',
+              format: 'Risk summary',
+              quality: [
+                'Each contested position explained with business impact',
+                'Residual legal risk quantified where possible',
+                'Recommendation: accept, negotiate further, or escalate',
+                'Comparison to corporate risk appetite thresholds'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'GOV-06.2',
+      name: 'Legal Governance Review',
+      description: 'Present legal positions to governance panel and capture decision',
+      tasks: [
+        {
+          id: 'GOV-06.2.1',
+          name: 'Present legal and contractual positions to governance panel — explain risk, defend positions, advise on negotiation strategy',
+          raci: {
+            r: 'Legal Lead',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Legal governance presentation',
+              format: 'Meeting record',
+              quality: [
+                'Key legal risks presented and debated',
+                'Panel understands what risk is being accepted',
+                'Negotiation strategy for contested positions endorsed'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'GOV-06.2.2',
+          name: 'Capture legal review decision — positions approved, negotiation mandates granted, risk acceptance documented',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Senior Responsible Executive',
+            c: 'Legal Lead',
+            i: 'Commercial Lead'
+          },
+          outputs: [
+            {
+              name: 'Legal review decision record (activity primary output)',
+              format: 'Formal decision record',
+              quality: [
+                'Contract positions approved by governance panel',
+                'Negotiation mandates granted for contested areas',
+                'Risk acceptance documented for positions accepted as-is',
+                'Any conditions for post-submission negotiation defined'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Legal review decision record',
+      format: 'Formal decision record',
+      quality: [
+        'Legal positions reviewed by governance panel',
+        'Negotiation mandates granted',
+        'Risk acceptance documented',
+        'Feeds GOV-04 executive approval and POST-07 contract negotiation'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'GOV-03',
+      consumes: 'Legal review decision',
+      usage: 'Pricing & risk review incorporates approved legal position'
+    }
+  ]
 }
 ```
 
@@ -10438,34 +14167,170 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-01', name: 'Presentation design & development', workstream: 'POST', phase: 'POST', role: 'Bid Director',
-  output: 'Presentation deck, speaker notes, narrative', dependencies: ['PRD-09'], effortDays: 10, teamSize: 2, parallelisationType: 'P',
-
-  inputs: [
-    { from: 'PRD-09', artifact: 'Submission confirmation receipt', note: 'The submitted proposal — the presentation must be consistent with what was submitted' },
-    { from: 'SAL-04', artifact: 'Win theme document', note: 'Win themes drive the presentation narrative' },
-    { from: 'SAL-10', artifact: 'Stakeholder relationship map & engagement plan', note: 'Who is on the evaluation panel — tailor the presentation' },
-    { external: true, artifact: 'Client invitation to present — format, duration, panel composition, topic guidance' }
+  id: 'POST-01',
+  name: 'Presentation design & development',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Bid Director',
+  output: 'Presentation deck, speaker notes, narrative',
+  dependencies: [
+    'PRD-09'
   ],
-
-  subs: [{
-    id: 'POST-01.1', name: 'Presentation Preparation', description: 'Design and develop the bid presentation',
-    tasks: [
-      { id: 'POST-01.1.1', name: 'Design presentation narrative and structure — aligned to win themes, tailored to evaluation panel, consistent with submitted proposal',
-        raci: { r: 'Bid Director', a: 'Senior Responsible Executive', c: 'Capture Lead / Solution Architect', i: 'Bid Manager' },
-        inputs: [{ from: 'SAL-04', artifact: 'Win theme document' }, { from: 'SAL-10', artifact: 'Stakeholder relationship map & engagement plan' }, { external: true, artifact: 'Client invitation to present' }],
-        outputs: [{ name: 'Presentation narrative and structure', format: 'Presentation outline', quality: ['Narrative leads with win strategy — why we should win', 'Tailored to known panel members and their priorities', 'Consistent with submitted proposal — no contradictions', 'Structured to the client\'s format and time constraints'] }],
-        effort: 'High', type: 'Sequential' },
-      { id: 'POST-01.1.2', name: 'Develop presentation materials — slides, speaker notes, Q&A preparation, supporting visuals and demos',
-        raci: { r: 'Bid Manager / Presentation Coach', a: 'Bid Director', c: 'Solution Architect / Commercial Lead', i: 'DTP' },
-        inputs: [{ from: 'POST-01.1.1', artifact: 'Presentation narrative and structure' }],
-        outputs: [{ name: 'Presentation deck, speaker notes, narrative (activity primary output)', format: 'Complete presentation pack', quality: ['Professional presentation materials — not a proposal re-read', 'Speaker notes per slide — what to say, not what to show', 'Q&A preparation — anticipated tough questions with agreed answers', 'Supporting visuals or demos prepared if applicable'] }],
-        effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Presentation deck, speaker notes, narrative', format: 'Complete presentation pack', quality: ['Win-strategy-led narrative', 'Tailored to panel', 'Q&A prepared'] }],
-  consumers: [{ activity: 'POST-02', consumes: 'Presentation materials', usage: 'Rehearsals use the presentation pack' }]
+  effortDays: 10,
+  teamSize: 2,
+  parallelisationType: 'P',
+  inputs: [
+    {
+      from: 'PRD-09',
+      artifact: 'Submission confirmation receipt',
+      note: 'The submitted proposal — the presentation must be consistent with what was submitted'
+    },
+    {
+      from: 'SAL-04',
+      artifact: 'Win theme document',
+      note: 'Win themes drive the presentation narrative'
+    },
+    {
+      from: 'SAL-10',
+      artifact: 'Stakeholder relationship map & engagement plan',
+      note: 'Who is on the evaluation panel — tailor the presentation'
+    },
+    {
+      external: true,
+      artifact: 'Client invitation to present — format, duration, panel composition, topic guidance'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-01.1',
+      name: 'Presentation Design',
+      description: 'Design the presentation narrative and structure',
+      tasks: [
+        {
+          id: 'POST-01.1.1',
+          name: 'Design presentation narrative — key messages aligned to win themes, tailored to evaluation panel, consistent with submitted proposal',
+          raci: {
+            r: 'Capture Lead',
+            a: 'Bid Director',
+            c: 'Solution Architect',
+            i: 'Presenting Team'
+          },
+          outputs: [
+            {
+              name: 'Presentation narrative framework',
+              format: 'Outline with key messages',
+              quality: [
+                'Narrative aligned to win themes — not a proposal summary but a persuasion framework',
+                'Tailored to known evaluation panel members — speaks to their concerns',
+                'Consistent with submitted proposal — no new commitments or contradictions',
+                'Clear structure: opening impact, proof points, differentiation, call to action'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-01.1.2',
+          name: 'Identify and brief presenting team — assign roles (lead presenter, technical, commercial, Q&A support)',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: 'Bid Manager',
+            i: 'Presenting Team'
+          },
+          outputs: [
+            {
+              name: 'Presenting team brief',
+              format: 'Role assignments and briefing',
+              quality: [
+                'Presenting team selected for credibility with this client',
+                'Roles assigned — who presents each section, who handles Q&A',
+                'Team briefed on evaluation criteria and what the panel is looking for',
+                'Presenting team includes people the client will work with — not just senior bid team'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'POST-01.2',
+      name: 'Materials Development',
+      description: 'Develop presentation materials including slides, notes, and Q&A preparation',
+      tasks: [
+        {
+          id: 'POST-01.2.1',
+          name: 'Develop presentation slides — visual, compelling, minimal text, supporting not duplicating the spoken narrative',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'DTP',
+            i: 'Presenting Team'
+          },
+          outputs: [
+            {
+              name: 'Presentation deck',
+              format: 'Slide deck',
+              quality: [
+                'Slides support the narrative — visual evidence, not text-heavy bullets',
+                'Branding consistent with submitted proposal',
+                'Within time allocation — timed per section',
+                'Key proof points visualised — data, diagrams, evidence'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-01.2.2',
+          name: 'Prepare Q&A pack — anticipated questions with prepared answers, difficult questions with agreed positions, panel-specific concerns',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'All Workstream Leads',
+            i: 'Presenting Team'
+          },
+          outputs: [
+            {
+              name: 'Q&A preparation pack (activity primary output)',
+              format: 'Structured Q&A pack with speaker notes',
+              quality: [
+                'Top 30-50 anticipated questions prepared with model answers',
+                'Difficult questions identified — pricing challenges, risk concerns, past performance',
+                'Agreed positions for sensitive topics — who answers, what we say, what we don\'t say',
+                'Panel-specific questions anticipated based on known concerns'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Presentation deck, speaker notes, narrative',
+      format: 'Complete presentation package',
+      quality: [
+        'Narrative aligned to win themes and evaluation criteria',
+        'Presenting team briefed and role-assigned',
+        'Slides visual and compelling',
+        'Q&A pack comprehensive with difficult questions prepared'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'POST-02',
+      consumes: 'Presentation materials',
+      usage: 'Rehearsals use the presentation pack'
+    }
+  ]
 }
 ```
 
@@ -10475,24 +14340,124 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-02', name: 'Presentation rehearsals & coaching', workstream: 'POST', phase: 'POST', role: 'Bid Director',
-  output: 'Rehearsal debrief notes, revised deck, Q&A prep', dependencies: ['POST-01'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'POST-01', artifact: 'Presentation deck, speaker notes, narrative' }],
-
-  subs: [{
-    id: 'POST-02.1', name: 'Rehearsal & Coaching', description: 'Structured rehearsals with feedback and iteration',
-    tasks: [{
-      id: 'POST-02.1.1', name: 'Conduct structured presentation rehearsals — simulate the evaluation panel, provide feedback, iterate the presentation and Q&A responses',
-      raci: { r: 'Presenting Team', a: 'Senior Responsible Executive', c: 'Presentation Coach / SMEs', i: 'Bid Manager' },
-      inputs: [{ from: 'POST-01', artifact: 'Presentation deck, speaker notes, narrative' }],
-      outputs: [{ name: 'Rehearsal debrief notes, revised deck, Q&A prep (activity primary output)', format: 'Iterated presentation pack', quality: ['At least 2 full rehearsals conducted — with debrief after each', 'Panel simulation included — mock questions from evaluator perspective', 'Presentation refined based on feedback — not just practiced but improved', 'Q&A responses refined and pressure-tested', 'Presenting team confident and aligned'] }],
-      effort: 'High', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Rehearsal debrief notes, revised deck, Q&A prep', format: 'Rehearsed presentation pack', quality: ['Multiple rehearsals conducted', 'Presentation iterated', 'Team confident'] }],
-  consumers: [{ activity: 'POST-03', consumes: 'Rehearsed presentation', usage: 'Delivery uses the rehearsed materials' }]
+  id: 'POST-02',
+  name: 'Presentation rehearsals & coaching',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Bid Director',
+  output: 'Rehearsal debrief notes, revised deck, Q&A prep',
+  dependencies: [
+    'POST-01'
+  ],
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'POST-01',
+      artifact: 'Presentation deck, speaker notes, narrative'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-02.1',
+      name: 'Rehearsal Programme',
+      description: 'Structured rehearsal cycle with feedback and iteration',
+      tasks: [
+        {
+          id: 'POST-02.1.1',
+          name: 'Conduct first rehearsal — full run-through with timer, simulated panel, feedback on content, delivery, and timing',
+          raci: {
+            r: 'Presenting Team',
+            a: 'Bid Director',
+            c: 'Presentation Coach',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'First rehearsal debrief',
+              format: 'Feedback notes',
+              quality: [
+                'Full presentation run against timer',
+                'Feedback on: content clarity, delivery confidence, timing, visual impact',
+                'Q&A simulation included — test responses to difficult questions',
+                'Specific improvement actions per presenter identified'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-02.1.2',
+          name: 'Iterate presentation based on rehearsal feedback — revise content, refine delivery, adjust timing',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Presenting Team',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Revised presentation materials',
+              format: 'Updated deck, notes, Q&A pack',
+              quality: [
+                'All rehearsal actions addressed',
+                'Timing adjusted to fit within allocation',
+                'Weak sections strengthened — content or delivery',
+                'Q&A responses refined based on rehearsal experience'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-02.1.3',
+          name: 'Conduct final dress rehearsal — complete simulation of presentation environment, timing, Q&A, and handover',
+          raci: {
+            r: 'Presenting Team',
+            a: 'Bid Director',
+            c: 'Presentation Coach',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Rehearsal debrief notes (activity primary output)',
+              format: 'Final readiness assessment',
+              quality: [
+                'Full simulation completed — as close to actual conditions as possible',
+                'Team confident and prepared — no major concerns remaining',
+                'Timing confirmed within allocation',
+                'Final Q&A preparation verified — team comfortable with difficult questions'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Rehearsal debrief notes, revised deck, Q&A prep',
+      format: 'Rehearsal outputs',
+      quality: [
+        'Minimum two rehearsals completed',
+        'All feedback actions addressed',
+        'Team confident and prepared',
+        'Timing verified within allocation'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'POST-03',
+      consumes: 'Rehearsed presentation',
+      usage: 'Delivery uses the rehearsed materials'
+    }
+  ]
 }
 ```
 
@@ -10502,24 +14467,124 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-03', name: 'Presentation delivery', workstream: 'POST', phase: 'POST', role: 'Bid Director',
-  output: 'Presentation delivered, Q&A record', dependencies: ['POST-02'], effortDays: 1, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'POST-02', artifact: 'Rehearsal debrief notes, revised deck, Q&A prep' }],
-
-  subs: [{
-    id: 'POST-03.1', name: 'Presentation Delivery', description: 'Deliver the presentation and manage Q&A',
-    tasks: [{
-      id: 'POST-03.1.1', name: 'Deliver bid presentation to evaluation panel — present, manage Q&A, capture panel reactions and follow-up questions',
-      raci: { r: 'Bid Director / Senior Executive / Presenting Team', a: 'Senior Responsible Executive', c: 'Commercial Lead / Solution Architect', i: 'Bid Manager' },
-      inputs: [{ from: 'POST-02', artifact: 'Rehearsal debrief notes, revised deck, Q&A prep' }],
-      outputs: [{ name: 'Presentation delivered, Q&A record (activity primary output)', format: 'Delivery record', quality: ['Presentation delivered within time allocation', 'Q&A managed — all questions answered or follow-up committed', 'Panel reactions noted — informal intelligence on how it landed', 'Any follow-up commitments documented and assigned'] }],
-      effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Presentation delivered, Q&A record', format: 'Delivery record', quality: ['Delivered on time', 'Q&A managed', 'Follow-ups captured'] }],
-  consumers: [{ activity: 'BM-12', consumes: 'Presentation record', usage: 'Lessons learned includes presentation performance' }]
+  id: 'POST-03',
+  name: 'Presentation delivery',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Bid Director',
+  output: 'Presentation delivered, Q&A record',
+  dependencies: [
+    'POST-02'
+  ],
+  effortDays: 1,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'POST-02',
+      artifact: 'Rehearsal debrief notes, revised deck, Q&A prep'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-03.1',
+      name: 'Presentation Delivery',
+      description: 'Deliver the bid presentation to the evaluation panel',
+      tasks: [
+        {
+          id: 'POST-03.1.1',
+          name: 'Final team briefing — logistics, roles, last-minute intelligence, contingency plan if technology fails',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Presenting Team'
+          },
+          outputs: [
+            {
+              name: 'Pre-presentation briefing',
+              format: 'Briefing record',
+              quality: [
+                'Logistics confirmed — venue, time, technology, access',
+                'Roles reconfirmed — who presents what, who handles Q&A',
+                'Any last-minute intelligence shared — client mood, panel changes',
+                'Contingency plan confirmed — what if projector fails, key person unavailable'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-03.1.2',
+          name: 'Deliver presentation to evaluation panel — present, manage Q&A, observe panel reactions',
+          raci: {
+            r: 'Presenting Team',
+            a: 'Bid Director',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Presentation delivered',
+              format: 'Delivery record',
+              quality: [
+                'Presentation delivered within time allocation',
+                'Q&A handled confidently — no commitments beyond submitted proposal',
+                'Panel reactions observed and noted'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-03.1.3',
+          name: 'Capture post-presentation intelligence — panel reactions, follow-up questions, client signals, competitive intelligence',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Presenting Team',
+            i: 'Capture Lead'
+          },
+          outputs: [
+            {
+              name: 'Presentation delivered, Q&A record (activity primary output)',
+              format: 'Intelligence debrief',
+              quality: [
+                'Team debrief conducted immediately after presentation',
+                'Panel reactions documented — positive signals, concerns, unexpected questions',
+                'Follow-up questions recorded — may indicate evaluation focus areas',
+                'Competitive intelligence captured — any client comments about other presentations',
+                'Intelligence feeds POST-04/05 if clarifications or BAFO follow'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Presentation delivered, Q&A record',
+      format: 'Delivery record and intelligence debrief',
+      quality: [
+        'Presentation delivered within time allocation',
+        'Q&A handled without unintended commitments',
+        'Panel reactions and intelligence captured',
+        'Team debrief completed immediately'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'BM-12',
+      consumes: 'Presentation record',
+      usage: 'Lessons learned includes presentation performance'
+    }
+  ]
 }
 ```
 
@@ -10529,29 +14594,160 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-04', name: 'Post-submission clarification management', workstream: 'POST', phase: 'POST', role: 'Bid Manager',
-  output: 'Clarification log, submitted responses, updated risk log', dependencies: ['PRD-09'], effortDays: 5, teamSize: 2, parallelisationType: 'P',
-
-  inputs: [{ from: 'PRD-09', artifact: 'Submission confirmation receipt', note: 'The submitted proposal — clarifications reference it' }, { external: true, artifact: 'Client post-submission clarification requests' }],
-
-  subs: [{
-    id: 'POST-04.1', name: 'Post-Submission Clarification', description: 'Manage client clarification requests received after submission',
-    tasks: [
-      { id: 'POST-04.1.1', name: 'Receive, log, and triage post-submission clarification requests from client — assess impact and assign to workstream leads',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'All Workstream Leads', i: 'Commercial Lead' },
-        inputs: [{ external: true, artifact: 'Client post-submission clarification requests' }],
-        outputs: [{ name: 'Clarification triage log', format: 'Tracking register', quality: ['Every request logged with date, topic, urgency, and assigned owner', 'Impact assessed — does this change our position or just need explanation?'] }],
-        effort: 'Medium', type: 'Iterative' },
-      { id: 'POST-04.1.2', name: 'Draft, review, and submit clarification responses within client deadlines — ensuring consistency with submitted proposal',
-        raci: { r: 'Workstream Leads (per topic)', a: 'Bid Director', c: 'Legal / Commercial', i: 'Bid Manager' },
-        inputs: [{ from: 'POST-04.1.1', artifact: 'Clarification triage log' }],
-        outputs: [{ name: 'Clarification log, submitted responses (activity primary output)', format: 'Response log with submitted answers', quality: ['All responses submitted within client deadlines', 'Responses consistent with submitted proposal — no contradictions', 'Responses reviewed by Bid Director before submission', 'Any responses that change our risk position flagged and risk log updated'] }],
-        effort: 'High', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Clarification log, submitted responses, updated risk log', format: 'Response tracker', quality: ['All requests answered on time', 'Consistency with submission maintained', 'Risk log updated'] }],
-  consumers: [{ activity: 'POST-05', consumes: 'Clarification responses', usage: 'BAFO preparation considers any positions changed through clarification' }]
+  id: 'POST-04',
+  name: 'Post-submission clarification management',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Bid Manager',
+  output: 'Clarification log, submitted responses, updated risk log',
+  dependencies: [
+    'PRD-09'
+  ],
+  effortDays: 5,
+  teamSize: 2,
+  parallelisationType: 'P',
+  inputs: [
+    {
+      from: 'PRD-09',
+      artifact: 'Submission confirmation receipt',
+      note: 'The submitted proposal — clarifications reference it'
+    },
+    {
+      external: true,
+      artifact: 'Client post-submission clarification requests'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-04.1',
+      name: 'Clarification Receipt & Triage',
+      description: 'Receive and triage post-submission clarification requests',
+      tasks: [
+        {
+          id: 'POST-04.1.1',
+          name: 'Monitor for and receive post-submission clarification requests from client — log and triage by urgency and workstream',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: 'Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Clarification request log',
+              format: 'Log with triage',
+              quality: [
+                'All requests logged with receipt timestamp',
+                'Triage: urgency (deadline-driven), workstream assignment, complexity assessment',
+                'Requests that imply evaluation concerns flagged for strategic attention',
+                'Requests distributed to workstream leads within 24 hours'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        },
+        {
+          id: 'POST-04.1.2',
+          name: 'Assess clarification requests for strategic signals — what is the client really asking, and what does it tell us about our competitive position?',
+          raci: {
+            r: 'Capture Lead',
+            a: 'Bid Director',
+            c: 'Bid Manager',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Strategic assessment of clarifications',
+              format: 'Assessment brief',
+              quality: [
+                'Each clarification assessed for strategic significance — not just answer the question',
+                'Patterns identified — are clarifications focused on a particular area of weakness?',
+                'Competitive intelligence extracted — are these questions being asked of all bidders or just us?',
+                'Strategic response approach agreed — factual vs opportunity to strengthen position'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Parallel'
+        }
+      ]
+    },
+    {
+      id: 'POST-04.2',
+      name: 'Response Drafting & Submission',
+      description: 'Draft, review, and submit clarification responses',
+      tasks: [
+        {
+          id: 'POST-04.2.1',
+          name: 'Draft clarification responses — technically accurate, consistent with submitted proposal, strategically framed',
+          raci: {
+            r: 'Workstream Leads (per topic)',
+            a: 'Bid Director',
+            c: 'Bid Manager',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Draft clarification responses',
+              format: 'Response documents',
+              quality: [
+                'Responses factually accurate and technically correct',
+                'Consistent with submitted proposal — no contradictions or new commitments',
+                'Strategically framed — answers the question while reinforcing win themes where possible',
+                'Reviewed by at least two people before submission'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Parallel'
+        },
+        {
+          id: 'POST-04.2.2',
+          name: 'Review, approve, and submit clarification responses within client deadlines',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: null,
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Clarification log, submitted responses (activity primary output)',
+              format: 'Submitted responses with log',
+              quality: [
+                'All responses approved by Bid Director before submission',
+                'Submitted before client deadline with margin',
+                'Submission logged with confirmation receipt',
+                'Responses archived alongside original submission'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Clarification log, submitted responses, updated risk log',
+      format: 'Clarification management outputs',
+      quality: [
+        'All clarification requests triaged and assigned',
+        'Strategic significance assessed',
+        'Responses consistent with submitted proposal',
+        'Submitted within deadlines with approval'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'POST-05',
+      consumes: 'Clarification responses',
+      usage: 'BAFO preparation considers any positions changed through clarification'
+    }
+  ]
 }
 ```
 
@@ -10561,37 +14757,170 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-05', name: 'BAFO preparation & revised pricing', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
-  // ARCHETYPE NOTES:
-  // Consulting/Advisory: MODIFIED — BAFO is typically "reduce your day rates." Very simple.
-  //   No solution rework. Strategy is: how far can we reduce rates while maintaining margin?
-  output: 'Revised pricing model, updated solution elements', dependencies: ['POST-04'], effortDays: 10, teamSize: 2, parallelisationType: 'P',
-
-  inputs: [
-    { from: 'POST-04', artifact: 'Clarification log', note: 'Positions clarified that may affect BAFO' },
-    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'The original pricing to revise' },
-    { from: 'COM-05', artifact: 'Margin model with sensitivities', note: 'Sensitivity analysis informs how far we can move' },
-    { external: true, artifact: 'Client BAFO invitation — scope of changes permitted, timeline, format' }
+  id: 'POST-05',
+  name: 'BAFO preparation & revised pricing',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Commercial Lead',
+  output: 'Revised pricing model, updated solution elements',
+  dependencies: [
+    'POST-04'
   ],
-
-  subs: [{
-    id: 'POST-05.1', name: 'BAFO Preparation', description: 'Develop the BAFO strategy and revised pricing',
-    tasks: [
-      { id: 'POST-05.1.1', name: 'Develop BAFO strategy — what to change, what to hold, how far to move on price, any solution adjustments',
-        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Capture Lead / Solution Architect', i: 'Finance' },
-        inputs: [{ from: 'COM-05', artifact: 'Margin model with sensitivities' }, { external: true, artifact: 'Client BAFO invitation' }],
-        outputs: [{ name: 'BAFO strategy', format: 'Strategy paper', quality: ['Clear rationale for what to change and what to hold', 'Price movement informed by sensitivity analysis — know the margin impact', 'Solution adjustments (if any) are consistent with submitted approach', 'Competitive intelligence considered — what might competitors do in BAFO?'] }],
-        effort: 'High', type: 'Sequential' },
-      { id: 'POST-05.1.2', name: 'Prepare revised pricing and any updated solution elements — ready for BAFO governance approval',
-        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Solution Architect / Finance', i: 'Bid Manager' },
-        inputs: [{ from: 'POST-05.1.1', artifact: 'BAFO strategy' }, { from: 'COM-06', artifact: 'Pricing model (locked & assured)' }],
-        outputs: [{ name: 'Revised pricing model, updated solution elements (activity primary output)', format: 'BAFO pricing and solution pack', quality: ['Revised pricing model complete — changes clearly tracked against original', 'Margin at revised price confirmed — still meets minimum threshold', 'Solution adjustments documented — what changed and why', 'Ready for POST-06 (BAFO governance approval)'] }],
-        effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Revised pricing model, updated solution elements', format: 'BAFO submission pack', quality: ['Changes tracked against original', 'Margin confirmed', 'Ready for governance'] }],
-  consumers: [{ activity: 'POST-06', consumes: 'Revised pricing', usage: 'BAFO governance approves the revised position' }]
+  effortDays: 10,
+  teamSize: 2,
+  parallelisationType: 'P',
+  inputs: [
+    {
+      from: 'POST-04',
+      artifact: 'Clarification log',
+      note: 'Positions clarified that may affect BAFO'
+    },
+    {
+      from: 'COM-06',
+      artifact: 'Pricing model (locked & assured)',
+      note: 'The original pricing to revise'
+    },
+    {
+      from: 'COM-05',
+      artifact: 'Margin model with sensitivities',
+      note: 'Sensitivity analysis informs how far we can move'
+    },
+    {
+      external: true,
+      artifact: 'Client BAFO invitation — scope of changes permitted, timeline, format'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-05.1',
+      name: 'BAFO Strategy',
+      description: 'Develop the BAFO strategy — what to change and what to hold',
+      tasks: [
+        {
+          id: 'POST-05.1.1',
+          name: 'Assess BAFO context — what intelligence do we have about our competitive position, what has the client signalled, what leverage do we have?',
+          raci: {
+            r: 'Capture Lead',
+            a: 'Bid Director',
+            c: 'Commercial Lead',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'BAFO context assessment',
+              format: 'Assessment brief',
+              quality: [
+                'Competitive position assessed — are we winning, losing, or neck-and-neck?',
+                'Client signals analysed — what has the client told us or implied through clarifications?',
+                'Leverage identified — what can we offer that strengthens our position?',
+                'Risk of over-conceding assessed — how far can we move without undermining margin or deliverability?'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-05.1.2',
+          name: 'Develop BAFO strategy — price adjustments, solution refinements, commercial concessions, and non-price value-adds',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Solution Architect / Capture Lead',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'BAFO strategy document',
+              format: 'Strategy brief with scenarios',
+              quality: [
+                'Price adjustment strategy defined — how much, where from, what trade-offs',
+                'Solution refinements identified — any improvements that strengthen position without cost',
+                'Commercial concessions prepared — payment terms, risk sharing, performance guarantees',
+                'Non-price value-adds identified — innovation, social value, partnership investment'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'POST-05.2',
+      name: 'BAFO Preparation',
+      description: 'Prepare the revised pricing and solution elements for BAFO submission',
+      tasks: [
+        {
+          id: 'POST-05.2.1',
+          name: 'Prepare revised pricing model — implement agreed price adjustments, update financial model, recalculate margins and sensitivities',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Revised pricing model',
+              format: 'Updated financial model',
+              quality: [
+                'Price adjustments implemented per BAFO strategy',
+                'Margin impact calculated and within approved parameters',
+                'Sensitivities recalculated against new price position',
+                'Model independently verified'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-05.2.2',
+          name: 'Prepare updated solution or commercial documents — any changes to the submitted proposal required by BAFO strategy',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Workstream Leads',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Revised pricing model, updated solution elements (activity primary output)',
+              format: 'BAFO submission package',
+              quality: [
+                'All changes from original submission clearly identified',
+                'Narrative updated to reflect any solution or commercial changes',
+                'Consistency checked — no contradictions with unchanged elements',
+                'Ready for BAFO governance approval (POST-06)'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Revised pricing model, updated solution elements',
+      format: 'BAFO submission package',
+      quality: [
+        'BAFO strategy defined with clear rationale',
+        'Price adjustments within approved parameters',
+        'Solution changes consistent with original submission',
+        'Ready for governance approval'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'POST-06',
+      consumes: 'Revised pricing',
+      usage: 'BAFO governance approves the revised position'
+    }
+  ]
 }
 ```
 
@@ -10601,24 +14930,99 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-06', name: 'BAFO governance approval', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
-  output: 'Board-approved BAFO mandate', dependencies: ['POST-05'], effortDays: 2, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [{ from: 'POST-05', artifact: 'Revised pricing model, updated solution elements' }],
-
-  subs: [{
-    id: 'POST-06.1', name: 'BAFO Governance', description: 'Obtain governance approval for the revised commercial position',
-    tasks: [{
-      id: 'POST-06.1.1', name: 'Obtain governance approval for BAFO — any material change to price or commercial position requires fresh executive approval',
-      raci: { r: 'Commercial Lead', a: 'Senior Responsible Executive / Board', c: 'Bid Director / Finance Director', i: 'Bid Manager' },
-      inputs: [{ from: 'POST-05', artifact: 'Revised pricing model, updated solution elements' }],
-      outputs: [{ name: 'Board-approved BAFO mandate (activity primary output)', format: 'Governance approval record', quality: ['BAFO position approved — revised price and any solution changes authorised', 'Margin at revised price accepted by governance', 'Authority to submit BAFO confirmed', 'Conditions documented if conditional approval'] }],
-      effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Board-approved BAFO mandate', format: 'Governance approval', quality: ['Revised position approved', 'Authority to submit confirmed'] }],
-  consumers: [{ activity: 'POST-07', consumes: 'BAFO mandate', usage: 'Contract negotiation proceeds with approved BAFO position' }]
+  id: 'POST-06',
+  name: 'BAFO governance approval',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Commercial Lead',
+  output: 'Board-approved BAFO mandate',
+  dependencies: [
+    'POST-05'
+  ],
+  effortDays: 2,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'POST-05',
+      artifact: 'Revised pricing model, updated solution elements'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-06.1',
+      name: 'BAFO Governance',
+      description: 'Obtain governance approval for BAFO submission',
+      tasks: [
+        {
+          id: 'POST-06.1.1',
+          name: 'Prepare BAFO governance pack — original approved position, proposed changes, margin impact, rationale, and recommendation',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Commercial Lead',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'BAFO governance pack',
+              format: 'Governance pack',
+              quality: [
+                'Original approved position referenced — GOV-03/04 decisions',
+                'Proposed changes clearly described with rationale',
+                'Margin impact quantified — new position vs approved position',
+                'Competitive context explained — why these changes improve PWIN'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-06.1.2',
+          name: 'Obtain executive approval for BAFO — any material change to price or commercial position requires fresh approval',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: null,
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Board-approved BAFO mandate (activity primary output)',
+              format: 'Formal approval record',
+              quality: [
+                'BAFO position approved at appropriate governance level',
+                'If change exceeds delegated authority, escalated to higher tier',
+                'Approved price floor and negotiation parameters confirmed',
+                'Mandate communicated to bid team for BAFO preparation'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Board-approved BAFO mandate',
+      format: 'Formal BAFO approval',
+      quality: [
+        'BAFO position approved at appropriate governance level',
+        'Margin floor and negotiation parameters confirmed',
+        'Mandate communicated to bid team'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'POST-07',
+      consumes: 'BAFO mandate',
+      usage: 'Contract negotiation proceeds with approved BAFO position'
+    }
+  ]
 }
 ```
 
@@ -10628,29 +15032,145 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-07', name: 'Contract negotiation support', workstream: 'POST', phase: 'POST', role: 'Commercial Lead',
-  output: 'Negotiated T&C schedule, agreed pricing', dependencies: ['PRD-09'], effortDays: 5, teamSize: 1, parallelisationType: 'S',
-
-  inputs: [
-    { from: 'LEG-01', artifact: 'Contract markup with positions log', note: 'Negotiation positions and fallbacks' },
-    { from: 'COM-06', artifact: 'Pricing model (locked & assured)', note: 'Pricing position for negotiation' },
-    { from: 'POST-06', artifact: 'Board-approved BAFO mandate', note: 'Revised position if BAFO occurred' },
-    { external: true, artifact: 'Client preferred bidder notification and negotiation invitation' }
+  id: 'POST-07',
+  name: 'Contract negotiation support',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Commercial Lead',
+  output: 'Negotiated T&C schedule, agreed pricing',
+  dependencies: [
+    'PRD-09'
   ],
-
-  subs: [{
-    id: 'POST-07.1', name: 'Contract Negotiation', description: 'Support commercial and contractual negotiation with the client',
-    tasks: [
-      { id: 'POST-07.1.1', name: 'Lead commercial and contractual negotiations with client — using approved positions, manage trade-offs, escalate when authority limits reached',
-        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal Lead / Senior Executive', i: 'Finance' },
-        inputs: [{ from: 'LEG-01', artifact: 'Contract markup with positions log' }, { from: 'COM-06', artifact: 'Pricing model (locked & assured)' }, { external: true, artifact: 'Client negotiation invitation' }],
-        outputs: [{ name: 'Negotiated T&C schedule, agreed pricing (activity primary output)', format: 'Agreed contract terms', quality: ['Terms negotiated within approved positions — no unauthorised concessions', 'Trade-offs managed — concessions in one area balanced by gains in another', 'Any positions outside approved authority escalated to governance for fresh approval', 'Agreed terms documented and ready for contract signature'] }],
-        effort: 'High', type: 'Iterative' }
-    ]
-  }],
-
-  outputs: [{ name: 'Negotiated T&C schedule, agreed pricing', format: 'Agreed contract terms', quality: ['Negotiated within approved positions', 'Documented and ready for signature'] }],
-  consumers: [{ activity: 'POST-08', consumes: 'Agreed terms', usage: 'Award processing proceeds on agreed contract' }]
+  effortDays: 5,
+  teamSize: 1,
+  parallelisationType: 'S',
+  inputs: [
+    {
+      from: 'LEG-01',
+      artifact: 'Contract markup with positions log',
+      note: 'Negotiation positions and fallbacks'
+    },
+    {
+      from: 'COM-06',
+      artifact: 'Pricing model (locked & assured)',
+      note: 'Pricing position for negotiation'
+    },
+    {
+      from: 'POST-06',
+      artifact: 'Board-approved BAFO mandate',
+      note: 'Revised position if BAFO occurred'
+    },
+    {
+      external: true,
+      artifact: 'Client preferred bidder notification and negotiation invitation'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-07.1',
+      name: 'Negotiation Preparation',
+      description: 'Prepare negotiation positions and strategy',
+      tasks: [
+        {
+          id: 'POST-07.1.1',
+          name: 'Prepare negotiation positions — approved contract positions from GOV-06, commercial parameters from GOV-03, trade-off matrix',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Legal Lead',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Negotiation preparation pack',
+              format: 'Strategy and positions document',
+              quality: [
+                'Approved positions from governance documented — what we can and cannot concede',
+                'Trade-off matrix prepared — what are we willing to give vs what we need to hold?',
+                'Authority limits clear — who can agree what during negotiation',
+                'Fallback positions identified for each key negotiation point'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'POST-07.2',
+      name: 'Negotiation Execution',
+      description: 'Lead negotiations with the client',
+      tasks: [
+        {
+          id: 'POST-07.2.1',
+          name: 'Lead commercial and contractual negotiations — manage trade-offs within approved parameters, escalate when authority limits reached',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Legal Lead',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Negotiation session records',
+              format: 'Session records',
+              quality: [
+                'All negotiation sessions documented — positions discussed, concessions made, agreements reached',
+                'Trade-offs tracked — what we gave vs what we got',
+                'Client rationale for their positions captured — useful for future bids'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-07.2.2',
+          name: 'Escalate positions exceeding approved parameters — re-gate if material change to commercial or contractual position',
+          raci: {
+            r: 'Bid Director',
+            a: 'Senior Responsible Executive',
+            c: 'Commercial Lead / Legal Lead',
+            i: 'Bid Manager'
+          },
+          outputs: [
+            {
+              name: 'Negotiated T&C schedule, agreed pricing (activity primary output)',
+              format: 'Agreed positions with escalation record',
+              quality: [
+                'Final negotiated positions documented',
+                'Any positions exceeding approved parameters re-approved through governance',
+                'Client agreements confirmed in writing — not just verbal',
+                'Ready for contract execution (POST-08)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Negotiated T&C schedule, agreed pricing',
+      format: 'Agreed contractual and commercial positions',
+      quality: [
+        'Negotiations conducted within approved parameters',
+        'Escalations handled through governance where required',
+        'Final positions documented and confirmed in writing',
+        'Ready for contract execution'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'POST-08',
+      consumes: 'Agreed terms',
+      usage: 'Award processing proceeds on agreed contract'
+    }
+  ]
 }
 ```
 
@@ -10660,33 +15180,191 @@ Use this checklist before marking any activity as mapping-complete:
 
 ```javascript
 {
-  id: 'POST-08', name: 'Award processing & mobilisation handover', workstream: 'POST', phase: 'POST', role: 'Bid Manager',
-  output: 'Handover pack, delivery team briefed, PID', dependencies: ['POST-07'], effortDays: 3, teamSize: 1, parallelisationType: 'C',
-
-  inputs: [
-    { from: 'POST-07', artifact: 'Negotiated T&C schedule, agreed pricing' },
-    { from: 'DEL-02', artifact: 'Mobilisation plan', note: 'The mobilisation plan to hand over to delivery' },
-    { from: 'SOL-11', artifact: 'Solution design pack (locked & assured)', note: 'The solution to be delivered' }
+  id: 'POST-08',
+  name: 'Award processing & mobilisation handover',
+  workstream: 'POST',
+  phase: 'POST',
+  role: 'Bid Manager',
+  output: 'Handover pack, delivery team briefed, PID',
+  dependencies: [
+    'POST-07'
   ],
-
-  subs: [{
-    id: 'POST-08.1', name: 'Award & Handover', description: 'Process the award and hand over from bid team to delivery team',
-    tasks: [
-      { id: 'POST-08.1.1', name: 'Process contract award — receive confirmation, execute contract, establish commercial baseline',
-        raci: { r: 'Commercial Lead', a: 'Bid Director', c: 'Legal Lead / Finance', i: 'Bid Manager' },
-        inputs: [{ from: 'POST-07', artifact: 'Negotiated T&C schedule, agreed pricing' }],
-        outputs: [{ name: 'Executed contract', format: 'Signed contract', quality: ['Contract executed on agreed terms', 'Commercial baseline established — this is what we committed to deliver at what price', 'Contract stored and accessible to delivery team'] }],
-        effort: 'Medium', type: 'Sequential' },
-      { id: 'POST-08.1.2', name: 'Hand over from bid team to delivery team — solution, mobilisation plan, risk register, assumptions, key relationships, lessons learned',
-        raci: { r: 'Bid Manager', a: 'Bid Director', c: 'Delivery Director', i: 'All Workstream Leads' },
-        inputs: [{ from: 'SOL-11', artifact: 'Solution design pack (locked & assured)' }, { from: 'DEL-02', artifact: 'Mobilisation plan' }],
-        outputs: [{ name: 'Handover pack, delivery team briefed, PID (activity primary output)', format: 'Comprehensive handover package', quality: ['Solution design, mobilisation plan, and risk register handed over — not just documents but knowledge', 'Delivery team briefed on win strategy, client relationships, key commitments, and known risks', 'Project Initiation Document (PID) prepared — the delivery team\'s starting point', 'Bid team formally stood down — bid costs closed out', 'Key relationships transitioned — client contacts introduced to delivery leadership'] }],
-        effort: 'High', type: 'Sequential' }
-    ]
-  }],
-
-  outputs: [{ name: 'Handover pack, delivery team briefed, PID', format: 'Delivery handover package', quality: ['Knowledge transferred not just documents', 'Delivery team briefed', 'PID prepared', 'Bid team stood down'] }],
-  consumers: [{ activity: 'Delivery (post-bid)', consumes: 'Handover pack', usage: 'Delivery team begins mobilisation from the handover' }]
+  effortDays: 3,
+  teamSize: 1,
+  parallelisationType: 'C',
+  inputs: [
+    {
+      from: 'POST-07',
+      artifact: 'Negotiated T&C schedule, agreed pricing'
+    },
+    {
+      from: 'DEL-02',
+      artifact: 'Mobilisation plan',
+      note: 'The mobilisation plan to hand over to delivery'
+    },
+    {
+      from: 'SOL-11',
+      artifact: 'Solution design pack (locked & assured)',
+      note: 'The solution to be delivered'
+    }
+  ],
+  subs: [
+    {
+      id: 'POST-08.1',
+      name: 'Contract Award',
+      description: 'Process the contract award and establish the commercial baseline',
+      tasks: [
+        {
+          id: 'POST-08.1.1',
+          name: 'Receive and process contract award — confirm terms match negotiated positions, execute contract per delegated authority',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Legal Lead',
+            i: 'Finance'
+          },
+          outputs: [
+            {
+              name: 'Executed contract',
+              format: 'Signed contract',
+              quality: [
+                'Contract terms verified against negotiated positions — no surprises',
+                'Executed per corporate delegated authority',
+                'Contract start date and key milestones confirmed',
+                'Commercial baseline established — this is the reference for delivery'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-08.1.2',
+          name: 'Establish commercial baseline and contract management framework — hand over from bid commercial to delivery commercial',
+          raci: {
+            r: 'Commercial Lead',
+            a: 'Bid Director',
+            c: 'Finance',
+            i: 'Delivery Director'
+          },
+          outputs: [
+            {
+              name: 'Commercial baseline pack',
+              format: 'Baseline documents',
+              quality: [
+                'P&L baseline documented — what was bid vs what was agreed',
+                'Key commercial terms summarised for delivery team',
+                'Contract management framework handed over',
+                'Financial model locked as the bid baseline'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    },
+    {
+      id: 'POST-08.2',
+      name: 'Mobilisation Handover',
+      description: 'Hand over from bid team to delivery team',
+      tasks: [
+        {
+          id: 'POST-08.2.1',
+          name: 'Prepare handover pack — solution design, mobilisation plan, risk register, assumptions, key relationships, lessons learned',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Delivery Director',
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Handover pack',
+              format: 'Comprehensive handover document',
+              quality: [
+                'Solution design and key commitments documented',
+                'Mobilisation plan with milestones and team structure',
+                'Risk register handed over with current status and mitigations',
+                'Assumptions log — what was assumed during the bid that delivery must validate',
+                'Key client relationships and stakeholder intelligence transferred'
+              ]
+            }
+          ],
+          effort: 'Medium',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-08.2.2',
+          name: 'Conduct handover briefing — face-to-face session between bid team and delivery team covering all critical handover items',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Delivery Director',
+            i: 'All Workstream Leads'
+          },
+          outputs: [
+            {
+              name: 'Handover briefing record',
+              format: 'Meeting record',
+              quality: [
+                'Delivery Director and key delivery leads attend',
+                'Every handover item briefed — not just document handoff',
+                'Questions from delivery team captured and answered',
+                'Transition support period agreed — bid team available for X weeks after handover'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        },
+        {
+          id: 'POST-08.2.3',
+          name: 'Close bid — archive all bid documents, close cost-to-bid tracker, update corporate bid library, confirm bid team stand-down',
+          raci: {
+            r: 'Bid Manager',
+            a: 'Bid Director',
+            c: 'Bid Coordinator',
+            i: null
+          },
+          outputs: [
+            {
+              name: 'Handover pack, delivery team briefed, PID (activity primary output)',
+              format: 'Bid closure record',
+              quality: [
+                'All bid documents archived per retention policy',
+                'Cost-to-bid tracker closed — final actuals recorded',
+                'Corporate bid library updated with reusable content',
+                'Bid team formally stood down — resources released',
+                'Win/loss analysis scheduled (if not already completed via BM-12)'
+              ]
+            }
+          ],
+          effort: 'Low',
+          type: 'Sequential'
+        }
+      ]
+    }
+  ],
+  outputs: [
+    {
+      name: 'Handover pack, delivery team briefed, PID',
+      format: 'Handover package and bid closure',
+      quality: [
+        'Contract executed and commercial baseline established',
+        'Handover pack comprehensive — solution, risks, assumptions, relationships',
+        'Delivery team briefed face-to-face',
+        'Bid formally closed — documents archived, resources released'
+      ]
+    }
+  ],
+  consumers: [
+    {
+      activity: 'Delivery (post-bid)',
+      consumes: 'Handover pack',
+      usage: 'Delivery team begins mobilisation from the handover'
+    }
+  ]
 }
 ```
 
