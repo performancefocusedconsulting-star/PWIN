@@ -2227,7 +2227,7 @@ Use this checklist before marking any activity as mapping-complete:
               quality: [
                 'Engagement objective defined per stakeholder (inform / influence / validate / convert)',
                 'Approach matched to disposition — different tactics for champions vs sceptics',
-                'Key messages aligned to each stakeholder's known priorities',
+                'Key messages aligned to each stakeholder\'s known priorities',
                 'Engagement owner assigned and accepted for each stakeholder',
                 'Compliance boundaries noted — what engagement is permissible under procurement rules'
               ]
