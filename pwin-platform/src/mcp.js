@@ -352,6 +352,64 @@ function createMcpServer() {
   );
 
   // ==========================================================================
+  // GOVERNANCE KNOWLEDGE TOOLS
+  // ==========================================================================
+
+  server.tool(
+    'get_governance_gates',
+    'Get gate definitions with tier mapping, prerequisites, and outcomes. Optionally filter by tier or gate number.',
+    { tier: z.enum(['qualification', 'solution', 'submission', 'contract']).optional(), gateNumber: z.number().optional() },
+    async ({ tier, gateNumber }) => {
+      const data = await store.getPlatformData('governance/governance_gate_definitions.json');
+      if (!data) return { content: [{ type: 'text', text: 'null' }] };
+      let result = { tier_definitions: data.tier_definitions, ic_trigger_criteria: data.ic_trigger_criteria, no_bid_criteria: data.no_bid_criteria };
+      let gates = data.gates || [];
+      if (tier) gates = gates.filter(g => g.tier === tier);
+      if (gateNumber !== undefined) gates = gates.filter(g => g.gate_number === gateNumber);
+      result.gates = gates;
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_governance_pack_template',
+    'Get governance pack section structure for a given gate tier (qualification, solution, submission, contract)',
+    { tier: z.enum(['qualification', 'solution', 'submission', 'contract']) },
+    async ({ tier }) => {
+      const data = await store.getPlatformData('governance/governance_pack_templates.json');
+      const template = data?.[tier] || null;
+      return { content: [{ type: 'text', text: JSON.stringify(template, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_governance_risk_framework',
+    'Get risk tornado format, probability weightings, standard risk categories, and RAG definitions',
+    {},
+    async () => {
+      const data = await store.getPlatformData('governance/governance_risk_framework.json');
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_governance_signoff_matrix',
+    'Get functional sign-off areas, role titles, accountabilities, and gate tier requirements',
+    { tier: z.enum(['qualification', 'solution', 'submission', 'contract']).optional() },
+    async ({ tier }) => {
+      const data = await store.getPlatformData('governance/governance_signoff_matrix.json');
+      if (!data) return { content: [{ type: 'text', text: 'null' }] };
+      let result = { ...data };
+      if (tier) {
+        result.functional_areas = data.functional_areas.filter(a =>
+          !a.required_at_tiers || a.required_at_tiers.includes(tier)
+        );
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  // ==========================================================================
   // BID EXECUTION READ TOOLS — first 10 (Section 4.1, Steps 4)
   // ==========================================================================
 

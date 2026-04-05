@@ -147,6 +147,30 @@ async function gatherContext(skill, input) {
         context.sourceHierarchy = await store.getPlatformData('source_hierarchy.json');
         break;
       }
+      case 'governance_gates': {
+        const gateData = await store.getPlatformData('governance/governance_gate_definitions.json');
+        context.governanceGates = gateData || null;
+        break;
+      }
+      case 'governance_pack_template': {
+        const templateData = await store.getPlatformData('governance/governance_pack_templates.json');
+        // If gateTier is known from input, load only that tier's template
+        const tier = input?.gateTier || null;
+        if (tier && templateData?.[tier]) {
+          context.governancePackTemplate = templateData[tier];
+        } else {
+          context.governancePackTemplate = templateData || null;
+        }
+        break;
+      }
+      case 'governance_risk_framework': {
+        context.governanceRiskFramework = await store.getPlatformData('governance/governance_risk_framework.json');
+        break;
+      }
+      case 'governance_signoff_matrix': {
+        context.governanceSignoffMatrix = await store.getPlatformData('governance/governance_signoff_matrix.json');
+        break;
+      }
       default:
         break;
     }
