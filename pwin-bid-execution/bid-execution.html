@@ -6266,6 +6266,7 @@ function renderBidTable(bids) {
       <td>${b.prodReadiness!=null?b.prodReadiness+'%':'—'}</td>
       <td>${STORE.fmtCurrency(b.winFeeValue)}</td>
       <td class="mono">${h(b.bidManager||'—')}</td>
+      <td style="text-align:center;"><button class="btn btn-sm" style="color:var(--red);border-color:var(--red);padding:2px 8px;font-size:9px;" onclick="event.stopPropagation();handleDeleteBid('${b.id}','${h(b.name||'').replace(/'/g,"\\'")}')">Delete</button></td>
     </tr>`;
   }).join('');
 
@@ -6273,7 +6274,7 @@ function renderBidTable(bids) {
     <thead><tr>
       <th>Health</th><th>Client</th><th>Bid Name</th><th>Deadline</th>
       <th>Days Left</th><th>Status</th><th>Dev %</th><th>Prod %</th>
-      <th>Win Fee</th><th>Bid Manager</th>
+      <th>Win Fee</th><th>Bid Manager</th><th></th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
@@ -11188,6 +11189,12 @@ function handleConfirmSubmission() {
     // Snapshot readiness
     READINESS.snapshotReadiness(bid);
   });
+  renderApp();
+}
+
+function handleDeleteBid(id, name) {
+  if (!confirm(`Delete bid "${name}"?\n\nThis cannot be undone.`)) return;
+  STORE.deleteBid(id);
   renderApp();
 }
 
