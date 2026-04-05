@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Governance Pack — Gate 4 Submission Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   GOVERNANCE PACK TEMPLATE — BidEquity Brand
+   Landscape A4, slide-sized pages, print-to-PDF optimised
+   ============================================================ */
+
+/* --- Design Tokens --- */
+:root {
+  /* Backgrounds */
+  --bg0: #F7F4EE;
+  --bg1: #FFFFFF;
+  --bg2: #FFFFFF;
+  --bg3: #F0ECE4;
+  --bg4: #E8E4DC;
+
+  /* Borders */
+  --bdr: #D5D9E0;
+  --bdr-s: #E8E4DC;
+
+  /* Accent — teal */
+  --gold: #5CA3B6;
+  --gold-d: rgba(92,163,182,.08);
+  --gold-g: rgba(92,163,182,.04);
+
+  /* Text */
+  --t1: #021744;
+  --t2: #576482;
+  --t3: #818CA2;
+  --t4: #ABB2C1;
+
+  /* Semantic */
+  --grn: #2D8A5E;  --grn-d: rgba(45,138,94,.08);
+  --red: #C15050;  --red-d: rgba(193,80,80,.08);
+  --amb: #C68A1D;  --amb-d: rgba(198,138,29,.08);
+  --blu: #3B82B8;  --blu-d: rgba(59,130,184,.08);
+
+  /* Header */
+  --hdr-bg: #021744;
+  --hdr-text: #F0EDE6;
+  --hdr-cyan: #60F5F7;
+
+  /* Layout */
+  --page-pad: 48px;
+  --slide-gap: 32px;
+
+  /* Fonts */
+  --ff-display: 'Spline Sans', sans-serif;
+  --ff-body: 'Inter', sans-serif;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 14px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  font-family: var(--ff-body);
+  color: var(--t1);
+  background: var(--bg0);
+  line-height: 1.55;
+}
+
+/* --- Page Slide --- */
+.page {
+  width: 297mm;
+  min-height: 210mm;
+  max-height: 210mm;
+  overflow: hidden;
+  background: var(--bg1);
+  border: 1px solid var(--bdr);
+  margin: 24px auto;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-body {
+  flex: 1;
+  padding: var(--page-pad);
+  padding-top: 32px;
+  padding-bottom: 40px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* --- Page Header Bar --- */
+.page-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--hdr-bg);
+  padding: 10px 28px;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.page-hdr-brand {
+  font-family: var(--ff-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--hdr-text);
+  letter-spacing: .04em;
+}
+
+.page-hdr-product {
+  font-family: var(--ff-body);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--hdr-cyan);
+  margin-left: 10px;
+}
+
+.page-hdr-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.page-hdr-meta span {
+  font-family: var(--ff-body);
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(240,237,230,.7);
+  letter-spacing: .02em;
+}
+
+.page-hdr-meta .gate-label {
+  background: var(--gold);
+  color: #FFFFFF;
+  padding: 2px 10px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* --- Page Footer --- */
+.page-ftr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 28px;
+  border-top: 1px solid var(--bdr-s);
+  background: var(--bg3);
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: .02em;
+  flex-shrink: 0;
+  min-height: 28px;
+}
+
+.page-ftr .classification {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--red);
+}
+
+/* --- Typography --- */
+.sl {
+  font-family: var(--ff-body);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 6px;
+}
+
+.pg-title {
+  font-family: var(--ff-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--t1);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.pg-desc {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--t2);
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+.sh {
+  font-family: var(--ff-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--t1);
+  margin-bottom: 10px;
+}
+
+.sh2 {
+  font-family: var(--ff-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--t1);
+  margin-bottom: 8px;
+}
+
+.bt {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--t2);
+  line-height: 1.65;
+}
+
+.bt + .bt { margin-top: 10px; }
+
+/* --- Cards --- */
+.cd {
+  background: var(--bg2);
+  border: 1px solid var(--bdr);
+  padding: 16px;
+}
+
+/* --- Metric Cards (Dashboard) --- */
+.metric-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.metric-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.metric-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.metric-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+.metric-card {
+  background: var(--bg1);
+  border: 1px solid var(--bdr);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-card .metric-label {
+  font-family: var(--ff-body);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--t3);
+}
+
+.metric-card .metric-value {
+  font-family: var(--ff-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--t1);
+  line-height: 1.1;
+}
+
+.metric-card .metric-value.accent { color: var(--gold); }
+.metric-card .metric-value.green { color: var(--grn); }
+.metric-card .metric-value.red { color: var(--red); }
+.metric-card .metric-value.amber { color: var(--amb); }
+
+.metric-card .metric-sub {
+  font-family: var(--ff-body);
+  font-size: 11px;
+  color: var(--t2);
+  margin-top: 2px;
+}
+
+/* --- Tables --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ff-body);
+  font-size: 11px;
+}
+
+table th {
+  background: var(--gold);
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 8px 12px;
+  text-align: left;
+  border: none;
+}
+
+table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--bdr-s);
+  color: var(--t1);
+  vertical-align: top;
+}
+
+table tr:last-child td { border-bottom: none; }
+
+table tbody tr:nth-child(even) td { background: var(--bg3); }
+
+table.compact td,
+table.compact th { padding: 6px 10px; font-size: 10px; }
+
+/* Financial table — right-align numbers */
+table.financial td:not(:first-child),
+table.financial th:not(:first-child) { text-align: right; }
+
+table.financial tfoot td {
+  font-weight: 600;
+  border-top: 2px solid var(--t1);
+  background: var(--bg4);
+}
+
+/* --- RAG Colours --- */
+.rag-green { background: var(--grn); color: #FFFFFF; }
+.rag-amber { background: var(--amb); color: #FFFFFF; }
+.rag-red   { background: var(--red); color: #FFFFFF; }
+
+.rag-green-light { background: var(--grn-d); color: var(--grn); }
+.rag-amber-light { background: var(--amb-d); color: var(--amb); }
+.rag-red-light   { background: var(--red-d); color: var(--red); }
+
+.rag-cell {
+  text-align: center;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .04em;
+  padding: 6px 10px;
+}
+
+.rag-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.rag-dot.green { background: var(--grn); }
+.rag-dot.amber { background: var(--amb); }
+.rag-dot.red   { background: var(--red); }
+
+/* --- Status Badges --- */
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 2px 8px;
+}
+
+.badge-open   { background: var(--amb-d); color: var(--amb); }
+.badge-closed { background: var(--grn-d); color: var(--grn); }
+.badge-overdue { background: var(--red-d); color: var(--red); }
+.badge-na     { background: var(--bg4); color: var(--t3); }
+
+/* --- Two-Column Narrative Layout --- */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.two-col.split-60-40 { grid-template-columns: 3fr 2fr; }
+
+/* --- Tornado Chart (CSS horizontal bars) --- */
+.tornado-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 16px 0;
+}
+
+.tornado-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 60px;
+  align-items: center;
+  gap: 12px;
+  height: 28px;
+}
+
+.tornado-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--t2);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tornado-bar-track {
+  position: relative;
+  height: 20px;
+  background: var(--bg3);
+}
+
+.tornado-bar-neg {
+  position: absolute;
+  right: 50%;
+  height: 100%;
+  background: var(--red);
+  opacity: 0.85;
+}
+
+.tornado-bar-pos {
+  position: absolute;
+  left: 50%;
+  height: 100%;
+  background: var(--grn);
+  opacity: 0.85;
+}
+
+.tornado-bar-track::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--t1);
+}
+
+.tornado-value {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t1);
+  text-align: left;
+}
+
+/* --- Watermark --- */
+.watermark .page-body::before {
+  content: 'DRAFT';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-family: var(--ff-display);
+  font-size: 100px;
+  font-weight: 700;
+  color: rgba(193,80,80,.06);
+  letter-spacing: .15em;
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+/* Title page watermark is different — subtitle text */
+.title-page .watermark-text {
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-top: 16px;
+}
+
+/* --- Title Page --- */
+.title-page .page-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.title-brand {
+  font-family: var(--ff-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: .04em;
+  margin-bottom: 4px;
+}
+
+.title-product {
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--gold);
+  margin-bottom: 40px;
+}
+
+.title-pursuit {
+  font-family: var(--ff-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--t1);
+  line-height: 1.3;
+  max-width: 600px;
+  margin-bottom: 8px;
+}
+
+.title-gate {
+  font-family: var(--ff-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gold);
+  margin-bottom: 32px;
+}
+
+.title-meta {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.title-meta span {
+  font-size: 11px;
+  color: var(--t2);
+}
+
+.title-meta span strong {
+  color: var(--t1);
+  font-weight: 600;
+}
+
+.title-divider {
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+  margin: 24px auto;
+}
+
+/* --- Section Divider Strip --- */
+.section-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--gold);
+}
+
+.section-strip .section-num {
+  font-family: var(--ff-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.section-strip .section-title {
+  font-family: var(--ff-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--t1);
+}
+
+/* --- Awaiting Input Placeholder --- */
+.awaiting-input {
+  background: var(--amb-d);
+  border: 1px dashed var(--amb);
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--amb);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* --- Staleness Warning --- */
+.stale-warning {
+  background: var(--red-d);
+  border-left: 3px solid var(--red);
+  padding: 8px 14px;
+  font-size: 10px;
+  color: var(--red);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* --- IC Trigger Indicator --- */
+.ic-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.ic-trigger.triggered { background: var(--red-d); color: var(--red); }
+.ic-trigger.not-triggered { background: var(--grn-d); color: var(--grn); }
+
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  html, body {
+    background: #FFFFFF;
+    margin: 0;
+    padding: 0;
+  }
+
+  .page {
+    width: 297mm;
+    height: 210mm;
+    min-height: 210mm;
+    max-height: 210mm;
+    margin: 0;
+    border: none;
+    page-break-after: always;
+    page-break-inside: avoid;
+    box-shadow: none;
+  }
+
+  .page:last-child { page-break-after: auto; }
+
+  /* Ensure backgrounds print */
+  .page-hdr, table th, .rag-green, .rag-amber, .rag-red,
+  .metric-card, .badge, .tornado-bar-neg, .tornado-bar-pos,
+  .ic-trigger, .gate-label {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* --- Screen preview polish --- */
+@media screen {
+  body { padding: 32px 0; }
+
+  .page {
+    box-shadow: 0 2px 12px rgba(2,23,68,.08);
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ==========================================================
+     PAGE 1 — TITLE PAGE
+     ========================================================== -->
+<div class="page title-page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span class="gate-label">Gate 4 — Submission Review</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="title-brand">BidEquity</div>
+    <div class="title-product">Governance Pack</div>
+    <div class="title-divider"></div>
+    <div class="title-pursuit">National Infrastructure Managed Services Programme</div>
+    <div class="title-gate">Gate 4 — Submission Review</div>
+    <div class="title-meta">
+      <span><strong>Client:</strong> Ministry of Defence</span>
+      <span><strong>TCV:</strong> &pound;364m</span>
+      <span><strong>Submission:</strong> 28 Apr 2026</span>
+    </div>
+    <div class="title-meta" style="margin-top:12px;">
+      <span><strong>Prepared:</strong> 5 Apr 2026</span>
+      <span><strong>Classification:</strong> Commercial in Confidence</span>
+    </div>
+    <div class="watermark-text">Draft &mdash; For Bid Director Review</div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 1</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 2 — DEAL DASHBOARD
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">02</span>
+      <span class="section-title">Deal Dashboard</span>
+    </div>
+
+    <!-- Row 1: Key metrics -->
+    <div class="metric-grid cols-4" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <span class="metric-label">Total Contract Value</span>
+        <span class="metric-value">&pound;364m</span>
+        <span class="metric-sub">10-year term + 2-year extension</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Annual Contract Value</span>
+        <span class="metric-value">&pound;36.4m</span>
+        <span class="metric-sub">Year 1 revenue</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">PWIN Score</span>
+        <span class="metric-value accent">62%</span>
+        <span class="metric-sub">Up from 48% at Gate 2</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Bid Cost to Date</span>
+        <span class="metric-value">&pound;1.2m</span>
+        <span class="metric-sub">Budget: &pound;1.4m (86% consumed)</span>
+      </div>
+    </div>
+
+    <!-- Row 2: Secondary metrics -->
+    <div class="metric-grid cols-4" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <span class="metric-label">Target Margin</span>
+        <span class="metric-value green">8.2%</span>
+        <span class="metric-sub">Floor: 6.5% | Stretch: 9.1%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">NPV (10-year)</span>
+        <span class="metric-value">&pound;18.7m</span>
+        <span class="metric-sub">IRR: 14.3%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">IC Trigger</span>
+        <span class="metric-value red">Yes</span>
+        <span class="metric-sub">TCV &gt; &pound;100m threshold</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Procurement Route</span>
+        <span class="metric-value" style="font-size:20px;">Competitive Dialogue</span>
+        <span class="metric-sub">BAFO stage</span>
+      </div>
+    </div>
+
+    <!-- Row 3: Compact detail strip -->
+    <div class="metric-grid cols-4">
+      <div class="metric-card">
+        <span class="metric-label">Sector</span>
+        <span class="metric-value" style="font-size:16px;">Defence &amp; Security</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Deal Type</span>
+        <span class="metric-value" style="font-size:16px;">Outsource (Re-let)</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Competitors</span>
+        <span class="metric-value" style="font-size:16px;">Serco, Babcock, Mitie</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Submission Deadline</span>
+        <span class="metric-value" style="font-size:16px;">28 Apr 2026</span>
+        <span class="metric-sub">23 days remaining</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 2</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 3 — NARRATIVE (Executive Summary)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">04</span>
+      <span class="section-title">Opportunity &amp; Solution Summary</span>
+    </div>
+
+    <div class="two-col split-60-40">
+      <div>
+        <div class="sh2">Opportunity</div>
+        <p class="bt">The Ministry of Defence is re-letting the National Infrastructure Managed Services contract, a 10-year outsource covering facilities management, asset maintenance, and infrastructure lifecycle across 47 sites in the South-West region. The incumbent (Serco) has held the contract since 2016 and is expected to re-bid.</p>
+        <p class="bt">The client has signalled dissatisfaction with the incumbent's technology investment and sustainability performance, creating a genuine competitive opening. Our solution leverages IoT-enabled predictive maintenance and a net-zero transition pathway that directly addresses these gaps.</p>
+
+        <div class="sh2" style="margin-top:20px;">Solution Approach</div>
+        <p class="bt">Our solution centres on three differentiated propositions: (1) a digital twin platform for real-time asset visibility, reducing reactive maintenance by 35%; (2) a net-zero roadmap achieving carbon neutrality by Year 7; and (3) a social value programme delivering 200+ apprenticeships across the contract term.</p>
+        <p class="bt">The delivery model is hub-and-spoke with a central operations centre in Bristol and satellite teams at each major site. Technology partner integration (Honeywell for BMS, ServiceNow for ITSM) is confirmed with signed ICAs.</p>
+      </div>
+
+      <div>
+        <div class="cd" style="margin-bottom:16px;">
+          <div class="sl">Win Themes</div>
+          <div style="margin-top:8px;">
+            <p class="bt" style="margin-bottom:6px;"><strong>1.</strong> Predictive infrastructure — technology-led value, not just cost reduction</p>
+            <p class="bt" style="margin-bottom:6px;"><strong>2.</strong> Net-zero pathfinder — first MOD FM contract to guarantee carbon neutrality</p>
+            <p class="bt" style="margin-bottom:6px;"><strong>3.</strong> Regional economic impact — local workforce, apprenticeships, SME supply chain</p>
+          </div>
+        </div>
+
+        <div class="cd">
+          <div class="sl">Key Risks</div>
+          <div style="margin-top:8px;">
+            <p class="bt" style="margin-bottom:6px;"><span class="rag-dot red"></span> TUPE cost uncertainty (&pound;2.3m exposure)</p>
+            <p class="bt" style="margin-bottom:6px;"><span class="rag-dot amber"></span> Technology partner dependency (Honeywell exclusivity)</p>
+            <p class="bt" style="margin-bottom:6px;"><span class="rag-dot green"></span> Security clearance pipeline (12/14 key staff cleared)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 3</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 4 — DATA TABLE (Financial Summary P&L)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">08</span>
+      <span class="section-title">Financial Summary</span>
+    </div>
+
+    <table class="financial">
+      <thead>
+        <tr>
+          <th>&pound;m</th>
+          <th>Year 1</th>
+          <th>Year 2</th>
+          <th>Year 3</th>
+          <th>Year 4</th>
+          <th>Year 5</th>
+          <th>Years 6-10</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Revenue</strong></td>
+          <td>34.2</td>
+          <td>35.8</td>
+          <td>36.4</td>
+          <td>36.4</td>
+          <td>37.1</td>
+          <td>189.6</td>
+          <td>369.5</td>
+        </tr>
+        <tr>
+          <td><strong>Direct Costs</strong></td>
+          <td>(28.1)</td>
+          <td>(29.0)</td>
+          <td>(29.4)</td>
+          <td>(29.4)</td>
+          <td>(29.9)</td>
+          <td>(153.2)</td>
+          <td>(299.0)</td>
+        </tr>
+        <tr>
+          <td><strong>Gross Margin</strong></td>
+          <td>6.1</td>
+          <td>6.8</td>
+          <td>7.0</td>
+          <td>7.0</td>
+          <td>7.2</td>
+          <td>36.4</td>
+          <td>70.5</td>
+        </tr>
+        <tr>
+          <td><strong>Overheads</strong></td>
+          <td>(3.4)</td>
+          <td>(3.5)</td>
+          <td>(3.5)</td>
+          <td>(3.5)</td>
+          <td>(3.6)</td>
+          <td>(18.2)</td>
+          <td>(35.7)</td>
+        </tr>
+        <tr>
+          <td><strong>Bid &amp; Transition Costs</strong></td>
+          <td>(1.4)</td>
+          <td>(0.2)</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>(1.6)</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><strong>Operating Profit</strong></td>
+          <td>1.3</td>
+          <td>3.1</td>
+          <td>3.5</td>
+          <td>3.5</td>
+          <td>3.6</td>
+          <td>18.2</td>
+          <td>33.2</td>
+        </tr>
+        <tr>
+          <td><strong>Margin %</strong></td>
+          <td>3.8%</td>
+          <td>8.7%</td>
+          <td>9.6%</td>
+          <td>9.6%</td>
+          <td>9.7%</td>
+          <td>9.6%</td>
+          <td>9.0%</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div style="margin-top:20px;" class="metric-grid cols-4">
+      <div class="metric-card">
+        <span class="metric-label">Blended Margin</span>
+        <span class="metric-value green">9.0%</span>
+        <span class="metric-sub">Target: 8.0% | Floor: 6.5%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">NPV (12% WACC)</span>
+        <span class="metric-value">&pound;18.7m</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Payback Period</span>
+        <span class="metric-value">18 months</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Capex Requirement</span>
+        <span class="metric-value">&pound;4.2m</span>
+        <span class="metric-sub">Years 1-2 (technology platform)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 4</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 5 — TORNADO (Risk & Sensitivity)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">09</span>
+      <span class="section-title">Risk &amp; Sensitivity Analysis</span>
+    </div>
+
+    <div class="two-col split-60-40">
+      <div>
+        <div class="sh2" style="margin-bottom:14px;">Margin Sensitivity (Tornado)</div>
+        <p class="bt" style="margin-bottom:14px;font-size:10px;color:var(--t3);">
+          Impact on blended operating margin (9.0% base case). Bar width represents range from realistic downside to realistic upside.
+        </p>
+
+        <div class="tornado-container">
+          <div class="tornado-row">
+            <span class="tornado-label">Volume Risk</span>
+            <div class="tornado-bar-track">
+              <div class="tornado-bar-neg" style="width:18%;"></div>
+              <div class="tornado-bar-pos" style="width:8%;"></div>
+            </div>
+            <span class="tornado-value">&minus;2.4pp</span>
+          </div>
+          <div class="tornado-row">
+            <span class="tornado-label">TUPE &amp; Pensions</span>
+            <div class="tornado-bar-track">
+              <div class="tornado-bar-neg" style="width:14%;"></div>
+              <div class="tornado-bar-pos" style="width:4%;"></div>
+            </div>
+            <span class="tornado-value">&minus;1.8pp</span>
+          </div>
+          <div class="tornado-row">
+            <span class="tornado-label">Subcontractor Costs</span>
+            <div class="tornado-bar-track">
+              <div class="tornado-bar-neg" style="width:11%;"></div>
+              <div class="tornado-bar-pos" style="width:6%;"></div>
+            </div>
+            <span class="tornado-value">&minus;1.2pp</span>
+          </div>
+          <div class="tornado-row">
+            <span class="tornado-label">Technology Platform</span>
+            <div class="tornado-bar-track">
+              <div class="tornado-bar-neg" style="width:9%;"></div>
+              <div class="tornado-bar-pos" style="width:12%;"></div>
+            </div>
+            <span class="tornado-value">+0.8pp</span>
+          </div>
+          <div class="tornado-row">
+            <span class="tornado-label">Service Credits</span>
+            <div class="tornado-bar-track">
+              <div class="tornado-bar-neg" style="width:8%;"></div>
+              <div class="tornado-bar-pos" style="width:3%;"></div>
+            </div>
+            <span class="tornado-value">&minus;0.9pp</span>
+          </div>
+          <div class="tornado-row">
+            <span class="tornado-label">Indexation</span>
+            <div class="tornado-bar-track">
+              <div class="tornado-bar-neg" style="width:6%;"></div>
+              <div class="tornado-bar-pos" style="width:7%;"></div>
+            </div>
+            <span class="tornado-value">&plusmn;0.6pp</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sh2" style="margin-bottom:14px;">Scenario Summary</div>
+        <table class="compact">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th style="text-align:right;">Margin</th>
+              <th style="text-align:right;">NPV</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Practical Best</td>
+              <td style="text-align:right;">11.2%</td>
+              <td style="text-align:right;">&pound;24.1m</td>
+            </tr>
+            <tr>
+              <td>Realistic Upside</td>
+              <td style="text-align:right;">10.1%</td>
+              <td style="text-align:right;">&pound;21.3m</td>
+            </tr>
+            <tr>
+              <td><strong>Base Case</strong></td>
+              <td style="text-align:right;"><strong>9.0%</strong></td>
+              <td style="text-align:right;"><strong>&pound;18.7m</strong></td>
+            </tr>
+            <tr>
+              <td>Realistic Downside</td>
+              <td style="text-align:right;">6.3%</td>
+              <td style="text-align:right;">&pound;11.2m</td>
+            </tr>
+            <tr>
+              <td>Practical Worst</td>
+              <td style="text-align:right;">3.1%</td>
+              <td style="text-align:right;">&pound;4.8m</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="cd" style="margin-top:16px;">
+          <div class="sl">Risk Commentary</div>
+          <p class="bt" style="margin-top:8px;">Volume risk dominates the downside. A 15% shortfall in Year 1 transaction volumes (against the client's demand forecast) erodes margin by 2.4pp. The TUPE exposure is bounded at &pound;2.3m but pension deficit risk remains unquantified pending actuarial review.</p>
+          <p class="bt">Technology investment creates the only material upside beyond base case, with predictive maintenance delivering cost avoidance from Year 3.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 5</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 6 — RAG MATRIX (Legal & Commercial Terms)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">11</span>
+      <span class="section-title">Legal &amp; Commercial Terms</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:160px;">Legal Area</th>
+          <th>Client Position</th>
+          <th>Our Position</th>
+          <th style="width:80px;text-align:center;">Status</th>
+          <th>Negotiation Strategy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Liability Cap</strong></td>
+          <td>Unlimited liability for all breaches</td>
+          <td>Cap at 150% ACV for general; unlimited for death/PI, fraud, IP</td>
+          <td class="rag-cell rag-red">RED</td>
+          <td>Escalate to BAFO. Non-negotiable &mdash; must be resolved before submission.</td>
+        </tr>
+        <tr>
+          <td><strong>Termination for Convenience</strong></td>
+          <td>6 months notice, no compensation</td>
+          <td>12 months notice + stranded cost recovery</td>
+          <td class="rag-cell rag-amber">AMBER</td>
+          <td>Accept 6 months if stranded cost mechanism included. Draft counter-clause prepared.</td>
+        </tr>
+        <tr>
+          <td><strong>Performance Regime</strong></td>
+          <td>Service credits capped at 15% monthly invoice</td>
+          <td>Acceptable &mdash; aligned to similar contracts</td>
+          <td class="rag-cell rag-green">GREEN</td>
+          <td>Accept as drafted. Ensure PI targets are achievable (see Section 12).</td>
+        </tr>
+        <tr>
+          <td><strong>TUPE &amp; Pensions</strong></td>
+          <td>Full TUPE applies; pension risk with transferor</td>
+          <td>Require pension deficit indemnity from client</td>
+          <td class="rag-cell rag-red">RED</td>
+          <td>Pension deficit exposure unquantified. Require actuarial report before commitment.</td>
+        </tr>
+        <tr>
+          <td><strong>IP &amp; Data Rights</strong></td>
+          <td>All IP developed under contract vests in Crown</td>
+          <td>Background IP retained; foreground IP licensed</td>
+          <td class="rag-cell rag-amber">AMBER</td>
+          <td>Standard MOD position. Accept for bespoke; retain licence for platform IP.</td>
+        </tr>
+        <tr>
+          <td><strong>Insurance</strong></td>
+          <td>PI &pound;10m, PL &pound;25m, EL &pound;10m</td>
+          <td>Within existing group cover</td>
+          <td class="rag-cell rag-green">GREEN</td>
+          <td>Confirmed with Group Insurance. No incremental cost.</td>
+        </tr>
+        <tr>
+          <td><strong>Change in Law</strong></td>
+          <td>General change in law: contractor risk</td>
+          <td>Discriminatory/specific CIL: client risk</td>
+          <td class="rag-cell rag-green">GREEN</td>
+          <td>Standard HMG position. Acceptable with costed risk provision.</td>
+        </tr>
+        <tr>
+          <td><strong>Subcontractor Flow-Down</strong></td>
+          <td>Back-to-back on all material terms</td>
+          <td>Agreed in principle; Honeywell ICA limits exposure</td>
+          <td class="rag-cell rag-amber">AMBER</td>
+          <td>Honeywell ICA caps their liability at contract value. Gap accepted in risk provision.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:16px;display:flex;gap:24px;">
+      <div class="ic-trigger triggered">2 Red Terms &mdash; Escalation Required</div>
+      <div style="font-size:10px;color:var(--t2);padding-top:4px;">Legal review lead: Sarah Chen, Group Legal &mdash; last updated 2 Apr 2026</div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 6</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 7 — ACTION TRACKER (Previous Gate Actions)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">03</span>
+      <span class="section-title">Actions from Previous Gate</span>
+    </div>
+
+    <p class="bt" style="margin-bottom:16px;">The following actions were raised at the Gate 3 Solution Review on 12 February 2026. Status as at pack generation date.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:50px;">Ref</th>
+          <th>Action</th>
+          <th style="width:120px;">Owner</th>
+          <th style="width:90px;">Due Date</th>
+          <th style="width:80px;text-align:center;">Status</th>
+          <th>Evidence / Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>G3-01</td>
+          <td>Complete actuarial assessment of pension deficit exposure for TUPE transfer population</td>
+          <td>James Ward (HR)</td>
+          <td>15 Mar 2026</td>
+          <td style="text-align:center;"><span class="badge badge-overdue">Overdue</span></td>
+          <td>Actuarial firm engaged but report delayed. Revised ETA: 10 Apr 2026. <strong>Critical path for submission.</strong></td>
+        </tr>
+        <tr>
+          <td>G3-02</td>
+          <td>Obtain signed ICA from Honeywell covering BMS platform integration and SLA pass-through</td>
+          <td>Maria Santos (Commercial)</td>
+          <td>28 Feb 2026</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Closed</span></td>
+          <td>ICA signed 24 Feb 2026. Filed in commercial workstream. Liability cap: contract value.</td>
+        </tr>
+        <tr>
+          <td>G3-03</td>
+          <td>Confirm security clearance status for all named personnel in the bid</td>
+          <td>Tom Fletcher (Security)</td>
+          <td>01 Mar 2026</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Closed</span></td>
+          <td>12 of 14 cleared. 2 pending (DV level) &mdash; expected by 20 Apr. Mitigated by named alternates.</td>
+        </tr>
+        <tr>
+          <td>G3-04</td>
+          <td>Price the social value programme and confirm apprenticeship levy treatment</td>
+          <td>Rachel Liu (Finance)</td>
+          <td>10 Mar 2026</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Closed</span></td>
+          <td>Costed at &pound;1.8m over contract term. Levy transfer mechanism confirmed with HMRC guidance.</td>
+        </tr>
+        <tr>
+          <td>G3-05</td>
+          <td>Resolve liability cap position with Group Legal and confirm red line for BAFO</td>
+          <td>Sarah Chen (Legal)</td>
+          <td>20 Mar 2026</td>
+          <td style="text-align:center;"><span class="badge badge-open">Open</span></td>
+          <td>Group Legal position confirmed (150% ACV cap). Awaiting client response to BAFO negotiation.</td>
+        </tr>
+        <tr>
+          <td>G3-06</td>
+          <td>Complete red team review of technical response volumes</td>
+          <td>David Park (Bid Manager)</td>
+          <td>25 Mar 2026</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Closed</span></td>
+          <td>Red team completed 22 Mar. 14 actions raised, 11 resolved, 3 in progress (non-critical).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:20px;display:flex;gap:24px;align-items:center;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="badge badge-closed">Closed</span>
+        <span style="font-size:11px;color:var(--t2);">4 of 6</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="badge badge-open">Open</span>
+        <span style="font-size:11px;color:var(--t2);">1 of 6</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="badge badge-overdue">Overdue</span>
+        <span style="font-size:11px;color:var(--t2);">1 of 6</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 7</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 8 — DATA TABLE (Functional Sign-Off Control Sheet)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">17</span>
+      <span class="section-title">Functional Sign-Off Control Sheet</span>
+    </div>
+
+    <p class="bt" style="margin-bottom:16px;">Each functional area must confirm review and approval before submission. Unsigned areas will be escalated to the Bid Review Board.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Functional Area</th>
+          <th>Signatory</th>
+          <th>Role</th>
+          <th style="width:100px;text-align:center;">Signed</th>
+          <th style="width:100px;">Date</th>
+          <th>Conditions / Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Finance</strong></td>
+          <td>Rachel Liu</td>
+          <td>Divisional FD</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>3 Apr 2026</td>
+          <td>Subject to pension actuarial confirmation</td>
+        </tr>
+        <tr>
+          <td><strong>Commercial</strong></td>
+          <td>Maria Santos</td>
+          <td>Commercial Director</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>3 Apr 2026</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td><strong>Legal</strong></td>
+          <td>Sarah Chen</td>
+          <td>Group Legal Counsel</td>
+          <td style="text-align:center;"><span class="badge badge-open">Pending</span></td>
+          <td>&mdash;</td>
+          <td>Withheld pending liability cap resolution</td>
+        </tr>
+        <tr>
+          <td><strong>Operations</strong></td>
+          <td>Michael Osei</td>
+          <td>Operations Director</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>2 Apr 2026</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td><strong>Transformation</strong></td>
+          <td>Priya Sharma</td>
+          <td>Head of Transition</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>1 Apr 2026</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td><strong>Risk</strong></td>
+          <td>Andrew Bell</td>
+          <td>Divisional Risk Manager</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>3 Apr 2026</td>
+          <td>Conditional on TUPE actuarial report</td>
+        </tr>
+        <tr>
+          <td><strong>HR / People</strong></td>
+          <td>James Ward</td>
+          <td>HR Director</td>
+          <td style="text-align:center;"><span class="badge badge-open">Pending</span></td>
+          <td>&mdash;</td>
+          <td>Awaiting actuarial assessment (G3-01)</td>
+        </tr>
+        <tr>
+          <td><strong>IT Security</strong></td>
+          <td>Tom Fletcher</td>
+          <td>CISO</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>28 Mar 2026</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td><strong>Insurance</strong></td>
+          <td>Karen Mills</td>
+          <td>Group Insurance Manager</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>25 Mar 2026</td>
+          <td>Within existing group cover</td>
+        </tr>
+        <tr>
+          <td><strong>Treasury</strong></td>
+          <td>Robert Hayes</td>
+          <td>Group Treasurer</td>
+          <td style="text-align:center;"><span class="badge badge-closed">Signed</span></td>
+          <td>1 Apr 2026</td>
+          <td>&mdash;</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:16px;display:flex;gap:24px;align-items:center;">
+      <div style="font-size:11px;color:var(--t2);"><strong>8 of 10</strong> functional areas signed off</div>
+      <div class="ic-trigger triggered">2 Pending &mdash; Legal, HR</div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 8</span>
+  </div>
+</div>
+
+
+<!-- ==========================================================
+     PAGE 9 — NARRATIVE (Recommendation & Approval Sought)
+     ========================================================== -->
+<div class="page watermark">
+  <div class="page-hdr">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span class="page-hdr-brand">BidEquity</span>
+      <span class="page-hdr-product">Governance</span>
+    </div>
+    <div class="page-hdr-meta">
+      <span>National Infrastructure Managed Services</span>
+      <span class="gate-label">Gate 4</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="section-strip">
+      <span class="section-num">16</span>
+      <span class="section-title">Recommendation &amp; Approval Sought</span>
+    </div>
+
+    <div class="two-col" style="gap:40px;">
+      <div>
+        <div class="sh2">Recommendation</div>
+        <p class="bt">The Bid Director recommends <strong>conditional approval to submit</strong>, subject to the resolution of two outstanding items before the submission deadline of 28 April 2026:</p>
+
+        <div style="margin:16px 0;">
+          <div class="cd" style="border-left:3px solid var(--red);margin-bottom:12px;">
+            <p class="bt"><strong>Condition 1:</strong> Pension actuarial report must be received and financial impact incorporated into the bid model before submission. Owner: James Ward. Deadline: 10 April 2026.</p>
+          </div>
+          <div class="cd" style="border-left:3px solid var(--red);margin-bottom:12px;">
+            <p class="bt"><strong>Condition 2:</strong> Liability cap position must be confirmed through BAFO negotiation. If the client does not accept the 150% ACV cap, the matter must return to the Bid Review Board before submission. Owner: Sarah Chen. Deadline: 18 April 2026.</p>
+          </div>
+        </div>
+
+        <p class="bt">If both conditions are met, the bid may proceed to submission without further gate review. If either condition is not met, the Bid Director will convene an emergency BRB session.</p>
+      </div>
+
+      <div>
+        <div class="sh2">Approval Sought</div>
+        <div class="cd" style="margin-bottom:16px;background:var(--gold-d);">
+          <p class="bt" style="margin-bottom:10px;"><strong>The Board is asked to approve:</strong></p>
+          <p class="bt" style="margin-bottom:6px;">1. Conditional authority to submit the tender response by 28 April 2026</p>
+          <p class="bt" style="margin-bottom:6px;">2. Price submission at &pound;369.5m TCV (9.0% blended margin)</p>
+          <p class="bt" style="margin-bottom:6px;">3. Capex commitment of &pound;4.2m for technology platform investment</p>
+          <p class="bt" style="margin-bottom:6px;">4. Delegation to Bid Director to authorise final submission once conditions are met</p>
+        </div>
+
+        <div class="sh2">Decision</div>
+        <div class="cd">
+          <table class="compact" style="margin:0;">
+            <tbody>
+              <tr>
+                <td style="width:120px;"><strong>Decision</strong></td>
+                <td class="awaiting-input">[Awaiting Board Decision]</td>
+              </tr>
+              <tr>
+                <td><strong>Chair</strong></td>
+                <td class="awaiting-input">[Awaiting Input]</td>
+              </tr>
+              <tr>
+                <td><strong>Date</strong></td>
+                <td class="awaiting-input">[Awaiting Input]</td>
+              </tr>
+              <tr>
+                <td><strong>Conditions</strong></td>
+                <td class="awaiting-input">[Awaiting Input]</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-ftr">
+    <span class="classification">Commercial in Confidence</span>
+    <span>Generated 5 Apr 2026 09:14 UTC</span>
+    <span>Page 9</span>
+  </div>
+</div>
+
+
+</body>
+</html>
