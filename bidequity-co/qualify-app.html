@@ -1390,6 +1390,9 @@ body {
 })();
 
 // ══════════════════════════════════════════════════════════════
+// API ENDPOINT — change this to your Cloudflare Worker URL after deployment
+const AI_REVIEW_URL = 'https://bidequity-ai-review.YOURNAME.workers.dev';
+
 // DATA
 // ══════════════════════════════════════════════════════════════
 const CATS = [
@@ -2298,7 +2301,7 @@ async function runSingleReview(idx) {
   var userPrompt = 'PURSUIT CONTEXT:\n' + contextBlock + '\n\nQUESTION BEING REVIEWED:\nQuestion: ' + q.text + '\nCategory: ' + CATS.find(function(c) { return c.id===q.cat; }).name + ' | Topic: ' + q.topic + '\nClaimed Score: ' + pos + '\nEvidence: ' + ev + '\nScoring Rubric:\n' + rubricText + '\nInflation signals to watch: ' + q.signals.join(', ');
 
   try {
-    var resp = await fetch("/.netlify/functions/ai-review", {
+    var resp = await fetch(AI_REVIEW_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -2434,7 +2437,7 @@ async function runFullReport() {
   var userPrompt = 'PURSUIT CONTEXT:\n' + contextBlock + '\n\nASSESSMENT RESULTS:\nPursuit Phase: ' + phase + '\nOverall PWIN: ' + Math.round(pwin*100) + '% (Target: 75%)\nQuestions Answered: ' + answered + '/24\nAI Reviews Completed: ' + getReviewed() + '\nChallenges Flagged: ' + getChallenged() + '\n\nCategory Scores:\n' + scoreSummary + '\n\nScored Questions with Evidence:\n' + questionSummary;
 
   try {
-    var resp = await fetch("/.netlify/functions/ai-review", {
+    var resp = await fetch(AI_REVIEW_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
