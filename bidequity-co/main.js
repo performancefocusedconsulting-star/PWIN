@@ -68,6 +68,60 @@
     });
   }
 
-  handleFormSubmit('qualify-registration', 'form-success');
+  // Qualify form — special handling: store registration + redirect to tool
+  (function () {
+    var form = document.getElementById('qualify-registration');
+    var success = document.getElementById('form-success');
+    if (!form || !success) return;
+
+    // If already registered, show direct link to tool
+    var existing = localStorage.getItem('bidequity_qualify_user');
+    if (existing) {
+      form.hidden = true;
+      success.hidden = false;
+      success.innerHTML = '<h3 class="color-teal mb-16">Welcome back.</h3>'
+        + '<p class="text-muted mb-16">You\'re already registered.</p>'
+        + '<a href="qualify-app.html" class="btn">Launch Qualification Tool</a>';
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var data = new FormData(form);
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Starting...'; }
+
+      // Store registration in localStorage
+      var userData = {
+        firstName: data.get('first-name'),
+        lastName: data.get('last-name'),
+        email: data.get('email'),
+        company: data.get('company'),
+        role: data.get('role'),
+        sector: data.get('sector'),
+        contractValue: data.get('contract-value'),
+        registeredAt: new Date().toISOString()
+      };
+      localStorage.setItem('bidequity_qualify_user', JSON.stringify(userData));
+
+      // Submit to Netlify forms for lead capture
+      fetch('/', {
+        method: 'POST',
+        body: new URLSearchParams(data).toString(),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).then(function (response) {
+        // Redirect to tool regardless of Netlify form success
+        // (don't block the user experience on form submission)
+        form.hidden = true;
+        success.hidden = false;
+        setTimeout(function () { window.location.href = 'qualify-app.html'; }, 800);
+      }).catch(function () {
+        // Still redirect even if Netlify form fails — user data is in localStorage
+        form.hidden = true;
+        success.hidden = false;
+        setTimeout(function () { window.location.href = 'qualify-app.html'; }, 800);
+      });
+    });
+  })();
+
   handleFormSubmit('contact-form', 'contact-success');
 })();
