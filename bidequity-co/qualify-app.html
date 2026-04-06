@@ -1096,10 +1096,25 @@ body {
     <!-- Your Organisation -->
     <div class="ctx-section-title">Your Organisation</div>
     <div class="ctx-grid" style="margin-bottom:28px;">
-      <div class="ctx-field ctx-grid-full">
+      <div class="ctx-field">
         <label class="ctx-label">Your Company Name <span class="ctx-required">*</span></label>
         <input class="ctx-input" id="ctx-bidder" type="text" placeholder="e.g. Serco, Capita, Deloitte" oninput="onCtxChange()">
-        <span class="ctx-hint">Your organisation — the company pursuing this opportunity. Used for competitive analysis.</span>
+        <span class="ctx-hint">The company pursuing this opportunity. Helps the AI identify you for competitive analysis.</span>
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Your Primary Sector <span class="ctx-optional">(optional)</span></label>
+        <select class="ctx-select" id="ctx-bidder-sector" onchange="onCtxChange()">
+          <option value="">-- Select --</option>
+          <option>BPO / Outsourcing</option>
+          <option>Systems Integration</option>
+          <option>Consulting / Advisory</option>
+          <option>Technology / Digital</option>
+          <option>Defence / Aerospace</option>
+          <option>Facilities / Support Services</option>
+          <option>Professional Services</option>
+          <option>Other</option>
+        </select>
+        <span class="ctx-hint">Helps the AI understand what kind of organisation you are — e.g. distinguishes a boutique consultancy from a major outsourcer.</span>
       </div>
     </div>
 
@@ -1232,7 +1247,7 @@ body {
     </div>
 
     <div style="margin-top:20px;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);font-size:11px;color:var(--slate);line-height:1.7;">
-      <strong style="color:var(--navy);">Data privacy.</strong> Your pursuit data is processed entirely in your browser and is not stored on our servers. When you generate the AI Assurance Report, your scores and evidence are sent to the Claude AI API for analysis and are not retained after processing. No bid-sensitive data is stored by BidEquity. Close this tab and your data is gone. The downloaded PDF report is yours alone.
+      <strong style="color:var(--navy);">Data privacy.</strong> Your pursuit data is processed entirely in your browser and is not stored on our servers. When you generate the AI Assurance Report, your scores and evidence are processed by AI for analysis and are not retained. No bid-sensitive data is stored by BidEquity. Close this tab and your data is gone. The downloaded PDF report is yours alone.
     </div>
 
   </div>
@@ -1395,6 +1410,17 @@ body {
       var bidderField = document.getElementById('ctx-bidder');
       if (bidderField && regData && (regData.organisation || regData.company)) {
         bidderField.value = regData.organisation || regData.company;
+      }
+      var bidderSectorField = document.getElementById('ctx-bidder-sector');
+      if (bidderSectorField && regData && regData.sector) {
+        // Try to match registration sector to dropdown options
+        var opts = bidderSectorField.options;
+        for (var oi = 0; oi < opts.length; oi++) {
+          if (opts[oi].text.toLowerCase().includes(regData.sector.toLowerCase()) ||
+              regData.sector.toLowerCase().includes(opts[oi].text.toLowerCase().split('/')[0].trim())) {
+            bidderSectorField.selectedIndex = oi; break;
+          }
+        }
       }
     } catch(e) {}
     return;
@@ -1581,7 +1607,7 @@ const state = {
   selectedReviewIdx: null,
   radarChart: null,
   context: {
-    bidder: '', org: '', opp: '', sector: '', tcv: '', oppType: '',
+    bidder: '', bidderSector: '', org: '', opp: '', sector: '', tcv: '', oppType: '',
     route: '', stage: '', incumbent: '', bnb: '', competitors: '', importance: ''
   },
   contextComplete: false,
@@ -1607,6 +1633,7 @@ function formatTCV(el) {
 
 function onCtxChange() {
   state.context.bidder      = document.getElementById('ctx-bidder').value.trim();
+  state.context.bidderSector= document.getElementById('ctx-bidder-sector').value;
   state.context.org         = document.getElementById('ctx-org').value.trim();
   state.context.opp         = document.getElementById('ctx-opp').value.trim();
   state.context.sector      = document.getElementById('ctx-sector').value;
@@ -1688,7 +1715,7 @@ function requireContext(e, target) {
 function getContextBlock() {
   var c = state.context;
   var lines = [
-    'Bidding Organisation: ' + c.bidder,
+    'Bidding Organisation: ' + c.bidder + (c.bidderSector ? ' (' + c.bidderSector + ')' : ''),
     'Client Organisation: ' + c.org,
     'Opportunity: ' + c.opp,
     'Sector: ' + c.sector,
@@ -2817,6 +2844,7 @@ function switchView(id) {
   document.getElementById('view-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
   if (id === 'dashboard') updateDashboard();
+  window.scrollTo(0, 0);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2881,6 +2909,7 @@ function restoreSession(data) {
 
   var fieldMap = {
     'ctx-bidder':     'bidder',
+    'ctx-bidder-sector': 'bidderSector',
     'ctx-org':        'org',
     'ctx-opp':        'opp',
     'ctx-sector':     'sector',
