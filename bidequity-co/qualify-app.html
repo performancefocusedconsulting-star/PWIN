@@ -1087,11 +1087,21 @@ body {
       <div style="font-size:13px;color:var(--slate);line-height:1.6;">Complete this before beginning the assessment. These details calibrate the AI scoring thresholds, challenge questions, and assurance report to your specific opportunity.</div>
     </div>
 
+    <!-- Your Organisation -->
+    <div class="ctx-section-title">Your Organisation</div>
+    <div class="ctx-grid" style="margin-bottom:28px;">
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Your Company Name <span class="ctx-required">*</span></label>
+        <input class="ctx-input" id="ctx-bidder" type="text" placeholder="e.g. Serco, Capita, Deloitte" oninput="onCtxChange()">
+        <span class="ctx-hint">Your organisation — the company pursuing this opportunity. Used for competitive analysis.</span>
+      </div>
+    </div>
+
     <!-- Opportunity -->
     <div class="ctx-section-title">Opportunity</div>
     <div class="ctx-grid" style="margin-bottom:28px;">
       <div class="ctx-field ctx-grid-full">
-        <label class="ctx-label">Organisation (Client) <span class="ctx-required">*</span></label>
+        <label class="ctx-label">Client Organisation <span class="ctx-required">*</span></label>
         <input class="ctx-input" id="ctx-org" type="text" placeholder="e.g. Home Office, Metropolitan Police, NHS England" oninput="onCtxChange()">
         <span class="ctx-hint">The client organisation you are bidding to.</span>
       </div>
@@ -1358,12 +1368,25 @@ body {
 // ══════════════════════════════════════════════════════════════
 (function initRegistration() {
   const STORAGE_KEY = 'bidequity:qualify:registration';
-  const existing = localStorage.getItem(STORAGE_KEY);
+  // Check both keys — website qualify.html uses 'bidequity_qualify_user', app uses STORAGE_KEY
+  const existing = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('bidequity_qualify_user');
 
   if (existing) {
-    // Already registered — show the app
+    // Already registered (from either website form or app form) — show the app
+    // Copy to app key if it came from website key
+    if (!localStorage.getItem(STORAGE_KEY) && existing) {
+      localStorage.setItem(STORAGE_KEY, existing);
+    }
     document.getElementById('registration-gate').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
+    // Pre-fill bidder company from registration data
+    try {
+      var regData = JSON.parse(existing);
+      var bidderField = document.getElementById('ctx-bidder');
+      if (bidderField && regData && (regData.organisation || regData.company)) {
+        bidderField.value = regData.organisation || regData.company;
+      }
+    } catch(e) {}
     return;
   }
 
@@ -1548,7 +1571,7 @@ const state = {
   selectedReviewIdx: null,
   radarChart: null,
   context: {
-    org: '', opp: '', sector: '', tcv: '', oppType: '',
+    bidder: '', org: '', opp: '', sector: '', tcv: '', oppType: '',
     route: '', stage: '', incumbent: '', bnb: '', competitors: '', importance: ''
   },
   contextComplete: false,
@@ -1557,7 +1580,7 @@ const state = {
 // ══════════════════════════════════════════════════════════════
 // PURSUIT CONTEXT
 // ══════════════════════════════════════════════════════════════
-const CTX_REQUIRED = ['org','opp','sector','tcv','oppType','route','stage','incumbent'];
+const CTX_REQUIRED = ['bidder','org','opp','sector','tcv','oppType','route','stage','incumbent'];
 
 function formatTCV(el) {
   var raw = el.value.replace(/[^0-9.]/g, '');
@@ -1573,6 +1596,7 @@ function formatTCV(el) {
 }
 
 function onCtxChange() {
+  state.context.bidder      = document.getElementById('ctx-bidder').value.trim();
   state.context.org         = document.getElementById('ctx-org').value.trim();
   state.context.opp         = document.getElementById('ctx-opp').value.trim();
   state.context.sector      = document.getElementById('ctx-sector').value;
@@ -1654,7 +1678,8 @@ function requireContext(e, target) {
 function getContextBlock() {
   var c = state.context;
   var lines = [
-    'Organisation: ' + c.org,
+    'Bidding Organisation: ' + c.bidder,
+    'Client Organisation: ' + c.org,
     'Opportunity: ' + c.opp,
     'Sector: ' + c.sector,
     'Opportunity Type: ' + c.oppType,
@@ -2465,7 +2490,7 @@ async function runFullReport() {
   var btn = document.getElementById('btn-full-report') || document.getElementById('btn-dash-report');
   if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Reviewing all questions\u2026'; }
 
-  var area = document.getElementById('full-report-area') || document.getElementById('dash-report-area');
+  var area = document.getElementById('dash-report-area') || document.getElementById('full-report-area');
   if (!area) return;
 
   var pwin = getPWIN();
@@ -2712,7 +2737,7 @@ async function runFullReport() {
 }
 
 function downloadReportPDF() {
-  var reportCard = document.querySelector('#full-report-area .report-card') || document.querySelector('#dash-report-area .report-card');
+  var reportCard = document.querySelector('#dash-report-area .report-card') || document.querySelector('#full-report-area .report-card');
   if (!reportCard) { alert('No report generated yet.'); return; }
 
   // Build a standalone HTML document for printing
@@ -2845,6 +2870,7 @@ function restoreSession(data) {
   state.reviews   = data.reviews   || {};
 
   var fieldMap = {
+    'ctx-bidder':     'bidder',
     'ctx-org':        'org',
     'ctx-opp':        'opp',
     'ctx-sector':     'sector',
