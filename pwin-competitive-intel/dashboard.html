@@ -987,7 +987,7 @@ async function loadPipeline() {
         <td>${truncate(n.title, 60)}</td>
         <td class="num">${fmtCurrency(n.estimated_value)}</td>
         <td class="mono">${fmtDate(n.engagement_deadline)}</td>
-        <td class="mono">${fmtDate(n.tender_due)}</td>
+        <td class="mono">${fmtDate(n.future_notice_date)}</td>
       </tr>`).join('');
     document.getElementById('pipelineTable').innerHTML = rows ||
       '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px">No forward pipeline notices found</td></tr>';
