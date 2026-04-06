@@ -23,7 +23,7 @@
   --amber:      #f39c12;
   --red:        #e74c3c;
   --border:     rgba(201,168,76,0.12);
-  --border-row: rgba(255,255,255,0.04);
+  --border-row: rgba(255,255,255,0.10);
 
   --font-display: 'Cormorant Garamond', serif;
   --font-body:    'DM Sans', sans-serif;
@@ -177,6 +177,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  table-layout: fixed;
 }
 thead th {
   font-family: var(--font-mono);
@@ -194,7 +195,11 @@ tbody td {
   border-bottom: 1px solid var(--border-row);
   color: var(--text);
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+tbody td:hover { white-space: normal; word-break: break-word; }
 tbody tr { transition: background 0.15s; }
 tbody tr:hover { background: var(--bg-hover); }
 td.num {
@@ -500,9 +505,9 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Buyer</th><th>Supplier</th><th>Title</th>
-            <th style="text-align:right">Value</th><th style="text-align:right">Days Left</th>
-            <th>Method</th><th>End Date</th>
+            <th style="width:18%">Buyer</th><th style="width:18%">Supplier</th><th style="width:24%">Title</th>
+            <th style="text-align:right;width:10%">Value</th><th style="text-align:right;width:8%">Days Left</th>
+            <th style="width:10%">Method</th><th style="width:12%">End Date</th>
           </tr></thead>
           <tbody id="expiryTable"></tbody>
         </table>
@@ -521,9 +526,9 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Buyer</th><th>Title</th>
-            <th style="text-align:right">Est. Value</th>
-            <th>Engagement Deadline</th><th>Tender Due</th>
+            <th style="width:22%">Buyer</th><th style="width:32%">Title</th>
+            <th style="text-align:right;width:14%">Est. Value</th>
+            <th style="width:16%">Engagement Deadline</th><th style="width:16%">Tender Due</th>
           </tr></thead>
           <tbody id="pipelineTable"></tbody>
         </table>
@@ -785,7 +790,13 @@ async function loadBuyerDirect(name) {
   showLoading('buyerResults');
   try {
     const data = await apiFetch('buyer', { name });
-    renderBuyerProfile(data);
+    const match = (data.buyers || []).find(b => b.name === name) || (data.buyers || [])[0];
+    if (match) {
+      renderBuyerProfile(match);
+    } else {
+      document.getElementById('buyerResults').innerHTML = `
+        <div class="empty-state"><h3>No results</h3><p>No buyer matching "${name}" found.</p></div>`;
+    }
   } catch (e) { showError('buyerResults'); }
 }
 
@@ -892,7 +903,14 @@ async function loadSupplierDirect(name) {
   showLoading('supplierResults');
   try {
     const data = await apiFetch('supplier', { name });
-    renderSupplierProfile(data);
+    // Find the exact match from results, or take first
+    const match = (data.suppliers || []).find(s => s.name === name) || (data.suppliers || [])[0];
+    if (match) {
+      renderSupplierProfile(match);
+    } else {
+      document.getElementById('supplierResults').innerHTML = `
+        <div class="empty-state"><h3>No results</h3><p>No supplier matching "${name}" found.</p></div>`;
+    }
   } catch (e) { showError('supplierResults'); }
 }
 
