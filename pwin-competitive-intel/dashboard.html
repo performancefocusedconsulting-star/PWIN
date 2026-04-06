@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWIN Competitive Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── DESIGN TOKENS ──────────────────────────────────────────── */
+:root {
+  --bg-deep:    #0a1628;
+  --bg-mid:     #0f1d32;
+  --bg-card:    #162544;
+  --bg-hover:   #1c2f54;
+  --gold:       #c9a84c;
+  --gold-light: #d4b95e;
+  --gold-dim:   rgba(201,168,76,0.15);
+  --text:       #e8e0d0;
+  --text-bright:#ffffff;
+  --text-muted: #8a9ab5;
+  --green:      #2ecc71;
+  --amber:      #f39c12;
+  --red:        #e74c3c;
+  --border:     rgba(201,168,76,0.12);
+  --border-row: rgba(255,255,255,0.04);
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --radius:     8px;
+  --radius-lg:  12px;
+  --shadow:     0 4px 24px rgba(0,0,0,0.3);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.header {
+  background: var(--bg-mid);
+  border-bottom: 2px solid var(--gold);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left { display: flex; align-items: baseline; gap: 16px; }
+.header h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.5px;
+}
+.header h1 span { color: var(--gold); }
+.header-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.header-meta .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+}
+.header-meta.offline .dot { background: var(--red); }
+
+/* ── TABS ───────────────────────────────────────────────────── */
+.tabs {
+  background: var(--bg-mid);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.tab {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tab:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+.tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ── MAIN CONTENT ───────────────────────────────────────────── */
+.main { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+
+.view { display: none; animation: fadeIn 0.3s ease; }
+.view.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CARDS & PANELS ─────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.card-title span { color: var(--gold); font-weight: 700; }
+
+/* ── STAT GRID ──────────────────────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-box {
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.stat-box:hover { border-color: var(--gold-dim); }
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+}
+
+/* ── TABLES ─────────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-row);
+  color: var(--text);
+  vertical-align: middle;
+}
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: var(--bg-hover); }
+td.num {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-bright);
+  text-align: right;
+}
+td.mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ── SEARCH ─────────────────────────────────────────────────── */
+.search-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.search-bar input {
+  flex: 1;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  color: var(--text-bright);
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+.search-bar input:focus { border-color: var(--gold); }
+.search-bar button, .btn {
+  background: var(--gold);
+  color: var(--bg-deep);
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search-bar button:hover, .btn:hover { background: var(--gold-light); }
+
+/* ── FILTERS ────────────────────────────────────────────────── */
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: var(--bg-mid);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.filter-group { display: flex; flex-direction: column; gap: 4px; }
+.filter-group label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.filter-group input, .filter-group select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: var(--text-bright);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+.filter-group input:focus, .filter-group select:focus { border-color: var(--gold); }
+.filter-group select option { background: var(--bg-card); }
+
+/* ── VISUAL BARS ────────────────────────────────────────────── */
+.proc-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 120px;
+  background: rgba(255,255,255,0.05);
+}
+.proc-bar .seg { height: 100%; transition: width 0.4s ease; }
+.seg-open     { background: var(--green); }
+.seg-limited  { background: #3498db; }
+.seg-direct   { background: var(--amber); }
+.seg-selective { background: #9b59b6; }
+
+.proc-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.proc-legend .swatch {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ── URGENCY BADGES ─────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-red    { background: rgba(231,76,60,0.15); color: var(--red); }
+.badge-amber  { background: rgba(243,156,18,0.15); color: var(--amber); }
+.badge-green  { background: rgba(46,204,113,0.15); color: var(--green); }
+
+/* ── EMPTY / ERROR STATES ───────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.empty-state p { font-size: 13px; max-width: 400px; margin: 0 auto; }
+.empty-state code {
+  font-family: var(--font-mono);
+  background: var(--bg-card);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--gold);
+}
+
+/* ── LOADING ────────────────────────────────────────────────── */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TWO-COL LAYOUT ─────────────────────────────────────────── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── SCROLLABLE TABLE ───────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+
+/* ── RANGE SLIDER ───────────────────────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  background: var(--bg-card);
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  width: 140px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-left">
+    <h1><span>PWIN</span> Competitive Intelligence</h1>
+  </div>
+  <div class="header-meta" id="headerMeta">
+    <span class="dot"></span>
+    <span id="lastIngest">Connecting...</span>
+  </div>
+</header>
+
+<!-- ── TABS ───────────────────────────────────────────────── -->
+<nav class="tabs" id="tabs">
+  <div class="tab active" data-view="summary">Summary</div>
+  <div class="tab" data-view="buyer">Buyer Intelligence</div>
+  <div class="tab" data-view="supplier">Supplier Intelligence</div>
+  <div class="tab" data-view="expiry">Expiry Pipeline</div>
+  <div class="tab" data-view="pipeline">Forward Pipeline</div>
+  <div class="tab" data-view="pwin">PWIN Signals</div>
+</nav>
+
+<!-- ── VIEWS ──────────────────────────────────────────────── -->
+<main class="main">
+
+  <!-- SUMMARY VIEW -->
+  <section class="view active" id="view-summary">
+    <div class="stat-grid" id="summaryStats"></div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Top CPV Categories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CPV Code</th><th>Description</th><th style="text-align:right">Awards</th><th style="text-align:right">Total Value</th></tr></thead>
+            <tbody id="topCpvTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Procurement Methods</div>
+        <div id="summaryMethods"></div>
+        <div style="margin-top:24px">
+          <div class="card-title" style="font-size:16px">Database Coverage</div>
+          <div id="summaryCoverage"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER INTELLIGENCE VIEW -->
+  <section class="view" id="view-buyer">
+    <div class="search-bar">
+      <input type="text" id="buyerSearch" placeholder="Search buyer name (e.g. Ministry of Defence, NHS England)..." />
+      <button onclick="searchBuyer()">Search</button>
+    </div>
+    <div id="buyerResults">
+      <div class="empty-state">
+        <div class="icon">&#x1F3DB;</div>
+        <h3>Buyer Intelligence</h3>
+        <p>Search for a public sector buyer to see their procurement profile, top suppliers, and recent awards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPLIER INTELLIGENCE VIEW -->
+  <section class="view" id="view-supplier">
+    <div class="search-bar">
+      <input type="text" id="supplierSearch" placeholder="Search supplier name (e.g. Serco, Capita, Fujitsu)..." />
+      <button onclick="searchSupplier()">Search</button>
+    </div>
+    <div id="supplierResults">
+      <div class="empty-state">
+        <div class="icon">&#x1F3E2;</div>
+        <h3>Supplier Intelligence</h3>
+        <p>Search for a supplier to see their win record, buyer relationships, and active contracts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPIRY PIPELINE VIEW -->
+  <section class="view" id="view-expiry">
+    <div class="filters">
+      <div class="filter-group">
+        <label>Expiry Window</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="expiryDays" min="30" max="730" value="365" oninput="updateExpiryLabel()" />
+          <span id="expiryDaysLabel" style="font-family:var(--font-mono);font-size:12px;color:var(--gold);min-width:50px;">365 days</span>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Min Value (GBP)</label>
+        <input type="number" id="expiryMinValue" value="0" min="0" step="10000" style="width:120px;" />
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="expiryCategory" style="min-width:160px;">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div style="margin-left:auto;align-self:flex-end;">
+        <button class="btn" onclick="loadExpiry()">Apply Filters</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Contracts Expiring <span id="expiryTitle">within 365 days</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Buyer</th><th>Supplier</th><th>Title</th>
+            <th style="text-align:right">Value</th><th style="text-align:right">Days Left</th>
+            <th>Method</th><th>End Date</th>
+          </tr></thead>
+          <tbody id="expiryTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORWARD PIPELINE VIEW -->
+  <section class="view" id="view-pipeline">
+    <div class="search-bar">
+      <input type="text" id="pipelineBuyer" placeholder="Filter by buyer name (optional)..." />
+      <button onclick="loadPipeline()">Search</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Forward Pipeline &mdash; Planning &amp; Market Engagement Notices</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Buyer</th><th>Title</th>
+            <th style="text-align:right">Est. Value</th>
+            <th>Engagement Deadline</th><th>Tender Due</th>
+          </tr></thead>
+          <tbody id="pipelineTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PWIN SIGNALS VIEW -->
+  <section class="view" id="view-pwin">
+    <div class="search-bar">
+      <input type="text" id="pwinBuyer" placeholder="Filter by buyer name (optional)..." />
+      <input type="text" id="pwinCategory" placeholder="Filter by category (optional)..." style="max-width:260px;" />
+      <button onclick="loadPwin()">Search</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Competition Analysis &mdash; <span>PWIN Signals</span></div>
+      <div style="margin-bottom:12px;">
+        <div class="proc-legend">
+          <span><span class="swatch" style="background:var(--green)"></span>Open</span>
+          <span><span class="swatch" style="background:#3498db"></span>Limited</span>
+          <span><span class="swatch" style="background:var(--amber)"></span>Direct</span>
+          <span><span class="swatch" style="background:#9b59b6"></span>Selective</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Buyer</th><th>Category</th>
+            <th style="text-align:right">Awards</th><th style="text-align:right">Avg Bids</th>
+            <th style="text-align:right">Avg Value</th><th style="min-width:160px">Method Mix</th>
+          </tr></thead>
+          <tbody id="pwinTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ── CONFIGURATION ──────────────────────────────────────────── */
+const API = 'http://localhost:8765/api';
+let apiOnline = false;
+
+/* ── UTILITIES ──────────────────────────────────────────────── */
+function fmtCurrency(v) {
+  if (v == null) return '—';
+  const n = Number(v);
+  if (n >= 1e9) return '£' + (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return '£' + (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '£' + (n / 1e3).toFixed(0) + 'K';
+  return '£' + n.toLocaleString();
+}
+
+function fmtNumber(v) {
+  if (v == null) return '—';
+  return Number(v).toLocaleString();
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function daysUntil(d) {
+  if (!d) return null;
+  const now = new Date();
+  const end = new Date(d);
+  return Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+}
+
+function urgencyBadge(days) {
+  if (days == null) return '<span class="badge badge-green">—</span>';
+  if (days < 90) return `<span class="badge badge-red">${days}d</span>`;
+  if (days < 180) return `<span class="badge badge-amber">${days}d</span>`;
+  return `<span class="badge badge-green">${days}d</span>`;
+}
+
+function procBar(methods) {
+  if (!methods) return '';
+  const total = (methods.open || 0) + (methods.limited || 0) + (methods.direct || 0) + (methods.selective || 0);
+  if (total === 0) return '<div class="proc-bar"></div>';
+  const pct = (v) => ((v || 0) / total * 100).toFixed(1);
+  return `<div class="proc-bar">
+    <div class="seg seg-open" style="width:${pct(methods.open)}%" title="Open: ${methods.open || 0}"></div>
+    <div class="seg seg-limited" style="width:${pct(methods.limited)}%" title="Limited: ${methods.limited || 0}"></div>
+    <div class="seg seg-direct" style="width:${pct(methods.direct)}%" title="Direct: ${methods.direct || 0}"></div>
+    <div class="seg seg-selective" style="width:${pct(methods.selective)}%" title="Selective: ${methods.selective || 0}"></div>
+  </div>`;
+}
+
+function truncate(s, len) {
+  if (!s) return '—';
+  return s.length > len ? s.substring(0, len) + '...' : s;
+}
+
+/* ── API FETCH ──────────────────────────────────────────────── */
+async function apiFetch(endpoint, params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  const url = `${API}/${endpoint}${qs ? '?' + qs : ''}`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    apiOnline = true;
+    updateConnectionStatus(true);
+    return await resp.json();
+  } catch (e) {
+    apiOnline = false;
+    updateConnectionStatus(false);
+    throw e;
+  }
+}
+
+function updateConnectionStatus(online) {
+  const el = document.getElementById('headerMeta');
+  if (online) {
+    el.classList.remove('offline');
+  } else {
+    el.classList.add('offline');
+    document.getElementById('lastIngest').textContent = 'Offline';
+  }
+}
+
+function showError(containerId) {
+  document.getElementById(containerId).innerHTML = `
+    <div class="empty-state">
+      <div class="icon">&#x26A0;</div>
+      <h3>Data Server Unavailable</h3>
+      <p>Could not connect to the API. Start the data server:</p>
+      <p style="margin-top:12px"><code>python server.py</code></p>
+    </div>`;
+}
+
+function showLoading(containerId) {
+  document.getElementById(containerId).innerHTML = `
+    <div class="loading"><div class="spinner"></div>Loading data...</div>`;
+}
+
+/* ── TAB SWITCHING ──────────────────────────────────────────── */
+document.getElementById('tabs').addEventListener('click', (e) => {
+  if (!e.target.classList.contains('tab')) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  e.target.classList.add('active');
+  const viewId = 'view-' + e.target.dataset.view;
+  const view = document.getElementById(viewId);
+  view.classList.add('active');
+  // trigger load on first switch
+  if (e.target.dataset.view === 'expiry' && !view.dataset.loaded) {
+    loadExpiry(); view.dataset.loaded = '1';
+  }
+  if (e.target.dataset.view === 'pipeline' && !view.dataset.loaded) {
+    loadPipeline(); view.dataset.loaded = '1';
+  }
+  if (e.target.dataset.view === 'pwin' && !view.dataset.loaded) {
+    loadPwin(); view.dataset.loaded = '1';
+  }
+});
+
+/* ── SUMMARY VIEW ───────────────────────────────────────────── */
+async function loadSummary() {
+  try {
+    const data = await apiFetch('summary');
+    document.getElementById('lastIngest').textContent = 'Last ingest: ' + fmtDate(data.last_ingest);
+
+    document.getElementById('summaryStats').innerHTML = [
+      { v: fmtNumber(data.buyers), l: 'Buyers' },
+      { v: fmtNumber(data.suppliers), l: 'Suppliers' },
+      { v: fmtNumber(data.notices), l: 'Notices' },
+      { v: fmtNumber(data.awards), l: 'Awards' },
+      { v: fmtCurrency(data.total_value), l: 'Total Value Indexed' },
+    ].map(s => `
+      <div class="stat-box">
+        <div class="stat-value">${s.v}</div>
+        <div class="stat-label">${s.l}</div>
+      </div>`).join('');
+
+    const cpvRows = (data.top_cpv || []).map(c => `
+      <tr>
+        <td class="mono">${c.code}</td>
+        <td>${truncate(c.description, 50)}</td>
+        <td class="num">${fmtNumber(c.awards)}</td>
+        <td class="num">${fmtCurrency(c.value)}</td>
+      </tr>`).join('');
+    document.getElementById('topCpvTable').innerHTML = cpvRows || '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">No data</td></tr>';
+
+    let methHtml = '';
+    if (data.methods) {
+      methHtml += procBar(data.methods);
+      methHtml += `<div class="proc-legend" style="margin-top:12px">
+        <span><span class="swatch" style="background:var(--green)"></span>Open: ${fmtNumber(data.methods.open)}</span>
+        <span><span class="swatch" style="background:#3498db"></span>Limited: ${fmtNumber(data.methods.limited)}</span>
+        <span><span class="swatch" style="background:var(--amber)"></span>Direct: ${fmtNumber(data.methods.direct)}</span>
+        <span><span class="swatch" style="background:#9b59b6"></span>Selective: ${fmtNumber(data.methods.selective)}</span>
+      </div>`;
+    }
+    document.getElementById('summaryMethods').innerHTML = methHtml;
+
+    let covHtml = '';
+    if (data.coverage) {
+      covHtml = `<table>
+        <tbody>
+          <tr><td class="mono">Date Range</td><td>${fmtDate(data.coverage.earliest)} — ${fmtDate(data.coverage.latest)}</td></tr>
+          <tr><td class="mono">CPV Codes</td><td>${fmtNumber(data.coverage.cpv_codes)}</td></tr>
+          <tr><td class="mono">Regions</td><td>${fmtNumber(data.coverage.regions)}</td></tr>
+        </tbody>
+      </table>`;
+    }
+    document.getElementById('summaryCoverage').innerHTML = covHtml;
+  } catch (e) {
+    showError('summaryStats');
+  }
+}
+
+/* ── BUYER INTELLIGENCE ─────────────────────────────────────── */
+document.getElementById('buyerSearch').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') searchBuyer();
+});
+
+async function searchBuyer() {
+  const name = document.getElementById('buyerSearch').value.trim();
+  if (!name) return;
+  showLoading('buyerResults');
+  try {
+    const data = await apiFetch('buyer', { name });
+    if (!data || (!data.name && !data.buyers)) {
+      document.getElementById('buyerResults').innerHTML = `
+        <div class="empty-state"><h3>No results</h3><p>No buyer matching "${name}" found.</p></div>`;
+      return;
+    }
+    // If multiple results returned
+    if (data.buyers && data.buyers.length > 0) {
+      renderBuyerList(data.buyers);
+      return;
+    }
+    renderBuyerProfile(data);
+  } catch (e) {
+    showError('buyerResults');
+  }
+}
+
+function renderBuyerList(buyers) {
+  const rows = buyers.map(b => `
+    <tr style="cursor:pointer" onclick="loadBuyerDirect('${b.name.replace(/'/g, "\\'")}')">
+      <td>${b.name}</td>
+      <td class="num">${fmtNumber(b.awards)}</td>
+      <td class="num">${fmtCurrency(b.total_value)}</td>
+    </tr>`).join('');
+  document.getElementById('buyerResults').innerHTML = `
+    <div class="card"><div class="card-title">Matching Buyers</div>
+      <table><thead><tr><th>Buyer</th><th style="text-align:right">Awards</th><th style="text-align:right">Total Value</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>`;
+}
+
+async function loadBuyerDirect(name) {
+  document.getElementById('buyerSearch').value = name;
+  showLoading('buyerResults');
+  try {
+    const data = await apiFetch('buyer', { name });
+    renderBuyerProfile(data);
+  } catch (e) { showError('buyerResults'); }
+}
+
+function renderBuyerProfile(b) {
+  const stats = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-value">${fmtNumber(b.awards)}</div><div class="stat-label">Awards</div></div>
+      <div class="stat-box"><div class="stat-value">${fmtCurrency(b.total_spend)}</div><div class="stat-label">Total Spend</div></div>
+      <div class="stat-box"><div class="stat-value">${fmtCurrency(b.avg_value)}</div><div class="stat-label">Avg Award Value</div></div>
+      <div class="stat-box"><div class="stat-value">${b.avg_bids != null ? Number(b.avg_bids).toFixed(1) : '—'}</div><div class="stat-label">Avg Bids/Award</div></div>
+    </div>`;
+
+  let methHtml = '';
+  if (b.methods) {
+    methHtml = `<div style="margin-bottom:20px">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Procurement Method Breakdown</div>
+      ${procBar(b.methods)}
+      <div class="proc-legend" style="margin-top:8px">
+        <span><span class="swatch" style="background:var(--green)"></span>Open: ${b.methods.open || 0}</span>
+        <span><span class="swatch" style="background:#3498db"></span>Limited: ${b.methods.limited || 0}</span>
+        <span><span class="swatch" style="background:var(--amber)"></span>Direct: ${b.methods.direct || 0}</span>
+        <span><span class="swatch" style="background:#9b59b6"></span>Selective: ${b.methods.selective || 0}</span>
+      </div>
+    </div>`;
+  }
+
+  const suppRows = (b.top_suppliers || []).map(s => `
+    <tr>
+      <td>${s.name}</td>
+      <td class="num">${fmtNumber(s.awards)}</td>
+      <td class="num">${fmtCurrency(s.value)}</td>
+    </tr>`).join('');
+  const suppTable = `<table>
+    <thead><tr><th>Supplier</th><th style="text-align:right">Awards</th><th style="text-align:right">Value</th></tr></thead>
+    <tbody>${suppRows || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">No supplier data</td></tr>'}</tbody>
+  </table>`;
+
+  const awardRows = (b.recent_awards || []).map(a => `
+    <tr>
+      <td>${truncate(a.title, 60)}</td>
+      <td>${a.supplier || '—'}</td>
+      <td class="num">${fmtCurrency(a.value)}</td>
+      <td class="mono">${fmtDate(a.date)}</td>
+    </tr>`).join('');
+  const awardTable = `<table>
+    <thead><tr><th>Title</th><th>Supplier</th><th style="text-align:right">Value</th><th>Date</th></tr></thead>
+    <tbody>${awardRows || '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">No recent awards</td></tr>'}</tbody>
+  </table>`;
+
+  document.getElementById('buyerResults').innerHTML = `
+    <div class="card">
+      <div class="card-title">${b.name || 'Buyer Profile'}</div>
+      ${stats}
+      ${methHtml}
+    </div>
+    <div class="two-col">
+      <div class="card"><div class="card-title">Top Suppliers</div>${suppTable}</div>
+      <div class="card"><div class="card-title">Recent Awards</div>${awardTable}</div>
+    </div>`;
+}
+
+/* ── SUPPLIER INTELLIGENCE ──────────────────────────────────── */
+document.getElementById('supplierSearch').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') searchSupplier();
+});
+
+async function searchSupplier() {
+  const name = document.getElementById('supplierSearch').value.trim();
+  if (!name) return;
+  showLoading('supplierResults');
+  try {
+    const data = await apiFetch('supplier', { name });
+    if (!data || (!data.name && !data.suppliers)) {
+      document.getElementById('supplierResults').innerHTML = `
+        <div class="empty-state"><h3>No results</h3><p>No supplier matching "${name}" found.</p></div>`;
+      return;
+    }
+    if (data.suppliers && data.suppliers.length > 0) {
+      renderSupplierList(data.suppliers);
+      return;
+    }
+    renderSupplierProfile(data);
+  } catch (e) {
+    showError('supplierResults');
+  }
+}
+
+function renderSupplierList(suppliers) {
+  const rows = suppliers.map(s => `
+    <tr style="cursor:pointer" onclick="loadSupplierDirect('${s.name.replace(/'/g, "\\'")}')">
+      <td>${s.name}</td>
+      <td class="num">${fmtNumber(s.wins)}</td>
+      <td class="num">${fmtCurrency(s.total_value)}</td>
+    </tr>`).join('');
+  document.getElementById('supplierResults').innerHTML = `
+    <div class="card"><div class="card-title">Matching Suppliers</div>
+      <table><thead><tr><th>Supplier</th><th style="text-align:right">Wins</th><th style="text-align:right">Total Value</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>`;
+}
+
+async function loadSupplierDirect(name) {
+  document.getElementById('supplierSearch').value = name;
+  showLoading('supplierResults');
+  try {
+    const data = await apiFetch('supplier', { name });
+    renderSupplierProfile(data);
+  } catch (e) { showError('supplierResults'); }
+}
+
+function renderSupplierProfile(s) {
+  const stats = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-value">${fmtNumber(s.wins)}</div><div class="stat-label">Contract Wins</div></div>
+      <div class="stat-box"><div class="stat-value">${fmtCurrency(s.total_value)}</div><div class="stat-label">Total Value</div></div>
+      <div class="stat-box"><div class="stat-value">${fmtDate(s.first_win)}</div><div class="stat-label">First Win</div></div>
+      <div class="stat-box"><div class="stat-value">${fmtDate(s.last_win)}</div><div class="stat-label">Last Win</div></div>
+    </div>`;
+
+  const buyerRows = (s.buyers || []).map(b => `
+    <tr>
+      <td>${b.name}</td>
+      <td class="num">${fmtNumber(b.awards)}</td>
+      <td class="num">${fmtCurrency(b.value)}</td>
+    </tr>`).join('');
+  const buyerTable = `<table>
+    <thead><tr><th>Buyer</th><th style="text-align:right">Awards</th><th style="text-align:right">Value</th></tr></thead>
+    <tbody>${buyerRows || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">No buyer data</td></tr>'}</tbody>
+  </table>`;
+
+  const contractRows = (s.active_contracts || []).map(c => {
+    const days = daysUntil(c.end_date);
+    return `<tr>
+      <td>${c.buyer || '—'}</td>
+      <td>${truncate(c.title, 50)}</td>
+      <td class="num">${fmtCurrency(c.value)}</td>
+      <td>${urgencyBadge(days)}</td>
+      <td class="mono">${fmtDate(c.end_date)}</td>
+    </tr>`;
+  }).join('');
+  const contractTable = `<table>
+    <thead><tr><th>Buyer</th><th>Title</th><th style="text-align:right">Value</th><th>Days Left</th><th>End Date</th></tr></thead>
+    <tbody>${contractRows || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No active contracts</td></tr>'}</tbody>
+  </table>`;
+
+  document.getElementById('supplierResults').innerHTML = `
+    <div class="card">
+      <div class="card-title">${s.name || 'Supplier Profile'}</div>
+      ${stats}
+    </div>
+    <div class="two-col">
+      <div class="card"><div class="card-title">Buyer Relationships</div>${buyerTable}</div>
+      <div class="card"><div class="card-title">Active Contracts (Incumbencies)</div>${contractTable}</div>
+    </div>`;
+}
+
+/* ── EXPIRY PIPELINE ────────────────────────────────────────── */
+function updateExpiryLabel() {
+  const v = document.getElementById('expiryDays').value;
+  document.getElementById('expiryDaysLabel').textContent = v + ' days';
+}
+
+async function loadExpiry() {
+  const days = document.getElementById('expiryDays').value;
+  const minValue = document.getElementById('expiryMinValue').value;
+  const category = document.getElementById('expiryCategory').value;
+  document.getElementById('expiryTitle').textContent = `within ${days} days`;
+
+  try {
+    const data = await apiFetch('expiring', { days, minValue, category });
+    const rows = (data.contracts || []).map(c => {
+      const d = daysUntil(c.end_date);
+      return `<tr>
+        <td>${c.buyer || '—'}</td>
+        <td>${c.supplier || '—'}</td>
+        <td>${truncate(c.title, 45)}</td>
+        <td class="num">${fmtCurrency(c.value)}</td>
+        <td style="text-align:right">${urgencyBadge(d)}</td>
+        <td class="mono">${c.method || '—'}</td>
+        <td class="mono">${fmtDate(c.end_date)}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('expiryTable').innerHTML = rows ||
+      '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px">No expiring contracts match your filters</td></tr>';
+  } catch (e) {
+    document.getElementById('expiryTable').innerHTML =
+      '<tr><td colspan="7"><div class="empty-state"><h3>Data Server Unavailable</h3><p><code>python server.py</code></p></div></td></tr>';
+  }
+}
+
+/* ── FORWARD PIPELINE ───────────────────────────────────────── */
+async function loadPipeline() {
+  const buyer = document.getElementById('pipelineBuyer').value.trim();
+  try {
+    const data = await apiFetch('pipeline', { buyer });
+    const rows = (data.notices || []).map(n => `
+      <tr>
+        <td>${n.buyer || '—'}</td>
+        <td>${truncate(n.title, 60)}</td>
+        <td class="num">${fmtCurrency(n.estimated_value)}</td>
+        <td class="mono">${fmtDate(n.engagement_deadline)}</td>
+        <td class="mono">${fmtDate(n.tender_due)}</td>
+      </tr>`).join('');
+    document.getElementById('pipelineTable').innerHTML = rows ||
+      '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px">No forward pipeline notices found</td></tr>';
+  } catch (e) {
+    document.getElementById('pipelineTable').innerHTML =
+      '<tr><td colspan="5"><div class="empty-state"><h3>Data Server Unavailable</h3><p><code>python server.py</code></p></div></td></tr>';
+  }
+}
+
+/* ── PWIN SIGNALS ───────────────────────────────────────────── */
+async function loadPwin() {
+  const buyer = document.getElementById('pwinBuyer').value.trim();
+  const category = document.getElementById('pwinCategory').value.trim();
+  try {
+    const data = await apiFetch('pwin', { buyer, category });
+    const rows = (data.signals || []).map(s => `
+      <tr>
+        <td>${s.buyer || '—'}</td>
+        <td>${s.category || '—'}</td>
+        <td class="num">${fmtNumber(s.awards)}</td>
+        <td class="num">${s.avg_bids != null ? Number(s.avg_bids).toFixed(1) : '—'}</td>
+        <td class="num">${fmtCurrency(s.avg_value)}</td>
+        <td>${procBar(s.methods)}</td>
+      </tr>`).join('');
+    document.getElementById('pwinTable').innerHTML = rows ||
+      '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">No competition signals found</td></tr>';
+  } catch (e) {
+    document.getElementById('pwinTable').innerHTML =
+      '<tr><td colspan="6"><div class="empty-state"><h3>Data Server Unavailable</h3><p><code>python server.py</code></p></div></td></tr>';
+  }
+}
+
+/* ── KEYBOARD SHORTCUTS ─────────────────────────────────────── */
+document.getElementById('pipelineBuyer').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') loadPipeline();
+});
+document.getElementById('pwinBuyer').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') loadPwin();
+});
+document.getElementById('pwinCategory').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') loadPwin();
+});
+
+/* ── INIT ───────────────────────────────────────────────────── */
+loadSummary();
+</script>
+</body>
+</html>

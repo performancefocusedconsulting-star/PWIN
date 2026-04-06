@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
 import * as store from './store.js';
 import { validateAIWrite } from './permissions.js';
+import * as compIntel from './competitive-intel.js';
 
 function createMcpServer() {
   const server = new McpServer({
@@ -1661,6 +1662,98 @@ function createMcpServer() {
       await mkdir(dirname(filePath), { recursive: true });
       await writeFile(filePath, JSON.stringify(merged, null, 2), 'utf-8');
       return { content: [{ type: 'text', text: JSON.stringify({ updated: true, competitorName }, null, 2) }] };
+    }
+  );
+
+  // ==========================================================================
+  // COMPETITIVE INTELLIGENCE TOOLS (FTS OCDS data)
+  // ==========================================================================
+
+  server.tool(
+    'get_competitive_intel_summary',
+    'Get summary statistics from the UK procurement intelligence database (buyers, suppliers, awards, values)',
+    {},
+    async () => {
+      const result = compIntel.dbSummary();
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_buyer_profile',
+    'Get buyer procurement profile: spend, top suppliers, procurement methods, award history. Use for understanding a client before qualifying or bidding.',
+    {
+      name: z.string().describe('Buyer name or partial match (e.g. "Home Office", "NHS", "Ministry of Defence")'),
+      limit: z.number().optional().describe('Max recent awards to return (default 20)'),
+    },
+    async ({ name, limit }) => {
+      const result = compIntel.buyerProfile(name, limit);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_supplier_profile',
+    'Get supplier/competitor profile: win history, buyer relationships, active contracts (incumbencies). Use for competitive positioning analysis.',
+    {
+      name: z.string().describe('Supplier name or partial match (e.g. "Serco", "Capita", "Deloitte")'),
+      limit: z.number().optional().describe('Max recent awards to return (default 20)'),
+    },
+    async ({ name, limit }) => {
+      const result = compIntel.supplierProfile(name, limit);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_expiring_contracts',
+    'Find contracts expiring within N days — core sales prospecting tool. Filter by value, buyer, and category.',
+    {
+      days: z.number().optional().describe('Days until expiry (default 365)'),
+      minValue: z.number().optional().describe('Minimum contract value in GBP'),
+      buyer: z.string().optional().describe('Buyer name filter (partial match)'),
+      category: z.string().optional().describe('Category filter: services, goods, or works'),
+    },
+    async ({ days, minValue, buyer, category }) => {
+      const result = compIntel.expiringContracts({ days, minValue, buyer, category });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_forward_pipeline',
+    'Get planning and market engagement notices — upcoming tenders not yet published. Early positioning intelligence.',
+    {
+      buyer: z.string().optional().describe('Buyer name filter (partial match)'),
+    },
+    async ({ buyer }) => {
+      const result = compIntel.forwardPipeline({ buyer });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_pwin_signals',
+    'Get competition level analysis per buyer and category: avg bidders, procurement method breakdown, direct award rates. Core PWIN input for qualification.',
+    {
+      buyer: z.string().optional().describe('Buyer name filter (partial match)'),
+      category: z.string().optional().describe('Category filter: services, goods, or works'),
+    },
+    async ({ buyer, category }) => {
+      const result = compIntel.pwinSignals({ buyer, category });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'search_cpv_codes',
+    'Search procurement notices by CPV (Common Procurement Vocabulary) code prefix. Use to find opportunities in specific sectors.',
+    {
+      code: z.string().describe('CPV code or prefix (e.g. "79410000" for management consultancy, "72" for IT services)'),
+    },
+    async ({ code }) => {
+      const result = compIntel.cpvSearch(code);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
     }
   );
 

@@ -1,0 +1,339 @@
+-- ============================================================
+-- PWIN Competitive Intelligence — Database Schema
+-- Source: Find a Tender Service OCDS API (Cabinet Office)
+-- ============================================================
+
+PRAGMA journal_mode=WAL;
+PRAGMA foreign_keys=ON;
+
+-- ============================================================
+-- BUYERS (contracting authorities)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS buyers (
+    id                  TEXT PRIMARY KEY,
+    name                TEXT NOT NULL,
+    org_type            TEXT,
+    devolved_region     TEXT,
+    street_address      TEXT,
+    locality            TEXT,
+    postal_code         TEXT,
+    region_code         TEXT,
+    contact_name        TEXT,
+    contact_email       TEXT,
+    contact_telephone   TEXT,
+    website             TEXT,
+    first_seen          TEXT NOT NULL DEFAULT (datetime('now')),
+    last_updated        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_buyers_name ON buyers(name);
+CREATE INDEX IF NOT EXISTS idx_buyers_region ON buyers(region_code);
+CREATE INDEX IF NOT EXISTS idx_buyers_type ON buyers(org_type);
+
+-- ============================================================
+-- SUPPLIERS (winning / shortlisted companies)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS suppliers (
+    id                  TEXT PRIMARY KEY,
+    name                TEXT NOT NULL,
+    companies_house_no  TEXT,
+    scale               TEXT,
+    is_vcse             INTEGER DEFAULT 0,
+    is_sheltered        INTEGER DEFAULT 0,
+    is_public_mission   INTEGER DEFAULT 0,
+    street_address      TEXT,
+    locality            TEXT,
+    postal_code         TEXT,
+    region_code         TEXT,
+    contact_email       TEXT,
+    website             TEXT,
+    first_seen          TEXT NOT NULL DEFAULT (datetime('now')),
+    last_updated        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers(name);
+CREATE INDEX IF NOT EXISTS idx_suppliers_scale ON suppliers(scale);
+CREATE INDEX IF NOT EXISTS idx_suppliers_coh ON suppliers(companies_house_no);
+
+-- ============================================================
+-- NOTICES (one row per OCID — the contracting process)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS notices (
+    ocid                    TEXT PRIMARY KEY,
+    buyer_id                TEXT REFERENCES buyers(id),
+    latest_release_id       TEXT,
+
+    -- Tender fields
+    title                   TEXT,
+    description             TEXT,
+    procurement_method      TEXT,
+    procurement_method_detail TEXT,
+    main_category           TEXT,
+    legal_basis             TEXT,
+    above_threshold         INTEGER DEFAULT 0,
+
+    -- Overall value (tender-level estimate or sum)
+    value_amount            REAL,
+    value_amount_gross      REAL,
+    currency                TEXT DEFAULT 'GBP',
+
+    -- Dates
+    tender_end_date         TEXT,
+    published_date          TEXT,
+
+    -- Status
+    tender_status           TEXT,
+
+    -- Bid intelligence (from bids.statistics)
+    total_bids              INTEGER,
+    final_stage_bids        INTEGER,
+    sme_bids                INTEGER,
+    vcse_bids               INTEGER,
+
+    -- Renewal
+    has_renewal             INTEGER DEFAULT 0,
+    renewal_description     TEXT,
+
+    -- Notice metadata
+    notice_type             TEXT,
+    notice_url              TEXT,
+
+    -- Latest release tag seen
+    latest_tag              TEXT,
+
+    ingested_at             TEXT NOT NULL DEFAULT (datetime('now')),
+    last_updated            TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_notices_buyer ON notices(buyer_id);
+CREATE INDEX IF NOT EXISTS idx_notices_status ON notices(tender_status);
+CREATE INDEX IF NOT EXISTS idx_notices_published ON notices(published_date);
+
+-- ============================================================
+-- LOTS (one row per lot within a notice)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS lots (
+    id                      TEXT PRIMARY KEY,   -- ocid + '-lot-' + lot_id
+    ocid                    TEXT NOT NULL REFERENCES notices(ocid),
+    lot_number              TEXT NOT NULL,
+    title                   TEXT,
+    description             TEXT,
+    status                  TEXT,
+    has_options             INTEGER DEFAULT 0,
+    ingested_at             TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_lots_ocid ON lots(ocid);
+
+-- ============================================================
+-- AWARDS (one row per award — links to lot and has suppliers)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS awards (
+    id                      TEXT PRIMARY KEY,   -- release award id e.g. 031223-2026-1
+    ocid                    TEXT NOT NULL REFERENCES notices(ocid),
+    lot_id                  TEXT REFERENCES lots(id),
+    title                   TEXT,
+    status                  TEXT,
+    award_date              TEXT,
+
+    -- Value for this specific award
+    value_amount            REAL,
+    value_amount_gross      REAL,
+    currency                TEXT DEFAULT 'GBP',
+
+    -- Contract period (from award.contractPeriod or linked contract)
+    contract_start_date     TEXT,
+    contract_end_date       TEXT,
+    contract_max_extend     TEXT,
+    date_signed             TEXT,
+    contract_status         TEXT,
+
+    -- Award criteria (JSON)
+    award_criteria          TEXT,
+
+    ingested_at             TEXT NOT NULL DEFAULT (datetime('now')),
+    last_updated            TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_awards_ocid ON awards(ocid);
+CREATE INDEX IF NOT EXISTS idx_awards_lot ON awards(lot_id);
+CREATE INDEX IF NOT EXISTS idx_awards_end_date ON awards(contract_end_date);
+CREATE INDEX IF NOT EXISTS idx_awards_status ON awards(status);
+CREATE INDEX IF NOT EXISTS idx_awards_value ON awards(value_amount_gross);
+
+-- ============================================================
+-- AWARD_SUPPLIERS (many-to-many: awards can have multiple suppliers)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS award_suppliers (
+    award_id    TEXT NOT NULL REFERENCES awards(id),
+    supplier_id TEXT NOT NULL REFERENCES suppliers(id),
+    PRIMARY KEY (award_id, supplier_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_as_supplier ON award_suppliers(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_as_award ON award_suppliers(award_id);
+
+-- ============================================================
+-- CPV_CODES (normalised — one row per code per notice)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS cpv_codes (
+    ocid        TEXT NOT NULL REFERENCES notices(ocid),
+    code        TEXT NOT NULL,
+    description TEXT,
+    PRIMARY KEY (ocid, code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cpv_code ON cpv_codes(code);
+
+-- ============================================================
+-- PLANNING NOTICES (market engagement / future tenders)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS planning_notices (
+    ocid                TEXT PRIMARY KEY,
+    buyer_id            TEXT REFERENCES buyers(id),
+    title               TEXT,
+    description         TEXT,
+    engagement_deadline TEXT,
+    future_notice_date  TEXT,
+    estimated_value     REAL,
+    notice_url          TEXT,
+    notice_type         TEXT,
+    published_date      TEXT,
+    ingested_at         TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_planning_buyer ON planning_notices(buyer_id);
+CREATE INDEX IF NOT EXISTS idx_planning_future ON planning_notices(future_notice_date);
+
+-- ============================================================
+-- PLANNING CPV CODES
+-- ============================================================
+CREATE TABLE IF NOT EXISTS planning_cpv_codes (
+    ocid        TEXT NOT NULL REFERENCES planning_notices(ocid),
+    code        TEXT NOT NULL,
+    description TEXT,
+    PRIMARY KEY (ocid, code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_planning_cpv_code ON planning_cpv_codes(code);
+
+-- ============================================================
+-- INGEST STATE
+-- ============================================================
+CREATE TABLE IF NOT EXISTS ingest_state (
+    key     TEXT PRIMARY KEY,
+    value   TEXT,
+    updated TEXT DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO ingest_state (key, value)
+VALUES ('last_cursor', '');
+
+-- ============================================================
+-- VIEWS
+-- ============================================================
+
+-- Contracts expiring in the next 365 days
+CREATE VIEW IF NOT EXISTS v_expiring_contracts AS
+SELECT
+    a.id                            AS award_id,
+    n.ocid,
+    b.name                          AS buyer_name,
+    b.org_type                      AS buyer_type,
+    b.region_code,
+    GROUP_CONCAT(DISTINCT s.name)   AS supplier_names,
+    n.title,
+    n.main_category,
+    a.value_amount_gross,
+    a.contract_start_date,
+    a.contract_end_date,
+    a.contract_max_extend,
+    n.has_renewal,
+    n.renewal_description,
+    n.procurement_method,
+    n.notice_url,
+    CAST(julianday(a.contract_end_date) - julianday('now') AS INTEGER) AS days_to_expiry
+FROM awards a
+JOIN notices n ON a.ocid = n.ocid
+JOIN buyers b ON n.buyer_id = b.id
+LEFT JOIN award_suppliers asup ON a.id = asup.award_id
+LEFT JOIN suppliers s ON asup.supplier_id = s.id
+WHERE a.contract_end_date IS NOT NULL
+  AND a.contract_end_date > datetime('now')
+  AND a.contract_end_date < datetime('now', '+365 days')
+  AND a.status IN ('active', 'pending')
+GROUP BY a.id
+ORDER BY a.contract_end_date ASC;
+
+-- Supplier win history (one row per supplier per award)
+CREATE VIEW IF NOT EXISTS v_supplier_wins AS
+SELECT
+    s.id                            AS supplier_id,
+    s.name                          AS supplier_name,
+    s.scale,
+    s.is_vcse,
+    b.name                          AS buyer_name,
+    b.org_type                      AS buyer_type,
+    a.id                            AS award_id,
+    n.title,
+    n.main_category,
+    a.value_amount_gross,
+    a.contract_start_date,
+    a.contract_end_date,
+    n.procurement_method,
+    n.total_bids,
+    a.award_date
+FROM award_suppliers asup
+JOIN suppliers s ON asup.supplier_id = s.id
+JOIN awards a ON asup.award_id = a.id
+JOIN notices n ON a.ocid = n.ocid
+JOIN buyers b ON n.buyer_id = b.id
+ORDER BY a.award_date DESC;
+
+-- Buyer procurement history
+CREATE VIEW IF NOT EXISTS v_buyer_history AS
+SELECT
+    b.id                            AS buyer_id,
+    b.name                          AS buyer_name,
+    b.org_type,
+    b.region_code,
+    GROUP_CONCAT(DISTINCT s.name)   AS supplier_names,
+    a.id                            AS award_id,
+    n.title,
+    n.main_category,
+    a.value_amount_gross,
+    n.procurement_method,
+    n.total_bids,
+    a.contract_start_date,
+    a.contract_end_date,
+    a.award_date
+FROM awards a
+JOIN notices n ON a.ocid = n.ocid
+JOIN buyers b ON n.buyer_id = b.id
+LEFT JOIN award_suppliers asup ON a.id = asup.award_id
+LEFT JOIN suppliers s ON asup.supplier_id = s.id
+GROUP BY a.id
+ORDER BY a.award_date DESC;
+
+-- PWIN signals: competition level per buyer + category
+CREATE VIEW IF NOT EXISTS v_pwin_signals AS
+SELECT
+    b.name                                          AS buyer_name,
+    b.org_type,
+    n.main_category,
+    COUNT(DISTINCT a.id)                            AS awards_count,
+    AVG(n.total_bids)                               AS avg_bids_per_tender,
+    AVG(a.value_amount_gross)                       AS avg_award_value,
+    SUM(a.value_amount_gross)                       AS total_value,
+    SUM(CASE WHEN n.procurement_method = 'direct' THEN 1 ELSE 0 END) AS direct_awards,
+    SUM(CASE WHEN n.procurement_method = 'open'   THEN 1 ELSE 0 END) AS open_awards,
+    SUM(CASE WHEN n.procurement_method = 'limited' THEN 1 ELSE 0 END) AS limited_awards,
+    SUM(CASE WHEN n.procurement_method = 'selective' THEN 1 ELSE 0 END) AS selective_awards,
+    ROUND(100.0 * SUM(CASE WHEN n.procurement_method = 'open' THEN 1 ELSE 0 END) / COUNT(DISTINCT a.id), 1) AS pct_open
+FROM awards a
+JOIN notices n ON a.ocid = n.ocid
+JOIN buyers b ON n.buyer_id = b.id
+WHERE a.status IN ('active', 'pending')
+GROUP BY b.id, n.main_category
+HAVING awards_count >= 1
+ORDER BY awards_count DESC;

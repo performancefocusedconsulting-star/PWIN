@@ -233,6 +233,49 @@ Forensic post-loss bid review product. Independently evaluates the entire pursui
 
 ---
 
+## pwin-competitive-intel
+
+Automated competitive intelligence database built on the UK Find a Tender Service (FTS) OCDS open data API. Ingests all UK public sector procurement notices nightly, building a structured database of buyers, suppliers, awards, lots, and CPV codes. Feeds intelligence into the wider PWIN platform (Qualify AI context, Win Strategy competitor profiling) and provides a sales hit list for upcoming opportunities.
+
+### Architecture
+
+- **Ingest agent** (`agent/ingest.py`) — incremental FTS OCDS API pull with cursor-based pagination, multi-lot and multi-supplier support
+- **SQLite database** (`db/bid_intel.db`) — normalised schema: notices (OCID-keyed), lots, awards, award_suppliers (many-to-many), cpv_codes (indexed junction table), planning_notices
+- **Query library** (`queries/queries.py`) — CLI with 8 commands: summary, buyer, supplier, expiring, pipeline, awards, pwin, cpv
+- **Scheduler** (`agent/scheduler.py`) + GitHub Actions workflow for nightly runs
+
+### Technical Constraints
+
+- Python 3.9+ stdlib only — zero external dependencies
+- SQLite for persistence — handles 100k+ releases comfortably, designed for eventual Postgres migration
+- Nightly scheduled ingest via cron or GitHub Actions (02:00 UTC)
+- Database not committed to repo (`.gitignore`), built from API on first run
+
+### Purpose Within the Product Family
+
+Cross-cutting knowledge layer sitting above individual pursuit products:
+
+- **Feeds Qualify** — buyer procurement patterns, competition levels, avg bidder counts → AI assurance context
+- **Feeds Win Strategy** — competitor incumbencies, supplier win histories, buyer relationships
+- **Sales pipeline** — expiry pipeline (contracts ending in 6-12 months), forward pipeline (planning notices), CPV-filtered prospecting
+- **PWIN signals** — competition level per buyer/category, procurement method breakdown, direct award percentages
+
+### Running
+
+```bash
+cd pwin-competitive-intel
+python agent/ingest.py --limit 50        # quick test
+python agent/ingest.py --from 2026-01-01T00:00:00  # from specific date
+python agent/ingest.py --full            # full historical from 2024
+python queries/queries.py summary        # database stats
+python queries/queries.py buyer "NHS"    # buyer profile
+python queries/queries.py supplier "Serco"  # supplier intel
+python queries/queries.py expiring --days 180 --value 500000  # sales pipeline
+python queries/queries.py pwin --category services  # competition analysis
+```
+
+---
+
 ## Adding New Products
 
 When a new product folder is added, create a new section in this file following the same structure as above.
