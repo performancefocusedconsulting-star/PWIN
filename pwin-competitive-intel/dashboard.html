@@ -200,6 +200,36 @@ tbody td {
   white-space: nowrap;
 }
 tbody td:hover { white-space: normal; word-break: break-word; }
+tr.detail-row td {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+tr.detail-row .detail-inner {
+  padding: 16px 20px;
+  background: var(--bg-deep);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: normal;
+  word-break: break-word;
+}
+tr.detail-row .detail-inner .detail-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+tr.detail-row .detail-inner .detail-label:first-child { margin-top: 0; }
+tr.detail-row .detail-inner a {
+  color: var(--gold-light);
+  text-decoration: none;
+}
+tr.detail-row .detail-inner a:hover { text-decoration: underline; }
+tr.expandable { cursor: pointer; }
+tr.expandable:hover { background: var(--bg-hover); }
 tbody tr { transition: background 0.15s; }
 tbody tr:hover { background: var(--bg-hover); }
 td.num {
@@ -974,17 +1004,26 @@ async function loadExpiry() {
 
   try {
     const data = await apiFetch('expiring', { days, minValue, category });
-    const rows = (data.contracts || []).map(c => {
+    const rows = (data.contracts || []).map((c, i) => {
       const d = daysUntil(c.end_date);
-      return `<tr>
+      const detailId = 'exp-detail-' + i;
+      const details = [];
+      if (c.start_date) details.push(`<div class="detail-label">Contract Period</div><div>${fmtDate(c.start_date)} — ${fmtDate(c.end_date)}${c.max_extend ? ' (max extend: ' + fmtDate(c.max_extend) + ')' : ''}</div>`);
+      if (c.category) details.push(`<div class="detail-label">Category</div><div>${c.category}</div>`);
+      if (c.buyer_type) details.push(`<div class="detail-label">Buyer Type</div><div>${c.buyer_type}</div>`);
+      if (c.has_renewal) details.push(`<div class="detail-label">Renewal</div><div>${c.renewal_description || 'Yes — details not specified'}</div>`);
+      if (c.notice_url) details.push(`<div class="detail-label">Notice</div><a href="${c.notice_url}" target="_blank">${c.notice_url}</a>`);
+      const hasDetail = details.length > 0;
+
+      return `<tr class="${hasDetail ? 'expandable' : ''}" ${hasDetail ? `onclick="toggleDetail('${detailId}')"` : ''}>
         <td>${c.buyer || '—'}</td>
         <td>${c.supplier || '—'}</td>
-        <td>${truncate(c.title, 45)}</td>
+        <td>${truncate(c.title, 45)}${hasDetail ? ' <span style="color:var(--gold);font-size:10px;">▸</span>' : ''}</td>
         <td class="num">${fmtCurrency(c.value)}</td>
         <td style="text-align:right">${urgencyBadge(d)}</td>
         <td class="mono">${c.method || '—'}</td>
         <td class="mono">${fmtDate(c.end_date)}</td>
-      </tr>`;
+      </tr>${hasDetail ? `<tr class="detail-row" id="${detailId}" style="display:none"><td colspan="7"><div class="detail-inner">${details.join('')}</div></td></tr>` : ''}`;
     }).join('');
     document.getElementById('expiryTable').innerHTML = rows ||
       '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px">No expiring contracts match your filters</td></tr>';
@@ -995,18 +1034,30 @@ async function loadExpiry() {
 }
 
 /* ── FORWARD PIPELINE ───────────────────────────────────────── */
+function toggleDetail(id) {
+  const row = document.getElementById(id);
+  if (row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+}
+
 async function loadPipeline() {
   const buyer = document.getElementById('pipelineBuyer').value.trim();
   try {
     const data = await apiFetch('pipeline', { buyer });
-    const rows = (data.notices || []).map(n => `
-      <tr>
+    const rows = (data.notices || []).map((n, i) => {
+      const detailId = 'pipe-detail-' + i;
+      const desc = n.description || '';
+      const hasDetail = desc.length > 0 || n.notice_url;
+      const linkHtml = n.notice_url ? `<div class="detail-label">Notice Link</div><a href="${n.notice_url}" target="_blank">${n.notice_url}</a>` : '';
+      const descHtml = desc ? `<div class="detail-label">Description</div><div>${desc.replace(/\n/g, '<br>')}</div>` : '';
+
+      return `<tr class="${hasDetail ? 'expandable' : ''}" ${hasDetail ? `onclick="toggleDetail('${detailId}')"` : ''}>
         <td>${n.buyer || '—'}</td>
-        <td>${truncate(n.title, 60)}</td>
+        <td>${truncate(n.title, 60)}${hasDetail ? ' <span style="color:var(--gold);font-size:10px;">▸</span>' : ''}</td>
         <td class="num">${fmtCurrency(n.estimated_value)}</td>
         <td class="mono">${fmtDate(n.engagement_deadline)}</td>
         <td class="mono">${fmtDate(n.future_notice_date)}</td>
-      </tr>`).join('');
+      </tr>${hasDetail ? `<tr class="detail-row" id="${detailId}" style="display:none"><td colspan="5"><div class="detail-inner">${descHtml}${linkHtml}</div></td></tr>` : ''}`;
+    }).join('');
     document.getElementById('pipelineTable').innerHTML = rows ||
       '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px">No forward pipeline notices found</td></tr>';
   } catch (e) {

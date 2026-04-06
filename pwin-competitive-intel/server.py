@@ -260,7 +260,10 @@ def api_expiring(params):
             {"buyer": r["buyer_name"], "supplier": r["supplier_names"],
              "title": r["title"], "value": r["value_amount_gross"],
              "days_to_expiry": r["days_to_expiry"], "method": r["procurement_method"],
-             "end_date": r["contract_end_date"]}
+             "end_date": r["contract_end_date"], "start_date": r["contract_start_date"],
+             "max_extend": r["contract_max_extend"], "category": r["main_category"],
+             "has_renewal": bool(r["has_renewal"]), "renewal_description": r["renewal_description"],
+             "notice_url": r["notice_url"], "buyer_type": r["buyer_type"]}
             for r in conn.execute(sql, p).fetchall()
         ]
         return {"count": len(rows), "contracts": rows}
