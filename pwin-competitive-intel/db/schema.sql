@@ -47,6 +47,20 @@ CREATE TABLE IF NOT EXISTS suppliers (
     region_code         TEXT,
     contact_email       TEXT,
     website             TEXT,
+    -- Companies House enrichment
+    ch_company_name     TEXT,
+    ch_status           TEXT,              -- active | dissolved | liquidation | etc.
+    ch_type             TEXT,              -- ltd | plc | llp | etc.
+    ch_incorporated     TEXT,              -- date
+    ch_sic_codes        TEXT,              -- JSON array of SIC codes
+    ch_address          TEXT,              -- registered office one-liner
+    ch_turnover         REAL,              -- from latest accounts (if filed)
+    ch_net_assets       REAL,
+    ch_employees        INTEGER,
+    ch_accounts_date    TEXT,              -- date of latest accounts
+    ch_directors        TEXT,              -- JSON array of current director names
+    ch_parent           TEXT,              -- immediate parent company name (if group)
+    ch_enriched_at      TEXT,              -- when we last pulled from CH
     first_seen          TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated        TEXT NOT NULL DEFAULT (datetime('now'))
 );

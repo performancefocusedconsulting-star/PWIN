@@ -178,7 +178,11 @@ def api_supplier(params):
     if not conn: return {"error": "Database not found"}
     try:
         suppliers = conn.execute("""
-            SELECT id, name, scale, is_vcse, companies_house_no FROM suppliers
+            SELECT id, name, scale, is_vcse, companies_house_no,
+                   ch_company_name, ch_status, ch_type, ch_incorporated, ch_sic_codes,
+                   ch_address, ch_turnover, ch_net_assets, ch_employees,
+                   ch_accounts_date, ch_directors, ch_parent, ch_enriched_at
+            FROM suppliers
             WHERE LOWER(name) LIKE LOWER(?) ORDER BY name LIMIT 10
         """, (f"%{name}%",)).fetchall()
 
@@ -223,6 +227,30 @@ def api_supplier(params):
                 """, (sup["id"],)).fetchall()
             ]
 
+            # Companies House enrichment (if available)
+            ch = None
+            if sup["ch_enriched_at"]:
+                directors = []
+                try: directors = json.loads(sup["ch_directors"] or "[]")
+                except: pass
+                sic = []
+                try: sic = json.loads(sup["ch_sic_codes"] or "[]")
+                except: pass
+                ch = {
+                    "company_name": sup["ch_company_name"],
+                    "status": sup["ch_status"],
+                    "type": sup["ch_type"],
+                    "incorporated": sup["ch_incorporated"],
+                    "sic_codes": sic,
+                    "address": sup["ch_address"],
+                    "turnover": sup["ch_turnover"],
+                    "net_assets": sup["ch_net_assets"],
+                    "employees": sup["ch_employees"],
+                    "accounts_date": sup["ch_accounts_date"],
+                    "directors": directors,
+                    "parent": sup["ch_parent"],
+                }
+
             results.append({
                 "name": sup["name"],
                 "scale": sup["scale"],
@@ -235,6 +263,7 @@ def api_supplier(params):
                 "last_win": stats["last_win"],
                 "buyers": buyer_rels,
                 "active_contracts": active,
+                "companies_house": ch,
             })
 
         return {"suppliers": results}

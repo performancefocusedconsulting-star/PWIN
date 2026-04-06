@@ -35,6 +35,12 @@ jobs:
       - name: Run ingest
         run: python agent/ingest.py
 
+      - name: Enrich suppliers from Companies House
+        if: env.COMPANIES_HOUSE_API_KEY != ''
+        env:
+          COMPANIES_HOUSE_API_KEY: ${{ secrets.COMPANIES_HOUSE_API_KEY }}
+        run: python agent/enrich-ch.py --limit 200
+
       - name: Export data for D1
         run: python agent/sync-d1.py
 

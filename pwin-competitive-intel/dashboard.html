@@ -979,11 +979,48 @@ function renderSupplierProfile(s) {
     <tbody>${contractRows || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No active contracts</td></tr>'}</tbody>
   </table>`;
 
+  // Companies House panel
+  let chHtml = '';
+  if (s.companies_house) {
+    const ch = s.companies_house;
+    const sicList = (ch.sic_codes || []).join(', ') || '—';
+    const dirList = (ch.directors || []).slice(0, 8).join(', ') || '—';
+    chHtml = `<div class="card">
+      <div class="card-title">Companies House</div>
+      <table>
+        <tbody>
+          <tr><td class="mono" style="width:140px">Registered Name</td><td>${ch.company_name || '—'}</td></tr>
+          <tr><td class="mono">Status</td><td>${ch.status || '—'}</td></tr>
+          <tr><td class="mono">Type</td><td>${ch.type || '—'}</td></tr>
+          <tr><td class="mono">Incorporated</td><td>${fmtDate(ch.incorporated)}</td></tr>
+          <tr><td class="mono">SIC Codes</td><td>${sicList}</td></tr>
+          <tr><td class="mono">Registered Address</td><td>${ch.address || '—'}</td></tr>
+          ${ch.parent ? `<tr><td class="mono">Parent Company</td><td>${ch.parent}</td></tr>` : ''}
+          ${ch.turnover ? `<tr><td class="mono">Turnover</td><td>${fmtCurrency(ch.turnover)}</td></tr>` : ''}
+          ${ch.net_assets ? `<tr><td class="mono">Net Assets</td><td>${fmtCurrency(ch.net_assets)}</td></tr>` : ''}
+          ${ch.employees ? `<tr><td class="mono">Employees</td><td>${fmtNumber(ch.employees)}</td></tr>` : ''}
+          ${ch.accounts_date ? `<tr><td class="mono">Accounts Date</td><td>${fmtDate(ch.accounts_date)}</td></tr>` : ''}
+          <tr><td class="mono">Directors</td><td style="white-space:normal">${dirList}</td></tr>
+          ${s.companies_house_no ? `<tr><td class="mono">CH Number</td><td><a href="https://find-and-update.company-information.service.gov.uk/company/${s.companies_house_no}" target="_blank" style="color:var(--gold-light)">${s.companies_house_no}</a></td></tr>` : ''}
+        </tbody>
+      </table>
+    </div>`;
+  } else if (s.companies_house_no) {
+    chHtml = `<div class="card">
+      <div class="card-title">Companies House</div>
+      <div style="padding:16px;color:var(--text-muted);font-size:13px">
+        CH Number: <a href="https://find-and-update.company-information.service.gov.uk/company/${s.companies_house_no}" target="_blank" style="color:var(--gold-light)">${s.companies_house_no}</a>
+        <br>Run <code>python agent/enrich-ch.py</code> to pull full company data
+      </div>
+    </div>`;
+  }
+
   document.getElementById('supplierResults').innerHTML = `
     <div class="card">
       <div class="card-title">${s.name || 'Supplier Profile'}</div>
       ${stats}
     </div>
+    ${chHtml}
     <div class="two-col">
       <div class="card"><div class="card-title">Buyer Relationships</div>${buyerTable}</div>
       <div class="card"><div class="card-title">Active Contracts (Incumbencies)</div>${contractTable}</div>
