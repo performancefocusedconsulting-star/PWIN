@@ -2979,9 +2979,9 @@ updateDashboard();
     <div style="background:white;border:1px solid var(--border);padding:18px;box-shadow:var(--shadow-sm);">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <div style="width:30px;height:30px;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
-        <div style="font-weight:600;color:var(--navy);font-size:14px;">Run the AI Assurance Review</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Generate the AI Assurance Report</div>
       </div>
-      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>AI Assurance Review</strong> tab. Select each question from the left panel and click <em>Run AI Assurance Review</em>. The AI will assess whether your evidence justifies your score, flag inflation, and provide challenge questions. Once you have reviewed key questions, generate a <em>Full Assurance Report</em> for a gate-level synthesis.</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">From the <strong>PWIN Dashboard</strong>, click <em>Generate AI Assurance Report</em>. The AI will independently review all 24 scored questions, challenge your evidence, detect inflation, and produce a comprehensive report including: executive summary, per-question verdicts, a scoring comparison (your scores vs AI-adjusted scores), and a gate recommendation. You can then download the report as a PDF.</div>
     </div>
 
   </div>
@@ -3035,28 +3035,43 @@ updateDashboard();
   </div>
 
   <!-- PWIN benchmarks -->
-  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:16px;">PWIN benchmarks by pursuit phase</div>
+  <div style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:8px;">Minimum PWIN targets by pursuit stage</div>
+  <div style="font-size:12px;color:var(--slate);margin-bottom:14px;line-height:1.6;">
+    These are <strong>minimum floor targets</strong> -- the PWIN score your pursuit team should have built by each stage through capture-phase activities. Falling below the floor indicates insufficient positioning before further bid investment.
+  </div>
 
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px;">
-    <div style="background:var(--red-lt);border:1px solid var(--red);padding:14px 12px;text-align:center;">
-      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">15 -- 35%</div>
-      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Capture commencement</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;">
+    <div style="background:var(--bg3);border:1px solid var(--border);padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--slate);margin-bottom:4px;">--</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Pre-market engagement</div>
+      <div style="font-size:10px;color:var(--slate);margin-top:4px;">No minimum -- still assessing</div>
     </div>
-    <div style="background:rgba(198,138,29,0.10);border:1px solid #C68A1D;padding:14px 12px;text-align:center;">
-      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">35 -- 55%</div>
-      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Active capture</div>
+    <div style="background:rgba(198,138,29,0.08);border:1px solid #C68A1D;padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">25%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Market engagement underway</div>
+      <div style="font-size:10px;color:var(--slate);margin-top:4px;">Understand the landscape</div>
     </div>
+    <div style="background:rgba(198,138,29,0.08);border:1px solid #C68A1D;padding:14px 12px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">40%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">ITT not yet published</div>
+      <div style="font-size:10px;color:var(--slate);margin-top:4px;">Baseline capture intelligence in place</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;">
     <div style="background:rgba(26,64,128,0.08);border:1px solid var(--navy-light);padding:14px 12px;text-align:center;">
-      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">55 -- 70%</div>
-      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Pre-ITT</div>
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">55%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">ITT / RFP published</div>
+      <div style="font-size:10px;color:var(--slate);margin-top:4px;">Capture phase built credible position</div>
     </div>
     <div style="background:var(--green-lt);border:1px solid var(--green);padding:14px 12px;text-align:center;">
-      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">70 -- 85%</div>
-      <div style="font-size:11px;color:var(--slate);line-height:1.4;">ITT ready</div>
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">70%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Shortlisted / BAFO</div>
+      <div style="font-size:10px;color:var(--slate);margin-top:4px;">Execution strengthened position</div>
     </div>
     <div style="background:var(--green-lt);border:1px solid var(--green);padding:14px 12px;text-align:center;">
-      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">100%</div>
-      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Maximum possible</div>
+      <div style="font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;">80%</div>
+      <div style="font-size:11px;color:var(--slate);line-height:1.4;">Preferred Bidder</div>
+      <div style="font-size:10px;color:var(--slate);margin-top:4px;">Below this indicates a problem</div>
     </div>
   </div>
 
