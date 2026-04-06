@@ -1237,6 +1237,15 @@ body {
         </select>
         <span class="ctx-hint">Informs the tone and urgency of the gate recommendation.</span>
       </div>
+      <div class="ctx-field ctx-grid-full">
+        <label class="ctx-label">Procurement Notice Details <span class="ctx-optional">(optional but highly recommended)</span></label>
+        <textarea class="evidence-area" id="ctx-notice" style="min-height:120px;" placeholder="If a Prior Information Notice (PIN), Contract Notice, or ITT summary has been published for this opportunity, paste the key details here. Include: scope of services, contract value, evaluation criteria, key dates, and any specific requirements.
+
+You can copy and paste directly from Contracts Finder, Find a Tender (FTS), or the procurement portal. The more detail you provide, the more specific and valuable the AI review will be.
+
+This field is optional — the tool works without it, but the AI analysis will be significantly richer with this context." oninput="onCtxChange()"></textarea>
+        <span class="ctx-hint">Paste from Contracts Finder, Find a Tender, or the procurement portal. Gives the AI real procurement context to challenge your scores against — scope, requirements, evaluation approach, timeline.</span>
+      </div>
     </div>
 
     <div class="ctx-proceed-wrap">
@@ -1608,7 +1617,7 @@ const state = {
   radarChart: null,
   context: {
     bidder: '', bidderSector: '', org: '', opp: '', sector: '', tcv: '', oppType: '',
-    route: '', stage: '', incumbent: '', bnb: '', competitors: '', importance: ''
+    route: '', stage: '', incumbent: '', bnb: '', competitors: '', importance: '', notice: ''
   },
   contextComplete: false,
 };
@@ -1644,6 +1653,7 @@ function onCtxChange() {
   state.context.bnb         = document.getElementById('ctx-bnb').value;
   state.context.competitors = document.getElementById('ctx-competitors').value.trim();
   state.context.importance  = document.getElementById('ctx-importance').value;
+  state.context.notice      = document.getElementById('ctx-notice').value.trim();
 
   applyWeightProfile(state.context.oppType);
   updateProfileBanner();
@@ -1728,6 +1738,7 @@ function getContextBlock() {
   if (c.competitors) lines.push('Known Competitors: ' + c.competitors);
   if (c.importance)  lines.push('Strategic Importance: ' + c.importance);
   if (c.bnb)         lines.push('Bid/No-Bid Deadline: ' + c.bnb);
+  if (c.notice)      lines.push('\nPROCUREMENT NOTICE / ITT DETAILS (provided by user):\n' + c.notice);
   return lines.join('\n');
 }
 
@@ -2920,6 +2931,7 @@ function restoreSession(data) {
     'ctx-bnb':        'bnb',
     'ctx-competitors':'competitors',
     'ctx-importance': 'importance',
+    'ctx-notice':     'notice',
   };
   Object.entries(fieldMap).forEach(function(entry) {
     var id = entry[0], key = entry[1];
