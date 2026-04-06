@@ -1048,38 +1048,27 @@ body {
 <!-- ── APP SHELL ───────────────────────────────────────────── -->
 <header class="app-header">
   <div class="header-brand">
-    <div class="brand-mark">BE</div>
     <div class="brand-text">
-      <div class="brand-name">BidEquity</div>
+      <div class="brand-name"><span style="color:#F0EDE6;">Bid</span><span style="color:#5CA3B6;">Equity</span></div>
       <div class="brand-sub">Pursuit Qualification</div>
     </div>
   </div>
   <nav class="header-nav">
     <button class="nav-btn active" onclick="switchView('context')" id="nav-context">
-      <span class="nav-icon">&#9639;</span> Pursuit Context
+      Pursuit Context
     </button>
     <button class="nav-btn locked" onclick="requireContext(event,'assessment')" id="nav-assessment">
-      <span class="nav-icon">&#9776;</span> Assessment
+      Assessment
     </button>
     <button class="nav-btn locked" onclick="requireContext(event,'dashboard')" id="nav-dashboard">
-      <span class="nav-icon">&#9673;</span> PWIN Dashboard
-    </button>
-    <button class="nav-btn locked" onclick="requireContext(event,'review')" id="nav-review">
-      <span class="nav-icon">&#9672;</span> AI Assurance Review
+      PWIN Dashboard
     </button>
     <button class="nav-btn" onclick="switchView('help')" id="nav-help">
-      <span class="nav-icon">?</span> How to Use
+      How to Use
     </button>
   </nav>
   <div class="header-pwin">
-    <div class="session-toolbar">
-      <span class="session-label">SESSION</span>
-      <button class="btn-new-pursuit" onclick="newPursuit()" title="Start a new pursuit — clears all data">+ New</button>
-      <button class="btn-session save" onclick="saveSession()" title="Save session to file">&#8595; Save</button>
-      <label class="btn-session" title="Load a saved session" style="cursor:pointer;">
-        &#8593; Load<input type="file" accept=".json" style="display:none;" onchange="loadSessionFile(event)">
-      </label>
-    </div>
+    <button class="btn-new-pursuit" onclick="newPursuit()" title="Start a new qualification">+ New</button>
     <div class="ctx-pill" id="ctx-pill" style="display:none;"></div>
     <div class="completion-pill" id="completion-pill">0 / 24</div>
     <div class="pwin-display">
@@ -1127,8 +1116,8 @@ body {
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Total Contract Value (TCV) <span class="ctx-required">*</span></label>
-        <input class="ctx-input" id="ctx-tcv" type="text" placeholder="e.g. 45m, 2.3m, 400m" oninput="onCtxChange()">
-        <span class="ctx-hint">Used to calibrate evidence bar and risk thresholds.</span>
+        <input class="ctx-input" id="ctx-tcv" type="text" placeholder="e.g. 10, 45, 100 (in millions)" oninput="formatTCV(this); onCtxChange()">
+        <span class="ctx-hint">Enter the value in millions — e.g. type 10 for £10m. Used to calibrate evidence bar and risk thresholds.</span>
       </div>
     </div>
 
@@ -1153,16 +1142,16 @@ body {
         <label class="ctx-label">Procurement Route <span class="ctx-required">*</span></label>
         <select class="ctx-select" id="ctx-route" onchange="onCtxChange()">
           <option value="">-- Select route --</option>
-          <option>Open Procedure</option>
-          <option>Restricted Procedure</option>
-          <option>Competitive Dialogue</option>
-          <option>Competitive Procedure with Negotiation</option>
-          <option>Framework Call-off</option>
-          <option>Dynamic Purchasing System</option>
-          <option>Direct Award</option>
-          <option>Other / Unknown</option>
+          <option value="open">Open</option>
+          <option value="restricted">Restricted</option>
+          <option value="competitive_dialogue">Competitive Dialogue</option>
+          <option value="competitive_flexible">Competitive Flexible</option>
+          <option value="negotiated">Negotiated</option>
+          <option value="direct_award">Direct Award</option>
+          <option value="framework_calloff">Framework Call-off</option>
+          <option value="dynamic_market">Dynamic Market</option>
         </select>
-        <span class="ctx-hint">Shapes what Procurement Intelligence questions mean in this context.</span>
+        <span class="ctx-hint">Procurement Act 2023 routes. Shapes what Procurement Intelligence questions mean in this context.</span>
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Pursuit Stage <span class="ctx-required">*</span></label>
@@ -1203,8 +1192,8 @@ body {
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Known Primary Competitor(s) <span class="ctx-optional">(optional)</span></label>
-        <input class="ctx-input" id="ctx-competitors" type="text" placeholder="e.g. Capita, Sopra Steria, CGI" oninput="onCtxChange()">
-        <span class="ctx-hint">Named competitors sharpen the AI's competitive challenge questions.</span>
+        <input class="ctx-input" id="ctx-competitors" type="text" placeholder="e.g. Capita, Sopra Steria, CGI (separate with commas)" oninput="onCtxChange()">
+        <span class="ctx-hint">Separate competitor names with commas. Named competitors sharpen the AI's competitive challenge questions.</span>
       </div>
       <div class="ctx-field ctx-grid-full">
         <label class="ctx-label">Strategic Importance <span class="ctx-optional">(optional)</span></label>
@@ -1250,13 +1239,13 @@ body {
             </svg>
             <div class="gauge-center">
               <div class="gauge-pct" id="gauge-pct">0%</div>
-              <div class="gauge-target-label">Target: 75%</div>
+              <div class="gauge-target-label" id="gauge-target-label">Target: —</div>
             </div>
           </div>
           <span class="gauge-phase" id="gauge-phase" style="background:#F0ECE4;color:#576482;">Pre-Capture</span>
           <div style="width:100%;padding:0 10px;">
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--slate);margin-bottom:3px;">
-              <span>0%</span><span>Target 75%</span><span>100%</span>
+              <span>0%</span><span id="bar-target-label">Target —</span><span>100%</span>
             </div>
             <div class="phase-bar"><div class="phase-fill" id="phase-fill" style="width:0%"></div></div>
           </div>
@@ -1311,6 +1300,27 @@ body {
       <div id="cat-bars"></div>
     </div>
   </div>
+
+  <!-- User-scored messaging + AI report button -->
+  <div id="dash-scoring-note" style="margin-top:24px;padding:20px;background:white;border:1px solid var(--border);box-shadow:var(--shadow-sm);">
+    <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:300px;">
+        <div style="font-family:var(--font-display);font-size:16px;color:var(--navy);margin-bottom:8px;">This score is based on your self-assessment</div>
+        <div style="font-size:13px;color:var(--slate);line-height:1.7;" id="dash-stage-message">
+          The PWIN score above reflects the scores and evidence you have submitted. It has not been independently reviewed or challenged by AI. Self-assessment naturally carries optimism bias — teams consistently over-score their positioning.
+        </div>
+        <div style="font-size:13px;color:var(--navy);line-height:1.7;margin-top:12px;font-weight:500;" id="dash-floor-message"></div>
+      </div>
+      <div style="flex-shrink:0;">
+        <button class="btn-report" id="btn-dash-report" onclick="runFullReport()" style="background:var(--teal);white-space:nowrap;">
+          Generate AI Assurance Report
+        </button>
+        <div style="font-size:10px;color:var(--slate);margin-top:6px;text-align:center;">Reviews all 24 questions with AI</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dash-report-area" style="margin-top:20px;"></div>
 </div>
 
 <!-- AI REVIEW -->
@@ -1548,6 +1558,19 @@ const state = {
 // PURSUIT CONTEXT
 // ══════════════════════════════════════════════════════════════
 const CTX_REQUIRED = ['org','opp','sector','tcv','oppType','route','stage','incumbent'];
+
+function formatTCV(el) {
+  var raw = el.value.replace(/[^0-9.]/g, '');
+  if (!raw) { el.value = ''; return; }
+  var num = parseFloat(raw);
+  if (isNaN(num)) return;
+  if (num >= 1000) {
+    // User typed full number like 10000000 — convert to millions
+    el.value = '\u00a3' + (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + 'm';
+  } else {
+    el.value = '\u00a3' + raw + 'm';
+  }
+}
 
 function onCtxChange() {
   state.context.org         = document.getElementById('ctx-org').value.trim();
@@ -1867,6 +1890,20 @@ function getPhase(pwin) {
   return                  { label:"Strong Position",    color:"#2D8A5E", bg:"rgba(45,138,94,0.15)" };
 }
 
+// Minimum expected PWIN floor by pursuit stage
+function getStageTarget() {
+  var stage = state.context.stage;
+  switch (stage) {
+    case 'Pre-market engagement':     return { pct: 0,    label: 'No minimum — still assessing the opportunity' };
+    case 'Market engagement underway':return { pct: 0.25, label: 'Minimum 25% — you should understand the landscape' };
+    case 'ITT not yet published':     return { pct: 0.40, label: 'Minimum 40% — baseline capture intelligence should be in place' };
+    case 'ITT / RFP published':       return { pct: 0.55, label: 'Minimum 55% — capture phase should have built a credible position' };
+    case 'Shortlisted / BAFO':        return { pct: 0.70, label: 'Minimum 70% — execution should have strengthened your position' };
+    case 'Preferred Bidder':          return { pct: 0.80, label: 'Minimum 80% — below this at this stage indicates a problem' };
+    default:                          return { pct: 0,    label: 'Select a pursuit stage for a calibrated target' };
+  }
+}
+
 function getAnswered()  { return Object.values(state.positions).filter(Boolean).length; }
 function getReviewed()  { return Object.keys(state.reviews).length; }
 function getValidated() { return Object.values(state.reviews).filter(function(r) { return r.verdict === "Validated"; }).length; }
@@ -1889,10 +1926,17 @@ function updateDashboard() {
   var pct  = Math.round(pwin * 100);
   var circ = 2 * Math.PI * 40;
 
+  // Stage-specific target
+  var stageTarget = getStageTarget();
+  var targetPct = Math.round(stageTarget.pct * 100);
+  var gaugeColor = (stageTarget.pct > 0 && pwin < stageTarget.pct) ? '#C15050' : pwin >= 0.70 ? '#2D8A5E' : '#5CA3B6';
+
   document.getElementById('gauge-pct').textContent = pct + "%";
   document.getElementById('gauge-fill').setAttribute('stroke-dasharray', (circ * pwin).toFixed(1) + ' ' + circ);
-  document.getElementById('gauge-fill').setAttribute('stroke', pwin >= 0.75 ? '#2D8A5E' : '#5CA3B6');
+  document.getElementById('gauge-fill').setAttribute('stroke', gaugeColor);
   document.getElementById('phase-fill').style.width = pct + "%";
+  document.getElementById('gauge-target-label').textContent = stageTarget.pct > 0 ? 'Min target: ' + targetPct + '%' : 'No target set';
+  document.getElementById('bar-target-label').textContent = stageTarget.pct > 0 ? 'Min ' + targetPct + '%' : '';
 
   var phase = getPhase(pwin);
   var gp = document.getElementById('gauge-phase');
@@ -1901,9 +1945,18 @@ function updateDashboard() {
   gp.style.color = phase.color;
 
   document.getElementById('stat-answered').textContent  = getAnswered();
-  document.getElementById('stat-reviewed').textContent  = getReviewed();
-  document.getElementById('stat-validated').textContent = getValidated();
-  document.getElementById('stat-challenged').textContent= getChallenged();
+
+  // Floor message on dashboard
+  var floorMsg = document.getElementById('dash-floor-message');
+  if (floorMsg) {
+    if (stageTarget.pct > 0 && pwin < stageTarget.pct) {
+      floorMsg.innerHTML = '<span style="color:#C15050;">&#9888; At ' + state.context.stage + ' stage, pursuit teams should have built a minimum PWIN of ' + targetPct + '%. Your score of ' + pct + '% is below this floor — this indicates insufficient positioning before further bid investment.</span>';
+    } else if (stageTarget.pct > 0) {
+      floorMsg.innerHTML = '<span style="color:#2D8A5E;">&#10003; Your score of ' + pct + '% meets the minimum floor of ' + targetPct + '% for ' + state.context.stage + ' stage.</span>';
+    } else {
+      floorMsg.textContent = stageTarget.label;
+    }
+  }
 
   var barsEl = document.getElementById('cat-bars');
   barsEl.innerHTML = CATS.map(function(cat) {
@@ -1924,7 +1977,9 @@ function updateDashboard() {
 
 function updateRadar() {
   var scores = CATS.map(function(c) { return Math.round((getCatScore(c.id) / MAX_CAT) * 100); });
-  var target = CATS.map(function() { return 75; });
+  var stTarget = getStageTarget();
+  var targetVal = stTarget.pct > 0 ? Math.round(stTarget.pct * 100) : 50;
+  var target = CATS.map(function() { return targetVal; });
 
   if (state.radarChart) {
     state.radarChart.data.datasets[0].data = scores;
@@ -2007,7 +2062,7 @@ function buildAssessment() {
               '</select>' +
             '</div>' +
             '<textarea class="evidence-area" id="ev-' + idx + '"' +
-              ' placeholder="Enter evidence \u2014 name individuals, documents, dates, commitments\u2026"' +
+              ' placeholder="The more specific your evidence, the more useful the AI review. Name individuals, dates, and documented commitments. There is no word limit."' +
               ' oninput="saveEvidence(' + idx + ', this.value)"></textarea>' +
             '<button class="rubric-toggle" onclick="toggleRubric(' + idx + ')" id="rubric-btn-' + idx + '">' +
               '\u25b6 scoring rubric' +
@@ -2280,13 +2335,17 @@ function toggleRubricPanel(idx) {
 // ══════════════════════════════════════════════════════════════
 // AI REVIEW — SINGLE QUESTION
 // ══════════════════════════════════════════════════════════════
-async function runSingleReview(idx) {
+async function runSingleReview(idx, silent) {
   var q   = QUESTIONS[idx];
   var pos = state.positions[idx] || (document.getElementById('rp-pos-' + idx) && document.getElementById('rp-pos-' + idx).value);
   var ev  = state.evidence[idx] || (document.getElementById('rp-ev-' + idx) && document.getElementById('rp-ev-' + idx).value);
 
-  if (!pos) { alert('Please select a position before requesting a review.'); return; }
-  if (!ev || ev.length < 20) { alert('Please provide more detailed evidence (at least a sentence) before requesting a review.'); return; }
+  if (!pos) { if (!silent) alert('Please select a position before requesting a review.'); return; }
+  if (!ev || ev.length < 20) {
+    if (!silent) { alert('Please provide more detailed evidence (at least a sentence) before requesting a review.'); return; }
+    // In batch mode, still review but note the lack of evidence
+    ev = ev || '(no evidence provided — user did not supply supporting detail)';
+  }
 
   var btn = document.getElementById('rp-btn-' + idx);
   if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Reviewing\u2026'; }
@@ -2402,48 +2461,107 @@ async function runFullReport() {
   var answered = getAnswered();
   if (answered < 8) { alert('Please answer at least 8 questions before generating a full report.'); return; }
 
-  var btn = document.getElementById('btn-full-report');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Generating report\u2026';
+  // Find the button and area — could be on AI Review tab or Dashboard
+  var btn = document.getElementById('btn-full-report') || document.getElementById('btn-dash-report');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Reviewing all questions\u2026'; }
 
-  var area = document.getElementById('full-report-area');
-  area.innerHTML = '<div class="report-card" style="margin-bottom:20px;">' +
-    '<div class="loading-block"><div class="spinner spinner-dark"></div> The AI is analysing all ' + answered + ' scored questions and generating your pursuit assurance report\u2026</div>' +
-  '</div>';
+  var area = document.getElementById('full-report-area') || document.getElementById('dash-report-area');
+  if (!area) return;
 
   var pwin = getPWIN();
   var phase = getPhase(pwin).label;
   var contextBlock = getContextBlock();
   var c = state.context;
+  var stageTarget = getStageTarget();
 
-  var scoreSummary = CATS.map(function(cat) {
-    var weighted = getCatScore(cat.id);
-    var pct = Math.round((weighted / MAX_CAT) * 100);
-    return cat.name + ': ' + pct + '% (weighted) \u2014 Category Weight: ' + (cat.weight*100).toFixed(0) + '%';
-  }).join('\n');
+  // ── STEP 1: Review all answered questions individually ──────
+  var answeredIndices = [];
+  QUESTIONS.forEach(function(q, i) { if (state.positions[i]) answeredIndices.push(i); });
 
-  var questionSummary = QUESTIONS.map(function(q,i) {
-    var pos = state.positions[i];
-    var ev  = state.evidence[i] || "(no evidence provided)";
-    var rev = state.reviews[i];
-    if (!pos) return null;
-    return '[' + CATS.find(function(cc) { return cc.id===q.cat; }).name + ' / ' + q.topic + ']\nScore: ' + pos + ' | Evidence: ' + ev.substring(0,200) + (ev.length>200?'\u2026':'') + '\n' + (rev ? 'AI Verdict: ' + rev.verdict + ' | Suggested: ' + rev.suggestedScore : 'Not individually reviewed');
-  }).filter(Boolean).join('\n\n');
+  // Only review questions not yet reviewed
+  var toReview = answeredIndices.filter(function(i) { return !state.reviews[i]; });
+  var totalSteps = toReview.length + 1; // +1 for synthesis
+  var currentStep = 0;
 
-  var fullReportSchema = 'Respond ONLY with valid JSON:\n{\n  "executiveSummary": "3-4 sentences on overall pursuit health and primary risks, referencing the opportunity and organisation by name",\n  "pwinAssessment": "2-3 sentences on whether the PWIN score is credible or inflated given evidence quality and contract value",\n  "strengthAreas": ["specific strength with evidence", "strength 2", "strength 3"],\n  "criticalRisks": [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}],\n  "immediateActions": ["specific action with suggested owner", "action 2", "action 3", "action 4", "action 5"],\n  "gateRecommendation": "Proceed | Proceed with Conditions | Review Required | Stop",\n  "gateRationale": "2-3 sentences explaining the gate recommendation in the context of this specific opportunity"\n}';
-
-  var systemPrompt = buildPersonaPrompt(fullReportSchema);
-
-  var userPrompt = 'PURSUIT CONTEXT:\n' + contextBlock + '\n\nASSESSMENT RESULTS:\nPursuit Phase: ' + phase + '\nOverall PWIN: ' + Math.round(pwin*100) + '% (Target: 75%)\nQuestions Answered: ' + answered + '/24\nAI Reviews Completed: ' + getReviewed() + '\nChallenges Flagged: ' + getChallenged() + '\n\nCategory Scores:\n' + scoreSummary + '\n\nScored Questions with Evidence:\n' + questionSummary;
+  function updateProgress(msg) {
+    currentStep++;
+    area.innerHTML = '<div style="background:white;border:1px solid var(--border);padding:20px;margin-bottom:16px;">' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+        '<div class="spinner spinner-dark"></div>' +
+        '<div style="font-size:13px;color:var(--navy);">' + msg + '</div>' +
+      '</div>' +
+      '<div style="height:4px;background:var(--border);"><div style="height:100%;background:var(--teal);width:' + Math.round(currentStep/totalSteps*100) + '%;transition:width 0.3s;"></div></div>' +
+      '<div style="font-size:10px;color:var(--slate);margin-top:6px;">Step ' + currentStep + ' of ' + totalSteps + '</div>' +
+    '</div>';
+  }
 
   try {
+    // Review each unanswered question
+    for (var ri = 0; ri < toReview.length; ri++) {
+      var idx = toReview[ri];
+      var q = QUESTIONS[idx];
+      updateProgress('AI reviewing: ' + CATS.find(function(cc){return cc.id===q.cat;}).name + ' \u2014 ' + q.topic + ' (' + (ri+1) + '/' + toReview.length + ')');
+      await runSingleReview(idx, true);
+    }
+
+    // ── STEP 2: Synthesise all reviews into report ──────
+    updateProgress('Synthesising all ' + answeredIndices.length + ' reviews into assurance report\u2026');
+
+    var scoreSummary = CATS.map(function(cat) {
+      var weighted = getCatScore(cat.id);
+      var pct2 = Math.round((weighted / MAX_CAT) * 100);
+      return cat.name + ': ' + pct2 + '% (weighted) \u2014 Weight: ' + (cat.weight*100).toFixed(0) + '%';
+    }).join('\n');
+
+    // Build detailed per-question summary including AI verdicts
+    var questionDetails = answeredIndices.map(function(i) {
+      var q = QUESTIONS[i];
+      var pos = state.positions[i];
+      var ev = state.evidence[i] || "(no evidence)";
+      var rev = state.reviews[i];
+      var catName = CATS.find(function(cc){return cc.id===q.cat;}).name;
+      var line = '[' + catName + ' / ' + q.topic + ']\nUser Score: ' + pos;
+      if (rev) {
+        line += ' | AI Verdict: ' + rev.verdict + ' | AI Suggested Score: ' + rev.suggestedScore;
+        if (rev.inflationDetected) line += ' | INFLATION DETECTED: ' + rev.inflationReason;
+        line += '\nAI Narrative: ' + (rev.narrative || '');
+        if (rev.challengeQuestions && rev.challengeQuestions.length) line += '\nChallenges: ' + rev.challengeQuestions.join('; ');
+        if (rev.captureActions && rev.captureActions.length) line += '\nActions: ' + rev.captureActions.join('; ');
+      }
+      line += '\nEvidence: ' + ev.substring(0, 300) + (ev.length > 300 ? '\u2026' : '');
+      return line;
+    }).join('\n\n');
+
+    // Calculate AI-adjusted PWIN
+    var aiScoreSum = 0, aiScoreCount = 0;
+    answeredIndices.forEach(function(i) {
+      var rev = state.reviews[i];
+      if (rev && rev.suggestedScore) {
+        var pts = SCORE_PTS[rev.suggestedScore];
+        if (pts) { aiScoreSum += pts; aiScoreCount++; }
+      }
+    });
+    var aiPwin = aiScoreCount > 0 ? Math.round((aiScoreSum / (aiScoreCount * 4)) * 100) : null;
+
+    var fullReportSchema = 'Respond ONLY with valid JSON:\n{\n  "executiveSummary": "4-5 sentences on overall pursuit health, referencing the opportunity and organisation by name. Be honest about the gap between self-assessed and AI-assessed position.",\n  "pwinAssessment": "3-4 sentences: state the user PWIN, the AI-adjusted PWIN, and explain the gap. If the user has over-scored, say so directly.",\n  "strengthAreas": ["specific strength with evidence reference", "strength 2", "strength 3"],\n  "criticalRisks": [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}],\n  "priorityRecommendations": ["specific recommendation with owner and timeframe", "rec 2", "rec 3", "rec 4", "rec 5"],\n  "gateRecommendation": "Proceed | Proceed with Conditions | Review Required | Stop",\n  "gateRationale": "3-4 sentences explaining the recommendation, referencing the minimum PWIN floor for this stage if relevant"\n}';
+
+    var systemPrompt = buildPersonaPrompt(fullReportSchema);
+
+    var userPrompt = 'PURSUIT CONTEXT:\n' + contextBlock +
+      '\n\nASSESSMENT RESULTS:\nPursuit Stage: ' + (c.stage || 'Not specified') +
+      '\nUser Self-Assessed PWIN: ' + Math.round(pwin*100) + '%' +
+      (aiPwin !== null ? '\nAI-Adjusted PWIN (based on suggested scores): ' + aiPwin + '%' : '') +
+      (stageTarget.pct > 0 ? '\nMinimum PWIN Floor for ' + c.stage + ': ' + Math.round(stageTarget.pct*100) + '%' : '') +
+      '\nQuestions Answered: ' + answered + '/24' +
+      '\nQuestions Challenged by AI: ' + getChallenged() + '/' + answeredIndices.length +
+      '\n\nCategory Scores:\n' + scoreSummary +
+      '\n\nDETAILED QUESTION-BY-QUESTION AI REVIEWS:\n' + questionDetails;
+
     var resp = await fetch(AI_REVIEW_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514", max_tokens: 2000,
+        model: "claude-sonnet-4-20250514", max_tokens: 3000,
         system: systemPrompt,
         messages: [{ role: "user", content: userPrompt }]
       })
@@ -2459,26 +2577,89 @@ async function runFullReport() {
     if (!data.content || !data.content.length) throw new Error("Empty response from API");
 
     var text = data.content.map(function(b) { return b.text || ""; }).join("").replace(/```json|```/g, "").trim();
-    var r    = JSON.parse(text);
+    var r = JSON.parse(text);
 
     var gateColor = {
-      "Proceed":"var(--green)","Proceed with Conditions":"#C68A1D",
-      "Review Required":"#C68A1D","Stop":"var(--red)"
-    }[r.gateRecommendation] || "var(--slate)";
+      "Proceed":"#2D8A5E","Proceed with Conditions":"#C68A1D",
+      "Review Required":"#C68A1D","Stop":"#C15050"
+    }[r.gateRecommendation] || "#576482";
+
+    // ── STEP 3: Build comprehensive report HTML ──────
+
+    // Per-question review cards grouped by category
+    var perQuestionHtml = CATS.map(function(cat) {
+      var catQuestions = answeredIndices.filter(function(i) { return QUESTIONS[i].cat === cat.id; });
+      if (catQuestions.length === 0) return '';
+      var qCards = catQuestions.map(function(i) {
+        var q = QUESTIONS[i];
+        var rev = state.reviews[i];
+        var pos = state.positions[i];
+        if (!rev) return '';
+        var verdictColor = rev.verdict === 'Validated' ? '#2D8A5E' : rev.verdict === 'Challenged' ? '#C15050' : '#C68A1D';
+        var verdictBg = rev.verdict === 'Validated' ? 'rgba(45,138,94,0.08)' : rev.verdict === 'Challenged' ? 'rgba(193,80,80,0.08)' : 'rgba(198,138,29,0.08)';
+        return '<div style="padding:12px 14px;border:1px solid var(--border);margin-bottom:8px;border-left:3px solid ' + verdictColor + ';">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+            '<div style="font-size:12px;font-weight:600;color:var(--navy);">' + q.topic + '</div>' +
+            '<div style="display:flex;gap:8px;align-items:center;">' +
+              '<span style="font-size:10px;color:var(--slate);">You: ' + pos + '</span>' +
+              (rev.suggestedScore && rev.suggestedScore !== pos ? '<span style="font-size:10px;color:' + verdictColor + ';font-weight:600;">AI: ' + rev.suggestedScore + '</span>' : '') +
+              '<span style="font-size:10px;font-weight:700;padding:2px 8px;background:' + verdictBg + ';color:' + verdictColor + ';text-transform:uppercase;letter-spacing:0.04em;">' + rev.verdict + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--slate);line-height:1.6;margin-bottom:6px;">' + (rev.narrative || '') + '</div>' +
+          (rev.inflationDetected ? '<div style="font-size:11px;color:#C68A1D;padding:4px 8px;background:rgba(198,138,29,0.08);margin-bottom:6px;">Inflation detected: ' + rev.inflationReason + '</div>' : '') +
+          (rev.challengeQuestions && rev.challengeQuestions.length ? '<div style="font-size:11px;color:var(--navy);margin-top:4px;"><strong>Challenges:</strong> ' + rev.challengeQuestions.join(' | ') + '</div>' : '') +
+          (rev.captureActions && rev.captureActions.length ? '<div style="font-size:11px;color:var(--teal);margin-top:4px;"><strong>Actions:</strong> ' + rev.captureActions.join(' | ') + '</div>' : '') +
+        '</div>';
+      }).join('');
+      return '<div class="report-section">' +
+        '<div class="report-section-title">' + cat.name + ' (' + Math.round((getCatScore(cat.id)/MAX_CAT)*100) + '%)</div>' +
+        qCards +
+      '</div>';
+    }).join('');
+
+    // Scoring comparison table
+    var userPwinPct = Math.round(pwin * 100);
+    var scoringTableHtml = '<div class="report-section">' +
+      '<div class="report-section-title">Scoring Comparison \u2014 Your Assessment vs AI Review</div>' +
+      '<div style="font-size:12px;color:var(--slate);margin-bottom:12px;line-height:1.6;">The table below shows how you scored each question compared to the AI\'s independent assessment. Where scores differ, the AI has provided justification in the question reviews above.</div>' +
+      '<table style="width:100%;font-size:11px;border-collapse:collapse;">' +
+        '<tr style="background:var(--navy);color:white;"><th style="padding:6px 8px;text-align:left;">Question</th><th style="padding:6px 8px;text-align:center;">Your Score</th><th style="padding:6px 8px;text-align:center;">AI Score</th><th style="padding:6px 8px;text-align:center;">Verdict</th></tr>' +
+        answeredIndices.map(function(i) {
+          var q = QUESTIONS[i];
+          var rev = state.reviews[i];
+          var pos = state.positions[i];
+          var verdictColor = rev ? (rev.verdict === 'Validated' ? '#2D8A5E' : rev.verdict === 'Challenged' ? '#C15050' : '#C68A1D') : '#576482';
+          return '<tr style="border-bottom:1px solid var(--border);">' +
+            '<td style="padding:5px 8px;">' + CATS.find(function(cc){return cc.id===q.cat;}).name + ': ' + q.topic + '</td>' +
+            '<td style="padding:5px 8px;text-align:center;">' + pos + '</td>' +
+            '<td style="padding:5px 8px;text-align:center;font-weight:600;color:' + (rev && rev.suggestedScore !== pos ? verdictColor : 'inherit') + ';">' + (rev ? rev.suggestedScore : '\u2014') + '</td>' +
+            '<td style="padding:5px 8px;text-align:center;color:' + verdictColor + ';font-weight:600;">' + (rev ? rev.verdict : '\u2014') + '</td>' +
+          '</tr>';
+        }).join('') +
+        '<tr style="background:var(--bg3);font-weight:700;">' +
+          '<td style="padding:6px 8px;">Overall PWIN</td>' +
+          '<td style="padding:6px 8px;text-align:center;">' + userPwinPct + '%</td>' +
+          '<td style="padding:6px 8px;text-align:center;color:' + (aiPwin !== null && aiPwin < userPwinPct ? '#C15050' : '#2D8A5E') + ';">' + (aiPwin !== null ? aiPwin + '%' : '\u2014') + '</td>' +
+          '<td style="padding:6px 8px;text-align:center;">' + (aiPwin !== null && aiPwin < userPwinPct ? 'Over-scored' : aiPwin !== null ? 'Credible' : '\u2014') + '</td>' +
+        '</tr>' +
+      '</table>' +
+    '</div>';
 
     area.innerHTML =
     '<div class="report-card" style="margin-bottom:24px;">' +
       '<div class="report-header">' +
         '<div>' +
           '<div class="report-title">' + (c.opp || 'Pursuit Assurance Report') + '</div>' +
-          '<div class="report-sub">' + c.org + (c.sector ? ' \u00b7 ' + c.sector : '') + (c.tcv ? ' \u00b7 ' + c.tcv : '') + ' \u00b7 ' + phase + ' \u00b7 ' + new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) + '</div>' +
+          '<div class="report-sub">' + c.org + (c.sector ? ' \u00b7 ' + c.sector : '') + (c.tcv ? ' \u00b7 ' + c.tcv : '') + ' \u00b7 ' + c.stage + ' \u00b7 ' + new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) + '</div>' +
           '<div style="margin-top:12px;display:inline-block;padding:5px 16px;font-size:12px;font-weight:700;background:' + gateColor + ';color:white;letter-spacing:0.04em;">' +
             'GATE: ' + r.gateRecommendation.toUpperCase() +
           '</div>' +
         '</div>' +
-        '<div>' +
-          '<div class="report-pwin-label">PWIN Score</div>' +
-          '<div class="report-pwin">' + Math.round(pwin*100) + '%</div>' +
+        '<div style="text-align:right;">' +
+          '<div class="report-pwin-label">Your PWIN</div>' +
+          '<div class="report-pwin">' + userPwinPct + '%</div>' +
+          (aiPwin !== null ? '<div style="font-size:11px;color:rgba(240,237,230,0.6);margin-top:4px;">AI-adjusted: <strong style="color:#5CA3B6;">' + aiPwin + '%</strong></div>' : '') +
         '</div>' +
       '</div>' +
       '<div class="report-body">' +
@@ -2499,9 +2680,11 @@ async function runFullReport() {
           r.criticalRisks.map(function(risk) { return '<div class="report-risk-item ' + (risk.severity==='High'?'risk-high':'risk-medium') + '"><div class="risk-label">' + risk.severity + ' Risk \u2014 ' + risk.category + '</div>' + risk.risk + '</div>'; }).join('') +
         '</div>' +
         '<div class="report-section">' +
-          '<div class="report-section-title">Immediate Actions Required</div>' +
-          r.immediateActions.map(function(a,i) { return '<div class="report-risk-item risk-action"><div class="risk-label">Action ' + (i+1) + '</div>' + a + '</div>'; }).join('') +
+          '<div class="report-section-title">Priority Recommendations</div>' +
+          (r.priorityRecommendations || r.immediateActions || []).map(function(a,i) { return '<div class="report-risk-item risk-action"><div class="risk-label">Recommendation ' + (i+1) + '</div>' + a + '</div>'; }).join('') +
         '</div>' +
+        perQuestionHtml +
+        scoringTableHtml +
         '<div class="report-section">' +
           '<div class="report-section-title">Gate Recommendation</div>' +
           '<p class="report-text">' + r.gateRationale + '</p>' +
@@ -2520,17 +2703,16 @@ async function runFullReport() {
   // Add download button after report
   area.insertAdjacentHTML('beforeend',
     '<div style="display:flex;gap:10px;margin-top:16px;">' +
-      '<button class="btn-report" onclick="downloadReportPDF()" style="background:var(--teal);">↓ Download as PDF</button>' +
-      '<button class="btn-report" onclick="printReport()" style="background:var(--navy);">⎙ Print Report</button>' +
+      '<button class="btn-report" onclick="downloadReportPDF()" style="background:var(--teal);">\u2193 Download as PDF</button>' +
+      '<button class="btn-report" onclick="printReport()" style="background:var(--navy);">\u2399 Print Report</button>' +
     '</div>'
   );
 
-  btn.disabled = false;
-  btn.innerHTML = '<span>\u25c8</span> Generate Full Assurance Report';
+  if (btn) { btn.disabled = false; btn.innerHTML = 'Generate AI Assurance Report'; }
 }
 
 function downloadReportPDF() {
-  var reportCard = document.querySelector('#full-report-area .report-card');
+  var reportCard = document.querySelector('#full-report-area .report-card') || document.querySelector('#dash-report-area .report-card');
   if (!reportCard) { alert('No report generated yet.'); return; }
 
   // Build a standalone HTML document for printing
