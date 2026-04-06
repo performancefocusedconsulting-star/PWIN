@@ -19,6 +19,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set up Node.js (for wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Restore database from cache
         uses: actions/cache@v4
         with:
@@ -29,6 +34,17 @@ jobs:
 
       - name: Run ingest
         run: python agent/ingest.py
+
+      - name: Export data for D1
+        run: python agent/sync-d1.py
+
+      - name: Sync to Cloudflare D1
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        working-directory: pwin-competitive-intel/workers
+        run: npx wrangler d1 execute pwin-competitive-intel --file=../db/d1-sync.sql
 
       - name: Upload database artifact
         uses: actions/upload-artifact@v4

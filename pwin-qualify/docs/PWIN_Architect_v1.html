@@ -1279,7 +1279,9 @@ function getContextBlock() {
 // Returns a formatted text block for injection into AI prompts.
 // Fails silently — competitive intel enriches but is not required.
 
-const INTEL_API = 'http://localhost:3456';
+const INTEL_API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? 'http://localhost:3456'
+  : 'https://pwin-competitive-intel.performancefocusedconsulting.workers.dev';
 let _intelCache = { org: null, data: null, ts: 0 };
 
 async function fetchCompetitiveIntel() {

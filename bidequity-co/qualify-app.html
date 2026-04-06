@@ -1742,6 +1742,74 @@ function getContextBlock() {
   return lines.join('\n');
 }
 
+// ── Competitive Intelligence from FTS procurement data ──────
+var INTEL_API = 'https://pwin-competitive-intel.performancefocusedconsulting.workers.dev';
+var _intelCache = { org: null, data: null, ts: 0 };
+
+async function fetchCompetitiveIntel() {
+  var org = state.context.org;
+  if (!org || org.length < 3) return '';
+  if (_intelCache.org === org && Date.now() - _intelCache.ts < 300000) return _intelCache.data;
+
+  try {
+    var results = await Promise.all([
+      fetch(INTEL_API + '/api/intel/buyer?name=' + encodeURIComponent(org)).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+      fetch(INTEL_API + '/api/intel/pwin?buyer=' + encodeURIComponent(org)).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+    ]);
+    var buyerResp = results[0];
+    var pwinResp = results[1];
+    var lines = [];
+
+    if (buyerResp && buyerResp.buyers && buyerResp.buyers.length) {
+      var b = buyerResp.buyers[0];
+      var s = b.stats || {};
+      if (b.awards > 0) {
+        lines.push('PROCUREMENT INTELLIGENCE (from UK Find a Tender Service data):');
+        lines.push('Buyer: ' + b.name + ' (' + (b.org_type || 'unknown type') + ')');
+        lines.push('Awards in database: ' + b.awards + ' | Total spend: \u00a3' + (b.total_spend ? (b.total_spend/1e6).toFixed(1) + 'm' : 'unknown'));
+        lines.push('Average award value: \u00a3' + (b.avg_value ? (b.avg_value/1e6).toFixed(1) + 'm' : 'unknown'));
+        if (b.avg_bids) lines.push('Average bidders per tender: ' + Number(b.avg_bids).toFixed(1));
+        if (b.methods) {
+          var meth = Object.entries(b.methods).filter(function(e) { return e[1] > 0; }).map(function(e) { return e[0] + ': ' + e[1]; }).join(', ');
+          if (meth) lines.push('Procurement methods used: ' + meth);
+        }
+        if (b.top_suppliers && b.top_suppliers.length) {
+          lines.push('Top suppliers for this buyer:');
+          b.top_suppliers.slice(0, 5).forEach(function(sup) {
+            lines.push('  - ' + sup.name + ': ' + sup.awards + ' award(s), \u00a3' + (sup.value ? (sup.value/1e6).toFixed(1) + 'm' : 'unknown') + ' total');
+          });
+        }
+      }
+    }
+
+    if (pwinResp && pwinResp.signals && pwinResp.signals.length) {
+      var sig = pwinResp.signals[0];
+      if (!lines.length) lines.push('PROCUREMENT INTELLIGENCE (from UK Find a Tender Service data):');
+      lines.push('Competition level: ' + sig.awards + ' awards tracked');
+      if (sig.avg_bids) lines.push('Average bids per tender: ' + Number(sig.avg_bids).toFixed(1));
+      var total = (sig.methods.open||0) + (sig.methods.limited||0) + (sig.methods.direct||0) + (sig.methods.selective||0);
+      if (total > 0) {
+        lines.push('Method breakdown: open=' + (sig.methods.open||0) + ', limited=' + (sig.methods.limited||0) + ', direct=' + (sig.methods.direct||0) + ', selective=' + (sig.methods.selective||0));
+      }
+    }
+
+    if (state.context.competitors && buyerResp && buyerResp.buyers && buyerResp.buyers.length) {
+      var competitorNames = state.context.competitors.split(/[,;]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+      var topSupNames = (buyerResp.buyers[0].top_suppliers || []).map(function(s) { return s.name.toLowerCase(); });
+      var incumbents = competitorNames.filter(function(c) { return topSupNames.some(function(s) { return s.indexOf(c.toLowerCase()) >= 0; }); });
+      if (incumbents.length) {
+        lines.push('Competitor incumbency signal: ' + incumbents.join(', ') + ' appear(s) in this buyer\'s award history');
+      }
+    }
+
+    var result = lines.length ? '\n' + lines.join('\n') : '';
+    _intelCache = { org: org, data: result, ts: Date.now() };
+    return result;
+  } catch(e) {
+    return '';
+  }
+}
+
 // ══════════════════════════════════════════════════════════════
 // ALEX PERSONA
 // ══════════════════════════════════════════════════════════════
@@ -1923,6 +1991,8 @@ function buildPersonaPrompt(outputSchema) {
     var oppBlock = oppEnrichment[ctx.oppType];
     if (oppBlock) prompt += 'OPPORTUNITY TYPE CONTEXT:\n' + oppBlock + '\n\n';
   }
+
+  prompt += '{{COMPETITIVE_INTEL_PLACEHOLDER}}\n';
 
   prompt += outputSchema + '\n\n';
 
@@ -2425,10 +2495,11 @@ async function runSingleReview(idx, silent) {
 
   var rubricText = Object.entries(q.rubric).map(function(entry) { return entry[0] + ': ' + entry[1]; }).join('\n');
   var contextBlock = getContextBlock();
+  var intelBlock = await fetchCompetitiveIntel();
 
   var outputSchema = 'Respond ONLY with a valid JSON object \u2014 no markdown, no preamble, no explanation outside the JSON.\n\nRequired fields:\n{\n  "verdict": "Validated" | "Queried" | "Challenged",\n  "suggestedScore": "Strongly Agree" | "Agree" | "Disagree" | "Strongly Disagree",\n  "confidenceLevel": number 0-100,\n  "narrative": "2-3 sentence assessment referencing the pursuit context where relevant",\n  "inflationDetected": boolean,\n  "inflationReason": "specific phrase or claim suggesting inflation, or empty string",\n  "challengeQuestions": ["q1","q2","q3"],\n  "captureActions": ["action with named owner and output","action2"]\n}';
 
-  var systemPrompt = buildPersonaPrompt(outputSchema);
+  var systemPrompt = buildPersonaPrompt(outputSchema).replace('{{COMPETITIVE_INTEL_PLACEHOLDER}}', intelBlock);
 
   var userPrompt = 'PURSUIT CONTEXT:\n' + contextBlock + '\n\nQUESTION BEING REVIEWED:\nQuestion: ' + q.text + '\nCategory: ' + CATS.find(function(c) { return c.id===q.cat; }).name + ' | Topic: ' + q.topic + '\nClaimed Score: ' + pos + '\nEvidence: ' + ev + '\nScoring Rubric:\n' + rubricText + '\nInflation signals to watch: ' + q.signals.join(', ');
 
@@ -2616,9 +2687,11 @@ async function runFullReport() {
     });
     var aiPwin = aiScoreCount > 0 ? Math.round((aiScoreSum / (aiScoreCount * 4)) * 100) : null;
 
+    var intelBlock = await fetchCompetitiveIntel();
+
     var fullReportSchema = 'Respond ONLY with valid JSON:\n{\n  "executiveSummary": "4-5 sentences on overall pursuit health, referencing the opportunity and organisation by name. Be honest about the gap between self-assessed and AI-assessed position.",\n  "pwinAssessment": "3-4 sentences: state the user PWIN, the AI-adjusted PWIN, and explain the gap. If the user has over-scored, say so directly.",\n  "strengthAreas": ["specific strength with evidence reference", "strength 2", "strength 3"],\n  "criticalRisks": [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}],\n  "priorityRecommendations": ["specific recommendation with owner and timeframe", "rec 2", "rec 3", "rec 4", "rec 5"],\n  "gateRecommendation": "Proceed | Proceed with Conditions | Review Required | Stop",\n  "gateRationale": "3-4 sentences explaining the recommendation, referencing the minimum PWIN floor for this stage if relevant"\n}';
 
-    var systemPrompt = buildPersonaPrompt(fullReportSchema);
+    var systemPrompt = buildPersonaPrompt(fullReportSchema).replace('{{COMPETITIVE_INTEL_PLACEHOLDER}}', intelBlock);
 
     var userPrompt = 'PURSUIT CONTEXT:\n' + contextBlock +
       '\n\nASSESSMENT RESULTS:\nPursuit Stage: ' + (c.stage || 'Not specified') +

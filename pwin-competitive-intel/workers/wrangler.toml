@@ -1,0 +1,8 @@
+name = "pwin-competitive-intel"
+main = "intel-api.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pwin-competitive-intel"
+database_id = ""  # Fill after: npx wrangler d1 create pwin-competitive-intel
