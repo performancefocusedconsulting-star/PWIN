@@ -1274,6 +1274,86 @@ function getContextBlock() {
   return lines.join('\n');
 }
 
+// ── Competitive Intelligence from FTS procurement data ──────
+// Fetches buyer profile and PWIN signals from the platform API.
+// Returns a formatted text block for injection into AI prompts.
+// Fails silently — competitive intel enriches but is not required.
+
+const INTEL_API = 'http://localhost:3456';
+let _intelCache = { org: null, data: null, ts: 0 };
+
+async function fetchCompetitiveIntel() {
+  const org = state.context.org;
+  if (!org || org.length < 3) return '';
+
+  // Cache for 5 minutes per organisation name
+  if (_intelCache.org === org && Date.now() - _intelCache.ts < 300000) return _intelCache.data;
+
+  try {
+    const [buyerResp, pwinResp] = await Promise.all([
+      fetch(`${INTEL_API}/api/intel/buyer?name=${encodeURIComponent(org)}`).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${INTEL_API}/api/intel/pwin?buyer=${encodeURIComponent(org)}`).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+
+    const lines = [];
+
+    // Buyer procurement profile
+    if (buyerResp?.buyers?.length) {
+      const b = buyerResp.buyers[0];
+      const s = b.stats || {};
+      if (s.total_awards > 0) {
+        lines.push('PROCUREMENT INTELLIGENCE (from UK Find a Tender Service data):');
+        lines.push(`Buyer: ${b.name} (${b.org_type || 'unknown type'})`);
+        lines.push(`Awards in database: ${s.total_awards} | Total spend: £${s.total_spend ? (s.total_spend/1e6).toFixed(1) + 'm' : 'unknown'}`);
+        lines.push(`Average award value: £${s.avg_value ? (s.avg_value/1e6).toFixed(1) + 'm' : 'unknown'}`);
+        if (s.avg_bids) lines.push(`Average bidders per tender: ${Number(s.avg_bids).toFixed(1)}`);
+
+        // Procurement methods
+        if (b.procurementMethods?.length) {
+          const methods = b.procurementMethods.map(m => `${m.procurement_method || 'unknown'}: ${m.cnt}`).join(', ');
+          lines.push(`Procurement methods used: ${methods}`);
+        }
+
+        // Top suppliers (incumbents to be aware of)
+        if (b.topSuppliers?.length) {
+          lines.push('Top suppliers for this buyer:');
+          b.topSuppliers.slice(0, 5).forEach(sup => {
+            lines.push(`  - ${sup.name}: ${sup.wins} award(s), £${sup.total_value ? (sup.total_value/1e6).toFixed(1) + 'm' : 'unknown'} total`);
+          });
+        }
+      }
+    }
+
+    // PWIN competition signals
+    if (pwinResp?.signals?.length) {
+      const sig = pwinResp.signals[0];
+      if (!lines.length) lines.push('PROCUREMENT INTELLIGENCE (from UK Find a Tender Service data):');
+      lines.push(`Competition level: ${sig.awards_count} awards tracked`);
+      if (sig.avg_bids_per_tender) lines.push(`Average bids per tender: ${Number(sig.avg_bids_per_tender).toFixed(1)}`);
+      const total = (sig.open_awards||0) + (sig.limited_awards||0) + (sig.direct_awards||0) + (sig.selective_awards||0);
+      if (total > 0) {
+        lines.push(`Method breakdown: open=${sig.open_awards||0}, limited=${sig.limited_awards||0}, direct=${sig.direct_awards||0}, selective=${sig.selective_awards||0}`);
+      }
+    }
+
+    // Competitor intelligence (if named competitors match suppliers in the database)
+    if (state.context.competitors && buyerResp?.buyers?.length) {
+      const competitorNames = state.context.competitors.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+      const topSupNames = (buyerResp.buyers[0].topSuppliers || []).map(s => s.name.toLowerCase());
+      const incumbents = competitorNames.filter(c => topSupNames.some(s => s.includes(c.toLowerCase())));
+      if (incumbents.length) {
+        lines.push(`Competitor incumbency signal: ${incumbents.join(', ')} appear(s) in this buyer's award history`);
+      }
+    }
+
+    const result = lines.length ? '\n' + lines.join('\n') : '';
+    _intelCache = { org, data: result, ts: Date.now() };
+    return result;
+  } catch {
+    return '';
+  }
+}
+
 // ══════════════════════════════════════════════════════════════
 // ALEX PERSONA — Level 2 Structured Object
 // Edit fields independently. buildPersonaPrompt() assembles at runtime.
@@ -1508,7 +1588,11 @@ Reference sites and case studies carry disproportionate weight — named public 
     if (oppBlock) prompt += `OPPORTUNITY TYPE CONTEXT:\n${oppBlock}\n\n`;
   }
 
-  // 10. Output schema (always second-to-last)
+  // 10. Competitive intelligence context (injected at runtime if available)
+  // This placeholder is replaced with live FTS procurement data before each API call.
+  prompt += '{{COMPETITIVE_INTEL_PLACEHOLDER}}\n';
+
+  // 11. Output schema (always second-to-last)
   prompt += outputSchema + '\n\n';
 
   // 11. Success criteria (always last — self-audit before returning)
@@ -1991,6 +2075,9 @@ async function runSingleReview(idx) {
   const rubricText = Object.entries(q.rubric).map(([l,r]) => `${l}: ${r}`).join('\n');
   const contextBlock = getContextBlock();
 
+  // Fetch competitive intelligence (non-blocking — enriches but doesn't gate)
+  const intelBlock = await fetchCompetitiveIntel();
+
   const outputSchema = `Respond ONLY with a valid JSON object — no markdown, no preamble, no explanation outside the JSON.
 
 Required fields:
@@ -2005,7 +2092,7 @@ Required fields:
   "captureActions": ["action with named owner and output","action2"]
 }`;
 
-  const systemPrompt = buildPersonaPrompt(outputSchema);
+  const systemPrompt = buildPersonaPrompt(outputSchema).replace('{{COMPETITIVE_INTEL_PLACEHOLDER}}', intelBlock);
 
   const userPrompt = `PURSUIT CONTEXT:
 ${contextBlock}
@@ -2135,6 +2222,9 @@ async function runFullReport() {
   const contextBlock = getContextBlock();
   const c = state.context;
 
+  // Fetch competitive intelligence (non-blocking — enriches but doesn't gate)
+  const intelBlock = await fetchCompetitiveIntel();
+
   const scoreSummary = CATS.map(cat => {
     const weighted = getCatScore(cat.id);
     const pct = Math.round((weighted / MAX_CAT) * 100);
@@ -2162,7 +2252,7 @@ ${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not i
   "gateRationale": "2-3 sentences explaining the gate recommendation in the context of this specific opportunity"
 }`;
 
-  const systemPrompt = buildPersonaPrompt(fullReportSchema);
+  const systemPrompt = buildPersonaPrompt(fullReportSchema).replace('{{COMPETITIVE_INTEL_PLACEHOLDER}}', intelBlock);
 
   const userPrompt = `PURSUIT CONTEXT:
 ${contextBlock}

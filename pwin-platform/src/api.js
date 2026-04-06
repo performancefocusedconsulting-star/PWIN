@@ -9,6 +9,7 @@
 import { createServer } from 'node:http';
 import * as store from './store.js';
 import { listSkills, executeSkill } from './skill-runner.js';
+import * as compIntel from './competitive-intel.js';
 
 const PORT = parseInt(process.env.PWIN_PORT || '3456', 10);
 
@@ -294,6 +295,63 @@ async function handleRequest(req, res) {
           if (savedKey) process.env.ANTHROPIC_API_KEY = savedKey;
         }
       }
+    }
+
+    // --- Competitive Intelligence ---
+
+    // GET /api/intel/summary
+    if (method === 'GET' && (params = match(method, url, '/api/intel/summary')) !== null) {
+      return json(res, 200, compIntel.dbSummary());
+    }
+
+    // GET /api/intel/buyer?name=xxx
+    if (method === 'GET' && url.startsWith('/api/intel/buyer')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      const name = qs.get('name');
+      if (!name) return badRequest(res, 'name parameter required');
+      return json(res, 200, compIntel.buyerProfile(name, parseInt(qs.get('limit') || '20')));
+    }
+
+    // GET /api/intel/supplier?name=xxx
+    if (method === 'GET' && url.startsWith('/api/intel/supplier')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      const name = qs.get('name');
+      if (!name) return badRequest(res, 'name parameter required');
+      return json(res, 200, compIntel.supplierProfile(name, parseInt(qs.get('limit') || '20')));
+    }
+
+    // GET /api/intel/expiring?days=365&minValue=0&buyer=&category=
+    if (method === 'GET' && url.startsWith('/api/intel/expiring')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      return json(res, 200, compIntel.expiringContracts({
+        days: parseInt(qs.get('days') || '365'),
+        minValue: parseFloat(qs.get('minValue') || '0') || null,
+        buyer: qs.get('buyer') || null,
+        category: qs.get('category') || null,
+      }));
+    }
+
+    // GET /api/intel/pipeline?buyer=
+    if (method === 'GET' && url.startsWith('/api/intel/pipeline')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      return json(res, 200, compIntel.forwardPipeline({ buyer: qs.get('buyer') || null }));
+    }
+
+    // GET /api/intel/pwin?buyer=&category=
+    if (method === 'GET' && url.startsWith('/api/intel/pwin')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      return json(res, 200, compIntel.pwinSignals({
+        buyer: qs.get('buyer') || null,
+        category: qs.get('category') || null,
+      }));
+    }
+
+    // GET /api/intel/cpv?code=xxx
+    if (method === 'GET' && url.startsWith('/api/intel/cpv')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      const code = qs.get('code');
+      if (!code) return badRequest(res, 'code parameter required');
+      return json(res, 200, compIntel.cpvSearch(code));
     }
 
     // --- Fallthrough ---
