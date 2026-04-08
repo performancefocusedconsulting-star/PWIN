@@ -1,3 +1,5 @@
 db/*.db
+db/*.db-*
 logs/*.log
+data/
 __pycache__/
