@@ -75,6 +75,27 @@ def set_cursor(conn: sqlite3.Connection, value: str):
     conn.commit()
 
 
+def get_backfill_url(conn: sqlite3.Connection) -> str:
+    """Saved API next-page URL for an in-progress backfill, or empty if none."""
+    row = conn.execute(
+        "SELECT value FROM ingest_state WHERE key='backfill_next_url'"
+    ).fetchone()
+    return row["value"] if row and row["value"] else ""
+
+
+def set_backfill_url(conn: sqlite3.Connection, value: str):
+    conn.execute(
+        "INSERT OR REPLACE INTO ingest_state (key, value, updated) VALUES (?, ?, datetime('now'))",
+        ("backfill_next_url", value),
+    )
+    conn.commit()
+
+
+def clear_backfill_url(conn: sqlite3.Connection):
+    conn.execute("DELETE FROM ingest_state WHERE key='backfill_next_url'")
+    conn.commit()
+
+
 # ── API fetch ───────────────────────────────────────────────────────────────
 
 def fetch_url(url: str) -> Optional[dict]:
@@ -107,14 +128,31 @@ def fetch_url(url: str) -> Optional[dict]:
     return None
 
 
-def paginate(updated_from: str, limit: Optional[int] = None):
+def paginate(
+    updated_from: Optional[str] = None,
+    start_url: Optional[str] = None,
+    limit: Optional[int] = None,
+    max_pages: Optional[int] = None,
+    on_page_done=None,
+):
     """Generator — yields individual OCDS releases, using proper cursor pagination.
 
     Note: the FTS API returns releases in newest-first order. updatedFrom acts as
     a lower bound; pagination walks backwards in time toward that bound.
+
+    Args:
+        updated_from: ISO date string — start of a fresh pagination
+        start_url:    Resume from a previously-saved API next-page URL (overrides updated_from)
+        limit:        Max releases to yield total
+        max_pages:    Max pages to fetch in this invocation
+        on_page_done: Callback(next_url_or_empty) invoked after each page is fully consumed.
+                      Used by backfill mode to persist progress between runs.
     """
-    params = {"limit": PAGE_SIZE, "updatedFrom": updated_from}
-    url = BASE_URL + "?" + urlencode(params)
+    if start_url:
+        url = start_url
+    else:
+        params = {"limit": PAGE_SIZE, "updatedFrom": updated_from}
+        url = BASE_URL + "?" + urlencode(params)
 
     total_yielded = 0
     page = 0
@@ -125,11 +163,14 @@ def paginate(updated_from: str, limit: Optional[int] = None):
         data = fetch_url(url)
         if not data:
             log.error("Failed to fetch page %d — aborting", page)
+            # Don't update on_page_done — we want the same URL retried next run
             break
 
         releases = data.get("releases", [])
         if not releases:
             log.info("No more releases — done")
+            if on_page_done:
+                on_page_done("")  # Signal completion — clear saved state
             break
 
         for release in releases:
@@ -142,9 +183,17 @@ def paginate(updated_from: str, limit: Optional[int] = None):
         # Use the API's own cursor for pagination
         next_url = data.get("links", {}).get("next")
         if next_url and next_url != url:
+            if on_page_done:
+                on_page_done(next_url)  # Persist progress before fetching next
             url = next_url
         else:
+            if on_page_done:
+                on_page_done("")  # No more pages — clear saved state
             break
+
+        if max_pages and page >= max_pages:
+            log.info("Reached --max-pages %d — stopping (resume saved)", max_pages)
+            return
 
         time.sleep(1.0)  # Polite rate limiting
 
@@ -611,32 +660,57 @@ def process_release(conn: sqlite3.Connection, release: dict) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(description="PWIN Competitive Intelligence — FTS ingest")
-    parser.add_argument("--full",  action="store_true", help="Full re-ingest from 2024-01-01")
-    parser.add_argument("--from",  dest="from_date",    help="Custom start date (ISO)")
-    parser.add_argument("--limit", type=int,            help="Max releases to ingest (testing)")
+    parser.add_argument("--full",      action="store_true", help="Full re-ingest from 2024-01-01 (incremental mode, no resume)")
+    parser.add_argument("--from",      dest="from_date",    help="Custom start date (ISO) — incremental mode")
+    parser.add_argument("--backfill",  dest="backfill_from", help="Start a fresh resumable backfill from this date (ISO). Persists progress between runs.")
+    parser.add_argument("--resume",    action="store_true", help="Resume an in-progress backfill from saved next-page URL")
+    parser.add_argument("--max-pages", dest="max_pages", type=int, help="Stop after N pages (use with --backfill / --resume to chunk long runs)")
+    parser.add_argument("--limit",     type=int,            help="Max releases to ingest (testing)")
     args = parser.parse_args()
 
     conn = get_db(DB_PATH)
     init_schema(conn)
 
-    # Determine start point
-    if args.full:
-        updated_from = "2024-01-01T00:00:00"
-        log.info("Full ingest from %s", updated_from)
-    elif args.from_date:
-        updated_from = args.from_date
-        log.info("Custom start: %s", updated_from)
+    # Two distinct modes:
+    #   - backfill mode (--backfill / --resume): persists API next-page URL between runs,
+    #     does NOT touch last_cursor (which is the incremental high-water mark)
+    #   - incremental mode (--full / --from / no flags): uses last_cursor as updatedFrom,
+    #     advances last_cursor to the high-water mark of processed releases
+    backfill_mode = bool(args.backfill_from or args.resume)
+
+    start_url = None
+    updated_from = None
+
+    if backfill_mode:
+        if args.backfill_from and args.resume:
+            log.error("Cannot use --backfill and --resume together")
+            sys.exit(2)
+        if args.backfill_from:
+            clear_backfill_url(conn)
+            updated_from = args.backfill_from
+            log.info("Starting fresh backfill from %s", updated_from)
+        else:  # --resume
+            start_url = get_backfill_url(conn)
+            if not start_url:
+                log.error("No saved backfill state to resume — use --backfill <DATE> first")
+                sys.exit(2)
+            log.info("Resuming backfill from saved next-page URL")
     else:
-        stored_cursor = get_cursor(conn)
-        if stored_cursor:
-            # We have a cursor URL from last run — but paginate() expects a date
-            # If stored cursor looks like a URL, we need to start fresh with a date
-            # For simplicity, store updatedFrom dates, not cursor URLs
-            updated_from = stored_cursor
-            log.info("Incremental from: %s", updated_from)
+        # Incremental mode
+        if args.full:
+            updated_from = "2024-01-01T00:00:00"
+            log.info("Full ingest from %s", updated_from)
+        elif args.from_date:
+            updated_from = args.from_date
+            log.info("Custom start: %s", updated_from)
         else:
-            updated_from = "2025-01-01T00:00:00"
-            log.info("First run — starting from %s", updated_from)
+            stored_cursor = get_cursor(conn)
+            if stored_cursor:
+                updated_from = stored_cursor
+                log.info("Incremental from: %s", updated_from)
+            else:
+                updated_from = "2025-01-01T00:00:00"
+                log.info("First run — starting from %s", updated_from)
 
     # Counters
     total = {"buyers": 0, "suppliers": 0, "notices": 0, "awards": 0,
@@ -645,8 +719,17 @@ def main():
     batch_size = 50
     high_water = None  # Max release date actually processed — used as next cursor
 
+    # In backfill mode, persist the API's next-page URL after each page
+    on_page_done = (lambda u: set_backfill_url(conn, u)) if backfill_mode else None
+
     try:
-        for release in paginate(updated_from, limit=args.limit):
+        for release in paginate(
+            updated_from=updated_from,
+            start_url=start_url,
+            limit=args.limit,
+            max_pages=args.max_pages,
+            on_page_done=on_page_done,
+        ):
             counts = process_release(conn, release)
             for k, v in counts.items():
                 total[k] += v
@@ -677,16 +760,25 @@ def main():
         conn.commit()
         raise
     finally:
-        # Only advance the cursor if we actually processed releases.
-        # Never jump forward to "now" — if a run dies mid-flight, the cursor
-        # must stay where it was so the next run resumes from the gap.
-        if high_water:
-            # Normalise to the format the API expects (strip TZ suffix if present)
-            cursor_value = high_water[:19].replace(" ", "T")
-            set_cursor(conn, cursor_value)
-            log.info("Cursor set to %s (high water mark from processed releases)", cursor_value)
+        if backfill_mode:
+            # Backfill manages its own state via backfill_next_url. Do NOT touch
+            # last_cursor — that's the incremental high-water mark and would
+            # corrupt future incremental runs if we moved it backwards.
+            saved = get_backfill_url(conn)
+            if saved:
+                log.info("Backfill paused — next-page URL persisted, use --resume to continue")
+            else:
+                log.info("Backfill complete — no more pages")
         else:
-            log.info("No releases processed — cursor unchanged")
+            # Only advance the cursor if we actually processed releases.
+            # Never jump forward to "now" — if a run dies mid-flight, the cursor
+            # must stay where it was so the next run resumes from the gap.
+            if high_water:
+                cursor_value = high_water[:19].replace(" ", "T")
+                set_cursor(conn, cursor_value)
+                log.info("Cursor set to %s (high water mark from processed releases)", cursor_value)
+            else:
+                log.info("No releases processed — cursor unchanged")
 
         log.info("=" * 60)
         log.info("Ingest complete")
