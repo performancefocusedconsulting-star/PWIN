@@ -81,13 +81,14 @@
   --grn:      #2D8A5E;
   --amb:      var(--be-terracotta);
 
-  /* ── Category tints (Qualify-specific scoring categories) ── */
-  --cat-cp: rgba(92,163,182,0.08);
-  --cat-pi: rgba(45,138,94,0.08);
-  --cat-ss: rgba(198,138,29,0.08);
-  --cat-oi: rgba(124,91,168,0.08);
-  --cat-vp: rgba(90,138,61,0.08);
-  --cat-pp: rgba(63,163,170,0.08);
+  /* ── Category tints — 8% versions of the brand-aligned CATS colours
+     in the JS constant. Navy + Aqua gradient palette only, no rainbow. ── */
+  --cat-cp: rgba(2,23,68,0.08);      /* Midnight Navy   — CP */
+  --cat-pi: rgba(87,100,130,0.08);   /* Steel Blue      — PI */
+  --cat-ss: rgba(36,135,142,0.08);   /* Deep Aqua       — SS */
+  --cat-oi: rgba(45,63,100,0.08);    /* Deep Slate      — OI */
+  --cat-vp: rgba(92,192,198,0.08);   /* Clear Aqua      — VP */
+  --cat-pp: rgba(122,221,226,0.08);  /* Bright Aqua     — PP */
 
   /* ── Fonts ──
      Two fonts only per brand. --font-mono is now Inter with tabular numerals
@@ -1560,13 +1561,17 @@ const AI_REVIEW_URL = 'https://bidequity-ai-review.performancefocusedconsulting.
 
 // DATA
 // ══════════════════════════════════════════════════════════════
+// Category colours drawn entirely from the Bid Equity Navy + Aqua gradient
+// palettes per Brand Guidelines v1.2 §6 (data visualisation rule).
+// 3 navy steps + 3 aqua steps give six visually distinct categories
+// without violating the chart-palette restriction.
 const CATS = [
-  { id:"cp", name:"Competitive Positioning",  weight:0.20, color:"#1A4080", bg:"var(--cat-cp)" },
-  { id:"pi", name:"Procurement Intelligence", weight:0.10, color:"#2D8A5E", bg:"var(--cat-pi)" },
-  { id:"ss", name:"Stakeholder Strength",      weight:0.20, color:"#C68A1D", bg:"var(--cat-ss)" },
-  { id:"oi", name:"Organisational Influence",  weight:0.20, color:"#7C5BA8", bg:"var(--cat-oi)" },
-  { id:"vp", name:"Value Proposition",         weight:0.20, color:"#5A8A3D", bg:"var(--cat-vp)" },
-  { id:"pp", name:"Pursuit Progress",          weight:0.10, color:"#3FA3AA", bg:"var(--cat-pp)" },
+  { id:"cp", name:"Competitive Positioning",  weight:0.20, color:"#021744", bg:"var(--cat-cp)" },  // Midnight Navy
+  { id:"pi", name:"Procurement Intelligence", weight:0.10, color:"#576482", bg:"var(--cat-pi)" },  // Steel Blue (Navy 500)
+  { id:"ss", name:"Stakeholder Strength",      weight:0.20, color:"#24878E", bg:"var(--cat-ss)" },  // Deep Aqua (Aqua 600)
+  { id:"oi", name:"Organisational Influence",  weight:0.20, color:"#2D3F64", bg:"var(--cat-oi)" },  // Deep Slate (Navy 700)
+  { id:"vp", name:"Value Proposition",         weight:0.20, color:"#5CC0C6", bg:"var(--cat-vp)" },  // Clear Aqua (Aqua 400)
+  { id:"pp", name:"Pursuit Progress",          weight:0.10, color:"#7ADDE2", bg:"var(--cat-pp)" },  // Bright Aqua (Aqua 300)
 ];
 
 const QUESTIONS = [
@@ -2243,12 +2248,16 @@ function updateRadar() {
     type: 'radar',
     data: {
       labels: CATS.map(function(c) { return c.name; }),
+      // Brand v1.2 §6: data viz uses Navy + Aqua gradient palettes only.
+      // Your-score series = Midnight Navy line with Bright Aqua points and an
+      // Aqua tint area fill. Target reference = Calm Teal dashed (structural use).
       datasets: [
         { label:'Your Score', data: scores,
-          backgroundColor:'rgba(26,64,128,0.15)', borderColor:'#0D2B5E',
-          borderWidth:2, pointBackgroundColor:'#0D2B5E', pointRadius:4, pointHoverRadius:6 },
+          backgroundColor:'rgba(122,221,226,0.18)', borderColor:'#021744',
+          borderWidth:2, pointBackgroundColor:'#7ADDE2', pointBorderColor:'#021744',
+          pointBorderWidth:1.5, pointRadius:4, pointHoverRadius:6 },
         { label:'Target 75%', data: target,
-          backgroundColor:'rgba(92,163,182,0.06)', borderColor:'rgba(92,163,182,0.6)',
+          backgroundColor:'rgba(92,163,182,0.04)', borderColor:'rgba(92,163,182,0.55)',
           borderWidth:1.5, borderDash:[5,4], pointRadius:0 }
       ]
     },
@@ -2256,10 +2265,10 @@ function updateRadar() {
       responsive:true, maintainAspectRatio:false,
       scales: { r: {
         min:0, max:100,
-        ticks:{ stepSize:25, font:{size:9}, color:'#818CA2' },
-        grid:{ color:'rgba(0,0,0,0.06)' },
-        pointLabels:{ font:{size:11, family:"'Inter', sans-serif"}, color:'#021744' },
-        angleLines:{ color:'rgba(0,0,0,0.06)' }
+        ticks:{ stepSize:25, font:{size:9, family:"'Inter', sans-serif"}, color:'#818CA2', backdropColor:'transparent' },
+        grid:{ color:'rgba(2,23,68,0.06)' },
+        pointLabels:{ font:{size:11, family:"'Inter', sans-serif", weight:'500'}, color:'#021744' },
+        angleLines:{ color:'rgba(2,23,68,0.06)' }
       }},
       plugins:{ legend:{ display:false } }
     }
