@@ -74,14 +74,12 @@ p { max-width: 640px; }
 .nav__brand {
   font-family: var(--be-font-display);
   font-weight: var(--be-fw-display-strong);
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--be-text-on-dark);
   letter-spacing: 0.02em;
   text-transform: none;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
+  display: inline-block;
+  line-height: 1.15;
   text-decoration: none;
 }
 .nav__brand .brand-bid    { color: var(--be-text-on-dark); margin-right: 0.22em; }
@@ -456,10 +454,8 @@ p { max-width: 640px; }
   color: var(--be-text-on-dark);
   letter-spacing: 0.02em;
   text-transform: none;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
+  display: inline-block;
+  line-height: 1.15;
 }
 .footer__brand .brand-bid    { color: var(--be-text-on-dark); margin-right: 0.22em; }
 .footer__brand .brand-equity { color: var(--be-text-on-dark); }
