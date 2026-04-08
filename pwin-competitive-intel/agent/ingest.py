@@ -85,7 +85,7 @@ def fetch_url(url: str) -> Optional[dict]:
                 "Accept": "application/json",
                 "User-Agent": "PWIN-CompetitiveIntel/1.0",
             })
-            with urlopen(req, timeout=30) as resp:
+            with urlopen(req, timeout=60) as resp:
                 return json.loads(resp.read().decode("utf-8"))
         except HTTPError as e:
             log.warning("HTTP %s on attempt %d: %s", e.code, attempt, url[:120])
@@ -97,12 +97,22 @@ def fetch_url(url: str) -> Optional[dict]:
                 break
         except URLError as e:
             log.warning("Network error attempt %d: %s", attempt, e.reason)
-            time.sleep(RETRY_DELAY)
+            time.sleep(RETRY_DELAY * attempt)
+        except (TimeoutError, OSError) as e:
+            # Read timeouts from urlopen surface as TimeoutError (Python 3.10+),
+            # and underlying socket errors as OSError. Neither is wrapped as URLError.
+            log.warning("Read timeout / socket error attempt %d: %s", attempt, e)
+            time.sleep(RETRY_DELAY * attempt)
+    log.error("All %d retries exhausted for %s", RETRY_MAX, url[:120])
     return None
 
 
 def paginate(updated_from: str, limit: Optional[int] = None):
-    """Generator — yields individual OCDS releases, using proper cursor pagination."""
+    """Generator — yields individual OCDS releases, using proper cursor pagination.
+
+    Note: the FTS API returns releases in newest-first order. updatedFrom acts as
+    a lower bound; pagination walks backwards in time toward that bound.
+    """
     params = {"limit": PAGE_SIZE, "updatedFrom": updated_from}
     url = BASE_URL + "?" + urlencode(params)
 
@@ -628,13 +638,12 @@ def main():
             updated_from = "2025-01-01T00:00:00"
             log.info("First run — starting from %s", updated_from)
 
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-
     # Counters
     total = {"buyers": 0, "suppliers": 0, "notices": 0, "awards": 0,
              "lots": 0, "planning": 0, "skipped": 0}
     processed = 0
     batch_size = 50
+    high_water = None  # Max release date actually processed — used as next cursor
 
     try:
         for release in paginate(updated_from, limit=args.limit):
@@ -642,6 +651,13 @@ def main():
             for k, v in counts.items():
                 total[k] += v
             processed += 1
+
+            # Track the latest release date we have actually committed.
+            # OCDS releases are returned in updated-date order, so the last
+            # one we successfully process is our resume point.
+            rd = release.get("date")
+            if rd and (high_water is None or rd > high_water):
+                high_water = rd
 
             if processed % batch_size == 0:
                 conn.commit()
@@ -656,10 +672,21 @@ def main():
     except KeyboardInterrupt:
         log.warning("Interrupted — committing progress")
         conn.commit()
+    except Exception as e:
+        log.error("Ingest aborted with error: %s", e)
+        conn.commit()
+        raise
     finally:
-        # Store the current time as cursor for next incremental run
-        set_cursor(conn, now_iso)
-        log.info("Cursor set to %s", now_iso)
+        # Only advance the cursor if we actually processed releases.
+        # Never jump forward to "now" — if a run dies mid-flight, the cursor
+        # must stay where it was so the next run resumes from the gap.
+        if high_water:
+            # Normalise to the format the API expects (strip TZ suffix if present)
+            cursor_value = high_water[:19].replace(" ", "T")
+            set_cursor(conn, cursor_value)
+            log.info("Cursor set to %s (high water mark from processed releases)", cursor_value)
+        else:
+            log.info("No releases processed — cursor unchanged")
 
         log.info("=" * 60)
         log.info("Ingest complete")
