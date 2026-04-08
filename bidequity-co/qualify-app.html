@@ -123,14 +123,14 @@ body {
   gap: 8px;
 }
 .site-nav__brand .brand-bid { color: #F0EDE6; }
-.site-nav__brand .brand-equity { color: #60F5F7; }
+.site-nav__brand .brand-equity { color: #F0EDE6; }
 .site-nav__brand .brand-subtitle {
   font-family: var(--font-body);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: #60F5F7;
   margin-left: 4px;
 }
 .site-nav__links {
@@ -334,6 +334,51 @@ body {
 
 .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media(max-width:900px){ .q-grid { grid-template-columns: 1fr; } }
+
+/* End-of-assessment CTA panel */
+.assessment-cta {
+  margin-top: 32px;
+  padding: 24px 28px;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 4px solid rgba(92,163,182,0.25);
+  transition: all 0.25s ease;
+}
+.assessment-cta.ready {
+  background: linear-gradient(135deg, #021744 0%, #0D2B5C 100%);
+  border-color: #5CA3B6;
+  border-left-color: #5CA3B6;
+  box-shadow: 0 4px 24px rgba(92,163,182,0.15);
+}
+.assessment-cta__inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+@media(max-width:700px){ .assessment-cta__inner { flex-direction: column; align-items: flex-start; } }
+.assessment-cta__copy { flex: 1; }
+.assessment-cta__title {
+  font-family: var(--font-display); font-size: 18px; color: var(--navy);
+  margin-bottom: 4px;
+}
+.assessment-cta.ready .assessment-cta__title { color: #F0EDE6; }
+.assessment-cta__sub { font-size: 12px; color: var(--slate); line-height: 1.55; }
+.assessment-cta.ready .assessment-cta__sub { color: rgba(240,237,230,0.75); }
+.assessment-cta__btn {
+  background: rgba(92,163,182,0.12);
+  color: rgba(92,163,182,0.5);
+  border: 1px solid rgba(92,163,182,0.25);
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  padding: 12px 22px; cursor: not-allowed;
+  letter-spacing: 0.02em; white-space: nowrap;
+  transition: all 0.18s ease;
+}
+.assessment-cta.ready .assessment-cta__btn {
+  background: #5CA3B6; color: #FFFFFF; border-color: #5CA3B6;
+  cursor: pointer;
+}
+.assessment-cta.ready .assessment-cta__btn:hover {
+  background: #4A8FA0; border-color: #4A8FA0;
+  transform: translateX(2px);
+}
 
 .q-card {
   background: var(--bg1); border: 1px solid var(--border);
@@ -872,20 +917,6 @@ body {
   padding: 6px 10px; background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
 }
-.btn-session {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.05em; padding: 5px 12px;
-  border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
-  display: flex; align-items: center; gap: 5px;
-  transition: all 0.12s; background: transparent; color: rgba(255,255,255,0.7);
-}
-.btn-session:hover { background: rgba(255,255,255,0.08); color: white; }
-.btn-session.save  { border-color: #5CA3B6; color: #5CA3B6; }
-.btn-session.save:hover { background: rgba(92,163,182,0.12); }
-.session-label {
-  font-family: var(--font-mono); font-size: 9px;
-  color: rgba(255,255,255,0.3); letter-spacing: 0.08em;
-}
 .session-toast {
   position: fixed; bottom: 24px; right: 24px; z-index: 9999;
   background: var(--navy); color: white; font-size: 12px;
@@ -919,7 +950,7 @@ body {
   font-weight: 700;
 }
 .site-footer__brand .brand-bid { color: #F0EDE6; }
-.site-footer__brand .brand-equity { color: #60F5F7; }
+.site-footer__brand .brand-equity { color: #F0EDE6; }
 .site-footer__brand .brand-subtitle {
   display: block;
   font-family: var(--font-body);
@@ -927,7 +958,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: #60F5F7;
   margin-top: 4px;
 }
 .site-footer__links {
@@ -1253,6 +1284,17 @@ This field is optional — the tool works without it, but the AI analysis will b
 <!-- ASSESSMENT -->
 <div class="view" id="view-assessment">
   <div id="assessment-body"></div>
+  <div class="assessment-cta" id="assessment-cta">
+    <div class="assessment-cta__inner">
+      <div class="assessment-cta__copy">
+        <div class="assessment-cta__title" id="assessment-cta-title">Keep going — score all 24 questions</div>
+        <div class="assessment-cta__sub" id="assessment-cta-sub">When all 24 are scored, your PWIN result and AI Assurance Review unlock here.</div>
+      </div>
+      <button class="assessment-cta__btn" id="assessment-cta-btn" onclick="switchView('dashboard')" disabled>
+        View PWIN Dashboard &rarr;
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
@@ -2051,6 +2093,27 @@ function updateHeader() {
   el.textContent = pct + "%";
   el.className   = "pwin-value" + (pwin >= 0.75 ? " good" : "");
   document.getElementById('completion-pill').textContent = getAnswered() + " / 24";
+  updateAssessmentCTA();
+}
+
+function updateAssessmentCTA() {
+  var cta = document.getElementById('assessment-cta');
+  if (!cta) return;
+  var answered = getAnswered();
+  var btn = document.getElementById('assessment-cta-btn');
+  var title = document.getElementById('assessment-cta-title');
+  var sub = document.getElementById('assessment-cta-sub');
+  if (answered >= 24) {
+    cta.classList.add('ready');
+    title.textContent = 'All 24 questions scored — your PWIN result is ready';
+    sub.textContent = 'Open the PWIN Dashboard to see your overall score, category breakdown, and run the AI Assurance Review.';
+    btn.disabled = false;
+  } else {
+    cta.classList.remove('ready');
+    title.textContent = 'Keep going — ' + (24 - answered) + ' question' + (24 - answered === 1 ? '' : 's') + ' remaining';
+    sub.textContent  = 'When all 24 are scored, your PWIN result and AI Assurance Review unlock here.';
+    btn.disabled = true;
+  }
 }
 
 function updateDashboard() {
@@ -2290,7 +2353,7 @@ function updateProfileBanner() {
 
 function newPursuit() {
   var opp = state.context.opp || 'this pursuit';
-  if (!confirm('Start a new pursuit?\n\nAll scores, evidence, and AI reviews for "' + opp + '" will be cleared. Save the session first if you want to keep this data.')) return;
+  if (!confirm('Start a new pursuit?\n\nAll scores, evidence, and AI reviews for "' + opp + '" will be cleared. Download your AI Assurance Report from the dashboard first if you want to keep a copy.')) return;
 
   state.positions = {};
   state.evidence  = {};
@@ -2918,134 +2981,6 @@ function switchView(id) {
   document.getElementById('nav-'+id).classList.add('active');
   if (id === 'dashboard') updateDashboard();
   window.scrollTo(0, 0);
-}
-
-// ══════════════════════════════════════════════════════════════
-// SESSION PERSISTENCE
-// ══════════════════════════════════════════════════════════════
-var SESSION_VERSION = 2;
-
-function saveSession() {
-  var c = state.context;
-  var opp = (c.opp || 'pursuit').replace(/[^a-z0-9]/gi, '_').substring(0, 40);
-  var date = new Date().toISOString().slice(0,10);
-
-  var payload = {
-    _version:  SESSION_VERSION,
-    _savedAt:  new Date().toISOString(),
-    _app:      'BidEquity Qualify',
-    context:   Object.assign({}, state.context),
-    positions: Object.assign({}, state.positions),
-    evidence:  Object.assign({}, state.evidence),
-    reviews:   Object.assign({}, state.reviews),
-  };
-
-  var blob = new Blob([JSON.stringify(payload, null, 2)],
-                      { type: 'application/json' });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'BidEquity_Qualify_' + opp + '_' + date + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('\u2713 Session saved');
-}
-
-function loadSessionFile(event) {
-  var file = event.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      var data = JSON.parse(e.target.result);
-      // Accept both old PWIN Architect and new BidEquity Qualify files
-      if (data._app !== 'BidEquity Qualify' && data._app !== 'PWIN Architect') {
-        showToast('\u26a0 Not a BidEquity Qualify session file', true); return;
-      }
-      restoreSession(data);
-      showToast('\u2713 Session loaded \u2014 ' + (data.context && data.context.opp ? data.context.opp : 'unnamed pursuit'));
-    } catch(ex) {
-      showToast('\u26a0 Could not read session file', true);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function restoreSession(data) {
-  Object.assign(state.context, data.context || {});
-  applyWeightProfile(state.context.oppType || '');
-
-  state.positions = data.positions || {};
-  state.evidence  = data.evidence  || {};
-  state.reviews   = data.reviews   || {};
-
-  var fieldMap = {
-    'ctx-bidder':     'bidder',
-    'ctx-bidder-sector': 'bidderSector',
-    'ctx-org':        'org',
-    'ctx-opp':        'opp',
-    'ctx-sector':     'sector',
-    'ctx-tcv':        'tcv',
-    'ctx-opptype':    'oppType',
-    'ctx-route':      'route',
-    'ctx-stage':      'stage',
-    'ctx-bnb':        'bnb',
-    'ctx-competitors':'competitors',
-    'ctx-importance': 'importance',
-    'ctx-notice':     'notice',
-  };
-  Object.entries(fieldMap).forEach(function(entry) {
-    var id = entry[0], key = entry[1];
-    var el = document.getElementById(id);
-    if (el && state.context[key]) el.value = state.context[key];
-  });
-
-  var incVal = state.context.incumbent || '';
-  if (incVal) {
-    var radio = document.querySelector('input[name="incumbent"][value="' + incVal + '"]');
-    if (radio) {
-      radio.checked = true;
-      document.querySelectorAll('#ctx-incumbent-group .ctx-radio-label').forEach(function(el) {
-        el.classList.toggle('checked', el.querySelector('input').value === incVal);
-      });
-    }
-  }
-
-  onCtxChange();
-
-  buildAssessment();
-  buildReviewNav();
-  updateHeader();
-
-  Object.entries(state.positions).forEach(function(entry) {
-    var idx = entry[0], pos = entry[1];
-    var sel = document.getElementById('pos-' + idx);
-    if (sel) sel.value = pos;
-    updateCardStyle(parseInt(idx));
-    updateCatScore(QUESTIONS[parseInt(idx)].cat);
-  });
-  Object.entries(state.evidence).forEach(function(entry) {
-    var idx = entry[0], ev = entry[1];
-    var ta = document.getElementById('ev-' + idx);
-    if (ta) ta.value = ev;
-  });
-
-  if (Object.keys(state.reviews).length > 0) {
-    updateReviewNav();
-    updateDashboard();
-  }
-
-  if (state.contextComplete) {
-    var wrap = document.getElementById('ctx-proceed-btn').parentElement;
-    var existing = wrap.querySelector('.ctx-complete-banner');
-    if (!existing) {
-      var banner = document.createElement('div');
-      banner.className = 'ctx-complete-banner';
-      banner.innerHTML = '\u2713 Session restored. All scores and context loaded.';
-      wrap.appendChild(banner);
-    }
-  }
 }
 
 function showToast(msg, isError) {
