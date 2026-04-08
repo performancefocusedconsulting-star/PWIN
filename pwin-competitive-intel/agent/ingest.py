@@ -15,6 +15,7 @@ Usage:
 import argparse
 import json
 import logging
+import re
 import sqlite3
 import sys
 import time
@@ -232,13 +233,68 @@ def _all_parties(parties: list, role: str) -> list:
     return [p for p in parties if role in p.get("roles", [])]
 
 
+# Companies House numbers are 8 characters: 8 digits, or 2 letter prefix + 6 digits.
+# Prefixes: SC (Scotland), NI / R (N Ireland), OC/SO/NC/NL (LLP variants),
+# IP (industrial/provident), FC (foreign co branch), AC/RC/CE/ZC (other).
+# We accept 6-8 trailing digits to handle older numbers recorded without leading zeros.
+_CH_NUMBER_RE = re.compile(
+    r'^(SC|NI|NL|OC|SO|NC|IP|FC|RC|SR|RS|AC|CE|ZC|R)?(\d{6,8})$',
+    re.IGNORECASE,
+)
+
+
+def _looks_like_ch_number(value) -> bool:
+    """Does this value plausibly look like a UK Companies House number?
+    Accepts bare digits or a 2-letter (rarely 1-letter) prefix followed by digits.
+    Rejects obvious foreign registers (e.g. 'HRB 304054', 'B 12345').
+    """
+    if not value:
+        return False
+    s = str(value).strip().replace(" ", "")
+    return bool(_CH_NUMBER_RE.match(s))
+
+
+def _normalize_ch_number(value) -> str:
+    """Normalise to canonical CH form: uppercase prefix, digits zero-padded to 8."""
+    s = str(value).strip().replace(" ", "")
+    m = _CH_NUMBER_RE.match(s)
+    if not m:
+        return s
+    prefix = (m.group(1) or "").upper()
+    digits = m.group(2).zfill(8 - len(prefix))
+    return f"{prefix}{digits}"
+
+
 def _extract_coh(party: dict) -> Optional[str]:
-    ident = party.get("identifier", {})
-    if ident.get("scheme") == "GB-COH":
-        return ident.get("id")
-    for ai in party.get("additionalIdentifiers", []):
-        if ai.get("scheme") == "GB-COH":
-            return ai.get("id")
+    """Extract a Companies House number from an OCDS party.
+
+    Handles three real-world cases seen in the UK FTS / OCP feed:
+      1. identifier.scheme == 'GB-COH' (the spec-compliant case)
+      2. identifier has an id but no scheme — common publisher omission.
+         We accept it only if the value matches the CH number regex.
+      3. same as above but in additionalIdentifiers.
+
+    Values are validated in all cases — publishers sometimes tag non-UK
+    registers (e.g. German HRB numbers) as GB-COH by mistake, so we
+    reject anything that does not match the CH number format.
+    """
+    ident = party.get("identifier") or {}
+    scheme = ident.get("scheme")
+    raw_id = ident.get("id")
+
+    if scheme == "GB-COH" and _looks_like_ch_number(raw_id):
+        return _normalize_ch_number(raw_id)
+    if not scheme and _looks_like_ch_number(raw_id):
+        return _normalize_ch_number(raw_id)
+
+    for ai in party.get("additionalIdentifiers", []) or []:
+        ai_scheme = ai.get("scheme")
+        ai_id = ai.get("id")
+        if ai_scheme == "GB-COH" and _looks_like_ch_number(ai_id):
+            return _normalize_ch_number(ai_id)
+        if not ai_scheme and _looks_like_ch_number(ai_id):
+            return _normalize_ch_number(ai_id)
+
     return None
 
 
