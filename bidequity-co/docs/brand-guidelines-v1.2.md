@@ -55,6 +55,39 @@ The two-word form is reserved for the visual logo lock-up only. All running text
 - `#8C3B36` (Brick Wine) — removed in v1.2. The single warm accent is Light Terracotta only.
 - Any other warm colour — multiple warms in one composition is forbidden.
 
+### Sanctioned exception — semantic state colours (usability carve-out)
+
+Product UIs sometimes need to communicate **semantic states** at a glance: a question scored "Strongly Agree" vs "Strongly Disagree", a risk flagged red vs amber vs green, a verdict marked Validated vs Challenged, a pursuit phase chip showing whether the team is on track. These states rely on **universal traffic-light convention** (green = good, amber = caution, red = bad) — colours users do not have to learn.
+
+Forcing these onto the brand palette (e.g. Bright Aqua = good, Light Terracotta = bad) **degrades usability** because the visual reading is no longer instinctive. A senior commercial decision-maker glancing at a scorecard expects red to mean "stop", not "loss colour from the brand chart palette".
+
+The carve-out, applied **only** to semantic state indicators in product UIs:
+
+| State | Hex | Use |
+|---|---|---|
+| Positive / pass | `#2D8A5E` | Strongly Agree, Validated, on-track, low risk, healthy gauge state |
+| Caution / mid | `#C68A1D` | Disagree (mid-warn), Active Capture phase, medium risk, queried verdicts |
+| Negative / fail | `#C15050` | Strongly Disagree, Challenged, high risk, gauge below floor |
+| Mid-positive | `#5CA3B6` (Calm Teal) | Agree (mid-positive), structural-but-positive use |
+
+**Where the carve-out applies:**
+- Question rubric labels (`.rubric-label.sa/.ag/.dis/.sd`) and the matching scored-state borders on `.q-card.scored*`
+- Verdict chips on the AI Assurance Review (Validated / Queried / Challenged)
+- Risk indicators (low / medium / high) and confidence chips
+- Pursuit phase chips (Pre-Capture / Active Capture / Pre-ITT / ITT Ready / Strong Position)
+- Gauge state colour on the PWIN Dashboard
+
+**Where the carve-out does NOT apply:**
+- Brand wordmark, descriptor, headings, body copy
+- Hover/focus/active/selected states (always Bright Aqua per brand)
+- CTAs and primary action buttons (always Light Terracotta per brand)
+- Category swatches and category bands in product UIs (Navy + Aqua only per brand)
+- All charts, graphs, dashboards, and data visualisation (Navy + Aqua + Terracotta-for-loss per brand §6)
+
+**Rule of thumb:** if the colour is communicating a *semantic state the user must read instantly*, the traffic-light palette is permitted. If it's *decorative, structural, or categorical*, the brand palette is mandatory.
+
+This carve-out was confirmed by the brand owner on 2026-04-08 alongside the section-bands implementation.
+
 ### Navy gradient (data visualisation)
 
 | Step | Hex | Name | Chart usage |
@@ -287,4 +320,4 @@ Tone: **"McKinsey meets specialist operator."**
 | 1.0 | 24 March 2026 | Initial consolidation. Palette, typography, name format, descriptor, voice, offer architecture established. |
 | 1.1 | 25 March 2026 | Added colour usage guidance for light/dark assets across web, slides, docs, social, print. Expanded pairing rules. |
 | 1.2 | 26 March 2026 | Removed Deep Coral (`#C96F5A`) and Brick Wine (`#8C3B36`). Added Light Terracotta (`#D17A74`) as the single warm accent. Soft Sand mandatory canvas. Bright Aqua approved for print. Chart colours restricted to Navy + Aqua gradients with Terracotta as loss/insight exception. Added 6-step gradient palettes. |
-| 1.2.1 | 8 April 2026 | (This markdown only — pending PDF v1.3.) Naming convention split: "Bid Equity" two words is logo-only; "BidEquity" one word everywhere else. Added in-repo `brand-tokens.css` as canonical implementation. Deprecated `brand-design-system.md`. Removed JetBrains Mono from product apps (use Inter with `font-feature-settings: "tnum"`). |
+| 1.2.1 | 8 April 2026 | (This markdown only — pending PDF v1.3.) Naming convention split: "Bid Equity" two words is logo-only; "BidEquity" one word everywhere else. Added in-repo `brand-tokens.css` as canonical implementation. Deprecated `brand-design-system.md`. Removed JetBrains Mono from product apps (use Inter with `font-feature-settings: "tnum"`). Documented the semantic-state colour carve-out for traffic-light scoring/verdict/risk/phase indicators in product UIs. Section-band layout (Pale Aqua bands per category, white cards inside) confirmed as the canonical pattern for high-density question grids. |

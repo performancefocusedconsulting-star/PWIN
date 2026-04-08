@@ -370,12 +370,16 @@ h1, h2, h3, h4, h5, h6 {
    clear visual grouping for the four questions inside. The white
    q-cards within stand out cleanly against the aqua band, against
    the sand page canvas — three-tone hierarchy. Per brand v1.2 §6
-   "Pale Aqua for card backgrounds and section dividers". */
+   "Pale Aqua for card backgrounds and section dividers".
+   The 5px left edge is overridden inline per category in
+   buildAssessment() with the category's navy/aqua hue, reinforcing
+   category identity beyond the small swatch in the header row. */
 .cat-section {
   background: var(--be-pale-aqua);
   padding: 20px 24px 22px;
   margin-bottom: 24px;
   border: 1px solid rgba(36,135,142,0.15);
+  border-left: 5px solid var(--be-navy);
 }
 .cat-header-row {
   display: flex; align-items: center; gap: 12px;
@@ -2304,7 +2308,7 @@ function buildAssessment() {
 
   body.innerHTML = profileBannerHTML + CATS.map(function(cat) {
     var qs = QUESTIONS.filter(function(q) { return q.cat === cat.id; });
-    return '<div class="cat-section">' +
+    return '<div class="cat-section" style="border-left-color:' + cat.color + ';">' +
       '<div class="cat-header-row">' +
         '<div class="cat-swatch" style="background:' + cat.color + '"></div>' +
         '<div class="cat-name">' + cat.name + '</div>' +
