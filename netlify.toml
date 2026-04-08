@@ -2,3 +2,7 @@
   base = "bidequity-co"
   command = "echo 'No build needed'"
   publish = "."
+  # Skip the build unless something inside bidequity-co/ or netlify.toml itself
+  # has changed since the last successful deploy. Stops monorepo commits
+  # (pwin-platform, pwin-competitive-intel, etc.) from burning build minutes.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ../netlify.toml"
