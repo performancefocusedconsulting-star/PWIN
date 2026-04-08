@@ -235,44 +235,54 @@ Forensic post-loss bid review product. Independently evaluates the entire pursui
 
 ## pwin-competitive-intel
 
-Automated competitive intelligence database built on the UK Find a Tender Service (FTS) OCDS open data API and Companies House. Ingests all UK public sector procurement notices nightly, enriches supplier records with Companies House data (directors, parent companies, SIC codes), and feeds intelligence into the wider PWIN platform. Provides a sales hit list for upcoming opportunities via the dashboard.
+Internal-only intelligence database of UK public sector procurement, built on the Find a Tender Service (FTS) OCDS open data and Companies House. Loaded primarily from the Open Contracting Partnership weekly bulk file (5+ years of history) and kept current via incremental FTS API pulls. Enriches supplier records with Companies House data (directors, parent companies, SIC codes) and feeds the other PWIN products (Verdict, Win Strategy, Bid Execution, future paid Qualify tier).
+
+**This is NOT a customer-facing product.** A free public lookup tool was considered and consciously declined. The public Qualify lead-gen experience must not call this layer — see `feedback_qualify_lead_gen_scope.md` in auto-memory.
 
 ### Architecture
 
-- **FTS ingest agent** (`agent/ingest.py`) — incremental OCDS API pull with cursor-based pagination, multi-lot and multi-supplier support, 1s polite delay between pages
-- **Companies House enrichment** (`agent/enrich-ch.py`) — pulls company status, directors, SIC codes, parent company, accounts date for suppliers with CH numbers. Requires `COMPANIES_HOUSE_API_KEY` env var (free key from developer.company-information.service.gov.uk)
-- **SQLite database** (`db/bid_intel.db`) — normalised schema: notices (OCID-keyed), lots, awards, award_suppliers (many-to-many), cpv_codes (indexed junction table), planning_notices, plus 13 CH columns on suppliers
+- **OCP bulk importer** (`agent/import_ocp.py`) — reads the Open Contracting Partnership weekly JSONL bulk file (5+ years of UK FTS data, ~175k compiled releases) and back-populates the database in ~4 minutes. Reuses `ingest.py`'s parse/upsert functions so there is one source of truth for parsing. Idempotent — safe to re-run after each weekly OCP refresh. The canonical path for historical depth.
+- **FTS ingest agent** (`agent/ingest.py`) — incremental OCDS API pull with cursor-based pagination, multi-lot and multi-supplier support, 1s polite delay between pages. Cursor advances only on the high-water mark of releases actually processed (failures preserve state). Read timeouts caught with exponential backoff. Also supports a separate `--backfill`/`--resume`/`--max-pages` mode that persists the API's `links.next` URL between runs for chunked recovery.
+- **Companies House enrichment** (`agent/enrich-ch.py`) — pulls company status, directors, SIC codes, parent company, accounts date for suppliers with CH numbers. Requires `COMPANIES_HOUSE_API_KEY` env var (free key from developer.company-information.service.gov.uk).
+- **SQLite database** (`db/bid_intel.db`) — normalised schema: notices (OCID-keyed), lots, awards, award_suppliers (many-to-many), cpv_codes (indexed junction table), planning_notices, plus 13 Companies House columns on suppliers. The structured `companies_house_no` field is recovered at ingest time by `_extract_coh()`, which accepts spec-compliant `GB-COH`-tagged identifiers, schemeless identifiers whose value matches the CH number format (a common publisher omission), and the same in `additionalIdentifiers`. Values are validated to reject foreign registers (e.g. German HRB numbers) that publishers sometimes mis-tag.
 - **Query library** (`queries/queries.py`) — CLI with 8 commands: summary, buyer, supplier, expiring, pipeline, awards, pwin, cpv
 - **Dashboard** (`dashboard.html`) — 6-tab single HTML file with expandable detail rows, Companies House panel on supplier profiles, Midnight Executive palette
 - **Data server** (`server.py`, port 8765) — Python HTTP API bridging SQLite to dashboard
-- **Cloudflare Worker** (`workers/intel-api.js`) — serves `/api/intel/*` endpoints from D1 serverless SQLite for the live Qualify product
+- **Cloudflare Worker** (`workers/intel-api.js`) — serves `/api/intel/*` endpoints from D1 serverless SQLite. Currently stale (D1 deploy descoped — see below).
 - **D1 sync** (`agent/sync-d1.py`) — exports local SQLite to SQL for `wrangler d1 execute`
-- **GitHub Actions** (`.github/workflows/ingest.yml`) — nightly: FTS ingest → CH enrichment (200/night) → D1 sync
+- **GitHub Actions** (`.github/workflows/ingest.yml`, at repo root) — nightly at 02:00 UTC: FTS incremental ingest → CH enrichment (200/night) → D1 sync. The workflow file MUST live at the repo root, not nested under `pwin-competitive-intel/.github/`, or GitHub Actions will not pick it up.
 - **Scheduler** (`agent/scheduler.py`) — cron wrapper for local nightly runs
 
 ### Platform Integration
 
 - **MCP tools** — 7 read tools added to `pwin-platform/src/mcp.js` via `competitive-intel.js` module (uses node:sqlite): `get_competitive_intel_summary`, `get_buyer_profile`, `get_supplier_profile`, `get_expiring_contracts`, `get_forward_pipeline`, `get_pwin_signals`, `search_cpv_codes`
 - **Platform Data API** — `/api/intel/*` endpoints added to `pwin-platform/src/api.js` (same queries, served via HTTP for HTML apps)
-- **Qualify integration** — both `pwin-qualify/docs/PWIN_Architect_v1.html` and `bidequity-co/qualify-app.html` fetch buyer profile + PWIN signals before every AI review. Auto-detects environment: localhost → platform API, production → Cloudflare Worker. Fails silently if unavailable.
+- **Qualify integration (current state)** — both `pwin-qualify/docs/PWIN_Architect_v1.html` and `bidequity-co/qualify-app.html` currently fetch buyer profile + PWIN signals before every AI review (auto-detects: localhost → platform API, production → Cloudflare Worker). **This is being suppressed for the public lead-gen release**: when public release is imminent, the intel calls will be feature-flagged off in the public versions of these apps. They stay available for internal Bid Execution / Win Strategy / Verdict consumption and for the future paid Qualify tier. Re-enabling on the paid tier is gated on data-quality work (entity resolution, CH name-matching) clearing the misleading-assertion risk.
 
 ### Technical Constraints
 
 - Python 3.9+ stdlib only — zero external dependencies for ingest and enrichment
-- SQLite for local persistence — handles 100k+ releases comfortably
-- Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day)
-- FTS API rate limits: 1s between pages, 429 retries with exponential backoff
+- SQLite for local persistence — currently ~570 MB at 175k notices, scales comfortably
+- Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day) — **deploy descoped from immediate priority** since public Qualify is shipping intel-stripped; D1 becomes relevant again when paid Qualify or another internal product needs production access. The current 570 MB DB has not been validated against `wrangler d1 execute` load limits — verify before any deploy attempt.
+- FTS API rate limits: 1s between pages, 429 retries with exponential backoff, 60s read timeout with retries
 - Companies House API: 600ms between calls, free key required
-- Database not committed to repo (`.gitignore`), built from API on first run
+- Database not committed to repo (`.gitignore`); the OCP bulk JSONL file (`data/`) is also gitignored — built from a single download, not from git
 
 ### Purpose Within the Product Family
 
-Cross-cutting knowledge layer sitting above individual pursuit products:
+Cross-cutting **internal** knowledge layer feeding the other pursuit products:
 
-- **Feeds Qualify** — buyer procurement patterns, competition levels, avg bidder counts, competitor incumbency signals → injected into AI assurance system prompt
+- **Feeds Verdict** — incumbent detection, supplier history, buyer relationships for post-loss forensics
 - **Feeds Win Strategy** — competitor incumbencies, supplier win histories, buyer relationships, Companies House data (directors, parent companies)
-- **Sales pipeline** — forward pipeline (1,806 planning notices = upcoming tenders), expiry pipeline (contracts ending soon), CPV-filtered prospecting
-- **PWIN signals** — competition level per buyer/category, procurement method breakdown (open/limited/direct/selective)
+- **Feeds Bid Execution** — incumbent flags, comparable awards, buyer patterns during bid production
+- **Feeds future paid Qualify tier** — buyer signals, competition intensity, framework holders injected into AI assurance
+- **Internal sales pipeline** — forward pipeline (planning notices = upcoming tenders), expiry pipeline (contracts ending soon), CPV-filtered prospecting
+
+### Known Limitations
+
+- **Buyer entity resolution.** Large buyers fragment across many distinct rows. Ministry of Defence currently has ~1,272 buyer IDs (PPON variants, legacy GB-FTS IDs, case variants, subsidiaries like DE&S / DSTL / DIO). Aggregated queries for big buyers must use name-based LIKE joins across all variants. A canonical-buyer mapping layer is the #1 planned data-quality improvement.
+- **Companies House coverage.** ~27% of suppliers have a CH number on file. The rest are publisher name-only entries (no structured ID), GB-PPON-only, non-UK, or public sector bodies. Recovering name-only suppliers needs fuzzy matching against the Companies House register — planned but not yet built.
+- **Framework values.** OCDS records framework *maximum* values, not realised spend. Total-value summaries reflect ceilings, not draw-down.
 
 ### Running
 
@@ -282,10 +292,22 @@ cd pwin-competitive-intel
 # Dashboard (local development)
 python server.py                                    # → port 8765, open /dashboard.html
 
-# Ingest
+# OCP bulk import (canonical path for historical depth)
+mkdir -p data
+curl -L -o data/ocp-uk-fts.jsonl.gz \
+  "https://data.open-contracting.org/en/publication/41/download?name=full.jsonl.gz"
+python agent/import_ocp.py                          # full import (~4 minutes)
+python agent/import_ocp.py --limit 1000             # bounded (testing)
+
+# Live FTS API (incremental keep-current — what the nightly cron runs)
+python agent/ingest.py                              # incremental from saved cursor
+python agent/ingest.py --from 2026-01-01T00:00:00   # custom start date
 python agent/ingest.py --limit 50                   # quick test
-python agent/ingest.py --from 2025-01-01T00:00:00   # from specific date
-python agent/ingest.py --full                       # full historical from 2024
+
+# Resumable backfill (rare — prefer OCP for history)
+python agent/ingest.py --backfill 2024-01-01T00:00:00 --max-pages 50
+python agent/ingest.py --resume --max-pages 50
+python agent/ingest.py --resume                     # run to completion
 
 # Companies House enrichment
 export COMPANIES_HOUSE_API_KEY=your_key_here
@@ -299,7 +321,7 @@ python queries/queries.py supplier "Serco"
 python queries/queries.py expiring --days 180 --value 500000
 python queries/queries.py pwin --category services
 
-# Deploy to Cloudflare D1 (one-time setup)
+# Deploy to Cloudflare D1 (descoped — verify load mechanism for ~570 MB DB first)
 cd workers
 npx wrangler d1 create pwin-competitive-intel       # paste ID into wrangler.toml
 npx wrangler d1 execute pwin-competitive-intel --file=../db/schema.sql

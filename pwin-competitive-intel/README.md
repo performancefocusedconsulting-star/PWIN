@@ -1,21 +1,40 @@
 # PWIN Competitive Intelligence
 
-Automated competitive intelligence database built on the UK
-Find a Tender Service (FTS) OCDS open data API and Companies House.
+Internal-only intelligence database of UK public sector procurement,
+built on the Find a Tender Service (FTS) OCDS open data and Companies House.
 
-## What it does
+## Role within the platform
 
-- **FTS ingest agent** — pulls all UK public sector procurement notices
-  nightly via the FTS OCDS API (Cabinet Office, Open Government Licence)
-- **Companies House enrichment** — enriches supplier records with company
-  status, directors, SIC codes, parent company, accounts data
-- **Structured database** — buyers, suppliers, awards, lots, CPV codes,
-  planning notices with full relationship mapping
-- **Dashboard** — 6-tab web interface for browsing buyer profiles, supplier
-  intelligence, expiry pipeline, forward pipeline, and PWIN signals
-- **Platform integration** — MCP tools and Data API endpoints feed intelligence
-  into Qualify AI reviews and Win Strategy
-- **Cloudflare deployment** — D1 serverless SQLite + Worker for live product access
+This is an **internal enrichment asset**, not a customer-facing product.
+It exists to feed the other PWIN products with credible procurement
+intelligence:
+
+- **Verdict** — incumbent detection, supplier history, buyer relationships
+  for post-loss forensics
+- **Win Strategy** — competitor profiling, framework holders, parent groups
+- **Bid Execution** — incumbent flags, comparable awards, buyer patterns
+  during bid production
+- **Qualify (paid tier, future)** — buyer signals and competition intensity
+  injected into AI assurance reviews
+
+The **public Qualify lead-gen experience does NOT call this layer**.
+A free public lookup tool was considered and consciously declined; the
+data here is for internal product enrichment only.
+
+## What's in the database
+
+- **5+ years** of UK procurement data (Jan 2021 → present)
+- ~175k contract notices, ~24k buyers, ~161k suppliers, ~186k awards
+- Lots, CPV categorisation, supplier↔award many-to-many, planning notices
+- Companies House enrichment available for suppliers with valid CH numbers
+
+Data is loaded by two complementary mechanisms (see *Ingestion* below):
+
+1. **OCP bulk file** — weekly-refreshed JSONL covering Jan 2021 → present.
+   The canonical path for historical depth and weekly catch-up.
+2. **Live FTS API** — incremental cursor-based pulls. Used to keep current
+   between OCP refreshes and to capture forward-pipeline planning notices
+   (which the OCP compiled-release file does not contain as standalone records).
 
 ## Setup
 
@@ -23,15 +42,80 @@ Find a Tender Service (FTS) OCDS open data API and Companies House.
 # No external dependencies — uses Python stdlib only
 python --version   # 3.9+ required
 
-# Quick test (50 releases)
+# Quick smoke test (50 records via the live API)
 python agent/ingest.py --limit 50
+```
 
-# Ingest from a specific date
+## Ingestion
+
+There are two ingest paths and they complement each other.
+
+### 1. OCP bulk import (canonical for historical depth)
+
+The Open Contracting Partnership Data Registry publishes a weekly-refreshed
+bulk file of every UK FTS release as OCDS *compiled* releases — one merged
+current-state record per contract OCID. Coverage is January 2021 to present.
+
+```bash
+# One-off download (~200 MB gzipped, ~175k compiled releases)
+mkdir -p data
+curl -L -o data/ocp-uk-fts.jsonl.gz \
+  "https://data.open-contracting.org/en/publication/41/download?name=full.jsonl.gz"
+
+# Import into the local SQLite database
+python agent/import_ocp.py                  # full import (~4 minutes)
+python agent/import_ocp.py --limit 1000     # bounded (testing)
+python agent/import_ocp.py --file <path>    # custom input file
+```
+
+The import is **idempotent** — every upsert is keyed on OCID / party ID,
+so re-running after the OCP file refreshes is safe and just updates the
+existing rows. Re-pull the JSONL whenever you want the latest snapshot.
+
+The `data/` directory is gitignored — the bulk file stays local.
+
+> **Note on planning notices:** OCP compiled releases do not represent
+> pure forward-pipeline planning notices as standalone records (those
+> only exist in the live release-package format). The OCP import never
+> writes to the `planning_notices` table. Forward pipeline data flows
+> exclusively from the live API path below.
+
+### 2. Live FTS API (incremental keep-current)
+
+Incremental cursor-based pulls from the FTS OCDS API. This is what the
+nightly job runs to stay current between OCP refreshes and to capture
+new forward-pipeline planning notices.
+
+```bash
+# Incremental from saved cursor (default — what the nightly cron runs)
+python agent/ingest.py
+
+# From a specific date
 python agent/ingest.py --from 2026-01-01T00:00:00
 
-# Full historical ingest from 2024
-python agent/ingest.py --full
+# Bounded for testing
+python agent/ingest.py --limit 50
 ```
+
+The cursor advances only on the high-water mark of releases actually
+processed. If a run dies mid-flight (network issue, container restart),
+the cursor stays put and the next run picks up from where it stopped.
+Read timeouts are caught and retried with exponential backoff.
+
+#### Resumable backfill mode
+
+For long backfills directly against the FTS API (rare — prefer the OCP
+bulk path for history), there's a separate state machine that persists
+the API's `links.next` cursor URL between runs:
+
+```bash
+python agent/ingest.py --backfill 2024-01-01T00:00:00 --max-pages 50
+python agent/ingest.py --resume --max-pages 50
+python agent/ingest.py --resume                            # run to completion
+```
+
+Backfill mode does NOT touch the incremental cursor — the two state
+machines are fully independent.
 
 ## Dashboard
 
@@ -95,7 +179,23 @@ Requires GitHub secrets:
 
 ## Cloudflare D1 Deployment
 
-One-time setup for live product access:
+> **Status: descoped from immediate priority.** The D1 deploy was
+> originally driven by production Qualify needing intel access.
+> Public Qualify is shipping deliberately under-enriched (no intel
+> injection), so D1 is no longer urgent. It will become relevant
+> again when the paid Qualify tier or another internal product
+> starts consuming intel from a production environment.
+>
+> Before deploying, two things need verification:
+> 1. The current SQLite database is ~570 MB (14× the size when D1
+>    was first specced). Confirm `wrangler d1 execute` can load a
+>    DB of that size without hitting batch / execution-time limits.
+>    The free tier permits 5 GB storage so the data fits, but the
+>    *load mechanism* needs validation.
+> 2. The free tier permits 5M reads/day. Model expected production
+>    traffic before going live.
+
+One-time setup, when ready:
 
 ```bash
 cd workers
@@ -107,26 +207,31 @@ python ../agent/sync-d1.py --apply
 npx wrangler deploy
 ```
 
-Worker URL: `https://pwin-competitive-intel.performancefocusedconsulting.workers.dev`
-
-The live Qualify app auto-detects environment and calls the Worker
-when running on production, localhost when in development.
-
 ## Database
 
 SQLite at `db/bid_intel.db`. Schema:
 
-| Table              | Contents                                                |
-|--------------------|---------------------------------------------------------|
-| `buyers`           | Contracting authorities — name, type, region, contact   |
-| `suppliers`        | Companies — name, COH no., scale, VCSE + 13 CH fields  |
-| `notices`          | Contracting processes (one per OCID) — tender details   |
-| `lots`             | Individual lots within a notice                         |
-| `awards`           | Awards — value, dates, status, linked to lots           |
-| `award_suppliers`  | Many-to-many: which suppliers won which awards          |
-| `cpv_codes`        | Normalised CPV codes per notice (indexed for search)    |
-| `planning_notices` | Forward pipeline — market engagement, future tenders    |
-| `ingest_state`     | Cursor for incremental ingestion                        |
+| Table              | Contents                                                  |
+|--------------------|-----------------------------------------------------------|
+| `buyers`           | Contracting authorities — name, type, region, contact     |
+| `suppliers`        | Companies — name, scale, VCSE + 13 Companies House fields |
+| `notices`          | Contracting processes (one per OCID) — tender details     |
+| `lots`             | Individual lots within a notice                           |
+| `awards`           | Awards — value, dates, status, linked to lots             |
+| `award_suppliers`  | Many-to-many: which suppliers won which awards            |
+| `cpv_codes`        | Normalised CPV codes per notice (indexed for search)      |
+| `planning_notices` | Forward pipeline — fed by live API only                   |
+| `ingest_state`     | Incremental cursor + backfill resume URL                  |
+
+The 13 Companies House columns on `suppliers` (`ch_status`, `ch_directors`,
+`ch_sic_codes`, `ch_parent`, `ch_turnover`, etc.) are populated by
+`agent/enrich-ch.py`. The structured CH number itself
+(`companies_house_no`) is recovered at ingest time by `_extract_coh()`,
+which handles three real-world cases: spec-compliant `GB-COH`-tagged
+identifiers, schemeless identifiers whose value matches the CH number
+format (a common publisher omission), and the same in `additionalIdentifiers`.
+Values are validated in all paths to reject foreign registers
+(e.g. German HRB numbers) that publishers sometimes mis-tag as `GB-COH`.
 
 Pre-built views:
 
@@ -139,9 +244,14 @@ Pre-built views:
 
 ## Data sources
 
+**Open Contracting Partnership Data Registry — UK Find a Tender publication.**
+Bulk JSONL of OCDS compiled releases, refreshed weekly, covering January
+2021 to present. Free, no auth, Open Government Licence v3.0.
+URL: <https://data.open-contracting.org/en/publication/41>
+
 **Find a Tender Service OCDS API** (Cabinet Office, Open Government Licence).
-Covers all UK public sector contracts published via FTS:
-- Planning notices and market engagement (forward pipeline)
+Used for incremental keep-current and forward-pipeline planning notices:
+- Planning notices and market engagement (forward pipeline) — exclusive to this path
 - Tender notices (live opportunities)
 - Contract award notices (who won, at what value, how many bidders)
 - Contract detail notices (signed contracts with dates)
@@ -154,3 +264,25 @@ Covers all UK public sector contracts published via FTS:
 
 **Not yet integrated:** Contracts Finder (below-threshold contracts),
 KPI data, delivery performance, contract modifications post-award.
+
+## Known limitations
+
+- **Buyer entity resolution.** Large public sector buyers often appear
+  as many distinct rows in the database. Ministry of Defence currently
+  fragments across ~1,272 buyer IDs (multiple PPON identifiers, legacy
+  GB-FTS IDs, case variants, MoD subsidiaries like DE&S / DSTL / DIO).
+  Aggregated queries for big buyers must currently use a name-based
+  LIKE join across all variants. A canonical-buyer mapping layer is
+  the next planned data-quality improvement.
+
+- **Companies House coverage.** ~27% of suppliers in the database have
+  a Companies House number on file. The remainder are split between
+  publisher name-only entries (no structured ID), GB-PPON-only entries,
+  non-UK entities, and public sector bodies acting as suppliers
+  (NHS trusts, universities, etc.). Recovering the name-only suppliers
+  requires fuzzy matching against the Companies House register —
+  planned but not yet built.
+
+- **Framework values.** OCDS records framework agreement *maximum*
+  values, not realised spend. Total-value summaries reflect ceilings,
+  not actual contract draw-down.
