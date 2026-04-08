@@ -1,0 +1,46 @@
+- [Effort baseline](feedback_effort_baseline.md) — 2 person-days per page for qualitative bid questions (industry calibration)
+- [User profile](user_profile.md) — experienced bid manager, domain expert in bid production lifecycle
+- [CSV import UX](feedback_csv_guidance.md) — always show required CSV structure before file upload
+- [Client scoring optional](feedback_client_scoring_optional.md) — client marking scheme is optional, never mandatory (low-value bids don't have one)
+- [Win themes from capture](feedback_win_themes_capture.md) — win themes originate pre-ITT from sales lead, refined at ITT receipt, not created from scratch
+- [Module scope clarity](feedback_module_clarity.md) — Submissions (client reqs + production), Reviews (formal peer/SME), Governance (organisational assurance) are distinct
+- [ITT ingestion MVP scope](project_itt_ingestion_scope.md) — ResponseSection, EvaluationFramework, ITTDocument in; Requirement, ClarificationItem deferred to V2
+- [Scope discipline](feedback_scope_discipline.md) — avoid god-project; defer complex features to V2 rather than front-loading
+- [Question structure](feedback_question_structure.md) — ITT questions with sub-parts are one production unit, 1:1 ResponseSection-to-ResponseItem
+- [Migration approach](feedback_migration_approach.md) — auto-migrate existing data silently, never force re-entry
+- [Compliance matrix V1](feedback_compliance_matrix_v1.md) — UX deferred, but data model, PRD-01 activity, and governance gates all retained; tracking done externally via AI+Excel
+- [Response Requirements view](feedback_response_requirements_view.md) — pure reference view, no production tracking; follows client document structure, shows question marks not section weights
+- [Submissions redesign session](project_session_submissions_redesign.md) — full session summary: reference view, production pipeline, ribbons, CSV, slideout, next target is scheduling integration
+- [Production parallelisation](feedback_production_parallelisation.md) — authoring parallel, reviews ideally batched, solution gates pricing/implementation, 2-3 reviewers per workstream
+- [Gate production scope](feedback_gate_production_scope.md) — G8 only gates quality/solution responses; legal, company info, insurance, security, contracts start day 1
+- [Scheduling design session](project_session_scheduling_design.md) — Session 9: parallelisation resolved, gate scope resolved, scheduler bug found; Q2 (dependency model) and Q3 (buffer policy) still open
+- [Session 10 UX review](project_session10_ux_review.md) — 9 open items: gate renaming/reorder, activity moves, milestones view, GOV legal review, list view bug, methodology mapping complete
+- [Methodology data model](project_methodology_data_model.md) — L1/L2/L3 structure, structured inputs, checkable quality criteria, status derivation from tasks, slideout UX
+- [Session 11 gold standard](project_session11_gold_standard.md) — SAL-03 as reference template, L4=skills confirmed, Win Strategy product diagram, cross-product interface pattern
+- [Session 12 mapping](project_session12_notes.md) — SAL-10 added, SAL-08/09→BM-14/15, line-by-line gold standard mapping in progress, new SOL activity flagged
+- [Evaluation & Win Strategy module](project_evaluation_strategy_module.md) — new product module: eval criteria + client scoring + win themes + scoring insight, extracted from Submissions
+- [SOL workstream archetypes](project_sol_archetypes.md) — three archetypes (Services, Technology/Digital, Consulting/Advisory), same activity codes, different L2/L3 content
+- [Post-mapping actions](project_post_mapping_actions.md) — five follow-ups: archetype validation across all workstreams, role-based agent personas from RACI, AI suitability assessment, competitive dialogue methodology, SQ stage methodology
+- [Session 13 AI use cases](project_session13_ai_use_cases.md) — 20 intelligence use cases, three-layer architecture, plugin alignment v1.4, MCP server is next design target
+- [Four-layer AI value](project_ai_value_layers.md) — task efficiency (34%), timeline compression, team fungibility, decision velocity (highest value = early gate kills)
+- [Session 14 agents](project_session14_agents.md) — 6 capability-based agents replace 5 persona agents, assessment validated, moat = methodology not platform
+- [Session 15 multi-product](project_session15_multiproduct.md) — MCP server is multi-product platform; Qualify data model mapped; shared pursuit entities; AI enrichment docs reviewed
+- [Persona pattern](feedback_persona_pattern.md) — Alex Mercer persona is the reusable pattern for all agent system prompts: structured object + triggers + self-audit
+- [Session 16 MCP build](project_session16_mcp_build.md) — MCP server built (94 tools), platform knowledge seeded, skill runner + 3 skills, HTML apps wired, live tested ($0.09)
+- [API cost modelling needed](project_api_cost_analysis.md) — API costs must be modelled per skill and per opportunity lifecycle before go-to-market; architecture decisions (caching, pre-built intel, model selection) flow from this
+- [Client onboarding design](project_client_onboarding.md) — user has onboarding checklist to review; AI-assisted onboarding (RAG over past bids, auto-extraction) could reduce burden and be a differentiator
+- [Bid forensics service](project_bid_forensics_service.md) — standalone product: retrospective bid analysis using PWIN engine in reverse. Upload lost bid docs, get quantitative post-mortem. ~£2K fixed price, gateway to full platform
+- [API rate limit upgrade](project_api_rate_limit.md) — currently Tier 1 (30K/min), user contacting Anthropic to upgrade; design for Tier 3 (120K/min) as production baseline
+- [Skills need domain depth](feedback_skill_depth.md) — skill prompts are scaffolding; production skills need workflow, templates, multi-stage processes, real domain knowledge
+- [Skill workflow engine](project_skill_workflow_design.md) — production skills need multi-stage workflows (state, checkpoints, scheduling, human review, document outputs); template-driven approach confirmed
+- [Output format](feedback_output_format.md) — web-native content internally (markdown/HTML), Office 365 export layer for corporate compliance; don't build Office XML into skills
+- [Governance pack design](project_governance_pack_design.md) — Agent 5 skill redesign: 3 gate tiers, 3 content modes, platform knowledge files, HTML→PDF output, 5 reference PDFs analysed
+- [Qualify is #1 priority](project_qualify_priority.md) — live lead gen product, website CTAs active, AI ready, Netlify proxy built, rebrand in progress
+- [Qualify deploy status](project_qualify_deploy_status.md) — deployed to Cloudflare Pages/Workers but needs QA fixes; user reviewing overnight; Netlify paused
+- [Intelligence skills priority](project_intelligence_skills_priority.md) — client profiles + competitive intelligence skills are next after governance packs; feed Qualify AI depth
+- [Qualify alignment actions](project_qualify_alignment_actions.md) — incumbent/challenger variant questions to design; user reviewing alignment analysis before changes
+- [Competitive intel built](project_competitive_intel_build.md) — FTS ingest + CH enrichment + dashboard + MCP + D1 Worker + Qualify integration; 14.7k notices, 236 CH enriched; D1 deploy pending, 2025 backfill pending, qualify-app.html Netlify push pending
+- [Free-tier sector intel tool — NOT pursuing](project_free_tier_intel_tool.md) — public lookup product superseded 2026-04-08; intel DB stays as internal-only enrichment asset
+- [Qualify lead gen scope](feedback_qualify_lead_gen_scope.md) — public Qualify ships deliberately under-enriched: NO procurement intel injection, deliberate "limited demo" positioning
+- [OCP Data Registry](reference_ocp_data_registry.md) — canonical free bulk OCDS downloads for UK FTS and global publishers; check before grinding any paginated OCDS API
+- [Friction tolerance](feedback_friction_tolerance.md) — don't default to zero-cost options that create recurring friction; small monthly spend to remove babysitting is worth it
