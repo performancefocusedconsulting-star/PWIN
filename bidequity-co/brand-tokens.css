@@ -1,0 +1,121 @@
+/* ══════════════════════════════════════════════════════════════
+   BID EQUITY — BRAND TOKENS
+   ══════════════════════════════════════════════════════════════
+   Single source of truth for the Bid Equity brand. Canonical
+   palette, typography, and semantic role tokens used by every
+   product app and the marketing site.
+
+   Source: docs/brand-guidelines-v1.2.md (and matching PDF)
+   Do NOT redefine these values in product files. Reference the
+   semantic tokens (--be-*) only.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Core palette ──────────────────────────────────────────
+     6 brand colours plus the descriptor cyan exception.
+     Names mirror the brand doc exactly. */
+  --be-navy:        #021744;  /* Midnight Navy   — primary text, headings, structural */
+  --be-sand:        #F7F4EE;  /* Soft Sand       — MANDATORY page canvas, never pure white */
+  --be-teal:        #5CA3B6;  /* Calm Teal       — structural UI on light bg only (nav, table headers, rules) */
+  --be-pale-aqua:   #E0F4F6;  /* Pale Aqua       — card fills, section dividers (light bg only) */
+  --be-bright-aqua: #7ADDE2;  /* Bright Aqua     — hover/focus/active, attention colour, hero accents */
+  --be-terracotta:  #D17A74;  /* Light Terracotta — CTAs, buttons, callout badges, pull quotes (sparing) */
+  --be-cyan:        #60F5F7;  /* Bright Cyan     — descriptor lock-up only ("Pursuit Intelligence") */
+
+  /* ─── Navy gradient (data viz) ──────────────────────────────
+     Charts, graphs, maps. Navy + Aqua only. */
+  --be-navy-900: #021744;  /* Midnight Navy */
+  --be-navy-700: #2D3F64;  /* Deep Slate    */
+  --be-navy-500: #576482;  /* Steel Blue    */
+  --be-navy-300: #818CA2;  /* Pewter        */
+  --be-navy-200: #ABB2C1;  /* Silver Fog    */
+  --be-navy-100: #D5D9E0;  /* Pale Slate    */
+
+  /* ─── Aqua gradient (data viz) ──────────────────────────────
+     The 300 step is the same as --be-bright-aqua. */
+  --be-aqua-100: #CCF3F6;  /* Ice Aqua     */
+  --be-aqua-200: #A3E8EC;  /* Soft Aqua    */
+  --be-aqua-300: #7ADDE2;  /* Bright Aqua  */
+  --be-aqua-400: #5CC0C6;  /* Clear Aqua   */
+  --be-aqua-500: #3FA3AA;  /* Teal Aqua    */
+  --be-aqua-600: #24878E;  /* Deep Aqua    */
+
+  /* ─── Semantic role tokens ──────────────────────────────────
+     Use these in product code, not the colour primitives above. */
+  --be-text-primary:    var(--be-navy);       /* main text on light bg */
+  --be-text-secondary:  var(--be-navy-500);   /* secondary text */
+  --be-text-tertiary:   var(--be-navy-300);   /* labels, captions */
+  --be-text-on-dark:    var(--be-sand);       /* text on navy — sand, NEVER pure white */
+
+  --be-bg-page:         var(--be-sand);       /* page canvas — mandatory */
+  --be-bg-card:         var(--be-pale-aqua);  /* card fill in light mode */
+  --be-bg-dark:         var(--be-navy);       /* hero / dark sections / app header */
+
+  --be-border:          var(--be-navy-100);   /* primary border */
+  --be-border-subtle:   #E8E4DC;              /* subtle border */
+
+  --be-accent-cta:        var(--be-terracotta);   /* primary CTA — sparingly, one focal element per section */
+  --be-accent-attention:  var(--be-bright-aqua);  /* hover, focus, selection, active state */
+  --be-accent-structure:  var(--be-teal);         /* structural rules, table headers — LIGHT bg only */
+  --be-descriptor:        var(--be-cyan);         /* "Pursuit Intelligence" descriptor lock-up */
+
+  /* Semantic chart accents — only when a chart needs to flag a loss / key insight. */
+  --be-chart-loss:        var(--be-terracotta);
+
+  /* ─── Typography ────────────────────────────────────────────
+     Two fonts only. Spline Sans for display, Inter for body/UI/data.
+     Inter handles tabular numerals via font-feature-settings: "tnum". */
+  --be-font-display: 'Spline Sans', sans-serif;
+  --be-font-body:    'Inter', sans-serif;
+
+  --be-fw-display-strong: 700;  /* logo/wordmark */
+  --be-fw-display:        600;  /* main headings */
+  --be-fw-display-light:  500;  /* sub-headings */
+  --be-fw-body:           400;  /* body */
+  --be-fw-body-strong:    500;  /* labels, captions, emphasis */
+  --be-fw-body-bold:      600;  /* button text, strong UI */
+
+  /* ─── Brand rules baked in ──────────────────────────────────
+     Per brand doc: zero radius, sharp edges everywhere. */
+  --be-radius: 0;
+}
+
+/* Tabular numerals helper — apply to dashboards, scorecards, metric values
+   so columns of numbers line up without resorting to a monospace font. */
+.be-tnum {
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Brand wordmark layout — used in nav and footer.
+   "Bid Equity" is rendered as TWO words; the descriptor "Pursuit Intelligence"
+   sits BENEATH the wordmark per the brand lock-up. */
+.be-wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: var(--be-font-display);
+  font-weight: var(--be-fw-display-strong);
+  line-height: 1.1;
+  text-decoration: none;
+}
+.be-wordmark__name {
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: var(--be-text-on-dark); /* default: on dark bg (nav/footer) */
+}
+.be-wordmark__name .be-wordmark__bid    { margin-right: 0.22em; }
+.be-wordmark__name .be-wordmark__equity { /* same colour, separate span only for compositional control */ }
+.be-wordmark__descriptor {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--be-font-body);
+  font-weight: var(--be-fw-body-strong);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--be-descriptor);
+}
+
+/* Wordmark on light backgrounds (rare — most appearances are on navy nav/footer). */
+.be-wordmark--light .be-wordmark__name { color: var(--be-text-primary); }

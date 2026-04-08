@@ -12,88 +12,125 @@
   gtag('config', 'G-L97XYXR337');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pursuit Qualification — BidEquity</title>
-<meta name="description" content="Score your next pursuit against the factors that predict win probability. AI-powered qualification tool from BidEquity.">
+<title>BidEquity Qualify — Pursuit Intelligence</title>
+<meta name="description" content="Score your next pursuit against the factors that predict win probability. AI-enabled qualification from BidEquity.">
 
 <!-- Open Graph -->
-<meta property="og:title" content="Pursuit Qualification — BidEquity">
-<meta property="og:description" content="Score your next pursuit against the factors that predict win probability. AI-powered qualification with built-in correction for optimism bias.">
+<meta property="og:title" content="BidEquity Qualify — Pursuit Intelligence">
+<meta property="og:description" content="Score your next pursuit against the factors that predict win probability. AI-enabled qualification with built-in correction for optimism bias.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bidequity.co/qualify-app">
 <meta property="og:image" content="https://bidequity.co/og-image.png">
 
-<!-- Fonts -->
+<!-- Fonts — Bid Equity brand: Spline Sans for display, Inter for everything else. No third font. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Canonical brand tokens. See bidequity-co/brand-tokens.css and docs/brand-guidelines-v1.2.md -->
+<link rel="stylesheet" href="brand-tokens.css">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════
-   BIDEQUITY QUALIFY APP — Design System Tokens
+   BIDEQUITY QUALIFY APP
+   All colours, fonts, and brand decisions come from brand-tokens.css.
+   The :root block below is a thin shim — every legacy variable name
+   used by this file maps to a canonical --be-* token. Do NOT add
+   raw hex values here. If you need a new role, add it to brand-tokens.css.
    ══════════════════════════════════════════════════════════════ */
 :root {
-  /* Backgrounds — warm parchment */
-  --bg0: #F7F4EE;
-  --bg1: #FFFFFF;
-  --bg2: #FFFFFF;
-  --bg3: #F0ECE4;
-  --bg4: #E8E4DC;
+  /* ── Layered backgrounds (alias canonical Sand/Pale Aqua) ── */
+  --bg0: var(--be-bg-page);          /* page canvas — Soft Sand, mandatory */
+  --bg1: var(--be-bg-card);          /* card fill — Pale Aqua per brand */
+  --bg2: var(--be-bg-card);
+  --bg3: #F0ECE4;                    /* warm tertiary surface */
+  --bg4: #E8E4DC;                    /* warm quaternary */
 
-  /* Legacy aliases used in inline styles */
-  --ink:        #021744;
-  --navy:       #021744;
-  --navy-mid:   #0D2B5E;
-  --navy-light: #1A4080;
-  --amber:      #5CA3B6;
-  --amber-lt:   rgba(92,163,182,0.10);
-  --amber-mid:  #5CA3B6;
-  --teal:       #5CA3B6;
-  --teal-lt:    rgba(92,163,182,0.08);
-  --green:      #2D8A5E;
-  --green-lt:   rgba(45,138,94,0.10);
-  --red:        #C15050;
-  --red-lt:     rgba(193,80,80,0.10);
-  --slate:      #576482;
-  --border:     #D5D9E0;
-  --surface:    #F7F4EE;
-  --white:      #FFFFFF;
+  /* ── Text ── */
+  --ink:    var(--be-text-primary);
+  --navy:   var(--be-navy);
+  --slate:  var(--be-text-secondary);
+  --white:  var(--be-text-on-dark);  /* on dark bg, use Sand not pure white */
+  --t1:     var(--be-text-primary);
+  --t2:     var(--be-text-secondary);
+  --t3:     var(--be-text-tertiary);
 
-  --cat-cp:    rgba(92,163,182,0.08);
-  --cat-pi:    rgba(45,138,94,0.08);
-  --cat-ss:    rgba(198,138,29,0.08);
-  --cat-oi:    rgba(124,91,168,0.08);
-  --cat-vp:    rgba(90,138,61,0.08);
-  --cat-pp:    rgba(63,163,170,0.08);
+  /* ── Structure ── */
+  --border:  var(--be-border);
+  --surface: var(--be-bg-page);
 
-  --font-display: 'Spline Sans', sans-serif;
-  --font-body:    'Inter', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
+  /* ── Brand accents (semantic) ──
+     teal = structural only (LIGHT bg). Never as text on navy.
+     The legacy --amber alias is kept for compatibility but points
+     at terracotta now (the only warm accent in v1.2). */
+  --teal:        var(--be-teal);
+  --teal-lt:     rgba(92,163,182,0.08);
+  --terracotta:  var(--be-terracotta);
+  --bright-aqua: var(--be-bright-aqua);
+  --pale-aqua:   var(--be-pale-aqua);
+  --amber:       var(--be-terracotta);   /* legacy alias → terracotta */
+  --amber-lt:    rgba(209,122,116,0.10);
+  --amber-mid:   var(--be-terracotta);
 
-  /* Brand rule: zero radius everywhere */
+  /* ── Semantic UI states ── */
+  --green:    #2D8A5E;
+  --green-lt: rgba(45,138,94,0.10);
+  --red:      #C15050;
+  --red-lt:   rgba(193,80,80,0.10);
+  --grn:      #2D8A5E;
+  --amb:      var(--be-terracotta);
+
+  /* ── Category tints (Qualify-specific scoring categories) ── */
+  --cat-cp: rgba(92,163,182,0.08);
+  --cat-pi: rgba(45,138,94,0.08);
+  --cat-ss: rgba(198,138,29,0.08);
+  --cat-oi: rgba(124,91,168,0.08);
+  --cat-vp: rgba(90,138,61,0.08);
+  --cat-pp: rgba(63,163,170,0.08);
+
+  /* ── Fonts ──
+     Two fonts only per brand. --font-mono is now Inter with tabular numerals
+     so dashboard numbers still align without a third font. */
+  --font-display: var(--be-font-display);
+  --font-body:    var(--be-font-body);
+  --font-mono:    var(--be-font-body);
+
+  /* ── Brand rule: zero radius everywhere ── */
   --radius-sm: 0;
   --radius-md: 0;
   --radius-lg: 0;
   --shadow-sm: 0 1px 3px rgba(2,23,68,0.06), 0 1px 2px rgba(2,23,68,0.03);
   --shadow-md: 0 4px 16px rgba(2,23,68,0.08), 0 2px 6px rgba(2,23,68,0.04);
   --shadow-lg: 0 12px 40px rgba(2,23,68,0.10), 0 4px 12px rgba(2,23,68,0.06);
+}
 
-  /* Semantic */
-  --grn: #2D8A5E;
-  --amb: #C68A1D;
-  --t1: #021744;
-  --t2: #576482;
-  --t3: #818CA2;
+/* Inter renders dashboard numbers with tabular numerals where --font-mono
+   is used, so columns still line up without bringing in JetBrains Mono. */
+[class*="pwin-value"], [class*="gauge-pct"], [class*="cat-bar-val"],
+[class*="stat-val"], [class*="conf-pct"], .completion-pill,
+[style*="font-family: var(--font-mono)"], [style*="font-family:var(--font-mono)"] {
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bg0);
-  color: var(--t1);
+  font-family: var(--be-font-body);
+  background: var(--be-bg-page);
+  color: var(--be-text-primary);
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--be-font-display);
+  font-weight: var(--be-fw-display);
+  line-height: 1.2;
+  color: var(--be-text-primary);
 }
 
 /* ── WEBSITE NAV (matches bidequity.co) ────────────────────── */
@@ -110,28 +147,36 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  min-height: 64px;
 }
+/* Brand wordmark — "Bid Equity" two words, "Pursuit Intelligence" descriptor stacked beneath.
+   Per brand-guidelines-v1.2 §4. */
 .site-nav__brand {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  color: #F0EDE6;
+  font-family: var(--be-font-display);
+  font-weight: var(--be-fw-display-strong);
   text-decoration: none;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  padding: 8px 0;
 }
-.site-nav__brand .brand-bid { color: #F0EDE6; }
-.site-nav__brand .brand-equity { color: #F0EDE6; }
+.site-nav__brand .brand-name {
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  color: var(--be-text-on-dark);
+}
+.site-nav__brand .brand-bid    { margin-right: 0.22em; color: var(--be-text-on-dark); }
+.site-nav__brand .brand-equity { color: var(--be-text-on-dark); }
 .site-nav__brand .brand-subtitle {
-  font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  display: block;
+  margin-top: 2px;
+  font-family: var(--be-font-body);
+  font-size: 9px;
+  font-weight: var(--be-fw-body-strong);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #60F5F7;
-  margin-left: 4px;
+  color: var(--be-descriptor);
 }
 .site-nav__links {
   display: flex;
@@ -148,20 +193,21 @@ body {
   transition: color 0.15s;
   letter-spacing: 0.02em;
 }
-.site-nav__links a:hover { color: rgba(255,255,255,0.9); }
-.site-nav__links a.active { color: #FFFFFF; }
+.site-nav__links a:hover { color: var(--be-bright-aqua); }
+.site-nav__links a.active { color: var(--be-bright-aqua); }
 .site-nav__links .nav__cta {
-  background: #5CA3B6;
-  color: #FFFFFF;
+  background: var(--be-terracotta);
+  color: var(--be-text-on-dark);
   padding: 7px 16px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--be-fw-body-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-left: 8px;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
+  font-family: var(--be-font-display);
 }
-.site-nav__links .nav__cta:hover { background: #4A8FA0; }
+.site-nav__links .nav__cta:hover { background: var(--be-navy); color: var(--be-bright-aqua); }
 .site-nav__toggle {
   display: none;
   background: none;
@@ -245,25 +291,25 @@ body {
 }
 .reg-gate__form input:focus {
   outline: none;
-  border-color: #5CA3B6;
-  box-shadow: 0 0 0 3px rgba(92,163,182,0.12);
+  border-color: var(--be-bright-aqua);
+  box-shadow: 0 0 0 3px rgba(122,221,226,0.25);
 }
 .reg-gate__submit {
   width: 100%;
   padding: 12px;
-  background: #5CA3B6;
-  color: #FFFFFF;
+  background: var(--be-terracotta);
+  color: var(--be-text-on-dark);
   border: none;
-  font-family: var(--font-body);
+  font-family: var(--be-font-display);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--be-fw-body-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
   margin-top: 8px;
 }
-.reg-gate__submit:hover { background: #4A8FA0; }
+.reg-gate__submit:hover { background: var(--be-navy); color: var(--be-bright-aqua); }
 
 /* ── APP HEADER ────────────────────────────────────────────── */
 .app-header {
@@ -297,11 +343,12 @@ body {
 .pwin-display { text-align: right; }
 .pwin-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
 .pwin-value {
-  font-family: var(--font-mono); font-size: 28px; font-weight: 500;
-  color: #5CA3B6; line-height: 1;
+  font-family: var(--be-font-body); font-size: 28px; font-weight: var(--be-fw-display);
+  color: var(--be-bright-aqua); line-height: 1;
   transition: color 0.4s;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
-.pwin-value.good { color: #2D8A5E; }
+.pwin-value.good { color: var(--be-bright-aqua); }
 .completion-pill {
   background: rgba(255,255,255,0.08);
   padding: 5px 12px; font-size: 11px;
@@ -696,13 +743,14 @@ body {
 
 /* ── FULL REPORT ────────────────────────────────────────────── */
 .btn-report {
-  background: #5CA3B6; color: white; border: none;
+  background: var(--be-terracotta); color: var(--be-text-on-dark); border: none;
   padding: 12px 22px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  font-family: var(--be-font-display); font-size: 13px; font-weight: var(--be-fw-body-bold);
   cursor: pointer; display: flex; align-items: center; gap: 8px;
-  transition: background 0.15s; margin-bottom: 20px;
+  transition: background 0.15s, color 0.15s; margin-bottom: 20px;
+  letter-spacing: 0.03em;
 }
-.btn-report:hover:not(:disabled) { background: #4A8FA0; }
+.btn-report:hover:not(:disabled) { background: var(--be-navy); color: var(--be-bright-aqua); }
 .btn-report:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .report-card {
@@ -821,13 +869,13 @@ body {
 
 .ctx-proceed-wrap { margin-top: 8px; }
 .btn-proceed {
-  background: #5CA3B6; color: white; border: none;
+  background: var(--be-terracotta); color: var(--be-text-on-dark); border: none;
   padding: 13px 28px;
-  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  font-family: var(--be-font-display); font-size: 14px; font-weight: var(--be-fw-body-bold);
   cursor: pointer; display: inline-flex; align-items: center; gap: 9px;
-  transition: background 0.15s; letter-spacing: 0.01em;
+  transition: background 0.15s, color 0.15s; letter-spacing: 0.03em;
 }
-.btn-proceed:hover:not(:disabled) { background: #4A8FA0; }
+.btn-proceed:hover:not(:disabled) { background: var(--be-navy); color: var(--be-bright-aqua); }
 .btn-proceed:disabled { background: #C0CADA; cursor: not-allowed; }
 .ctx-status {
   font-size: 12px; color: var(--slate); margin-top: 10px;
@@ -945,21 +993,29 @@ body {
   margin-bottom: 20px;
 }
 .site-footer__brand {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
+  font-family: var(--be-font-display);
+  font-size: 18px;
+  font-weight: var(--be-fw-display-strong);
+  line-height: 1.1;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-.site-footer__brand .brand-bid { color: #F0EDE6; }
-.site-footer__brand .brand-equity { color: #F0EDE6; }
+.site-footer__brand .brand-name {
+  letter-spacing: 0.02em;
+  color: var(--be-text-on-dark);
+}
+.site-footer__brand .brand-bid    { margin-right: 0.22em; color: var(--be-text-on-dark); }
+.site-footer__brand .brand-equity { color: var(--be-text-on-dark); }
 .site-footer__brand .brand-subtitle {
   display: block;
-  font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  margin-top: 2px;
+  font-family: var(--be-font-body);
+  font-size: 9px;
+  font-weight: var(--be-fw-body-strong);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #60F5F7;
-  margin-top: 4px;
+  color: var(--be-descriptor);
 }
 .site-footer__links {
   display: flex;
@@ -1005,7 +1061,7 @@ body {
 <nav class="site-nav">
   <div class="site-nav__inner">
     <a href="index.html" class="site-nav__brand">
-      <span class="brand-bid">Bid</span><span class="brand-equity">Equity</span>
+      <span class="brand-name"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span></span>
       <span class="brand-subtitle">Pursuit Intelligence</span>
     </a>
     <button class="site-nav__toggle" aria-label="Menu" onclick="document.getElementById('site-nav-links').classList.toggle('open')">&#9776;</button>
@@ -1102,10 +1158,10 @@ body {
   <div class="ctx-form">
 
     <div style="margin-bottom:26px;">
-      <div style="font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:6px;">Pursuit Context</div>
-      <div style="font-size:13px;color:var(--slate);line-height:1.6;">Complete this before beginning the assessment. These details calibrate the AI scoring thresholds, challenge questions, and assurance report to your specific opportunity.</div>
-      <div style="margin-top:12px;padding:10px 14px;background:var(--navy);font-size:11px;color:rgba(255,255,255,0.8);line-height:1.65;">
-        <strong style="color:#5CA3B6;">Streamlined qualification.</strong> This is a self-service version of BidEquity's AI-enabled pursuit qualification. The AI reviews your evidence and scores using sector-calibrated challenge criteria. The full BidEquity platform integrates your organisation's bid library, competitive intelligence, and client relationship history for significantly deeper analysis. <a href="contact.html" style="color:#5CA3B6;text-decoration:underline;">Talk to us</a> about the full platform.
+      <div style="font-family:var(--be-font-display);font-size:24px;color:var(--be-navy);margin-bottom:6px;">Pursuit Context</div>
+      <div style="font-size:13px;color:var(--be-text-secondary);line-height:1.6;">Complete this before beginning the assessment. These details calibrate the AI scoring thresholds, challenge questions, and assurance report to your specific opportunity.</div>
+      <div style="margin-top:12px;padding:12px 16px;background:var(--be-navy);font-size:11px;color:var(--be-text-on-dark);line-height:1.65;border-left:3px solid var(--be-terracotta);">
+        <strong style="color:var(--be-terracotta);">Streamlined qualification.</strong> This is a self-service version of BidEquity's AI-enabled pursuit qualification. The AI reviews your evidence and scores using sector-calibrated challenge criteria. The full BidEquity platform integrates your organisation's bid library, competitive intelligence, and client relationship history for significantly deeper analysis. <a href="contact.html" style="color:var(--be-bright-aqua);text-decoration:underline;">Talk to us</a> about the full platform.
       </div>
     </div>
 
@@ -1386,7 +1442,7 @@ This field is optional — the tool works without it, but the AI analysis will b
         <div style="font-size:13px;color:var(--navy);line-height:1.7;margin-top:12px;font-weight:500;" id="dash-floor-message"></div>
       </div>
       <div style="flex-shrink:0;">
-        <button class="btn-report" id="btn-dash-report" onclick="runFullReport()" style="background:var(--teal);white-space:nowrap;">
+        <button class="btn-report" id="btn-dash-report" onclick="runFullReport()" style="white-space:nowrap;">
           Generate AI Assurance Report
         </button>
         <div style="font-size:10px;color:var(--slate);margin-top:6px;text-align:center;">Reviews all 24 questions with AI</div>
@@ -2901,7 +2957,7 @@ async function runFullReport() {
   // Add download button after report
   area.insertAdjacentHTML('beforeend',
     '<div style="display:flex;gap:10px;margin-top:16px;">' +
-      '<button class="btn-report" onclick="downloadReportPDF()" style="background:var(--teal);">\u2193 Download as PDF</button>' +
+      '<button class="btn-report" onclick="downloadReportPDF()">\u2193 Download as PDF</button>' +
       '<button class="btn-report" onclick="printReport()" style="background:var(--navy);">\u2399 Print Report</button>' +
     '</div>'
   );
@@ -2917,7 +2973,7 @@ function downloadReportPDF() {
   var c = state.context;
   var pwin = getPWIN();
   var printHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-    '<title>Pursuit Qualification Report - ' + (c.opp || 'Report') + '</title>' +
+    '<title>BidEquity Qualify Report \u2014 ' + (c.opp || 'Report') + '</title>' +
     '<style>' +
     '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }' +
     'body { font-family: Inter, -apple-system, sans-serif; color: #021744; line-height: 1.6; font-size: 13px; padding: 40px; max-width: 900px; margin: 0 auto; }' +
@@ -2955,7 +3011,7 @@ function downloadReportPDF() {
       '</div>' +
     '</div>' +
     '<div class="footer">' +
-      '<div>Generated by BidEquity Pursuit Qualification | ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) + '</div>' +
+      '<div>Generated by BidEquity Qualify | ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) + '</div>' +
       '<div>bidequity.co</div>' +
     '</div>' +
     '</body></html>';
@@ -3247,7 +3303,7 @@ updateDashboard();
   <div class="site-footer__inner">
     <div>
       <p class="site-footer__brand">
-        <span class="brand-bid">Bid</span><span class="brand-equity">Equity</span>
+        <span class="brand-name"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span></span>
         <span class="brand-subtitle">Pursuit Intelligence</span>
       </p>
     </div>

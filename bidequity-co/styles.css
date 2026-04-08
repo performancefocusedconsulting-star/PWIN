@@ -1,24 +1,31 @@
 /* ══════════════════════════════════════════
    BIDEQUITY — Global Stylesheet
-   "Forensic Minimal" design system
+   Brand: see brand-tokens.css and docs/brand-guidelines-v1.2.md
    ══════════════════════════════════════════ */
 
-/* ─── VARIABLES ─── */
-:root {
-  --navy: #021744;
-  --sand: #F7F4EE;
-  --teal: #3D7A8A;         /* darkened from #5CA3B6 for WCAG AA contrast on sand */
-  --teal-light: #5CA3B6;   /* original teal, for use on dark backgrounds */
-  --pale-aqua: #E0F4F6;
-  --bright-aqua: #7ADDE2;
-  --coral: #C96F5A;
-  --wine: #8C3B36;
-  --desc-cyan: #60F5F7;
-  --white: #FFFFFF;
+@import url("brand-tokens.css");
 
-  --font-heading: 'Spline Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
+/* ─── LEGACY VARIABLE ALIASES ─────────────────────────────
+   Existing rules across the marketing site reference these names.
+   They now map to canonical --be-* tokens so there is one source
+   of truth. Do NOT add new raw hex values here — extend
+   brand-tokens.css instead. */
+:root {
+  --navy:        var(--be-navy);
+  --sand:        var(--be-sand);
+  --teal:        var(--be-teal);          /* Calm Teal — structural use only on light bg */
+  --teal-light:  var(--be-teal);          /* legacy alias kept for back-compat */
+  --pale-aqua:   var(--be-pale-aqua);
+  --bright-aqua: var(--be-bright-aqua);
+  --terracotta:  var(--be-terracotta);
+  --coral:       var(--be-terracotta);    /* deprecated #C96F5A — now points at Terracotta */
+  --wine:        var(--be-navy);          /* deprecated #8C3B36 — hover now goes to navy */
+  --desc-cyan:   var(--be-cyan);          /* descriptor lock-up only */
+  --white:       var(--be-sand);          /* per brand: never pure white as a background */
+
+  --font-heading: var(--be-font-display);
+  --font-body:    var(--be-font-body);
+  --font-mono:    var(--be-font-body);    /* no third font — Inter handles tabular numerals */
 
   --max-width: 1120px;
   --section-pad: 100px;
@@ -65,13 +72,30 @@ p { max-width: 640px; }
   height: 64px;
 }
 .nav__brand {
-  font-family: var(--font-heading); font-weight: 700;
-  font-size: 1.1rem; color: var(--sand); letter-spacing: 0.15em;
-  text-transform: uppercase;
+  font-family: var(--be-font-display);
+  font-weight: var(--be-fw-display-strong);
+  font-size: 1rem;
+  color: var(--be-text-on-dark);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  text-decoration: none;
 }
-.nav__brand .brand-bid { color: var(--sand); margin-right: 0.25em; }
-.nav__brand .brand-equity { color: var(--sand); }
-.nav__brand .brand-subtitle { color: var(--desc-cyan); font-weight: 400; font-size: 0.65rem; display: block; letter-spacing: 0.2em; font-family: var(--font-mono); }
+.nav__brand .brand-bid    { color: var(--be-text-on-dark); margin-right: 0.22em; }
+.nav__brand .brand-equity { color: var(--be-text-on-dark); }
+.nav__brand .brand-subtitle {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--be-font-body);
+  font-weight: var(--be-fw-body-strong);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--be-descriptor);
+}
 .nav__links { display: flex; gap: 32px; align-items: center; }
 .nav__links a {
   font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
@@ -86,7 +110,7 @@ p { max-width: 640px; }
   letter-spacing: 0.05em; border: none; cursor: pointer; transition: background 0.2s;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
-.nav__links a.nav__cta:hover, .nav__links a.nav__cta:focus-visible { background: var(--wine); color: var(--sand); }
+.nav__links a.nav__cta:hover, .nav__links a.nav__cta:focus-visible { background: var(--be-navy); color: var(--be-bright-aqua); }
 .nav__links a.nav__cta:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 2px; }
 
 /* Mobile nav */
@@ -128,7 +152,7 @@ p { max-width: 640px; }
   padding: 14px 36px; font-family: var(--font-heading); font-weight: 600;
   font-size: 1rem; letter-spacing: 0.03em; transition: background 0.2s;
 }
-.hero__cta:hover, .hero__cta:focus-visible { background: var(--wine); }
+.hero__cta:hover, .hero__cta:focus-visible { background: var(--be-navy); color: var(--be-bright-aqua); }
 .hero__cta:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 4px; }
 .hero__trust {
   margin-top: 48px; font-family: var(--font-mono); font-size: 0.75rem;
@@ -376,7 +400,7 @@ p { max-width: 640px; }
   font-size: 1rem; border: none; cursor: pointer; width: 100%;
   text-align: center; letter-spacing: 0.03em; transition: background 0.2s;
 }
-.btn:hover, .btn:focus-visible { background: var(--wine); }
+.btn:hover, .btn:focus-visible { background: var(--be-navy); color: var(--be-bright-aqua); }
 .btn:focus-visible { outline: 2px solid var(--bright-aqua); outline-offset: 4px; }
 
 /* ─── CALLOUT BOX ─── */
@@ -426,14 +450,28 @@ p { max-width: 640px; }
   flex-wrap: wrap; gap: 32px;
 }
 .footer__brand {
-  font-family: var(--font-heading); font-weight: 700; font-size: 1rem;
-  color: var(--sand); letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: var(--be-font-display);
+  font-weight: var(--be-fw-display-strong);
+  font-size: 1rem;
+  color: var(--be-text-on-dark);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
 }
-.footer__brand .brand-bid { color: var(--sand); margin-right: 0.25em; }
-.footer__brand .brand-equity { color: var(--sand); }
+.footer__brand .brand-bid    { color: var(--be-text-on-dark); margin-right: 0.22em; }
+.footer__brand .brand-equity { color: var(--be-text-on-dark); }
 .footer__brand .brand-subtitle {
-  display: block; font-family: var(--font-mono); font-weight: 400;
-  font-size: 0.6rem; color: var(--desc-cyan); letter-spacing: 0.2em; margin-top: 4px;
+  display: block;
+  margin-top: 4px;
+  font-family: var(--be-font-body);
+  font-weight: var(--be-fw-body-strong);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--be-descriptor);
 }
 .footer__links { display: flex; gap: 24px; }
 .footer__links a { font-size: 0.85rem; transition: color 0.2s; }
