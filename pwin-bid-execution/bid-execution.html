@@ -4363,7 +4363,13 @@ function renderWizS1(d) {
       <div class="form-col">
         <label class="form-label">Procurement Route</label>
         <select class="sel" onchange="WIZARD.set('procurementRoute',this.value)">
-          ${[['','— Select —'],['open','Open'],['restricted','Restricted'],['competitive_dialogue','Competitive Dialogue'],['competitive_flexible','Competitive Flexible'],['negotiated','Negotiated'],['direct_award','Direct Award'],['framework_calloff','Framework Call-off'],['dynamic_market','Dynamic Market']].map(([v,l])=>`<option value="${v}" ${d.procurementRoute===v?'selected':''}>${l}</option>`).join('')}
+          <option value="" ${!d.procurementRoute?'selected':''}>— Select —</option>
+          <optgroup label="Procurement Act 2023">
+            ${[['open','Open Procedure'],['competitive_flexible','Competitive Flexible Procedure'],['direct_award','Direct Award'],['framework_calloff','Framework Call-off'],['dynamic_market','Dynamic Market']].map(([v,l])=>`<option value="${v}" ${d.procurementRoute===v?'selected':''}>${l}</option>`).join('')}
+          </optgroup>
+          <optgroup label="Legacy (PCR 2015 — in-flight bids only)">
+            ${[['legacy_restricted','Restricted (legacy)'],['legacy_competitive_dialogue','Competitive Dialogue (legacy)'],['legacy_negotiated','Negotiated (legacy)']].map(([v,l])=>`<option value="${v}" ${d.procurementRoute===v?'selected':''}>${l}</option>`).join('')}
+          </optgroup>
         </select>
       </div>
       <div class="form-col">

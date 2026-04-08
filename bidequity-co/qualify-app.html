@@ -274,22 +274,7 @@ body {
   position: sticky; top: 0; z-index: 100;
   box-shadow: var(--shadow-md);
 }
-.header-brand {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 0; border-right: 1px solid rgba(255,255,255,0.08);
-  padding-right: 28px; margin-right: 28px;
-}
-.brand-mark {
-  width: 36px; height: 36px;
-  background: #5CA3B6; display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 16px; color: white; font-weight: 700;
-  flex-shrink: 0; letter-spacing: 0.01em;
-}
-.brand-text { line-height: 1.2; }
-.brand-name { font-family: var(--font-display); color: #F0EDE6; font-size: 16px; letter-spacing: 0.04em; font-weight: 700; }
-.brand-sub  { font-size: 10px; color: #60F5F7; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 1px; font-weight: 500; }
-
-.header-nav { display: flex; align-items: center; gap: 4px; flex: 1; }
+.header-nav { display: flex; align-items: center; gap: 4px; flex: 1; padding: 6px 0; }
 .nav-btn {
   background: none; border: none; cursor: pointer;
   font-family: var(--font-body); font-size: 13px; font-weight: 500;
@@ -1026,9 +1011,15 @@ body {
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="reg-email">Work Email</label>
-          <input type="email" id="reg-email" name="email" autocomplete="email" required>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-email">Work Email</label>
+            <input type="email" id="reg-email" name="email" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Telephone</label>
+            <input type="tel" id="reg-phone" name="phone" autocomplete="tel" required>
+          </div>
         </div>
 
         <div class="form-group">
@@ -1050,12 +1041,6 @@ body {
 
 <!-- ── APP SHELL ───────────────────────────────────────────── -->
 <header class="app-header">
-  <div class="header-brand">
-    <div class="brand-text">
-      <div class="brand-name"><span style="color:#F0EDE6;">Bid</span><span style="color:#5CA3B6;">Equity</span></div>
-      <div class="brand-sub">Pursuit Qualification</div>
-    </div>
-  </div>
   <nav class="header-nav">
     <button class="nav-btn active" onclick="switchView('context')" id="nav-context">
       Pursuit Context
@@ -1102,19 +1087,19 @@ body {
         <span class="ctx-hint">The company pursuing this opportunity. Helps the AI identify you for competitive analysis.</span>
       </div>
       <div class="ctx-field">
-        <label class="ctx-label">Your Primary Sector <span class="ctx-optional">(optional)</span></label>
+        <label class="ctx-label">Your Primary Business Type <span class="ctx-optional">(optional)</span></label>
         <select class="ctx-select" id="ctx-bidder-sector" onchange="onCtxChange()">
           <option value="">-- Select --</option>
           <option>BPO / Outsourcing</option>
+          <option>Managed Services</option>
           <option>Systems Integration</option>
-          <option>Consulting / Advisory</option>
           <option>Technology / Digital</option>
-          <option>Defence / Aerospace</option>
-          <option>Facilities / Support Services</option>
+          <option>Consulting / Advisory</option>
           <option>Professional Services</option>
+          <option>Facilities / Support Services</option>
           <option>Other</option>
         </select>
-        <span class="ctx-hint">Helps the AI understand what kind of organisation you are — e.g. distinguishes a boutique consultancy from a major outsourcer.</span>
+        <span class="ctx-hint">What kind of supplier you are — e.g. Serco is a BPO operator, Capgemini is a systems integrator, Deloitte is a consultancy. Helps the AI frame competitive challenges appropriately. (PWIN category weights are driven by Opportunity Type, below.)</span>
       </div>
     </div>
 
@@ -1134,15 +1119,14 @@ body {
         <label class="ctx-label">Sector <span class="ctx-required">*</span></label>
         <select class="ctx-select" id="ctx-sector" onchange="onCtxChange()">
           <option value="">-- Select sector --</option>
-          <option>Emergency Services</option>
-          <option>Defence</option>
-          <option>Justice &amp; Probation</option>
           <option>Central Government</option>
           <option>Local Government</option>
-          <option>NHS / Health</option>
-          <option>Transport</option>
+          <option>Defence &amp; Security</option>
+          <option>Health</option>
           <option>Education</option>
-          <option>Other Public Sector</option>
+          <option>Transport</option>
+          <option>Justice</option>
+          <option>Other</option>
         </select>
       </div>
       <div class="ctx-field">
@@ -1173,16 +1157,20 @@ body {
         <label class="ctx-label">Procurement Route <span class="ctx-required">*</span></label>
         <select class="ctx-select" id="ctx-route" onchange="onCtxChange()">
           <option value="">-- Select route --</option>
-          <option value="open">Open</option>
-          <option value="restricted">Restricted</option>
-          <option value="competitive_dialogue">Competitive Dialogue</option>
-          <option value="competitive_flexible">Competitive Flexible</option>
-          <option value="negotiated">Negotiated</option>
-          <option value="direct_award">Direct Award</option>
-          <option value="framework_calloff">Framework Call-off</option>
-          <option value="dynamic_market">Dynamic Market</option>
+          <optgroup label="Procurement Act 2023">
+            <option value="open">Open Procedure</option>
+            <option value="competitive_flexible">Competitive Flexible Procedure</option>
+            <option value="direct_award">Direct Award</option>
+            <option value="framework_calloff">Framework Call-off</option>
+            <option value="dynamic_market">Dynamic Market</option>
+          </optgroup>
+          <optgroup label="Legacy (PCR 2015 — in-flight bids only)">
+            <option value="legacy_restricted">Restricted (legacy)</option>
+            <option value="legacy_competitive_dialogue">Competitive Dialogue (legacy)</option>
+            <option value="legacy_negotiated">Negotiated (legacy)</option>
+          </optgroup>
         </select>
-        <span class="ctx-hint">Procurement Act 2023 routes. Shapes what Procurement Intelligence questions mean in this context.</span>
+        <span class="ctx-hint">Procurement Act 2023 procedures. Legacy PCR 2015 routes are available only for bids that started before 24 February 2025.</span>
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Pursuit Stage <span class="ctx-required">*</span></label>
@@ -1445,12 +1433,13 @@ This field is optional — the tool works without it, but the AI analysis will b
     const firstName = document.getElementById('reg-first-name').value.trim();
     const lastName  = document.getElementById('reg-last-name').value.trim();
     const email     = document.getElementById('reg-email').value.trim();
+    const phone     = document.getElementById('reg-phone').value.trim();
     const org       = document.getElementById('reg-org').value.trim();
 
-    if (!firstName || !lastName || !email || !org) return;
+    if (!firstName || !lastName || !email || !phone || !org) return;
 
     // Store in localStorage
-    const regData = { firstName, lastName, email, organisation: org, registeredAt: new Date().toISOString() };
+    const regData = { firstName, lastName, email, phone, organisation: org, registeredAt: new Date().toISOString() };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(regData));
 
     // Submit to Netlify Forms via fetch
