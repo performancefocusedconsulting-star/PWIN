@@ -40,10 +40,15 @@
    raw hex values here. If you need a new role, add it to brand-tokens.css.
    ══════════════════════════════════════════════════════════════ */
 :root {
-  /* ── Layered backgrounds (alias canonical Sand/Pale Aqua) ── */
-  --bg0: var(--be-bg-page);          /* page canvas — Soft Sand, mandatory */
-  --bg1: var(--be-bg-card);          /* card fill — Pale Aqua per brand */
-  --bg2: var(--be-bg-card);
+  /* ── Layered backgrounds ──
+     Page canvas is Soft Sand per brand. Card surfaces are clean white,
+     which lifts cleanly off the warm sand canvas without overwhelming
+     a dense card grid. Pale Aqua is applied as the SECTION BAND
+     colour on .cat-section (per brand v1.2 §6 "card backgrounds AND
+     section dividers") — see .cat-section rule below. */
+  --bg0: var(--be-bg-page);          /* page canvas — Soft Sand */
+  --bg1: #FFFFFF;                    /* card surface — white on sand */
+  --bg2: #FFFFFF;
   --bg3: #F0ECE4;                    /* warm tertiary surface */
   --bg4: #E8E4DC;                    /* warm quaternary */
 
@@ -361,11 +366,21 @@ h1, h2, h3, h4, h5, h6 {
 .view.active { display: block; }
 
 /* ── ASSESSMENT VIEW ──────────────────────────────────────── */
-.cat-section { margin-bottom: 28px; }
+/* Each category becomes its own Pale Aqua section band, providing
+   clear visual grouping for the four questions inside. The white
+   q-cards within stand out cleanly against the aqua band, against
+   the sand page canvas — three-tone hierarchy. Per brand v1.2 §6
+   "Pale Aqua for card backgrounds and section dividers". */
+.cat-section {
+  background: var(--be-pale-aqua);
+  padding: 20px 24px 22px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(36,135,142,0.15);
+}
 .cat-header-row {
   display: flex; align-items: center; gap: 12px;
-  margin-bottom: 12px; padding-bottom: 10px;
-  border-bottom: 2px solid var(--border);
+  margin-bottom: 14px; padding-bottom: 12px;
+  border-bottom: 1px solid rgba(2,23,68,0.10);
 }
 .cat-swatch { width: 12px; height: 28px; flex-shrink: 0; }
 .cat-name { font-family: var(--font-display); font-size: 17px; color: var(--navy); }
