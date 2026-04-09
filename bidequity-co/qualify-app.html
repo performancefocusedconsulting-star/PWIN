@@ -3744,16 +3744,10 @@ function buildAssessment() {
       '<div class="q-grid">' +
         qs.map(function(q) {
           var idx = QUESTIONS.indexOf(q);
-          var rubricRows = Object.entries(q.rubric).map(function(entry) {
-            var label = entry[0], text = entry[1];
-            var cls = label === 'Strongly Agree' ? 'sa'
-                    : label === 'Agree'          ? 'ag'
-                    : label === 'Disagree'       ? 'dis' : 'sd';
-            return '<div class="rubric-row">' +
-              '<div class="rubric-label ' + cls + '">' + label + '</div>' +
-              '<div class="rubric-text">' + text + '</div>' +
-            '</div>';
-          }).join('');
+          // Rubric panel intentionally not rendered on the website MVP — see
+          // feedback_qualify_rubric_visibility memory. The rubric still flows
+          // to the AI in runSingleReview / generateFullReport. The consulting
+          // standalone (PWIN_Architect_v1.html) keeps the rubric panel.
           return '<div class="q-card" id="qcard-' + idx + '">' +
             '<div class="q-topic">' + q.topic + '</div>' +
             '<div class="q-text">' + q.text + '</div>' +
@@ -3769,12 +3763,6 @@ function buildAssessment() {
             '<textarea class="evidence-area" id="ev-' + idx + '"' +
               ' placeholder="The more specific your evidence, the more useful the AI review. Name individuals, dates, and documented commitments. There is no word limit."' +
               ' oninput="saveEvidence(' + idx + ', this.value)"></textarea>' +
-            '<button class="rubric-toggle" onclick="toggleRubric(' + idx + ')" id="rubric-btn-' + idx + '">' +
-              '\u25b6 scoring rubric' +
-            '</button>' +
-            '<div class="rubric-panel" id="rubric-panel-' + idx + '">' +
-              rubricRows +
-            '</div>' +
           '</div>';
         }).join('') +
       '</div>' +
@@ -3956,14 +3944,9 @@ function renderReviewPanel(idx) {
   var ev   = state.evidence[idx] || "";
   var rev  = state.reviews[idx];
 
-  var rubricHtml = Object.entries(q.rubric).map(function(entry) {
-    var lvl = entry[0], req = entry[1];
-    var cls = {"Strongly Agree":"rb-sa","Agree":"rb-a","Disagree":"rb-d","Strongly Disagree":"rb-sd"}[lvl];
-    return '<div class="rubric-row">' +
-      '<span class="rubric-badge ' + cls + '">' + lvl + '</span>' +
-      '<span class="rubric-req">' + req + '</span>' +
-    '</div>';
-  }).join('');
+  // Rubric intentionally not rendered on the website MVP — see
+  // feedback_qualify_rubric_visibility memory. The rubric still flows to the
+  // AI in runSingleReview. Consulting standalone keeps the rubric panel.
 
   document.getElementById('review-main').innerHTML =
   '<div class="review-panel">' +
@@ -3992,13 +3975,6 @@ function renderReviewPanel(idx) {
       '<textarea class="rp-textarea" id="rp-ev-' + idx + '"' +
         ' placeholder="Describe your evidence in specific detail \u2014 name individuals, roles, documents, dates, and explicit commitments made."' +
         ' oninput="saveEvidence(' + idx + ', this.value); syncEvidenceToAssessment(' + idx + ');">' + ev + '</textarea>' +
-
-      '<button class="rubric-toggle-btn" onclick="toggleRubricPanel(' + idx + ')">' +
-        '<span id="rtarrow-' + idx + '">\u25b6</span> View scoring rubric for this question' +
-      '</button>' +
-      '<div id="rubric-panel-' + idx + '" style="display:none">' +
-        '<div class="rubric-panel">' + rubricHtml + '</div>' +
-      '</div>' +
 
       '<button class="btn-run" id="rp-btn-' + idx + '" onclick="runSingleReview(' + idx + ')">' +
         '<span>\u25c8</span> Run AI Assurance Review' +
