@@ -2292,6 +2292,41 @@ function rebuildBaseContent() {
 }
 
 const ACTIVE_MODIFIERS = new Set();
+let LAST_RENDERED_MODIFIER_KEY = '';
+
+// When applyContentModifiers changes the active set (e.g. user picks
+// "incumbent" after the assessment DOM was first rendered), we must rebuild
+// buildAssessment / buildReviewNav so the new questions actually appear.
+// Then rehydrate from state so any answers the user already gave survive.
+function syncAssessmentToActiveModifiers() {
+  const key = Array.from(ACTIVE_MODIFIERS).sort().join(',');
+  if (key === LAST_RENDERED_MODIFIER_KEY) return;
+  LAST_RENDERED_MODIFIER_KEY = key;
+  if (!document.getElementById('assessment-body')) return;
+  buildAssessment();
+  buildReviewNav();
+  rehydrateAssessmentDOM();
+}
+
+function rehydrateAssessmentDOM() {
+  QUESTIONS.forEach((q, idx) => {
+    const pos = state.positions[idx];
+    if (pos) {
+      const sel = document.getElementById('pos-' + idx);
+      if (sel) sel.value = pos;
+      updateCardStyle(idx);
+    }
+    const ev = state.evidence[idx];
+    if (ev) {
+      const ta = document.getElementById('ev-' + idx);
+      if (ta) ta.value = ev;
+    }
+  });
+  CATS.forEach(cat => updateCatScore(cat.id));
+  updateHeader();
+  updateDashboard();
+  updateReviewNav();
+}
 
 function modifierTriggerMatches(trigger, ctx) {
   if (!trigger) return false;
@@ -2323,6 +2358,24 @@ function applyContentModifiers() {
 
   // Re-apply weight profile because base was rebuilt
   applyWeightProfile(state.context.oppType);
+
+  // Drop any answers/evidence/reviews that belong to question indices that no
+  // longer exist (e.g. user activated incumbent, answered R-questions, then
+  // switched back to challenger).
+  pruneOrphanedAnswers();
+}
+
+function pruneOrphanedAnswers() {
+  const max = QUESTIONS.length;
+  Object.keys(state.positions).forEach(k => {
+    if (Number(k) >= max) delete state.positions[k];
+  });
+  Object.keys(state.evidence).forEach(k => {
+    if (Number(k) >= max) delete state.evidence[k];
+  });
+  Object.keys(state.reviews).forEach(k => {
+    if (Number(k) >= max) delete state.reviews[k];
+  });
 }
 
 function activateModifier(modId, mod) {
@@ -2434,6 +2487,7 @@ function onCtxChange() {
   // Apply dynamic category weights based on opportunity type
   applyWeightProfile(state.context.oppType);
   applyContentModifiers();
+  syncAssessmentToActiveModifiers();
   updateProfileBanner();
 
   const complete = CTX_REQUIRED.every(k => state.context[k]);
