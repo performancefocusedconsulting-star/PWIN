@@ -14,6 +14,56 @@ PWIN is a monorepo containing multiple products, each in its own subfolder. It i
 
 ---
 
+## Architecture Decisions
+
+PWIN products historically used a "single HTML file, no server" architecture by default. That rule fit when products were prototypes shown on consultant laptops. **It is not a forever rule.** When the deployment context changes — public distribution, sensitive IP, integration requirements, scale — architecture should be reconsidered against the factors below, not blindly inherited.
+
+### Factors to weigh on every architecture decision
+
+| Factor | Questions to ask |
+|---|---|
+| **Effort** | How much work to build, test, and maintain? Does it require new tooling, hosting, or ongoing operational responsibility? |
+| **Cost** | What does it cost to run at expected volume? Is a free tier sufficient? Does cost scale linearly with users or stay flat? |
+| **Security & IP exposure** | What can a visitor copy from the running app? Are rubrics, prompts, persona, scoring logic visible in browser source? Is the threat model "trusted internal users" or "public adversary"? |
+| **Extensibility** | Can features be added without rewrites? Does the architecture force every change into one file? |
+| **Future-proofing** | Does the choice lock in a hard-to-reverse decision? Is there a clean migration path if context changes again? |
+| **User experience** | Does it work offline? On slow networks? Does login or account creation get in the way? |
+| **Distribution** | How does the product reach users — email attachment, public URL, app store, embedded? |
+
+### The "single HTML file" default, in context
+
+PWIN products started as single HTML files because:
+
+- They were demonstrated on consultant laptops via email or USB
+- The audience was small, trusted, and internal
+- The AI layer didn't exist yet
+- Hosting and servers were unwanted operational overhead
+- IP exposure to "users" wasn't a concern because users were trusted
+
+This is still the right default for **prototypes** and for **consultant standalone tools** that ship as files. It is the wrong default for:
+
+- **Public-facing lead-gen pages**, where competitors can View Source and copy the entire scoring intelligence in seconds
+- **Multi-user products**, where state must be shared across devices
+- **Products with sensitive prompt engineering**, where the system prompt is the IP
+- **Anything that needs server-side authentication, rate limiting, or audit logging**
+
+**When a product moves from prototype to public deployment, re-read this section before continuing** and decide whether the original architecture still fits. Do not let "single HTML file" override security, IP protection, or fitness for purpose.
+
+### Current architecture state of each product (2026-04-09)
+
+| Product | Current architecture | Why | Re-evaluate when |
+|---|---|---|---|
+| pwin-bid-execution | Single HTML, localStorage | Internal bid manager tool, single user, sensitive bid data should not leave the user's machine | Multi-user collaboration is required |
+| pwin-qualify (consulting standalone) | Single HTML, content inlined at build time | Ships to consultants on laptops, must work offline | The consultant deployment shifts to hosted SaaS with login |
+| pwin-qualify (website MVP) | Single HTML on Cloudflare Pages, AI via Worker proxy | **Currently exposes the rubrics, persona, and trigger rules in public browser source — flagged for migration 2026-04-09** | **Now.** Phase 1 server-side migration scoped: move content into the Worker so the browser becomes a thin display layer |
+| pwin-strategy | Not yet built | — | At design time, not after |
+| pwin-portfolio | Single HTML prototype | Internal leadership view, not public | If exposed externally |
+| bidequity-verdict | Runs on the pwin-platform MCP server | Two-pass forensic review needs server-side execution and platform knowledge access | — |
+| pwin-platform | Node.js + MCP server | Multi-product orchestration is inherently server-side | — |
+| pwin-competitive-intel | Python pipeline + SQLite + Cloudflare D1 | Data ingestion and serverless query layer for an internal-only DB | — |
+
+---
+
 ## pwin-bid-execution
 
 A single self-contained HTML application for bid production control and assurance. Used by bid managers to track the full lifecycle of complex government bids.
@@ -24,13 +74,13 @@ A single self-contained HTML application for bid production control and assuranc
 - `pwin-bid-execution/docs/bid_execution_rules.html` — the HOW (algorithms, state transitions, formulae, thresholds)
 - **Always read the relevant sections of these documents before implementing any feature.**
 
-### Technical Constraints
+### Current Architecture
 
-- Single HTML file output. All CSS, JS, and template data in one file.
-- Vanilla JavaScript only. No React, Vue, Angular, or any framework.
-- No external JS dependencies beyond Google Fonts (Cormorant Garamond, DM Mono, DM Sans).
-- `localStorage` for persistence. JSON import/export for portability.
-- Must work in any modern browser without a server.
+Single HTML file, vanilla JavaScript, `localStorage` for persistence, JSON import/export for portability, no external JS dependencies beyond Google Fonts (Cormorant Garamond, DM Mono, DM Sans). Must work in any modern browser without a server.
+
+This is the right shape for now because the bid manager is the sole operator, the data is highly sensitive (bid pricing, win strategy, client intelligence, commercial position) and should not leave the user's machine, and a single user on their own laptop has no need for a server. See the [Architecture Decisions](#architecture-decisions) section above for the framework that drove this choice.
+
+**Re-evaluate when:** multi-user collaboration becomes a requirement, or when the product needs to share state with the rest of the PWIN platform via the MCP server.
 
 ### Visual Identity
 
@@ -150,13 +200,20 @@ node pwin-qualify/content/build-content.js --check
 
 **Eval harness** (`pwin-qualify/content/eval-harness.js`) reads fixtures from `pwin-qualify/content/eval-fixtures/`, builds the same prompt the app builds, calls Claude, and diffs against expected verdicts. Add a fixture for every meaningful tune so it doesn't regress. Seed fixtures from the workbook few-shots are flagged `isConstructed: true` and should be replaced with real BIP cases when available. Cost is roughly $0.01–$0.02 per fixture with Sonnet 4.6.
 
-### Technical Constraints
+### Current Architecture
 
-- Same as pwin-bid-execution: single HTML file, vanilla JavaScript, no frameworks, no external dependencies beyond Google Fonts.
-- JSON file export/import for persistence (not localStorage).
-- No MCP integration yet — AI assurance review currently calls Claude API directly from the browser.
-- The content file is **inlined at build time**, not fetched at runtime. Both apps must work as standalone HTML with no server dependency.
-- Brand colours stay app-local (declared in each app's `CAT_BRAND` constant) — they are the only intentional drift between the two apps' scoring layers.
+Two HTML apps share one scoring brain via build-time content injection:
+
+- **Consulting standalone** (`pwin-qualify/docs/PWIN_Architect_v1.html`) — single HTML file, JSON content inlined at build time, vanilla JavaScript, runs offline. AI calls go directly to the Claude API. This is the right shape because it ships to consultants on laptops and must work without a server.
+- **Website MVP** (`bidequity-co/qualify-app.html`) — single HTML file deployed to Cloudflare Pages, AI calls proxied through a Cloudflare Worker that holds the API key. **Currently exposes the rubrics, persona, opportunity-type calibration, and trigger rules in public browser source — anyone can View Source and copy the entire scoring intelligence.** This was acceptable for the prototype but is not acceptable for the public lead-gen deployment.
+
+Brand colours stay app-local (declared in each app's `CAT_BRAND` constant) — they are the only intentional drift between the two apps' scoring layers.
+
+See the [Architecture Decisions](#architecture-decisions) section for the framework that drove these choices.
+
+**Re-evaluate when:**
+- For the **consulting standalone**: when the deployment shifts from laptop-distributed files to a hosted SaaS model with login.
+- For the **website MVP**: **now.** A Phase 1 server-side migration was scoped on 2026-04-09 — move the content (rubrics, persona, trigger rules, calibration paragraphs) into the Cloudflare Worker so the browser becomes a thin display layer that only sees what the visitor types in and what Alex says back. The questions remain visible (visitors must see them to answer them) but the scoring intelligence stays server-side.
 
 ### Cross-Product Data
 
@@ -235,11 +292,9 @@ Qualify → Strategy → Execution
 | Client Intelligence | Built from capture engagement | SAL-01 imports |
 | Capture Plan | Produced and locked | SAL-06.4 imports, governs bid strategy |
 
-### Technical Constraints
+### Current Architecture
 
-- Same as other products: single HTML file, vanilla JavaScript, no frameworks
-- Data persisted via PWIN Platform Data API (`win_strategy.json`)
-- MCP server already has Win Strategy read/write endpoints and shared entity sync rules designed
+Not yet built. When designed, the architecture should be chosen using the [Architecture Decisions](#architecture-decisions) framework above — not inherited from prior products. Likely shape: a single HTML application backed by the PWIN Platform Data API for `win_strategy.json` persistence, with the MCP server providing read/write endpoints and shared entity sync to Bid Execution. Whether the AI prompt assembly should live in the browser or server-side is an open question and should be decided at design time using the same security/IP framework that flagged the Qualify website MVP.
 
 ---
 
@@ -275,11 +330,13 @@ The Portfolio Dashboard sits **above** the individual pursuit products. While Qu
 - Consumes Verdict Pursuit Maturity Scores for historical portfolio benchmarking
 - The Portfolio Economics view models the consulting ROI — this is the commercial justification layer for Core and Command engagements
 
-### Technical Constraints
+### Current Architecture
 
-- Same as other products: single HTML file, vanilla JavaScript, no frameworks
-- Prototype uses seed data (12 illustrative Serco pursuits). Production version reads from the PWIN Platform Data API
-- Not yet wired to the MCP server — currently standalone
+Single HTML file prototype, vanilla JavaScript, currently uses 12 illustrative Serco pursuits as seed data. Not yet wired to the MCP server. Production version will read from the PWIN Platform Data API.
+
+This is an internal leadership view, not a public product, so the single-file architecture is appropriate. See the [Architecture Decisions](#architecture-decisions) section above.
+
+**Re-evaluate when:** the dashboard is exposed externally (e.g. shared with clients as part of a Core or Command engagement), or when it needs to display data from the live PWIN Platform Data API in real time for multiple concurrent leadership users.
 
 ---
 
