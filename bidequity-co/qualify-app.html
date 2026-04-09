@@ -3306,6 +3306,261 @@ function getPWIN() {
   }, 0);
 }
 
+// AI-adjusted variants — for each question, use the AI's suggestedScore where
+// the question has been reviewed, otherwise fall back to the user's position.
+// Lets the report show "before vs after AI challenge" without losing answers
+// the AI hasn't touched.
+function getCatScoreAI(catId) {
+  var qs = QUESTIONS.filter(function(q) { return q.cat === catId; });
+  return qs.reduce(function(s, q) {
+    var idx = QUESTIONS.indexOf(q);
+    var rev = state.reviews[idx];
+    var label = (rev && rev.suggestedScore) || state.positions[idx];
+    var pts = SCORE_PTS[label] || 0;
+    return s + pts * q.qw;
+  }, 0);
+}
+
+function getPWINAfterAI() {
+  return CATS.reduce(function(total, cat) {
+    var raw = getCatScoreAI(cat.id);
+    return total + (raw / MAX_CAT) * cat.weight;
+  }, 0);
+}
+
+function hasAnyReviews() {
+  return Object.keys(state.reviews).length > 0;
+}
+
+// Inline SVG radar — no Chart.js dependency, renders identically in the
+// in-app report and in the print popup without requiring an external script.
+function renderRadarSVG(categories, opts) {
+  opts = opts || {};
+  var size = opts.size || 360;
+  var cx = size / 2;
+  var cy = size / 2 + 4;
+  var radius = size * 0.30;
+  var n = categories.length;
+  if (n === 0) return '';
+
+  function pointAt(i, valuePct) {
+    var angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+    var r = (Math.max(0, Math.min(100, valuePct)) / 100) * radius;
+    return [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r];
+  }
+
+  var grid = '';
+  [25, 50, 75, 100].forEach(function(pct) {
+    var pts = categories.map(function(_, i) { return pointAt(i, pct).join(','); }).join(' ');
+    grid += '<polygon points="' + pts + '" fill="none" stroke="#D5D9E0" stroke-width="0.6"/>';
+  });
+
+  var axes = '';
+  categories.forEach(function(_, i) {
+    var p = pointAt(i, 100);
+    axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="#D5D9E0" stroke-width="0.6"/>';
+  });
+
+  var beforePts = categories.map(function(c, i) { return pointAt(i, c.before).join(','); }).join(' ');
+  var beforePoly = '<polygon points="' + beforePts + '" fill="rgba(87,100,130,0.18)" stroke="#576482" stroke-width="1.6" stroke-linejoin="round"/>';
+
+  var afterPoly = '';
+  if (opts.showAfter) {
+    var afterPts = categories.map(function(c, i) { return pointAt(i, c.after).join(','); }).join(' ');
+    afterPoly = '<polygon points="' + afterPts + '" fill="rgba(92,163,182,0.28)" stroke="#5CA3B6" stroke-width="2" stroke-linejoin="round"/>';
+  }
+
+  var labels = '';
+  categories.forEach(function(c, i) {
+    var lp = pointAt(i, 122);
+    var anchor = lp[0] < cx - 6 ? 'end' : lp[0] > cx + 6 ? 'start' : 'middle';
+    var name = c.name;
+    // Wrap two-word names onto two lines
+    var words = name.split(' ');
+    if (words.length >= 2 && name.length > 12) {
+      var mid = Math.ceil(words.length / 2);
+      var first = words.slice(0, mid).join(' ');
+      var second = words.slice(mid).join(' ');
+      labels += '<text x="' + lp[0] + '" y="' + (lp[1] - 3) + '" font-size="10" fill="#021744" text-anchor="' + anchor + '" font-family="Inter, sans-serif" font-weight="600">' + first + '</text>';
+      labels += '<text x="' + lp[0] + '" y="' + (lp[1] + 9) + '" font-size="10" fill="#021744" text-anchor="' + anchor + '" font-family="Inter, sans-serif" font-weight="600">' + second + '</text>';
+    } else {
+      labels += '<text x="' + lp[0] + '" y="' + (lp[1] + 3) + '" font-size="10" fill="#021744" text-anchor="' + anchor + '" font-family="Inter, sans-serif" font-weight="600">' + name + '</text>';
+    }
+  });
+
+  // Ring scale labels (top axis only)
+  var scale = '';
+  [25, 50, 75, 100].forEach(function(pct) {
+    var p = pointAt(0, pct);
+    scale += '<text x="' + (p[0] + 3) + '" y="' + (p[1] + 3) + '" font-size="8" fill="#818CA2" font-family="Inter, sans-serif">' + pct + '</text>';
+  });
+
+  var legend = '';
+  if (opts.showAfter) {
+    legend =
+      '<g transform="translate(' + (size - 150) + ', ' + (size - 22) + ')">' +
+        '<rect x="0" y="0" width="12" height="10" fill="rgba(87,100,130,0.18)" stroke="#576482" stroke-width="1.2"/>' +
+        '<text x="16" y="9" font-size="10" fill="#021744" font-family="Inter, sans-serif">Pre-AI (your scores)</text>' +
+      '</g>' +
+      '<g transform="translate(' + (size - 150) + ', ' + (size - 8) + ')">' +
+        '<rect x="0" y="0" width="12" height="10" fill="rgba(92,163,182,0.28)" stroke="#5CA3B6" stroke-width="1.6"/>' +
+        '<text x="16" y="9" font-size="10" fill="#021744" font-family="Inter, sans-serif">Post-AI (adjusted)</text>' +
+      '</g>';
+  }
+
+  return '<svg viewBox="0 0 ' + size + ' ' + (size + 10) + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:' + size + 'px;display:block;margin:0 auto;">' +
+    grid + axes + beforePoly + afterPoly + scale + labels + legend +
+    '</svg>';
+}
+
+function renderBeforeAfterSection() {
+  var showAfter = hasAnyReviews();
+  var cats = CATS.map(function(cat) {
+    var beforeRaw = getCatScore(cat.id);
+    var afterRaw  = getCatScoreAI(cat.id);
+    return {
+      name: cat.name,
+      weight: cat.weight,
+      before: Math.round((beforeRaw / MAX_CAT) * 100),
+      after:  Math.round((afterRaw  / MAX_CAT) * 100)
+    };
+  });
+  var pwinBefore = Math.round(getPWIN() * 100);
+  var pwinAfter  = Math.round(getPWINAfterAI() * 100);
+
+  var radarSvg = renderRadarSVG(cats, { size: 360, showAfter: showAfter });
+
+  var rows = cats.map(function(c) {
+    var delta = c.after - c.before;
+    var deltaColor = delta < 0 ? '#C15050' : delta > 0 ? '#2D8A5E' : '#576482';
+    var deltaText  = (delta > 0 ? '+' : '') + delta + 'pp';
+    return '<tr style="border-bottom:1px solid #E8EBF0;">' +
+      '<td style="padding:6px 8px;font-size:11px;color:#021744;">' + c.name + '</td>' +
+      '<td style="padding:6px 8px;font-size:11px;text-align:center;color:#576482;">' + (c.weight*100).toFixed(0) + '%</td>' +
+      '<td style="padding:6px 8px;font-size:11px;text-align:center;font-weight:600;">' + c.before + '%</td>' +
+      '<td style="padding:6px 8px;font-size:11px;text-align:center;font-weight:600;color:#5CA3B6;">' + (showAfter ? c.after + '%' : '\u2014') + '</td>' +
+      '<td style="padding:6px 8px;font-size:11px;text-align:center;font-weight:600;color:' + deltaColor + ';">' + (showAfter ? deltaText : '\u2014') + '</td>' +
+    '</tr>';
+  }).join('');
+
+  var pwinDelta = pwinAfter - pwinBefore;
+  var pwinDeltaColor = pwinDelta < 0 ? '#C15050' : pwinDelta > 0 ? '#2D8A5E' : '#576482';
+
+  var helpText = showAfter
+    ? 'The radar shows your self-assessed category scores (slate) overlaid with the AI-adjusted scores after independent challenge (teal). Where the teal polygon contracts inwards, the AI has reduced your score after challenging the evidence.'
+    : 'The radar shows your self-assessed category scores. Run the per-question AI review to see the post-challenge polygon.';
+
+  return '<div class="report-section" style="page-break-inside:avoid;">' +
+    '<div class="report-section-title">Category Profile \u2014 Before and After AI Challenge</div>' +
+    '<div style="font-size:12px;color:#576482;margin-bottom:14px;line-height:1.6;">' + helpText + '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">' +
+      '<div>' + radarSvg + '</div>' +
+      '<div>' +
+        '<table style="width:100%;border-collapse:collapse;">' +
+          '<tr style="background:#021744;color:#F0EDE6;">' +
+            '<th style="padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;">Category</th>' +
+            '<th style="padding:6px 8px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;">Wt</th>' +
+            '<th style="padding:6px 8px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;">Pre-AI</th>' +
+            '<th style="padding:6px 8px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;">Post-AI</th>' +
+            '<th style="padding:6px 8px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;">\u0394</th>' +
+          '</tr>' +
+          rows +
+          '<tr style="background:rgba(2,23,68,0.04);font-weight:700;">' +
+            '<td style="padding:8px;font-size:11px;">Overall PWIN</td>' +
+            '<td style="padding:8px;text-align:center;font-size:11px;">100%</td>' +
+            '<td style="padding:8px;text-align:center;font-size:12px;">' + pwinBefore + '%</td>' +
+            '<td style="padding:8px;text-align:center;font-size:12px;color:#5CA3B6;">' + (showAfter ? pwinAfter + '%' : '\u2014') + '</td>' +
+            '<td style="padding:8px;text-align:center;font-size:11px;color:' + pwinDeltaColor + ';">' + (showAfter ? ((pwinDelta > 0 ? '+' : '') + pwinDelta + 'pp') : '\u2014') + '</td>' +
+          '</tr>' +
+        '</table>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// Public-demo IP transparency section. Rendered ONLY in the website MVP — the
+// consulting standalone (PWIN_Architect_v1.html) ships with the full engine
+// and would mislead users by listing these layers as "missing".
+function renderMissingIPSection() {
+  var layers = [
+    {
+      name: 'Trained Capture Bid Leader Persona',
+      desc: 'A 30-year veteran capture leader embedded as the AI reviewer \u2014 deeper challenge logic, sector-specific calibration, and the judgement of someone who has run hundreds of bids.',
+      why:  'The public demo runs on the standard rubric only. The full persona changes which questions get challenged, how hard, and what evidence standard is applied.'
+    },
+    {
+      name: 'Buyer Profiles & Insight',
+      desc: 'Structured intelligence on the buying organisation: decision-making history, evaluation patterns, contract management style, political map, and senior stakeholder positions.',
+      why:  'Without this, the AI assesses your evidence in isolation. With it, the AI knows whether your client behaves the way you assume they do.'
+    },
+    {
+      name: 'Competitor Profiles & Battle Cards',
+      desc: 'Per-competitor profiles including win rates by sector, pricing posture, partnering patterns, recent moves, vulnerability mapping, and tested counter-positioning.',
+      why:  'The public demo only knows what you typed. The full engine knows the named competitors\u2019 actual behaviour and where they are exposed.'
+    },
+    {
+      name: 'Procurement Data & Insight',
+      desc: 'Live UK Find a Tender Service data: this buyer\u2019s award history, framework holders, average bidder counts, expiring contracts, and procurement method trends.',
+      why:  'Replaces guesses about competition intensity and incumbency with the actual public-record evidence. Already built and running internally \u2014 deliberately switched off here.'
+    },
+    {
+      name: 'Sector Profile & Market Insight',
+      desc: 'Structured sector knowledge: regulatory pressures, budget environment, typical evaluation weightings, dominant suppliers, sector-specific risk patterns, and historical benchmarks.',
+      why:  'A bid in central government Health is not the same as one in Local Authority Highways. The full engine reweights questions and recalibrates scoring against the right benchmark.'
+    },
+    {
+      name: 'Client Profiling & Vulnerability Assessment',
+      desc: 'Forensic profiling of your own organisation\u2019s position with this client \u2014 relationship strength, delivery history, political standing, and the specific decay risks the AI should probe.',
+      why:  'The public demo cannot see your history. The full engine knows where your account is solid and where it is quietly eroding.'
+    }
+  ];
+
+  var stackRows = layers.map(function(l) {
+    return '<div style="display:flex;align-items:center;padding:9px 14px;border:1px solid #D5D9E0;border-top:none;background:rgba(87,100,130,0.04);">' +
+      '<div style="width:22px;height:22px;border:1.5px solid #818CA2;border-radius:3px;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0;">' +
+        '<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="#576482" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>' +
+      '</div>' +
+      '<div style="font-size:12px;font-weight:600;color:#021744;">' + l.name + '</div>' +
+      '<div style="margin-left:auto;font-size:9px;font-weight:700;letter-spacing:0.06em;color:#818CA2;text-transform:uppercase;">Locked</div>' +
+    '</div>';
+  }).join('');
+
+  var stackVisual =
+    '<div style="border:1px solid #5CA3B6;border-bottom:none;background:rgba(92,163,182,0.10);padding:11px 14px;display:flex;align-items:center;">' +
+      '<div style="width:22px;height:22px;background:#5CA3B6;color:white;border-radius:3px;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0;font-size:14px;font-weight:700;">\u2713</div>' +
+      '<div style="font-size:12px;font-weight:700;color:#021744;">Public Demo Layer \u2014 Self-Assessment + Standard AI Rubric</div>' +
+      '<div style="margin-left:auto;font-size:9px;font-weight:700;letter-spacing:0.06em;color:#5CA3B6;text-transform:uppercase;">Active</div>' +
+    '</div>' +
+    stackRows;
+
+  var tableRows = layers.map(function(l) {
+    return '<tr style="border-bottom:1px solid #E8EBF0;">' +
+      '<td style="padding:9px 10px;font-size:11px;font-weight:600;color:#021744;width:28%;vertical-align:top;">' + l.name + '</td>' +
+      '<td style="padding:9px 10px;font-size:11px;color:#021744;line-height:1.55;width:38%;vertical-align:top;">' + l.desc + '</td>' +
+      '<td style="padding:9px 10px;font-size:11px;color:#576482;line-height:1.55;font-style:italic;vertical-align:top;">' + l.why + '</td>' +
+    '</tr>';
+  }).join('');
+
+  return '<div class="report-section" style="page-break-inside:avoid;margin-top:32px;border-top:2px solid #021744;padding-top:22px;">' +
+    '<div class="report-section-title" style="color:#021744;">What This Public Demo Does Not Include</div>' +
+    '<p style="font-size:12px;color:#576482;line-height:1.7;margin-bottom:16px;">' +
+      'This report was generated by the public demo of BidEquity Qualify. It runs on the standard rubric and your typed inputs only. The full engine \u2014 the one we use on live consulting engagements \u2014 layers six additional intelligence sources on top of what you have just seen. Each one would have changed how this report read. We have left them out of the public demo deliberately, both to protect the intellectual property and to keep the public experience fast and self-contained.' +
+    '</p>' +
+    '<div style="margin-bottom:18px;">' + stackVisual + '</div>' +
+    '<table style="width:100%;border-collapse:collapse;border:1px solid #D5D9E0;">' +
+      '<tr style="background:#021744;color:#F0EDE6;">' +
+        '<th style="padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;">Layer not in this report</th>' +
+        '<th style="padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;">What it contains</th>' +
+        '<th style="padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;">Why it would change this report</th>' +
+      '</tr>' +
+      tableRows +
+    '</table>' +
+    '<div style="margin-top:18px;padding:14px 16px;background:rgba(2,23,68,0.04);border-left:3px solid #5CA3B6;font-size:12px;color:#021744;line-height:1.7;">' +
+      '<strong>If this report is being used to inform a real bid decision</strong>, the gaps above are the difference between a self-assessment and a forensic capture review. The full engine is delivered as a consulting engagement \u2014 your team keeps the platform, we bring the intelligence layers and the trained capture leader behind them. Get in touch via <strong>bidequity.co</strong> to discuss what a full assessment of this pursuit would surface.' +
+    '</div>' +
+  '</div>';
+}
+
 function getPhase(pwin) {
   if (pwin < 0.15) return { label:"Pre-Capture",        color:"#576482", bg:"#F0ECE4" };
   if (pwin < 0.35) return { label:"Capture Commenced",  color:"#C15050", bg:"rgba(193,80,80,0.08)" };
@@ -4220,6 +4475,7 @@ async function runFullReport() {
           '<div class="report-section-title">PWIN Score Assessment</div>' +
           '<p class="report-text">' + r.pwinAssessment + '</p>' +
         '</div>' +
+        renderBeforeAfterSection() +
         '<div class="report-section">' +
           '<div class="report-section-title">Pursuit Strengths</div>' +
           r.strengthAreas.map(function(s) { return '<div class="report-risk-item risk-action"><div class="risk-label">\u2713 Strength</div>' + s + '</div>'; }).join('') +
@@ -4239,6 +4495,7 @@ async function runFullReport() {
           '<p class="report-text">' + r.gateRationale + '</p>' +
         '</div>' +
         (r.rebidRiskAssessment ? renderRebidRiskAssessment(r.rebidRiskAssessment) : '') +
+        renderMissingIPSection() +
       '</div>' +
     '</div>';
   } catch(err) {
@@ -4297,15 +4554,6 @@ function downloadReportPDF() {
     '.cat-item-score { font-family: "JetBrains Mono", monospace; color: #5CA3B6; }' +
     '</style></head><body>' +
     reportCard.outerHTML +
-    '<div class="report-section" style="padding: 0 32px 28px; border: 1px solid #D5D9E0; border-top: none;">' +
-      '<div class="report-section-title">Category Scores</div>' +
-      '<div class="cat-summary">' +
-      CATS.map(function(cat) {
-        var pct = Math.round((getCatScore(cat.id) / MAX_CAT) * 100);
-        return '<div class="cat-item"><div class="cat-item-name">' + cat.name + '</div><div class="cat-item-score">' + pct + '% (weight: ' + (cat.weight*100).toFixed(0) + '%)</div></div>';
-      }).join('') +
-      '</div>' +
-    '</div>' +
     '<div class="footer">' +
       '<div>Generated by BidEquity Qualify | ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) + '</div>' +
       '<div>bidequity.co</div>' +
