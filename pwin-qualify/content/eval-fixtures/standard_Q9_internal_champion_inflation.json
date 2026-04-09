@@ -1,0 +1,25 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "standard_Q9_internal_champion_inflation",
+  "description": "Standard 24 — Q9 Internal Champion. Vague positive sentiment with no named individual or commitment. Should be Challenged with inflation detected.",
+  "source": "Hand-crafted seed fixture",
+  "isConstructed": true,
+  "context": {
+    "org": "Department for Education",
+    "opp": "Apprenticeships Digital Service",
+    "sector": "Central Government",
+    "oppType": "Digital Outcomes",
+    "tcv": "£12m over 3 years",
+    "stage": "Market engagement underway",
+    "incumbent": "We are the challenger — no incumbent relationship",
+    "notes": "Mid-capture pursuit, no ITT yet."
+  },
+  "questionId": "Q9",
+  "claimedScore": "Strongly Agree",
+  "evidence": "We have a really good relationship with the team at DfE and they have been very supportive of our approach. We feel they prefer us to the competition. Our account director has known the senior team there for years.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: should challenge unnamed individuals, undated assertions, and substitute relationship-tenure for pursuit-current evidence."
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "rebid_R2_validated",
+  "description": "Workbook seed: Contract Performance Reality / Performance Risk Intelligence (R2) — incumbent fixture, expects Validated",
+  "source": "PWIN_Rebid_Module_Review.xlsx sheet 5 (constructed example, not real BIP case)",
+  "isConstructed": true,
+  "context": {
+    "org": "Example Public Sector Buyer",
+    "opp": "Strategic Service Recompete",
+    "sector": "Central Government",
+    "oppType": "Managed Service",
+    "tcv": "£45m over 5 years",
+    "stage": "Pre-market engagement",
+    "incumbent": "We are the incumbent defending this contract",
+    "notes": "Contract has been running for 4 years. Recompete published in OJEU 12 months from now."
+  },
+  "questionId": "R2",
+  "claimedScore": "Strongly Agree",
+  "evidence": "Following an internal review six months ago we identified three areas where our performance has been below the client's expectations: response times on P2 incidents (Feb-April average 4.2hrs vs 3hr SLA), social value reporting which the client has described as 'light on evidence', and our account management resource which was reduced in Year 2. We have addressed the response times (current average 2.8hrs), we are preparing a retrospective social value report to be presented in the next QBR, and we have committed a senior account manager starting in April. We anticipate a challenger will reference all three issues.",
+  "expected": {
+    "verdict": "Validated",
+    "inflationDetected": false
+  },
+  "idealResponseFromWorkbook": "VALIDATED. This evidence is exemplary. The team has done exactly what a well-prepared rebid pursuit team should do: identified their own weaknesses before a challenger can exploit them, quantified the underperformance specifically, evidenced the remediation, and anticipated the competitive attack.\n\nConfidence: 82%. The evidence meets Strongly Agree on the identification and remediation dimensions. Two areas to strengthen before this becomes a near-complete position: (1) the social value remediation is in preparation — it needs to be delivered and the client's response documented before the submission; (2) the senior account manager commitment is forward-looking — confirm they are in post before the ITT is published.\n\nChallenge: (1) Has the client acknowledged the response time improvement in writing, or do you only have your own measurement? (2) What was the client's reaction when the performance issues were raised — was this a difficult conversation or did they already know? (3) Have you tested whether the challenger is aware of these issues and is already referencing them in their client conversations?\n\nActions: (1) Bid Manager — obtain written acknowledgement from the client of the P2 improvement before ITT publication. A client email or QBR minute noting the improvement is gate-ready evidence. (2) Account Lead — confirm the social value retrospective is presented and the client response is documented before the submission deadline."
+}

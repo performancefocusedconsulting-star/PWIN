@@ -1,0 +1,25 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "rebid_R4_challenged",
+  "description": "Workbook seed: Incumbent Position Decay / Relationship Currency (R4) — incumbent fixture, expects Challenged",
+  "source": "PWIN_Rebid_Module_Review.xlsx sheet 5 (constructed example, not real BIP case)",
+  "isConstructed": true,
+  "context": {
+    "org": "Example Public Sector Buyer",
+    "opp": "Strategic Service Recompete",
+    "sector": "Central Government",
+    "oppType": "Managed Service",
+    "tcv": "£45m over 5 years",
+    "stage": "Pre-market engagement",
+    "incumbent": "We are the incumbent defending this contract",
+    "notes": "Contract has been running for 4 years. Recompete published in OJEU 12 months from now."
+  },
+  "questionId": "R4",
+  "claimedScore": "Strongly Agree",
+  "evidence": "We have a very strong relationship with the Head of Transformation who has been our main contact throughout the contract. We meet monthly and she has always been positive about our delivery. We are confident she will support our rebid.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true
+  },
+  "idealResponseFromWorkbook": "CHALLENGED. The evidence describes an operational delivery relationship, not a pursuit relationship. Monthly meetings with the Head of Transformation are contract governance — they are not rebid conversations. 'Always been positive' is undated sentiment with no specific content. The key questions this evidence cannot answer: has she been told explicitly that the rebid is now an active pursuit competition? Has she committed to any action that advances your position for the next term? Is she the decision authority for the award, or does that sit elsewhere?\n\nInflation detected: 'very strong relationship', 'always been positive', 'confident she will support' — three markers of incumbent complacency that substitute relationship history for current pursuit evidence.\n\nChallenge: (1) When did you last have an explicit conversation about the rebid — not contract delivery — with her, and what did she commit to? (2) Is she the SRO or the award decision-maker, and if not, who is and when did you last speak to them in a pursuit context? (3) Has she indicated what she personally needs from the next contract that she is not getting from the current one?\n\nActions: (1) Sector Director — meet Head of Transformation within 14 days for an explicit rebid conversation. The agenda is: what does the next contract need to look like for you personally to be comfortable recommending renewal? Document every commitment. (2) Bid Manager — map the full decision authority chain from Head of Transformation to award sign-off. Identify the contacts you do not currently have."
+}

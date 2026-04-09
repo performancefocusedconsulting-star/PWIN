@@ -1,0 +1,25 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "rebid_R7_queried",
+  "description": "Workbook seed: Retendering Intelligence / Retendering Motivation (R7) — incumbent fixture, expects Queried",
+  "source": "PWIN_Rebid_Module_Review.xlsx sheet 5 (constructed example, not real BIP case)",
+  "isConstructed": true,
+  "context": {
+    "org": "Example Public Sector Buyer",
+    "opp": "Strategic Service Recompete",
+    "sector": "Central Government",
+    "oppType": "Managed Service",
+    "tcv": "£45m over 5 years",
+    "stage": "Pre-market engagement",
+    "incumbent": "We are the incumbent defending this contract",
+    "notes": "Contract has been running for 4 years. Recompete published in OJEU 12 months from now."
+  },
+  "questionId": "R7",
+  "claimedScore": "Strongly Agree",
+  "evidence": "The contract naturally expires in 18 months and procurement have indicated they will follow standard process. We understand the procurement timeline and have a capture plan aligned to it. Our relationship with the procurement lead is good.",
+  "expected": {
+    "verdict": "Queried",
+    "inflationDetected": true
+  },
+  "idealResponseFromWorkbook": "QUERIED. The evidence describes process understanding, not motivation intelligence. 'Standard process' and 'natural expiry' are the procurement team's public framing — they do not tell you why the client is running a genuine competition rather than exercising the contract extension option. Most long-term contracts have extension provisions. If those extensions are not being used, there is a reason — and that reason is the most important piece of intelligence in your rebid strategy.\n\nThis scores Agree at best. To reach Strongly Agree you need to know: why extensions are not being exercised, what specific dissatisfactions or external pressures are driving the decision to compete, and whether any senior stakeholder has expressed a preference for the outcome.\n\nChallenge: (1) Does this contract have extension options, and if so why are they not being used? (2) What did the new Director of Finance say about this contract in the last budget review? (3) Has any senior stakeholder indicated — directly or indirectly — that they see this retendering as an opportunity to change something about the service?\n\nActions: (1) Account Lead — have a direct conversation with the procurement lead framed as 'helping us prepare the best possible rebid'. Ask specifically: are there aspects of the current service model the organisation wants to see changed in the next term? (2) Intelligence gathering — review the last two Board/SLT minutes for references to this contract area. What language does the client use internally?"
+}
