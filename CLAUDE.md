@@ -76,13 +76,87 @@ An AI-assisted bid qualification and coaching application. Pursuit teams self-as
 - `pwin-qualify/docs/PWIN-Qualify-Design v1.html` — functional design document (scoring model, PWIN formula, context engine, AI assurance layer, rejected decisions)
 - `pwin-qualify/docs/PWIN_AI_Enrichment_Review.xlsx` — AI prompt enrichment spec (sector knowledge, opportunity types, few-shot examples, output schema, system prompt) — **review columns not yet completed**
 - `pwin-qualify/docs/BWIN Qualify_AI Design_Proforma_v2.xlsx` — Phase 1 intelligence-gathering spec (51 data points, 20 reasoning rules, confidence model) — **not yet completed**
-- `pwin-qualify/docs/PWIN_Architect_v1.html` — working prototype application
+- `pwin-qualify/docs/PWIN_Rebid_Module_Review.xlsx` — design pack for the incumbent rebid modifier layer (12 questions, 11 trigger rules, 9 risk-assessment fields, 3 few-shots). The source of truth for the rebid layer; the JSON content file below is generated from it.
+- `pwin-qualify/docs/PWIN_Architect_v1.html` — **the consulting standalone app, and the canonical product**. All future Qualify development centres on this file.
+- `pwin-qualify/content/` — versioned content system (see below). Both Qualify apps load their scoring intelligence from here.
+- `pwin-qualify/content/README.md` — operating manual for editing content and the publishing workflow.
+
+### The two Qualify apps
+
+There are two Qualify HTML apps that share the same scoring intelligence but diverge on UX, branding, and feature flags:
+
+| App | Path | Purpose |
+|---|---|---|
+| **Consulting standalone (canon)** | `pwin-qualify/docs/PWIN_Architect_v1.html` | The main product going forward. Carries the full intelligence stack (intel injection, deeper context, eventually the rebid module enabled). |
+| **Website MVP** | `bidequity-co/qualify-app.html` | Public lead-gen, deliberately under-enriched (no competitive intel injection per the public-launch decision). Stripped variant of the consulting app. |
+
+**Both apps load the same `QUALIFY_CONTENT` JSON at build time** via `pwin-qualify/content/build-content.js`. The intelligence layer (questions, rubrics, persona, opportunity-type calibration, rebid modifier) is identical across both. Only the brand colours, runtime feature flags, and presentation HTML can drift.
+
+### Content system
+
+The product's scoring brain lives in `pwin-qualify/content/qualify-content-v0.1.json`. Editing this file and re-running the build script propagates changes to both apps. Never edit literals inside the HTML files by hand — they are sentinel-injected at build time.
+
+**What's in the content file:**
+
+- `questionPacks.standard` — the 24 standard questions (text, rubric, inflation signals, weight)
+- `modifiers.incumbent` — the rebid modifier layer (12 R-questions, additional persona triggers, additional output schema, design principles, few-shot examples)
+- `categories`, `weightProfiles`, `oppTypeProfile` — category definitions and the per-opportunity-type weight rebalancing
+- `persona` — Alex Mercer's full persona object (identity, beliefs, traits, tone, language patterns, hard rules, workflow triggers, success criteria)
+- `opportunityTypeCalibration` — the seven opportunity-type-specific calibration paragraphs injected into Alex's prompt
+- `outputs` — output schema definitions referenced by the apps
+
+**The four tunable areas** (per `feedback_qualify_finetune_scope` in auto-memory):
+
+1. **Rubric bands** — inside each question's `rubric` field
+2. **Inflation signals (per-question)** — each question's `inflationSignals` array
+3. **Persona workflow triggers** — `persona.workflowTriggers.{autoChallenge, autoQuery, calibrationRules, inflationTriggers}` and the modifier's `addsPersonaTriggers`
+4. **Opportunity-type calibration** — `opportunityTypeCalibration.{BPO, IT Outsourcing, ...}`
+
+**What NOT to tune for now:** question weights (`qw`) and category weights (`weight`, `weightProfiles`). These are stable.
+
+### Rebid modifier layer
+
+The incumbent rebid layer is the proof case for the modifier mechanism. When `state.context.incumbent === "We are the incumbent defending this contract"`, the runtime calls `applyContentModifiers()` which:
+
+1. Pushes a 7th category (`Incumbent Position`, weight 0.20) into `CATS`, rebalancing the standard six proportionally to 0.80 total
+2. Appends 12 R-questions (R1–R12) to `QUESTIONS`, each with normalised within-category weights
+3. Augments `ALEX_PERSONA.workflowTriggers` with 4 inflation triggers (RI-1..RI-4), 4 calibration rules (RC-1..RC-4), and 3 auto-verdict rules (RA-1..RA-3) — all with `[ref]` prefixes for traceability
+4. Registers `CONTENT_OUTPUTS.rebidRiskAssessment` with the 9-field Rebid Risk Assessment schema
+
+The full-report function checks `ACTIVE_MODIFIERS.has('incumbent')` and, if true, merges the rebid risk-assessment fields into the AI request schema. The response is rendered as a separate "Rebid Risk Assessment" section below the standard report. **One AI call, combined schema** — not two calls.
+
+`renderRebidRiskAssessment(rra)` exists in both apps (ES6 in consulting, ES5 in website) and renders the seven core fields plus the two PROPOSED-now-active fields (`performanceNarrativeGaps`, `switchingCostQuantification`).
+
+Modifier deactivation is handled by re-running `applyContentModifiers()` whenever context changes — the function rebuilds from base before re-applying, so flipping the radio button cleanly resets back to 24 questions and the standard persona.
+
+### Build, eval, publish workflow
+
+```bash
+# 1. Edit pwin-qualify/content/qualify-content-vX.Y.json
+# 2. Bump version + add changelog entry
+# 3. Run the eval harness (requires API key)
+ANTHROPIC_API_KEY=sk-... node pwin-qualify/content/eval-harness.js
+
+# 4. Build — inlines JSON into both HTML apps between sentinel markers
+node pwin-qualify/content/build-content.js
+
+# 5. Verify both apps in sync without modifying them
+node pwin-qualify/content/build-content.js --check
+
+# 6. Commit JSON + both HTML files together
+```
+
+**The build script is idempotent** — running it twice prints "unchanged" the second time. The HTML files MUST be committed alongside the JSON because they are derived but not auto-built (no CI step).
+
+**Eval harness** (`pwin-qualify/content/eval-harness.js`) reads fixtures from `pwin-qualify/content/eval-fixtures/`, builds the same prompt the app builds, calls Claude, and diffs against expected verdicts. Add a fixture for every meaningful tune so it doesn't regress. Seed fixtures from the workbook few-shots are flagged `isConstructed: true` and should be replaced with real BIP cases when available. Cost is roughly $0.01–$0.02 per fixture with Sonnet 4.6.
 
 ### Technical Constraints
 
 - Same as pwin-bid-execution: single HTML file, vanilla JavaScript, no frameworks, no external dependencies beyond Google Fonts.
 - JSON file export/import for persistence (not localStorage).
 - No MCP integration yet — AI assurance review currently calls Claude API directly from the browser.
+- The content file is **inlined at build time**, not fetched at runtime. Both apps must work as standalone HTML with no server dependency.
+- Brand colours stay app-local (declared in each app's `CAT_BRAND` constant) — they are the only intentional drift between the two apps' scoring layers.
 
 ### Cross-Product Data
 

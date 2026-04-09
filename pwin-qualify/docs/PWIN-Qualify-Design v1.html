@@ -569,8 +569,11 @@ body {
     <a class="nav-link" href="#questions">Questions</a>
     <a class="nav-link" href="#context">Context Engine</a>
     <a class="nav-link" href="#ai">AI Assurance Layer</a>
+    <a class="nav-link" href="#content">Content System</a>
+    <a class="nav-link" href="#rebid">Rebid Modifier</a>
     <a class="nav-link" href="#rejected">Rejected Decisions</a>
     <a class="nav-link" href="#phases">Expected Benchmarks</a>
+    <a class="nav-link" href="#next">Next Session</a>
   </div>
 </nav>
 
@@ -982,11 +985,157 @@ body {
 </section>
 
 <!-- ══════════════════════════════════════════
-  8. REJECTED DECISIONS
+  8. CONTENT SYSTEM
+═══════════════════════════════════════════ -->
+<section class="section" id="content">
+  <div class="section-header">
+    <span class="section-number">08</span>
+    <h2 class="section-title">Content System &amp; Tuning Workflow</h2>
+  </div>
+  <div class="section-body">
+    <p>The product's scoring intelligence — questions, rubrics, persona, opportunity-type calibration — was originally hard-coded inside each HTML app. As of v0.1.0 it has been externalised into a single versioned JSON file that both Qualify apps load at build time. This unlocks systematic tuning of the AI behaviour without HTML edits, eval-harness regression testing, and version-controlled iteration on the AI scoring layer.</p>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">The Two Apps Share One Scoring Brain</h3>
+  <table class="data-table">
+    <thead><tr><th>App</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Consulting standalone (canon)</strong></td>
+        <td><code>pwin-qualify/docs/PWIN_Architect_v1.html</code></td>
+        <td>The main product going forward. Carries the full intelligence stack (intel injection, deeper context, rebid module enabled).</td>
+      </tr>
+      <tr>
+        <td>Website MVP</td>
+        <td><code>bidequity-co/qualify-app.html</code></td>
+        <td>Public lead-gen, deliberately under-enriched. Stripped variant — same scoring brain, simpler presentation, no intel injection.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="section-body">
+    <p>Both apps load <code>QUALIFY_CONTENT</code> from <code>pwin-qualify/content/qualify-content-vX.Y.json</code>. The build script (<code>pwin-qualify/content/build-content.js</code>) injects the JSON between sentinel markers in each HTML file. Brand colours stay app-local — they are the only intentional drift between the two apps' scoring layers.</p>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">What Lives in the Content File</h3>
+  <table class="data-table">
+    <thead><tr><th>Section</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td><code>questionPacks.standard</code></td><td>The 24 standard questions: text, rubric (4 bands), inflation signals (per-question), normalised within-category weight</td></tr>
+      <tr><td><code>modifiers.incumbent</code></td><td>The rebid modifier layer (see next section)</td></tr>
+      <tr><td><code>categories</code> + <code>weightProfiles</code> + <code>oppTypeProfile</code></td><td>The six standard categories and the per-opportunity-type weight rebalancing</td></tr>
+      <tr><td><code>persona</code></td><td>Alex Mercer's full persona object: identity, beliefs, traits, tone, language patterns, hard rules, workflow triggers, success criteria</td></tr>
+      <tr><td><code>opportunityTypeCalibration</code></td><td>The seven opportunity-type-specific calibration paragraphs injected into Alex's prompt at runtime</td></tr>
+      <tr><td><code>outputs</code></td><td>Output schema definitions referenced by the apps</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">The Four Tunable Areas</h3>
+  <div class="section-body">
+    <p>Per the post-MVP fine-tuning intent, four areas are designed for iteration. Question and category weights are explicitly stable.</p>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Area</th><th>Where in JSON</th><th>When to edit</th></tr></thead>
+    <tbody>
+      <tr><td>Rubric bands</td><td><code>questions[].rubric</code></td><td>Sharpen or soften what each score level requires</td></tr>
+      <tr><td>Per-question inflation signals</td><td><code>questions[].inflationSignals</code></td><td>Add a phrase the AI should auto-flag for that specific question</td></tr>
+      <tr><td>Persona workflow triggers</td><td><code>persona.workflowTriggers.*</code></td><td>Cross-question rules: TCV-based, stage-based, contextual</td></tr>
+      <tr><td>Opportunity-type calibration</td><td><code>opportunityTypeCalibration.*</code></td><td>Sector- or type-specific guidance for Alex</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">The Publishing Workflow</h3>
+  <div class="prompt-block">
+    <span class="prompt-key">1.</span> Edit <code>pwin-qualify/content/qualify-content-vX.Y.json</code><br>
+    <span class="prompt-key">2.</span> Bump version + add changelog entry<br>
+    <span class="prompt-key">3.</span> Run eval harness — <code>node pwin-qualify/content/eval-harness.js</code><br>
+    <span class="prompt-key">4.</span> Review the diff manually (eyeball at least one Alex review per affected fixture)<br>
+    <span class="prompt-key">5.</span> Run build script — <code>node pwin-qualify/content/build-content.js</code><br>
+    <span class="prompt-key">6.</span> Commit JSON + both HTML files together
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">Eval Harness</h3>
+  <div class="section-body">
+    <p>The eval harness (<code>pwin-qualify/content/eval-harness.js</code>) runs each fixture in <code>eval-fixtures/</code> through the live API and diffs Alex's response against the fixture's expected verdict, inflation flag, and suggested score. Use it before publishing any new content version. Add a fixture for every meaningful tune so the rule doesn't regress next time you change something else.</p>
+    <p>Cost is roughly <strong>$0.01–$0.02 per fixture</strong> with Sonnet 4.6. A full run of 10–15 fixtures stays well under $0.30. Seed fixtures from the rebid workbook few-shots are flagged <code>isConstructed: true</code> and should be replaced with real BIP cases when available.</p>
+  </div>
+
+  <div class="rationale">
+    <strong>Why externalised, not hard-coded:</strong> The product's scoring intelligence is the most valuable and most frequently tuned part of the system. Hard-coded literals make every tune a HTML edit, risk regression with every change, and force the consulting and website variants to drift unless someone manually keeps them in sync. A versioned content file with a build script and an eval harness gives the editor a single point of truth, fast feedback, and rollback safety. The cost is one extra build step. Worth it.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  9. REBID MODIFIER
+═══════════════════════════════════════════ -->
+<section class="section" id="rebid">
+  <div class="section-header">
+    <span class="section-number">09</span>
+    <h2 class="section-title">Rebid Modifier Layer</h2>
+  </div>
+  <div class="section-body">
+    <p>The rebid modifier is the proof case for the modifier mechanism. When the user selects "We are the incumbent defending this contract" in the Context tab, a 12-question incumbent layer activates on top of the standard 24, additional persona triggers extend Alex's calibration, and a separate Rebid Risk Assessment is produced alongside the standard report.</p>
+    <p><strong>Source:</strong> <code>pwin-qualify/docs/PWIN_Rebid_Module_Review.xlsx</code> — a 5-sheet design pack covering principles, questions, risk-assessment schema, trigger rules, and few-shot calibration examples. The JSON content file is generated from this spec.</p>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">Why a Modifier, Not a Replacement Pack</h3>
+  <div class="rationale">
+    <strong>The rebid layer is additive, not a substitute.</strong> An incumbent's pursuit team still needs the standard 24 questions about competitive positioning, procurement intelligence, stakeholder strength, etc. — a rebid is still a bid. What the standard pack misses is the specific decay risks unique to incumbents: complacency blindness, relationship currency, political map decay, ITT specification influence, challenger threat assessment. The 12 R-questions add those without replacing anything.
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">What Activates When Incumbent Is Selected</h3>
+  <table class="data-table">
+    <thead><tr><th>Layer</th><th>What changes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Categories</td>
+        <td>A 7th category — <strong>Incumbent Position</strong> — is added at <strong>20% weight</strong>. The standard six rebalance proportionally to <strong>80% total</strong>. PWIN totals stay normalised to 1.</td>
+      </tr>
+      <tr>
+        <td>Questions</td>
+        <td>12 additional questions (R1–R12) are appended, organised into four rebid sub-categories: <em>Contract Performance Reality</em> (R1–R3), <em>Incumbent Position Decay</em> (R4–R6), <em>Retendering Intelligence</em> (R7–R9), <em>Challenger Threat Assessment</em> (R10–R12).</td>
+      </tr>
+      <tr>
+        <td>Persona triggers</td>
+        <td>Alex's <code>workflowTriggers</code> object gains 4 inflation triggers (RI-1..RI-4), 4 calibration rules (RC-1..RC-4), and 3 auto-verdict rules (RA-1..RA-3). Each is prefixed with <code>[ref]</code> for traceability when the AI cites which rule fired.</td>
+      </tr>
+      <tr>
+        <td>Output schema</td>
+        <td>A new output — the <strong>Rebid Risk Assessment</strong> — is registered. It has 7 core fields (incumbent vulnerability score, decay risk profile, challenger exploit assessment, retendering motivation, blind spots, strategy recommendation, remediation actions) plus 2 fields originally flagged PROPOSED that are now active (performance narrative gaps, switching cost quantification).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">How the Combined Report Works</h3>
+  <div class="section-body">
+    <p>When the user clicks "Generate Full Assurance Report" with the rebid modifier active, the app merges the Rebid Risk Assessment schema into the standard full-report request. <strong>One AI call returns one combined JSON object.</strong> The standard report renders as normal; the rebid risk assessment renders as a separate section below the gate recommendation, with its own colour palette (incumbent burgundy) and a Red/Amber/Green decay risk profile.</p>
+    <p>Deactivation is automatic. If the user changes the radio button to "challenger" or "no clear incumbent", the next call to <code>applyContentModifiers()</code> rebuilds from base — categories return to 6, questions to 24, persona triggers reset, and the rebid output is unregistered. The flip is clean and reversible.</p>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">Strategy Recommendation Spectrum</h3>
+  <div class="section-body">
+    <p>The Rebid Risk Assessment forces Alex to recommend one of four strategic postures, mirroring the gate recommendation pattern from the standard report:</p>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Posture</th><th>When it applies</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Defend and Shape</strong></td><td>Strong position. Focus on specification influence and transition risk amplification.</td></tr>
+      <tr><td><strong>Active Recovery</strong></td><td>Position salvageable but requires specific remediation actions before ITT.</td></tr>
+      <tr><td><strong>Emergency Intervention</strong></td><td>Position materially weaker than the team believes. Urgent strategic reset required.</td></tr>
+      <tr><td><strong>Qualify Out</strong></td><td>Insufficient position to win at acceptable cost. Recommend early qualification out.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rationale">
+    <strong>Why the rebid question is reframed:</strong> The standard PWIN question is "what is our win probability?" The rebid question is "what do our competitors know that we don't?" Incumbents systematically over-score the standard 24 because they have built relationships, built delivery intelligence, built a value proposition — they answer "yes" to questions about whether they have those things. The rebid layer specifically probes whether those assets are still <em>current</em>, whether the team has <em>tested</em> them in a pursuit context, and whether a well-prepared challenger would expose decay. The most dangerous rebid position is the one that feels safest.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  10. REJECTED DECISIONS
 ═══════════════════════════════════════════ -->
 <section class="section" id="rejected">
   <div class="section-header">
-    <span class="section-number">08</span>
+    <span class="section-number">10</span>
     <h2 class="section-title">Key Decisions Considered &amp; Rejected</h2>
   </div>
   <div class="section-body">
@@ -1025,7 +1174,7 @@ body {
 ═══════════════════════════════════════════ -->
 <section class="section" id="phases">
   <div class="section-header">
-    <span class="section-number">09</span>
+    <span class="section-number">11</span>
     <h2 class="section-title">Expected PWIN Benchmarks by Phase</h2>
   </div>
   <div class="section-body">
@@ -1065,6 +1214,47 @@ body {
       <div class="phase-pwin">100%</div>
       <div class="phase-desc">All 24 questions Strongly Agree with documented evidence. Theoretical ceiling — rarely achieved in practice.</div>
     </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  12. NEXT SESSION
+═══════════════════════════════════════════ -->
+<section class="section" id="next">
+  <div class="section-header">
+    <span class="section-number">12</span>
+    <h2 class="section-title">Next Session</h2>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:20px 0 12px;">What was just decided (2026-04-09)</h3>
+  <div class="section-body">
+    <ul>
+      <li><strong>Externalised the scoring intelligence.</strong> All questions, rubrics, persona, opportunity-type calibration, and the rebid modifier now live in <code>pwin-qualify/content/qualify-content-v0.1.json</code>. Both apps (consulting standalone and website MVP) hydrate from this file at build time. Hard-coded literals are gone.</li>
+      <li><strong>Built the rebid modifier layer.</strong> The <code>PWIN_Rebid_Module_Review.xlsx</code> spec was transcribed in full and wired through both apps. Activates when the user selects "We are the incumbent". Adds a 7th category, 12 R-questions, augments persona triggers, and produces a separate Rebid Risk Assessment in the full report. Both PROPOSED risk fields (<code>performanceNarrativeGaps</code>, <code>switchingCostQuantification</code>) approved as active.</li>
+      <li><strong>Built the build pipeline.</strong> <code>build-content.js</code> injects the JSON into both HTML apps via sentinel markers, idempotent, with a <code>--check</code> mode for CI safety. <code>eval-harness.js</code> runs fixtures through the live API and diffs against expected verdicts.</li>
+      <li><strong>Seeded the eval harness with 4 fixtures</strong> — three from the workbook few-shots (R2 Validated, R4 Challenged, R7 Queried) plus one hand-crafted standard-question fixture (Q9 Internal Champion inflation). All three rebid fixtures are flagged <code>isConstructed: true</code> and should be replaced with real BIP cases when available.</li>
+      <li><strong>Confirmed the consulting standalone is canon.</strong> The website MVP is the stripped lead-gen variant. Both share one scoring brain — only brand colours, runtime feature flags, and presentation HTML can drift.</li>
+      <li><strong>Smoke test passes 18/18 on both apps.</strong> Hydration, modifier activation/deactivation, weight rebalancing, persona augmentation, output schema registration all verified under headless Node.</li>
+    </ul>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">What was about to happen next</h3>
+  <div class="section-body">
+    <ul>
+      <li><strong>First live eval harness run.</strong> The harness has only been dry-run tested. Next time an API key is available, run the live harness to baseline the four fixtures and confirm they pass against the v0.1.0 content. Adjust expected outcomes if the AI's responses are correct but the fixture's expectation is wrong.</li>
+      <li><strong>Layer the user's bid management experience across the four tunable areas.</strong> The whole point of this build was to enable post-MVP fine-tuning. Per <code>feedback_qualify_finetune_scope</code>, the work to do is on rubrics, inflation signals, persona triggers, and opportunity-type calibration — not weights. Each tune should be paired with at least one new eval fixture.</li>
+      <li><strong>Replace the constructed seed fixtures with real BIP cases.</strong> When real rebid pursuits become available, swap them in and set <code>isConstructed: false</code>.</li>
+      <li><strong>Decide on the rebid module's UI surfacing in the website MVP.</strong> Currently the rebid layer activates in both apps when "incumbent" is selected. The website MVP may want to feature-flag it off (per the deliberate "limited demo" positioning). The hydration block already supports this via the modifier trigger — just needs a runtime decision.</li>
+    </ul>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--navy);margin:24px 0 12px;">Open questions</h3>
+  <div class="section-body">
+    <ul>
+      <li><strong>Eval fixture coverage target.</strong> Four is the floor. What's the right number for the first real tuning session? 10? 15? Depends on how much coverage is needed for confident publishing.</li>
+      <li><strong>Cost ceiling per eval run.</strong> At ~$0.02 per fixture × 15 fixtures = $0.30 per run. Cheap. But if the eval suite grows to 50+, that becomes $1+ per tune iteration. Worth thinking about whether to gate the harness by content-area (only run rebid fixtures if the modifier was edited).</li>
+      <li><strong>Should weight tuning ever be enabled?</strong> Currently flagged as "stable" and excluded from the tunable areas. If the user later wants to experiment with weight changes, the schema supports it — but we should plan an explicit major version bump and re-baseline of all eval fixtures.</li>
+    </ul>
   </div>
 </section>
 
