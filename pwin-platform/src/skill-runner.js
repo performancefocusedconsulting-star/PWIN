@@ -147,6 +147,18 @@ async function gatherContext(skill, input) {
         context.sourceHierarchy = await store.getPlatformData('source_hierarchy.json');
         break;
       }
+      case 'supplier_dossier': {
+        // Load a previously-generated supplier intelligence dossier from
+        // ~/.pwin/reference/suppliers/{supplierName}.json. The supplierName
+        // comes from skill input — enables downstream skills (competitive
+        // strategy, incumbent assessment) to pull in the deep dossier.
+        const supplierName = input?.supplierName;
+        if (supplierName) {
+          const slug = supplierName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          context.supplierDossier = await store.getReferenceData('suppliers', slug);
+        }
+        break;
+      }
       case 'governance_gates': {
         const gateData = await store.getPlatformData('governance/governance_gate_definitions.json');
         context.governanceGates = gateData || null;
@@ -526,6 +538,38 @@ function buildClaudeTools(skill) {
         required: ['reportType', 'content'],
       },
     },
+    store_intelligence_dossier: {
+      name: 'store_intelligence_dossier',
+      description: 'Store a supplier intelligence dossier as a reusable reference asset in the platform library (not pursuit-scoped)',
+      input_schema: {
+        type: 'object',
+        properties: {
+          supplierName: { type: 'string', description: 'The supplier name (used to derive the storage key)' },
+          dossierContent: { type: 'string', description: 'The full dossier content (markdown)' },
+          scores: {
+            type: 'object',
+            description: 'Strategic scores with per-factor breakdowns',
+            properties: {
+              sectorStrength: { type: 'number' },
+              competitorThreat: { type: 'number' },
+              vulnerability: { type: 'number' },
+            },
+          },
+          sectors: { type: 'array', items: { type: 'string' }, description: 'Sectors covered' },
+          archetype: { type: 'string', description: 'Supplier archetype (systems_integrator, bpo_bps, consulting, digital_native, etc.)' },
+          evidenceQuality: {
+            type: 'object',
+            description: 'Evidence quality summary',
+            properties: {
+              totalCitations: { type: 'number' },
+              tierDistribution: { type: 'object' },
+              averageConfidence: { type: 'number' },
+            },
+          },
+        },
+        required: ['supplierName', 'dossierContent'],
+      },
+    },
   };
 
   return writeTools
@@ -643,6 +687,21 @@ async function executeToolCall(toolName, pursuitId, input) {
       data.reports.push({ id: randomUUID(), type: input.reportType, content: input.content, generatedAt: new Date().toISOString() });
       await store.saveProductData(pursuitId, 'bid_execution', data);
       return { generated: true };
+    }
+    case 'store_intelligence_dossier': {
+      const slug = input.supplierName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const dossier = {
+        supplierName: input.supplierName,
+        slug,
+        content: input.dossierContent,
+        scores: input.scores || null,
+        sectors: input.sectors || [],
+        archetype: input.archetype || null,
+        evidenceQuality: input.evidenceQuality || null,
+        generatedAt: new Date().toISOString(),
+      };
+      await store.saveReferenceData('suppliers', slug, dossier);
+      return { stored: true, path: `reference/suppliers/${slug}.json` };
     }
     default:
       throw new Error(`Unknown tool: ${toolName}`);

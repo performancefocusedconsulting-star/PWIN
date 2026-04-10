@@ -202,6 +202,11 @@ async function getReferenceData(type, id) {
   return readJSON(referencePath(type, id));
 }
 
+async function saveReferenceData(type, id, data) {
+  await writeJSON(referencePath(type, id), data);
+  return data;
+}
+
 async function listReferenceData(type) {
   const dir = join(DATA_ROOT, 'reference', type);
   await ensureDir(dir);
@@ -247,6 +252,7 @@ export {
   getPlatformData,
   savePlatformData,
   getReferenceData,
+  saveReferenceData,
   listReferenceData,
   exportPursuit,
   importPursuit,
