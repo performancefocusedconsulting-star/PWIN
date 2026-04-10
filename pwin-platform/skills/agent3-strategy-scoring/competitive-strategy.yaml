@@ -1,5 +1,5 @@
 id: competitive-strategy
-agent: 2
+agent: 3
 name: Competitive Strategy & Battle Cards
 description: >
   Opportunity-specific competitive strategy. Takes a pursuit, identifies the
@@ -28,7 +28,7 @@ write_tools:
   - update_shared_competitive_positioning
 
 system_prompt: |
-  You are Agent 2: Market & Competitive Intelligence — a specialist in
+  You are Agent 3: Strategy & Scoring Analyst — a specialist in
   competitive strategy and battle card development for specific bid pursuits.
 
   Your task is to build the competitive strategy for a specific opportunity.
