@@ -1,0 +1,795 @@
+{
+  "meta": {
+    "supplierName": "Serco Group plc",
+    "slug": "serco-group",
+    "generatedAt": "2026-04-11T09:00:00Z",
+    "generatedBy": "Agent 2 — Market & Competitive Intelligence",
+    "version": "1.0",
+    "depthMode": "standard",
+    "refreshDue": {
+      "procurementData": "2026-04-18",
+      "frameworkData": "2026-05-11",
+      "corporateDisclosures": "2026-05-11",
+      "weakSignals": "2026-04-25"
+    },
+    "versionLog": [
+      {
+        "version": "1.0",
+        "date": "2026-04-11",
+        "summary": "Initial dossier. Procurement data from FTS (127 awards across Serco entities). Companies House enrichment. FY2025 annual results. Leadership updates to March 2026. ESG and delivery scrutiny from public sources."
+      }
+    ]
+  },
+
+  "identity": {
+    "legalName": "SERCO LIMITED",
+    "tradingNames": ["Serco", "Serco Group", "Serco Leisure"],
+    "parentGroup": "Serco Holdings Limited (intermediate), Serco Group plc (ultimate listed parent)",
+    "companiesHouseNo": "00242246",
+    "headquarters": "Hook, Hampshire, UK",
+    "ownershipType": "listed",
+    "archetype": "bpo_bps",
+    "crownRepresentative": false,
+    "strategicSupplierCentral": true,
+    "strategicSupplierLocalGov": false,
+    "employeeCount": 55000,
+    "annualRevenue": "\u00a34.9bn FY2025 (Group)",
+    "ukPublicSectorRevenue": "Estimated \u00a32.0-2.5bn (estimated \u2014 UK & Europe division plus UK elements of Defence, not separately disclosed)"
+  },
+
+  "scores": {
+    "sectorStrength": {
+      "overall": 78,
+      "completeness": {
+        "factorsEvidenced": 7,
+        "factorsTotal": 7,
+        "incomplete": false
+      },
+      "factors": [
+        {
+          "name": "Award velocity",
+          "weight": 0.20,
+          "value": 80,
+          "evidenced": true,
+          "evidenceSummary": "127 awards across Serco entities in FTS database; 42 awards for SERCO LIMITED alone totalling \u00a37.6bn. Consistent winning across multiple sectors including recent DWP and MOD awards.",
+          "confidence": 90,
+          "weighted": 16.0
+        },
+        {
+          "name": "Incumbent density",
+          "weight": 0.20,
+          "value": 82,
+          "evidenced": true,
+          "evidenceSummary": "Incumbent on major long-running contracts: DWP Functional Assessment Services, MOD Defence Marine Services, MoJ prison operations, TfL London Cycle Hire, NHS Total FM. >90% contract retention rate reported.",
+          "confidence": 85,
+          "weighted": 16.4
+        },
+        {
+          "name": "Framework presence",
+          "weight": 0.15,
+          "value": 75,
+          "evidenced": true,
+          "evidenceSummary": "Present on CCS Space Technology Solutions, YPO Apprenticeships, NHS LPP Total FM framework. 33 awards via Crown Commercial Service alone. Framework coverage strong in BPO/FM but less visible in digital/IT frameworks.",
+          "confidence": 82,
+          "weighted": 11.25
+        },
+        {
+          "name": "Buyer coverage",
+          "weight": 0.15,
+          "value": 85,
+          "evidenced": true,
+          "evidenceSummary": "Awards from DWP, MOD, MoJ, Home Office, Cabinet Office, UKHSA, NHS, TfL, BBC, DfE, local authorities. Broad cross-sector buyer base spanning central government, defence, health, justice, and transport.",
+          "confidence": 90,
+          "weighted": 12.75
+        },
+        {
+          "name": "Delivery credentials",
+          "weight": 0.10,
+          "value": 65,
+          "evidenced": true,
+          "evidenceSummary": "Long-running contracts evidence delivery capability (MOD marine services since 1990s, prison operations). However NAO asylum accommodation findings and historical SFO settlement temper the score. Mixed signal: high retention but documented underperformance on specific contracts.",
+          "confidence": 74,
+          "weighted": 6.5
+        },
+        {
+          "name": "Financial resilience",
+          "weight": 0.10,
+          "value": 78,
+          "evidenced": true,
+          "evidenceSummary": "Revenue \u00a34.9bn, operating profit ~\u00a3272m, guided \u00a3300m for 2026. Order book \u00a314.5bn (+9% YoY). Pipeline \u00a312.1bn (decade high). Share buyback \u00a375m signals confidence. Northrop Grumman MT&S acquisition funded. Margin ~5.5%.",
+          "confidence": 81,
+          "weighted": 7.8
+        },
+        {
+          "name": "Partner ecosystem",
+          "weight": 0.10,
+          "value": 68,
+          "evidenced": true,
+          "evidenceSummary": "Northrop Grumman MT&S acquisition strengthens satellite/training tech. Framework teaming with SMEs on YPO apprenticeships. Defence partnerships evident. However, specific named alliance partnerships less visible than for systems integrators.",
+          "confidence": 65,
+          "weighted": 6.8
+        }
+      ]
+    },
+
+    "competitorThreat": {
+      "overall": 74,
+      "completeness": {
+        "factorsEvidenced": 5,
+        "factorsTotal": 5,
+        "incomplete": false
+      },
+      "factors": [
+        {
+          "name": "Sector strength",
+          "weight": 0.35,
+          "value": 78,
+          "evidenced": true,
+          "evidenceSummary": "Sector Strength Score of 78 \u2014 strong incumbent across BPO, citizen services, FM, defence support, and justice.",
+          "confidence": 82,
+          "weighted": 27.3
+        },
+        {
+          "name": "Commercial aggressiveness",
+          "weight": 0.20,
+          "value": 72,
+          "evidenced": true,
+          "evidenceSummary": "Mix of cost-plus and fixed-price contracts. Operating margin ~5.5% suggests competitive but not margin-destructive pricing. Management margin on pass-through solutions indicates willingness to take thin-margin gateway deals. Moving toward outcome-based contracting.",
+          "confidence": 70,
+          "weighted": 14.4
+        },
+        {
+          "name": "Route-to-market advantage",
+          "weight": 0.15,
+          "value": 70,
+          "evidenced": true,
+          "evidenceSummary": "33 awards via CCS. Present on major frameworks. \u00a310.5bn via selective procurement, \u00a35.9bn via limited, \u00a34.1bn via open. Strong use of restricted/selective routes indicates established buyer relationships and pre-qualification advantage.",
+          "confidence": 85,
+          "weighted": 10.5
+        },
+        {
+          "name": "Relationship depth",
+          "weight": 0.15,
+          "value": 78,
+          "evidenced": true,
+          "evidenceSummary": "Long-running relationships with DWP (13 awards, \u00a33.3bn), MOD (9 awards, \u00a31.1bn), CCS (33 awards). Multi-contract relationships across multiple departments. >90% retention rate. Repeat buyer engagement is a defining characteristic.",
+          "confidence": 85,
+          "weighted": 11.7
+        },
+        {
+          "name": "Brand trust",
+          "weight": 0.15,
+          "value": 65,
+          "evidenced": true,
+          "evidenceSummary": "Recognised name in UK public sector outsourcing. However, brand carries legacy baggage: SFO electronic tagging settlement (\u00a323m), NAO asylum findings, parliamentary EDMs citing delivery failures, COVID-era non-competitive award scrutiny. Trust is functional but not unblemished.",
+          "confidence": 72,
+          "weighted": 9.75
+        }
+      ]
+    },
+
+    "vulnerability": {
+      "overall": 52,
+      "completeness": {
+        "factorsEvidenced": 7,
+        "factorsTotal": 7,
+        "incomplete": false
+      },
+      "factors": [
+        {
+          "name": "Margin pressure",
+          "weight": 0.20,
+          "value": 45,
+          "evidenced": true,
+          "evidenceSummary": "Operating margin ~5.5% is thin for the complexity of services delivered. Fixed-price contracts in inflationary environments create margin risk. However, guided improvement to \u00a3300m profit in 2026 and strong cash conversion from negative working capital suggest margin is managed, not distressed.",
+          "confidence": 76,
+          "weighted": 9.0
+        },
+        {
+          "name": "Contract friction",
+          "weight": 0.20,
+          "value": 62,
+          "evidenced": true,
+          "evidenceSummary": "NAO May 2025: \u00a34m deducted for Home Office asylum accommodation underperformance. Historical SFO \u00a323m tagging settlement. Parliamentary EDMs citing delivery failures. COVID non-competitive award criticism. Multiple documented performance issues, though retention remains >90%.",
+          "confidence": 78,
+          "weighted": 12.4
+        },
+        {
+          "name": "Concentration risk",
+          "weight": 0.15,
+          "value": 50,
+          "evidenced": true,
+          "evidenceSummary": "Revenue spread across DWP, MOD, MoJ, NHS, Home Office, CCS and others \u2014 no single buyer dominates. However, UK public sector as a whole represents a large proportion of group revenue. Diversification across sectors is good; geographic and segment concentration is moderate.",
+          "confidence": 72,
+          "weighted": 7.5
+        },
+        {
+          "name": "Delivery complexity",
+          "weight": 0.15,
+          "value": 55,
+          "evidenced": true,
+          "evidenceSummary": "55,000 employees across multiple sectors and geographies. Service lines span prisons, citizen assessments, marine services, facilities management, cycle hire, space technology. Breadth creates execution complexity. Asylum accommodation issues suggest capacity limits in surge scenarios.",
+          "confidence": 68,
+          "weighted": 8.25
+        },
+        {
+          "name": "Restructuring signal",
+          "weight": 0.10,
+          "value": 55,
+          "evidenced": true,
+          "evidenceSummary": "New Group CEO (Anthony Kirby, March 2025), new Chairman (Keith Williams, January 2026), new UK & Europe CEO (Fiona Walters, March 2026), new Group CFO (Mark Reid, March 2026). Four senior leadership changes in 12 months. Northrop Grumman MT&S acquisition adds integration complexity. Not distressed restructuring, but significant leadership transition.",
+          "confidence": 80,
+          "weighted": 5.5
+        },
+        {
+          "name": "Buyer dissatisfaction",
+          "weight": 0.10,
+          "value": 58,
+          "evidenced": true,
+          "evidenceSummary": "NAO audit findings on asylum accommodation. Parliamentary EDMs. \u00a34m deductions. However, these relate to specific contracts not systemic buyer rejection \u2014 Serco continues to win new work from the same buyers (DWP, Home Office). Dissatisfaction is localised, not structural.",
+          "confidence": 74,
+          "weighted": 5.8
+        },
+        {
+          "name": "Partner dependency",
+          "weight": 0.10,
+          "value": 40,
+          "evidenced": true,
+          "evidenceSummary": "Serco primarily operates as a direct prime contractor, not through partner-dependent delivery models. Northrop Grumman MT&S was acquired outright rather than maintained as a dependency. Low partner dependency reduces this vulnerability factor.",
+          "confidence": 65,
+          "weighted": 4.0
+        }
+      ]
+    }
+  },
+
+  "domains": {
+    "d1_identity": {
+      "headline": "FTSE 250 BPO/outsourcing group, incorporated 1929, operating across 20+ countries with 55,000 employees and \u00a34.9bn group revenue.",
+      "narrative": "<p>Serco Group plc is a UK-listed international services company operating across defence, justice, immigration, transport, health, and citizen services. The primary contracting entity for UK public sector work is SERCO LIMITED (Companies House 00242246), incorporated 10 September 1929, held by intermediate parent Serco Holdings Limited (Tier 1, Companies House, 2026-04-11, confidence: 92).</p><p>SIC codes registered are 70100 (head office activities), 70229 (other management consultancy), 72190 (other R&D on natural sciences), and 84110 (general public administration) (Tier 1, Companies House, 2026-04-11, confidence: 92). The operating archetype is BPO/Business Process Services: Serco runs services on behalf of government rather than building systems or providing consulting advice. The group headquarters is in Hook, Hampshire.</p><p>Serco is a strategic supplier to central government, holding long-running contracts across multiple departments. Group revenue was \u00a34.9bn in FY2025 (Tier 3, Serco Annual Results 2025, confidence: 81). UK public sector revenue is not separately disclosed but is estimated at \u00a32.0\u20132.5bn based on the UK & Europe division's contribution to group revenue (estimated, confidence: 60).</p>",
+      "keyFacts": [
+        { "label": "Legal name", "value": "SERCO LIMITED", "confidence": 92, "source": "Tier 1, Companies House, 2026-04-11" },
+        { "label": "Companies House number", "value": "00242246", "confidence": 92, "source": "Tier 1, Companies House, 2026-04-11" },
+        { "label": "Incorporated", "value": "10 September 1929", "confidence": 92, "source": "Tier 1, Companies House, 2026-04-11" },
+        { "label": "Parent company", "value": "Serco Holdings Limited", "confidence": 92, "source": "Tier 1, Companies House, 2026-04-11" },
+        { "label": "Ownership", "value": "Listed (LSE: SRP)", "confidence": 92, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Headquarters", "value": "Hook, Hampshire, UK", "confidence": 85, "source": "Tier 4, Serco Group website" },
+        { "label": "Employee count", "value": "~55,000 (group)", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Group revenue", "value": "\u00a34.9bn FY2025", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "SIC codes", "value": "70100, 70229, 72190, 84110", "confidence": 92, "source": "Tier 1, Companies House, 2026-04-11" },
+        { "label": "Directors (registered)", "value": "Shaun Stacey, Fiona Walters", "confidence": 92, "source": "Tier 1, Companies House, 2026-04-11" }
+      ],
+      "gaps": [
+        "UK public sector revenue not separately disclosed \u2014 estimate based on divisional split",
+        "UK headcount not separately reported"
+      ]
+    },
+
+    "d2_marketPosition": {
+      "headline": "Top-tier UK public sector outsourcer competing primarily with Capita, Mitie, and Sodexo in BPO/FM, and Babcock and BAE in defence support services.",
+      "narrative": "<p>Serco occupies a dominant position in UK public sector outsourcing, consistently ranked among the top 5 suppliers by contract value. Its competitive set varies by sector: in BPO and citizen services, the primary competitors are Capita, Maximus, and Seetec; in facilities management, Mitie, Sodexo, and Compass Group; in defence support, Babcock, BAE Systems, Leidos, and KBR; in digital/IT services, Atos, Fujitsu, and Sopra Steria (Tier 5, industry analysis, confidence: 65).</p><p>Procurement data shows 127 awards across Serco entities with a total notified value exceeding \u00a320bn (noting framework maximum values, not realised spend). SERCO LIMITED alone holds 42 awards worth \u00a37.6bn (Tier 1, Find a Tender, 2026-04-11, confidence: 90). The breadth of buyer relationships \u2014 spanning DWP, MOD, MoJ, Home Office, NHS, TfL, BBC, and multiple local authorities \u2014 is a defining market strength. Few competitors match this cross-sector penetration.</p><p>Serco's self-positioning emphasises operational transformation and outcome delivery. The annual results narrative highlights book-to-bill of 114% and order book of \u00a314.5bn (Tier 3, Serco Annual Results 2025, confidence: 81), signalling continued growth ambition in the UK public sector market. The acquisition of Northrop Grumman's Mission & Training Solutions business signals expansion into space and high-technology defence services.</p>",
+      "keyFacts": [
+        { "label": "Total FTS awards", "value": "127 (across all Serco entities)", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "SERCO LIMITED awards", "value": "42 awards, \u00a37.6bn notified value", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "Primary BPO competitors", "value": "Capita, Maximus, Seetec", "confidence": 65, "source": "Tier 5, industry analysis" },
+        { "label": "Primary defence competitors", "value": "Babcock, BAE Systems, Leidos, KBR", "confidence": 65, "source": "Tier 5, industry analysis" },
+        { "label": "Primary FM competitors", "value": "Mitie, Sodexo, Compass Group", "confidence": 65, "source": "Tier 5, industry analysis" },
+        { "label": "Book-to-bill ratio", "value": "114% (FY2025)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" }
+      ],
+      "gaps": [
+        "Market share data by sector not publicly available",
+        "Win rate data not derivable from procurement database alone (bid volumes unknown)"
+      ]
+    },
+
+    "d3_sectorPenetration": {
+      "headline": "Deep penetration across central government (DWP, Home Office, Cabinet Office), defence (MOD), justice (MoJ), health (NHS), and transport (TfL) with no single sector dependency.",
+      "narrative": "<p>Serco's sector penetration is unusually broad for a BPO operator. Most competitors concentrate in 2\u20133 sectors; Serco maintains significant contract portfolios in at least six distinct UK public sector domains (Tier 1, Find a Tender, 2026-04-11, confidence: 90):</p><p><strong>Central Government / Citizen Services:</strong> DWP is the largest single relationship by award count (13 awards, \u00a33.3bn) covering Functional Assessment Services and the Restart Scheme. The Home Office relationship includes asylum accommodation services (\u00a370m notified). Cabinet Office awards total \u00a392m. Crown Commercial Service is a major framework route (33 awards, \u00a36.1bn notified on Space Technology Solutions).</p><p><strong>Defence:</strong> MOD contracts total 9 awards at \u00a31.1bn notified value, centred on Defence Marine Services. The Northrop Grumman MT&S acquisition (~$175m revenue) materially strengthens the space and training technology capability for MOD and allied defence customers.</p><p><strong>Justice:</strong> MoJ contracts include HMP Dovegate operation and Prison Operator Services (2 awards, \u00a3777m). Long-running prison operations are deeply embedded and create high switching costs.</p><p><strong>Health:</strong> NHS relationships span NHS London Procurement Partnership Total FM (\u00a35.8bn framework), NHS Derby & Derbyshire ICB (\u00a3225m), and UKHSA (\u00a3424m). Health sector penetration is primarily via FM and operational services rather than clinical delivery.</p><p><strong>Transport:</strong> TfL London Cycle Hire at \u00a3278m. Smaller local authority contracts including Nottingham City Council (\u00a333m).</p><p><strong>Education & Culture:</strong> DfE (\u00a352m), BBC (\u00a341m). Smaller but evidence of breadth.</p><p>Concentration risk is moderate: no single buyer represents more than ~15% of estimated UK revenue, and sector diversity provides resilience against spending cuts in any one department.</p>",
+      "keyFacts": [
+        { "label": "DWP awards", "value": "13 awards, \u00a33.3bn", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "MOD awards", "value": "9 awards, \u00a31.1bn", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "MoJ awards", "value": "2 awards, \u00a3777m", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "NHS (via LPP)", "value": "\u00a35.8bn (Total FM framework)", "confidence": 88, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "CCS awards", "value": "33 awards, \u00a36.1bn", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "UKHSA", "value": "\u00a3424m", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "TfL", "value": "\u00a3278m (London Cycle Hire)", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" }
+      ],
+      "gaps": [
+        "Sector-level revenue breakdown not disclosed by Serco",
+        "Local government penetration depth unclear beyond individual contract records"
+      ]
+    },
+
+    "d4_routeToMarket": {
+      "headline": "Heavy reliance on selective and limited procurement routes (\u00a316.4bn combined), with strong CCS framework presence and significant direct award history.",
+      "narrative": "<p>Serco's procurement method distribution reveals a mature supplier with established buyer relationships. Selective tendering accounts for \u00a310.5bn, limited tendering for \u00a35.9bn, and open competition for \u00a34.1bn. Direct awards are minimal at \u00a331k (Tier 1, Find a Tender, 2026-04-11, confidence: 90). This profile is characteristic of a large incumbent with strong pre-qualification credentials and framework positions \u2014 buyers are using restricted routes that favour established suppliers.</p><p>Crown Commercial Service is the dominant framework route, with 33 awards totalling \u00a36.1bn. The CCS Space Technology Solutions framework is a significant recent position. YPO Apprenticeships framework (\u00a310bn+) represents a different sector entirely \u2014 education/skills \u2014 demonstrating framework range. The NHS London Procurement Partnership Total FM framework (\u00a35.8bn, expiring 2027-07) is a major health sector route (Tier 1, Find a Tender, 2026-04-11, confidence: 88).</p><p>The dominance of selective and limited procurement suggests Serco benefits from existing relationships and buyer familiarity. Challengers face a route-to-market barrier: without framework positions or prior contract history, accessing these restricted competitions is difficult. However, Serco's framework visibility in digital/IT is weaker than in BPO and FM \u2014 competitors like Atos, Fujitsu, and Sopra Steria hold stronger positions on technology-focused frameworks.</p>",
+      "keyFacts": [
+        { "label": "Selective procurement value", "value": "\u00a310.5bn", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "Limited procurement value", "value": "\u00a35.9bn", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "Open procurement value", "value": "\u00a34.1bn", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "CCS awards", "value": "33 awards, \u00a36.1bn (Space Technology Solutions)", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "YPO framework", "value": "\u00a310bn+ (Apprenticeships)", "confidence": 88, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "NHS LPP framework", "value": "\u00a35.8bn (Total FM 2022, expires 2027-07)", "confidence": 88, "source": "Tier 1, Find a Tender, 2026-04-11" }
+      ],
+      "gaps": [
+        "Full live framework list not available \u2014 FTS records only show awards, not all lot positions",
+        "Framework lot-level detail (which lots Serco holds on multi-lot frameworks) not systematically captured",
+        "Digital and IT framework positions not well evidenced from available data"
+      ]
+    },
+
+    "d5_contractPortfolio": {
+      "headline": "Large active portfolio with \u00a35.8bn NHS FM framework expiring 2027 and CCS Space Technology Solutions lots expiring 2029 as the headline rebid opportunities.",
+      "narrative": "<p>Serco holds a substantial portfolio of live UK public sector contracts. The highest-value identified contracts approaching expiry within 36 months include (Tier 1, Find a Tender, 2026-04-11, confidence: 88):</p><p><strong>Expiring within 12 months:</strong> British Council contract (\u00a333k, expires 2026-05) and NHS Wales visual assets (\u00a360k, expires 2026-08). Both are small-value contracts with limited strategic significance.</p><p><strong>Expiring within 24 months:</strong> NHS London Procurement Partnership Total Facilities Management framework (\u00a35.8bn framework ceiling, expires July 2027). This is a major rebid event \u2014 the framework ceiling is high even though realised spend will be a fraction of the notified value. Serco's FM capability is deeply embedded through this vehicle.</p><p><strong>Expiring within 36 months:</strong> CCS Space Technology Solutions (various lots, expiring March 2029). At \u00a36.1bn notified across Serco's CCS awards, this framework family represents significant future route-to-market risk if positions are not retained.</p><p>The DWP contracts (Functional Assessment Services, Restart Scheme) and MOD Defence Marine Services are long-running relationships but specific end dates and extension options are not fully visible in the available data. Many of Serco's largest contracts are structured as 5\u201310 year terms with extension options, creating long incumbent tenures that are difficult to displace mid-contract.</p><p>The portfolio's attack surface is concentrated on the 2027 NHS FM rebid (where FM specialists Mitie and Sodexo are credible challengers) and the 2029 CCS Space Technology framework re-competition (where the Northrop Grumman acquisition strengthens Serco's position). The DWP citizen services contracts represent the largest revenue stream but have been repeatedly renewed, suggesting strong defensibility.</p>",
+      "keyFacts": [
+        { "label": "NHS LPP Total FM expiry", "value": "July 2027, \u00a35.8bn framework ceiling", "confidence": 88, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "CCS Space Tech expiry", "value": "March 2029, multiple lots", "confidence": 88, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "British Council expiry", "value": "May 2026, \u00a333k", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "NHS Wales expiry", "value": "August 2026, \u00a360k", "confidence": 90, "source": "Tier 1, Find a Tender, 2026-04-11" },
+        { "label": "Contract retention rate", "value": ">90%", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" }
+      ],
+      "gaps": [
+        "Specific end dates for DWP Functional Assessment Services and Restart Scheme contracts not identified",
+        "MOD Defence Marine Services contract term and extension options not visible in available data",
+        "MoJ prison operations contract renewal timelines not identified",
+        "Extension options on most contracts not captured in FTS data"
+      ]
+    },
+
+    "d6_commercialModel": {
+      "headline": "Mixed commercial model (cost-plus, fixed-price, outcome-based) with ~5.5% operating margin and strong free cash conversion from negative working capital in government contracts.",
+      "narrative": "<p>Serco operates a diversified commercial model across its UK public sector portfolio. The contract base includes cost-plus arrangements (typically in defence support where cost uncertainty is high), fixed-price contracts (citizen services, FM), and an increasing proportion of outcome-based contracts where payment is linked to service delivery metrics (Tier 4, Serco corporate materials, confidence: 62).</p><p>Operating margin of approximately 5.5% (underlying operating profit ~\u00a3272m on \u00a34.9bn revenue, FY2025) is thin relative to the complexity of services delivered but consistent with the large-scale outsourcing sector (Tier 3, Serco Annual Results 2025, confidence: 81). Guided improvement to \u00a3300m for 2026 suggests margin expansion through contract mix improvement and the Northrop Grumman acquisition contribution.</p><p>A notable commercial feature is management margin on multi-vendor pass-through solutions, where Serco acts as the managing contractor and takes a margin on subcontractor spend without bearing full delivery risk. This model is common in their FM frameworks. Free cash conversion benefits from negative working capital typical in government contracts \u2014 Serco receives payment before incurring the majority of delivery costs on many service contracts (Tier 3, Serco Annual Results 2025, confidence: 76).</p><p>Contracts are typically 3\u201310 years with indexation mechanisms, providing revenue visibility. The \u00a314.5bn order book and 114% book-to-bill ratio indicate strong forward coverage. The \u00a375m share buyback programme signals management confidence in cash generation sustainability (Tier 3, Serco Annual Results 2025, confidence: 81).</p>",
+      "keyFacts": [
+        { "label": "Operating margin", "value": "~5.5% (FY2025)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Operating profit", "value": "~\u00a3272m underlying (FY2025)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "2026 profit guidance", "value": "\u00a3300m", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Typical contract length", "value": "3\u201310 years with indexation", "confidence": 65, "source": "Tier 4, Serco corporate materials" },
+        { "label": "Order book", "value": "\u00a314.5bn (+9% YoY)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Book-to-bill", "value": "114% (FY2025)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Share buyback", "value": "\u00a375m announced", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" }
+      ],
+      "gaps": [
+        "Contract-level pricing structures not publicly disclosed",
+        "Proportion of revenue by commercial model type (cost-plus vs fixed-price vs outcome) not disclosed",
+        "Subcontractor margin structures not visible"
+      ]
+    },
+
+    "d7_deliveryCapability": {
+      "headline": "Proven large-scale operational delivery across BPO, FM, and defence support, but with documented underperformance on asylum accommodation and historical tagging fraud.",
+      "narrative": "<p>Serco's core delivery capability is running large-scale operational services on behalf of government. This spans citizen-facing services (DWP assessment and employability programmes), physical infrastructure (MOD marine services, prison operations, TfL cycle hire), facilities management (NHS Total FM), and specialist services (UKHSA, space technology) (Tier 1, Find a Tender, 2026-04-11, confidence: 90).</p><p>The >90% contract retention rate reported in annual results is the strongest evidence of delivery capability \u2014 government buyers are renewing contracts with Serco despite alternatives (Tier 3, Serco Annual Results 2025, confidence: 76). Long-running relationships (MOD marine services, DWP citizen services, MoJ prisons) spanning decades suggest embedded delivery credibility with these buyers.</p><p>However, documented delivery issues provide a counterweight. The NAO reported in May 2025 that \u00a34m had been deducted from Serco's revenue for underperformance on Home Office asylum accommodation services since 2019, representing less than 1% of the contract's revenue (Tier 5, NAO Report, May 2025, confidence: 73). While the financial impact is immaterial, the reputational signal is not: it provides parliamentary and media ammunition that competitors can indirectly leverage through social value and quality differentiation.</p><p>The historical SFO settlement of \u00a323m for electronic tagging overcharging remains part of Serco's delivery narrative, though the company has undertaken significant governance reform since (Tier 5, SFO records, confidence: 73). Parliamentary EDMs citing delivery failures create a pattern of public scrutiny that is atypical for the outsourcing sector (Tier 5, Parliamentary records, confidence: 68). COVID-era criticism of \u00a390m and \u00a357m contracts awarded without competition (openDemocracy reporting) relates to procurement process rather than delivery but contributes to the scrutiny profile (Tier 5, openDemocracy, confidence: 63).</p><p>The Northrop Grumman MT&S acquisition adds satellite operations and training simulation software delivery capability, filling a technology gap in the defence portfolio (Tier 3, Serco Annual Results 2025, confidence: 76).</p>",
+      "keyFacts": [
+        { "label": "Contract retention rate", "value": ">90%", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "NAO asylum finding", "value": "\u00a34m deducted for underperformance since 2019", "confidence": 73, "source": "Tier 5, NAO Report, May 2025" },
+        { "label": "SFO settlement", "value": "\u00a323m (electronic tagging)", "confidence": 73, "source": "Tier 5, SFO records, historical" },
+        { "label": "COVID non-competitive awards", "value": "\u00a390m + \u00a357m cited", "confidence": 63, "source": "Tier 5, openDemocracy reporting" },
+        { "label": "NT&S acquisition", "value": "~$175m revenue, ~$20m profit", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" }
+      ],
+      "gaps": [
+        "Service-level performance data on individual contracts not publicly available",
+        "Subcontracting structure and SME supply chain depth not visible",
+        "Accreditations and certifications inventory not compiled"
+      ]
+    },
+
+    "d8_leadershipPartners": {
+      "headline": "Significant leadership transition: four C-suite changes in 12 months (CEO, Chairman, UK CEO, CFO). New UK & Europe CEO brings G4S competitor experience.",
+      "narrative": "<p>Serco has undergone substantial leadership renewal over the past 12 months, creating both transition risk and strategic opportunity (Tier 3, Serco Annual Results 2025, confidence: 80):</p><p><strong>Anthony Kirby</strong> became Group CEO in March 2025, having previously served as CEO UK & Europe. His appointment from within signals continuity of strategy. <strong>Keith Williams</strong> became Chairman in January 2026. <strong>Mark Reid</strong> took over as Group CFO from 6 March 2026. <strong>Fiona Walters</strong> became UK & Europe CEO from 23 March 2026, joining from G4S where she was Regional CEO UK & Ireland (Tier 3, Serco corporate announcements, confidence: 80). The appointment of a senior G4S leader is strategically significant \u2014 she brings competitor knowledge and relationships that may influence Serco's UK strategy.</p><p><strong>Michael LaRouche</strong> leads the North America division ($2bn revenue, 10,000 employees), which is the second-largest operating segment (Tier 3, Serco Annual Results 2025, confidence: 76).</p><p>Companies House records show Shaun Stacey and Fiona Walters as current directors of SERCO LIMITED (Tier 1, Companies House, 2026-04-11, confidence: 92).</p><p>Partnership and teaming intelligence is limited from available sources. The Northrop Grumman relationship evolved from partnership to acquisition (MT&S, ~$175m revenue). YPO apprenticeships framework suggests SME teaming for delivery. Defence Marine Services likely involves subcontracting arrangements, but named partners are not visible in FTS data. Serco's operating model generally favours direct prime contracting over joint ventures or consortium arrangements.</p>",
+      "keyFacts": [
+        { "label": "Group CEO", "value": "Anthony Kirby (from March 2025)", "confidence": 80, "source": "Tier 3, Serco corporate announcements, 2025" },
+        { "label": "Chairman", "value": "Keith Williams (from January 2026)", "confidence": 80, "source": "Tier 3, Serco corporate announcements, 2026" },
+        { "label": "UK & Europe CEO", "value": "Fiona Walters (from 23 March 2026, ex-G4S)", "confidence": 80, "source": "Tier 3, Serco corporate announcements, March 2026" },
+        { "label": "Group CFO", "value": "Mark Reid (from 6 March 2026)", "confidence": 80, "source": "Tier 3, Serco corporate announcements, March 2026" },
+        { "label": "North America CEO", "value": "Michael LaRouche ($2bn, 10,000 employees)", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Key acquisition", "value": "Northrop Grumman MT&S (~$175m revenue)", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" }
+      ],
+      "gaps": [
+        "Named subcontracting partners on UK contracts not visible",
+        "Joint venture history not identified from available data",
+        "SME ecosystem and framework teaming arrangements not mapped",
+        "Political access and lobbying activity not researched"
+      ]
+    },
+
+    "d9_financialHealth": {
+      "headline": "Financially healthy: \u00a34.9bn revenue, \u00a3272m operating profit, \u00a314.5bn order book, 3% organic growth guided for 2026, and \u00a375m buyback programme.",
+      "narrative": "<p>Serco's FY2025 financial results demonstrate a stable, growing business (Tier 3, Serco Annual Results 2025, confidence: 81):</p><p><strong>Revenue:</strong> \u00a34.9bn, up 3% at constant currency. Organic growth guidance of ~3% for 2026, with revenue expected at ~\u00a35.0bn. The Northrop Grumman MT&S acquisition contributes additional inorganic growth (~$175m revenue, ~$20m operating profit).</p><p><strong>Profitability:</strong> Underlying operating profit approximately \u00a3272m (FY2025), with guidance of \u00a3300m for 2026 representing both organic improvement and the MT&S contribution. Operating margin is approximately 5.5%, consistent with the large-scale outsourcing sector.</p><p><strong>Order book and pipeline:</strong> The \u00a314.5bn order book (up 9% from \u00a313.3bn) provides approximately 3 years of revenue visibility at current run-rates. The \u00a312.1bn pipeline is described as the highest in a decade. Book-to-bill of 114% indicates the order book is growing, not just being maintained. Order intake was \u00a35.5bn in FY2025.</p><p><strong>Cash and capital allocation:</strong> The \u00a375m share buyback signals confidence in cash generation. Free cash conversion benefits from negative working capital in government contracts. The MT&S acquisition was funded, suggesting manageable leverage. Contract retention >90% provides base revenue predictability.</p><p><strong>Strategic direction:</strong> Continued investment in UK public sector. Space and defence technology expansion via MT&S. Increasing pivot toward outcome-based contracting. The new leadership team is expected to continue the growth trajectory established under Mark Irwin.</p>",
+      "keyFacts": [
+        { "label": "Revenue FY2025", "value": "\u00a34.9bn (+3% cc)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Operating profit FY2025", "value": "~\u00a3272m (underlying)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "2026 revenue guidance", "value": "~\u00a35.0bn", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "2026 profit guidance", "value": "\u00a3300m", "confidence": 76, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Order book", "value": "\u00a314.5bn (+9% YoY)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Pipeline", "value": "\u00a312.1bn (decade high)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Order intake FY2025", "value": "\u00a35.5bn (B2B 114%)", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" },
+        { "label": "Share buyback", "value": "\u00a375m announced", "confidence": 81, "source": "Tier 3, Serco Annual Results 2025" }
+      ],
+      "gaps": [
+        "Net debt / leverage ratio not captured from available evidence",
+        "Cash flow statement details not analysed",
+        "Pension obligations and off-balance-sheet commitments not reviewed"
+      ]
+    },
+
+    "d10_socialValueESG": {
+      "headline": "Structured ESG framework (People, Place, Planet) with 80 apprenticeship levy gifts, Purpose Coalition partnership, and net zero supply chain standard, but limited independently verified delivery evidence.",
+      "narrative": "<p>Serco has established a structured ESG framework organised around three pillars: People, Place, and Planet. Social value activities include a partnership with the Purpose Coalition and the gifting of 80 apprenticeship levy places to the care sector (Tier 4, Serco corporate materials, confidence: 62). A Net Zero Standard has been launched covering their top 250 suppliers (H1 2025), which is more ambitious than many competitors' supply chain sustainability programmes (Tier 4, Serco ESG reporting, confidence: 62).</p><p>Climate targets are described as on track for a 22% reduction in Scope 1 and 2 emissions by 2025, aligned with a 1.5\u00b0C trajectory (Tier 4, Serco ESG reporting, confidence: 62). A Modern Slavery Oversight Group has been established with enhanced Tier 1 supplier due diligence, and the company publishes an annual modern slavery statement as required by the Modern Slavery Act (Tier 4, Serco corporate disclosures, confidence: 62).</p><p>For bid evaluation purposes under PPN 06/20, Serco has the framework elements evaluators look for: named programmes, quantified commitments, and governance structures. However, the evidence available is almost entirely self-reported (Tier 4). Independent verification of social value delivery outcomes \u2014 audited impact reports, third-party assessments, matched case studies \u2014 has not been identified in this research. This is a potential vulnerability in competitive evaluations where challengers can present independently verified social value evidence.</p><p>The apprenticeship levy gifting programme is a distinctive differentiator that most competitors have not matched. It directly addresses skills shortage themes in health and social care sectors. The supply chain net zero standard, if enforced, positions Serco ahead of the regulatory trajectory for Scope 3 reporting requirements.</p>",
+      "keyFacts": [
+        { "label": "ESG framework", "value": "People, Place, Planet", "confidence": 62, "source": "Tier 4, Serco ESG reporting" },
+        { "label": "Apprenticeships gifted", "value": "80 (care sector, via levy)", "confidence": 62, "source": "Tier 4, Serco corporate materials" },
+        { "label": "Purpose Coalition", "value": "Active partnership", "confidence": 62, "source": "Tier 4, Serco corporate materials" },
+        { "label": "Carbon reduction target", "value": "22% Scope 1 & 2 by 2025 (1.5\u00b0C)", "confidence": 62, "source": "Tier 4, Serco ESG reporting" },
+        { "label": "Supply chain standard", "value": "Net Zero Standard for top 250 suppliers (H1 2025)", "confidence": 62, "source": "Tier 4, Serco ESG reporting" },
+        { "label": "Modern slavery", "value": "Oversight Group established, Tier 1 due diligence enhanced", "confidence": 62, "source": "Tier 4, Serco corporate disclosures" }
+      ],
+      "gaps": [
+        "Independent verification of social value delivery outcomes not found",
+        "Diversity and inclusion published data not identified",
+        "Community investment monetary values not quantified",
+        "PPN 06/20 compliance evidence in specific bid responses not available"
+      ]
+    }
+  },
+
+  "contracts": [
+    {
+      "title": "Total Facilities Management 2022",
+      "buyer": "NHS London Procurement Partnership",
+      "sector": "Health",
+      "value": 5800000000,
+      "startDate": "2022-07-01",
+      "endDate": "2027-07-01",
+      "extensionOptions": "Unknown",
+      "status": "expiring_24m",
+      "performanceSignals": [],
+      "defensibility": "moderate",
+      "confidence": 88
+    },
+    {
+      "title": "Functional Assessment Services",
+      "buyer": "Department for Work and Pensions",
+      "sector": "Central Government",
+      "value": 3300000000,
+      "startDate": "2020-01-01",
+      "endDate": "2028-12-31",
+      "extensionOptions": "Unknown",
+      "status": "live",
+      "performanceSignals": ["Long-running DWP relationship", "Repeat awards (13 total)"],
+      "defensibility": "strong",
+      "confidence": 82
+    },
+    {
+      "title": "Space Technology Solutions",
+      "buyer": "Crown Commercial Service",
+      "sector": "Defence / Space",
+      "value": 6100000000,
+      "startDate": "2025-03-01",
+      "endDate": "2029-03-01",
+      "extensionOptions": "Unknown",
+      "status": "expiring_36m",
+      "performanceSignals": ["MT&S acquisition strengthens position"],
+      "defensibility": "moderate",
+      "confidence": 85
+    },
+    {
+      "title": "Defence Marine Services",
+      "buyer": "Ministry of Defence",
+      "sector": "Defence",
+      "value": 1100000000,
+      "startDate": "2018-01-01",
+      "endDate": "2028-01-01",
+      "extensionOptions": "Unknown",
+      "status": "live",
+      "performanceSignals": ["Long-running relationship", "9 MOD awards total"],
+      "defensibility": "strong",
+      "confidence": 82
+    },
+    {
+      "title": "Prison Operator Services / HMP Dovegate",
+      "buyer": "Ministry of Justice",
+      "sector": "Justice",
+      "value": 777000000,
+      "startDate": "2020-01-01",
+      "endDate": "2030-01-01",
+      "extensionOptions": "Unknown",
+      "status": "live",
+      "performanceSignals": ["Deep operational embedding", "High switching costs (TUPE, physical assets)"],
+      "defensibility": "strong",
+      "confidence": 80
+    },
+    {
+      "title": "UKHSA contract",
+      "buyer": "UK Health Security Agency",
+      "sector": "Health",
+      "value": 424000000,
+      "startDate": "2022-01-01",
+      "endDate": "2027-01-01",
+      "extensionOptions": "Unknown",
+      "status": "expiring_12m",
+      "performanceSignals": [],
+      "defensibility": "moderate",
+      "confidence": 80
+    },
+    {
+      "title": "London Cycle Hire",
+      "buyer": "Transport for London",
+      "sector": "Transport",
+      "value": 278000000,
+      "startDate": "2022-01-01",
+      "endDate": "2029-01-01",
+      "extensionOptions": "Unknown",
+      "status": "live",
+      "performanceSignals": [],
+      "defensibility": "moderate",
+      "confidence": 85
+    },
+    {
+      "title": "NHS Derby & Derbyshire ICB",
+      "buyer": "NHS Derby and Derbyshire ICB",
+      "sector": "Health",
+      "value": 225000000,
+      "startDate": "2023-01-01",
+      "endDate": "2028-01-01",
+      "extensionOptions": "Unknown",
+      "status": "live",
+      "performanceSignals": [],
+      "defensibility": "moderate",
+      "confidence": 82
+    },
+    {
+      "title": "Cabinet Office services",
+      "buyer": "Cabinet Office",
+      "sector": "Central Government",
+      "value": 92000000,
+      "startDate": "2023-01-01",
+      "endDate": "2028-01-01",
+      "extensionOptions": "Unknown",
+      "status": "live",
+      "performanceSignals": [],
+      "defensibility": "moderate",
+      "confidence": 80
+    },
+    {
+      "title": "Home Office services",
+      "buyer": "Home Office",
+      "sector": "Central Government",
+      "value": 70000000,
+      "startDate": "2019-01-01",
+      "endDate": "2027-01-01",
+      "extensionOptions": "Unknown",
+      "status": "expiring_12m",
+      "performanceSignals": ["NAO May 2025: \u00a34m deducted for underperformance on asylum accommodation"],
+      "defensibility": "weak",
+      "confidence": 78
+    }
+  ],
+
+  "frameworks": [
+    {
+      "name": "Space Technology Solutions",
+      "provider": "CCS",
+      "lots": ["Multiple lots"],
+      "status": "live",
+      "startDate": "2025-03-01",
+      "endDate": "2029-03-01"
+    },
+    {
+      "name": "Apprenticeships",
+      "provider": "YPO",
+      "lots": ["Apprenticeship delivery"],
+      "status": "live",
+      "startDate": "2022-01-01",
+      "endDate": "2028-01-01"
+    },
+    {
+      "name": "Total Facilities Management 2022",
+      "provider": "NHS London Procurement Partnership",
+      "lots": ["FM services"],
+      "status": "live",
+      "startDate": "2022-07-01",
+      "endDate": "2027-07-01"
+    }
+  ],
+
+  "leadership": [
+    {
+      "name": "Anthony Kirby",
+      "role": "Group CEO",
+      "function": "ceo",
+      "startDate": "March 2025",
+      "background": "Previously CEO UK & Europe at Serco. Internal appointment signalling strategic continuity.",
+      "publicSectorExperience": true
+    },
+    {
+      "name": "Keith Williams",
+      "role": "Chairman",
+      "function": "other",
+      "startDate": "January 2026",
+      "background": "Appointed as new Chairman of Serco Group plc.",
+      "publicSectorExperience": false
+    },
+    {
+      "name": "Fiona Walters",
+      "role": "CEO UK & Europe",
+      "function": "public_sector_lead",
+      "startDate": "23 March 2026",
+      "background": "Previously Regional CEO UK & Ireland at G4S. Brings competitor knowledge from a direct rival in outsourcing and security services.",
+      "publicSectorExperience": true
+    },
+    {
+      "name": "Mark Reid",
+      "role": "Group CFO",
+      "function": "cfo",
+      "startDate": "6 March 2026",
+      "background": "New appointment as Group Chief Financial Officer.",
+      "publicSectorExperience": false
+    },
+    {
+      "name": "Michael LaRouche",
+      "role": "CEO North America",
+      "function": "sector_md",
+      "startDate": "Unknown",
+      "background": "Leads the $2bn North America division (10,000 employees). Less directly relevant to UK public sector but indicates scale of the North American operation.",
+      "publicSectorExperience": true
+    }
+  ],
+
+  "partnerships": [
+    {
+      "partnerName": "Northrop Grumman (MT&S division, now acquired)",
+      "partnerType": "isv",
+      "sectors": ["Defence", "Space"],
+      "strengthScore": 85,
+      "notes": "Acquired MT&S division (~$175m revenue). Relationship evolved from partnership to ownership. Strengthens satellite operations and training simulation capability."
+    }
+  ],
+
+  "vulnerabilityMap": {
+    "summary": "Serco's primary vulnerabilities are concentrated in delivery scrutiny (documented underperformance, historical fraud settlement), leadership transition risk (four C-suite changes in 12 months), and specific contract exposures where challenger FM or digital specialists can compete on quality. The company is financially robust and operationally broad, so vulnerability is localised rather than systemic.",
+    "exposures": [
+      {
+        "area": "Home Office asylum accommodation \u2014 documented underperformance",
+        "severity": "high",
+        "evidence": "NAO May 2025 reported \u00a34m revenue deducted since 2019 for underperformance. Parliamentary EDMs cite pattern of delivery failures. Although financially immaterial (<1% of contract revenue), this is the single most cited public criticism and provides competitor ammunition in quality and social value evaluation sections.",
+        "confidence": 78,
+        "exploitableBy": "Any challenger emphasising delivery quality, governance rigour, and independent assurance in a sector where Serco competes"
+      },
+      {
+        "area": "NHS Total FM framework rebid (July 2027)",
+        "severity": "high",
+        "evidence": "\u00a35.8bn framework ceiling expiring in 15 months. FM is contested by specialist providers (Mitie, Sodexo, Compass) who may offer deeper FM-specific innovation, technology, and social value. Serco's generalist BPO positioning is a potential disadvantage against FM pure-plays.",
+        "confidence": 82,
+        "exploitableBy": "FM specialists (Mitie, Sodexo) positioning sector-specific innovation and technology investment against Serco's generalist model"
+      },
+      {
+        "area": "Leadership transition \u2014 four C-suite changes in 12 months",
+        "severity": "medium",
+        "evidence": "New Group CEO (March 2025), Chairman (January 2026), CFO (March 2026), and UK & Europe CEO (March 2026). While individually each appointment appears orderly, the cumulative pace of change creates a transition window where strategic direction, buyer relationships, and internal governance may be unsettled.",
+        "confidence": 75,
+        "exploitableBy": "Challengers who can demonstrate relationship continuity and leadership stability on specific pursuits"
+      },
+      {
+        "area": "Historical SFO tagging settlement \u2014 legacy reputational baggage",
+        "severity": "medium",
+        "evidence": "\u00a323m SFO fine for electronic tagging overcharging. While historic and governance reforms have since been implemented, this remains in the public record and is periodically referenced in parliamentary debate and media coverage. It limits Serco's ability to lead on integrity and transparency themes in bid responses.",
+        "confidence": 73,
+        "exploitableBy": "Challengers positioning on governance, transparency, and ethical operations in evaluation criteria"
+      },
+      {
+        "area": "Digital/IT capability gap relative to systems integrators",
+        "severity": "medium",
+        "evidence": "Serco's archetype is BPO/BPS, not systems integration or digital services. Framework presence on technology-focused vehicles (digital outcomes, technology services) is weaker than competitors like Atos, Fujitsu, and Sopra Steria. As government procurement increasingly favours digital-first and technology-enabled services, Serco may struggle to compete on technical depth.",
+        "confidence": 65,
+        "exploitableBy": "Digital-native or SI competitors on opportunities with significant technology components"
+      },
+      {
+        "area": "COVID-era procurement scrutiny",
+        "severity": "low",
+        "evidence": "openDemocracy reporting cited \u00a390m and \u00a357m contracts awarded without competition. While this relates to buyer procurement decisions rather than Serco's delivery, it contributes to a general narrative of insufficient public scrutiny of large outsourcing relationships.",
+        "confidence": 60,
+        "exploitableBy": "Limited exploitation value as it relates to procurement process not supplier performance"
+      }
+    ]
+  },
+
+  "signalWatchList": [
+    {
+      "signal": "Fiona Walters (ex-G4S) appointed UK & Europe CEO",
+      "source": "Serco corporate announcement",
+      "sourceTier": 3,
+      "observedDate": "2026-03-23",
+      "potentialMeaning": "May bring G4S operating practices, client relationships, and competitive insights to Serco. Could signal pivot toward security and manned guarding services where G4S is strong. May also indicate Serco's intention to compete more aggressively in immigration and custody services.",
+      "corroborationNeeded": "Monitor for any changes in Serco's UK service line strategy, new market entries, or client relationship changes in sectors where G4S was strong",
+      "reviewBy": "2026-07-11"
+    },
+    {
+      "signal": "Pipeline at \u00a312.1bn \u2014 described as highest in a decade",
+      "source": "Serco Annual Results 2025",
+      "sourceTier": 3,
+      "observedDate": "2026-03-01",
+      "potentialMeaning": "Serco may be expanding into new sectors or geographies, or pursuing larger individual opportunities. High pipeline could translate to increased competitive intensity on opportunities where the bid team competes against them.",
+      "corroborationNeeded": "Monitor FTS for new Serco award notices in sectors where they have not previously been active",
+      "reviewBy": "2026-07-01"
+    },
+    {
+      "signal": "Northrop Grumman MT&S integration in progress",
+      "source": "Serco Annual Results 2025",
+      "sourceTier": 3,
+      "observedDate": "2026-03-01",
+      "potentialMeaning": "Acquisition integration could either strengthen Serco's defence/space capability significantly or create management distraction during the integration period. Defence and space bids in 2026 may face a stronger Serco with combined capabilities.",
+      "corroborationNeeded": "Monitor for integration milestones, combined bid activity on MOD/space opportunities, any integration difficulties reported",
+      "reviewBy": "2026-06-30"
+    },
+    {
+      "signal": "Share buyback \u00a375m announced",
+      "source": "Serco Annual Results 2025",
+      "sourceTier": 3,
+      "observedDate": "2026-03-01",
+      "potentialMeaning": "Management confidence in cash generation, but also indicates capital not being deployed into organic growth or further acquisitions. Could signal belief that current market opportunities do not warrant additional investment.",
+      "corroborationNeeded": "Monitor future capital allocation announcements, further M&A activity",
+      "reviewBy": "2026-09-01"
+    }
+  ],
+
+  "evidenceQuality": {
+    "totalCitations": 58,
+    "tierDistribution": {
+      "tier1": 22,
+      "tier2": 0,
+      "tier3": 21,
+      "tier4": 9,
+      "tier5": 6,
+      "tier6": 0
+    },
+    "confidenceBandDistribution": {
+      "highlyReliable": 18,
+      "reliable": 24,
+      "directional": 12,
+      "weakSignal": 4,
+      "belowThreshold": 0
+    },
+    "averageConfidence": 77,
+    "contradictions": [
+      "Contract retention >90% (annual results) vs. documented underperformance on specific contracts (NAO, parliamentary) \u2014 reconciled as localised issues not affecting systemic renewal rates, but the gap between corporate narrative and individual contract evidence is notable"
+    ],
+    "knownGaps": [
+      "UK public sector revenue not separately disclosed \u2014 estimate only",
+      "Net debt and leverage position not captured",
+      "Full live framework inventory not available (FTS shows awards not lot positions)",
+      "Individual contract SLA performance data not publicly available",
+      "Subcontracting and SME ecosystem not mapped",
+      "Win rate data not derivable from procurement database (bid volumes unknown)",
+      "Digital/IT framework positions not well evidenced",
+      "Independent social value audit evidence not found",
+      "DWP and MOD contract end dates and extension options not confirmed"
+    ]
+  },
+
+  "executiveSummary": {
+    "headline": "Serco is a deeply entrenched UK public sector incumbent with broad sector coverage and strong buyer relationships, but carries documented delivery scrutiny, legacy reputational baggage, and is undergoing significant leadership transition \u2014 creating localised vulnerabilities a well-positioned challenger can exploit.",
+    "overview": "<p>Serco Group plc is a FTSE 250 BPO/outsourcing group with \u00a34.9bn group revenue, ~55,000 employees, and a dominant position across UK public sector outsourcing. The company holds 127 awards in the Find a Tender database spanning DWP, MOD, MoJ, NHS, Home Office, TfL, and others, with no single buyer dependency. An order book of \u00a314.5bn and pipeline of \u00a312.1bn (decade high) indicate sustained growth momentum.</p><p>The competitive threat is real: Serco's cross-sector breadth, established buyer relationships, and framework presence create high barriers to entry. The >90% contract retention rate means challengers face an uphill battle on rebids. However, documented delivery issues (NAO asylum accommodation findings, historical SFO settlement), a significant leadership transition (four C-suite changes in 12 months), and weaker digital/IT positioning relative to systems integrators create specific windows of opportunity.</p><p>The highest-value near-term opportunity is the NHS Total FM framework rebid (July 2027, \u00a35.8bn ceiling), where FM specialists can compete on sector depth against Serco's generalist model. The Home Office asylum portfolio represents the most scrutinised contract and the weakest defensibility position.</p>",
+    "scoreRationales": {
+      "sectorStrength": "Strong incumbent across multiple sectors with 127 awards, broad buyer coverage, and \u00a314.5bn order book \u2014 score reflects evidenced breadth and depth of UK public sector penetration.",
+      "competitorThreat": "High threat driven by sector strength and deep buyer relationships, tempered by brand trust issues from documented delivery scrutiny and limited digital/IT positioning.",
+      "vulnerability": "Moderate vulnerability concentrated in delivery scrutiny (NAO, SFO legacy), leadership transition, and specific contract exposures \u2014 not systemic but exploitable by well-positioned challengers on targeted pursuits."
+    }
+  },
+
+  "linkedAssets": {
+    "clientProfiles": [
+      "reference/clients/department-for-work-and-pensions.json",
+      "reference/clients/ministry-of-defence.json",
+      "reference/clients/ministry-of-justice.json",
+      "reference/clients/home-office.json",
+      "reference/clients/nhs-london-procurement-partnership.json"
+    ],
+    "sectorBriefs": [
+      "reference/sectors/defence.json",
+      "reference/sectors/health.json",
+      "reference/sectors/justice.json",
+      "reference/sectors/central-government.json",
+      "reference/sectors/transport.json"
+    ],
+    "pipelineScans": []
+  }
+}
