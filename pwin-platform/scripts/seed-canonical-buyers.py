@@ -43,6 +43,11 @@ from datetime import datetime, timezone
 API_BASE = "https://www.gov.uk/api/organisations"
 USER_AGENT = "PWIN-CanonicalGlossary/1.0 (UK public sector procurement intelligence)"
 DEFAULT_OUT = os.path.join(os.path.expanduser("~"), ".pwin", "platform", "buyer-canonical-glossary.json")
+HAND_CURATED = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "knowledge",
+    "central-buying-agencies.json",
+)
 
 
 def fetch_page(page: int) -> dict:
@@ -159,22 +164,88 @@ def transform(orgs: list, include_closed: bool) -> dict:
             "gov_uk_id": o.get("analytics_identifier"),
         })
 
+    # Tag GOV.UK entries with their source for provenance
+    for e in entities:
+        e["source"] = "gov_uk_api"
+
     glossary = {
-        "version": "1.0",
+        "version": "1.1",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": "GOV.UK organisations API",
-        "source_url": API_BASE,
-        "scope": "UK central government, ministerial and non-ministerial departments, executive agencies, ALBs, public corporations, devolved administrations",
+        "sources": [
+            {"name": "GOV.UK organisations API", "url": API_BASE},
+            {"name": "Hand-curated central buying agencies", "file": "pwin-platform/knowledge/central-buying-agencies.json"},
+        ],
+        "scope": "UK central government departments and ALBs (GOV.UK API) plus central buying agencies and procurement consortia (hand curated)",
         "not_covered_yet": [
             "NHS organisations (trusts, ICBs)",
             "Local authorities (councils)",
             "Police forces",
+            "Universities (excluding HE buying consortia)",
+            "Schools and academy trusts",
         ],
-        "entity_count": len(entities),
         "skipped_closed": skipped_closed,
-        "entities": sorted(entities, key=lambda e: (e["type"], e["canonical_name"])),
+        "entities": entities,
     }
     return glossary
+
+
+def merge_hand_curated(glossary: dict, hand_curated_path: str) -> tuple[int, int]:
+    """Merge hand-curated entries into the glossary in-place.
+
+    Returns (added_count, alias_supplement_count).
+
+    Special handling for entities of type 'Alias supplement': these append
+    their aliases to an existing canonical entry (matched by canonical_id)
+    rather than creating a duplicate. This is how we avoid creating two
+    'Crown Commercial Service' entries when the GOV.UK API already has one.
+    """
+    if not os.path.exists(hand_curated_path):
+        print(f"  WARNING: hand-curated file not found at {hand_curated_path}")
+        return 0, 0
+
+    with open(hand_curated_path) as f:
+        hand = json.load(f)
+
+    by_id = {e["canonical_id"]: e for e in glossary["entities"]}
+
+    added = 0
+    merged = 0
+    for entry in hand.get("entities", []):
+        cid = entry["canonical_id"]
+
+        # Merge model: canonical_id is the merge key.
+        # If the canonical_id already exists, append the hand-curated
+        # aliases to the existing entry rather than creating a duplicate.
+        if cid in by_id:
+            existing = by_id[cid]
+            seen = set(a.lower() for a in existing["aliases"])
+            new_aliases = [a for a in entry.get("aliases", []) if a.lower() not in seen]
+            existing["aliases"].extend(new_aliases)
+            if new_aliases:
+                print(f"    +{len(new_aliases)} aliases merged into {cid}")
+            merged += 1
+            continue
+
+        # An alias-only entry whose target doesn't exist in this fetch.
+        # Skip silently rather than creating a meaningless new entity.
+        if entry.get("type") in ("Alias merge", "Alias supplement"):
+            print(f"    SKIP alias-merge with no target: {cid}")
+            continue
+
+        # New canonical entity — fill defaults and add
+        entry.setdefault("status", "active")
+        entry.setdefault("closed_at", None)
+        entry.setdefault("superseded_by", [])
+        entry.setdefault("gov_uk_url", None)
+        entry.setdefault("gov_uk_id", None)
+        glossary["entities"].append(entry)
+        by_id[cid] = entry
+        added += 1
+        print(f"    +new entity: {cid}")
+
+    glossary["entity_count"] = len(glossary["entities"])
+    glossary["entities"] = sorted(glossary["entities"], key=lambda e: (e["type"], e["canonical_name"]))
+    return added, merged
 
 
 def write_output(glossary: dict, output_path: str) -> None:
@@ -216,10 +287,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default=DEFAULT_OUT, help=f"Output JSON path (default: {DEFAULT_OUT})")
     parser.add_argument("--include-closed", action="store_true", help="Include closed organisations in the output")
+    parser.add_argument("--skip-fetch", action="store_true", help="Skip GOV.UK fetch and re-merge from existing output (for fast iteration on hand-curated data)")
     args = parser.parse_args()
 
-    orgs = fetch_all()
-    glossary = transform(orgs, include_closed=args.include_closed)
+    if args.skip_fetch and os.path.exists(args.output):
+        print(f"Loading existing glossary from {args.output} (skipping GOV.UK fetch)")
+        with open(args.output) as f:
+            glossary = json.load(f)
+        # Strip any prior hand-curated entries before re-merging
+        glossary["entities"] = [e for e in glossary["entities"] if e.get("source") != "hand_curated"]
+    else:
+        orgs = fetch_all()
+        glossary = transform(orgs, include_closed=args.include_closed)
+
+    print(f"\nMerging hand-curated central buying agencies from {HAND_CURATED}...")
+    added, alias_supps = merge_hand_curated(glossary, HAND_CURATED)
+    print(f"  +{added} new entities, {alias_supps} alias-supplement merges")
+
     write_output(glossary, args.output)
     print_stats(glossary)
 

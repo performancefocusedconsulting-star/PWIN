@@ -1,0 +1,508 @@
+{
+  "_comment": "Hand-curated canonical glossary entries for UK public sector central buying agencies, procurement consortia, and aggregators. These entities are not government departments and therefore do not appear in the GOV.UK organisations API. They are merged into ~/.pwin/platform/buyer-canonical-glossary.json by pwin-platform/scripts/seed-canonical-buyers.py. Aliases were captured from real FTS publisher name variants observed in pwin-competitive-intel/db/bid_intel.db on 2026-04-11 — see DISCOVERY-REPORT.md addendum 1 for the variant catalogue and award counts.",
+  "version": "1.0",
+  "source": "hand_curated",
+  "last_updated": "2026-04-11",
+  "open_questions": [
+    "RESOLVED: NHMF (NPC) LIMITED is the National Housing Maintenance Forum 'NHMF Frameworx' procurement vehicle for housing estate services. Confirmed via FTS notice titles. Now included as a full entity below.",
+    "HealthTrust Europe agent-of-trust naming — collapsed to single HTE entry below; agent trust is preserved as a side-channel attribute at canonical layer time, not as separate canonical entries.",
+    "NHS Supply Chain operator chain — single canonical entry below; SCCL is the legal entity, NHS Supply Chain is the brand, DHL/NoE CPC are operators acting as agents.",
+    "LHC vs SPA vs WPA — modelled as three distinct entries, with LHC as the parent buying group and SPA/WPA as devolved-nation alliances under it.",
+    "GOV.UK marks Crown Commercial Service as closed since 2026-03-31. Real restructuring vs data error to be confirmed at next GOV.UK refresh. CCS is included as a hand-curated active entity to preserve historical FTS coverage regardless."
+  ],
+  "entities": [
+    {
+      "canonical_id": "nhs-shared-business-services",
+      "canonical_name": "NHS Shared Business Services",
+      "abbreviation": "NHS SBS",
+      "type": "Central buying agency",
+      "subtype": "NHS central agency",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "NHS Shared Business Services",
+        "NHS Shared Business Services Limited",
+        "NHS Shared Business Services Ltd",
+        "NHS Shared Business Services Ltd (NHS SBS)",
+        "NHS SBS",
+        "NHSSBS"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "yorkshire-purchasing-organisation",
+      "canonical_name": "Yorkshire Purchasing Organisation",
+      "abbreviation": "YPO",
+      "type": "Central buying agency",
+      "subtype": "Local government buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "YPO",
+        "Yorkshire Purchasing Organisation"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "nhs-national-services-scotland",
+      "canonical_name": "NHS National Services Scotland",
+      "abbreviation": "NSS",
+      "type": "Central buying agency",
+      "subtype": "NHS devolved central agency",
+      "parent_ids": ["scottish-government"],
+      "child_ids": [],
+      "aliases": [
+        "NHS National Services Scotland",
+        "National Services Scotland",
+        "Common Services Agency",
+        "The Common Services Agency",
+        "The Common Services Agency (more commonly known as NHS National Services Scotland)",
+        "The Common Services Agency(more commonly known as NHS National Services Scotland)",
+        "The Common Services Agency (more commonly known as NHS National Services Scotland) (\"NSS\")",
+        "The Common Services Agency (more commonly known as NHS National Services Scotland) (NSS)",
+        "The Common Services Agency (more commonly known as NHS National Services Scotland) (\"the Authority\")",
+        "The Common Services Agency(more commonly known as NHS National Services Scotland) (NSS)",
+        "The Common Services Agency (more commonly referred to as NHS National Services Scotland (hereinafter referred to as the \"Authority\")",
+        "NSS"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "FTS publishers emit many verbose forms with abbreviation suffixes. Long-term, use prefix/substring matching ('starts with The Common Services Agency') rather than enumeration. For now, all observed variants are listed exhaustively."
+    },
+    {
+      "canonical_id": "nhs-supply-chain",
+      "canonical_name": "NHS Supply Chain",
+      "abbreviation": "NHS SC",
+      "type": "Central buying agency",
+      "subtype": "NHS central agency",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "NHS Supply Chain",
+        "Supply Chain Coordination Limited",
+        "Supply Chain Coordination Ltd",
+        "SCCL",
+        "NHS Supply Chain operated by Supply Chain Coordination Ltd (SCCL)",
+        "NHS Supply Chain Operated by Supply Chain Coordination Ltd (SCCL)",
+        "NHS Supply Chain Operated by Supply Chain Coordination Limited (SCCL)",
+        "NHS Supply Chain operated by North of England Commercial Procurement Collaborative",
+        "NHS Supply Chain operated by North of England Commercial Procurement Collaborative (who are hosted by Leeds and York Partnership NHS Foundation Trust) acting on behalf of Supply Chain Coordination Ltd",
+        "NHS Supply Chain operated by DHL Supply Chain Ltd acting as agent of Supply Chain Coordination Limited",
+        "NHS Supply Chain Operated by DHL Supply Chain Ltd acting as agent of Supply Chain Coordination Ltd (SCCL)",
+        "NHS Supply Chain Operated by DHL Supply Chain Limited acting as agent of Supply Chain Coordination Ltd",
+        "NHS Supply Chain Operated by DHL Supply Chain Limited acting as agent of Supply Chain Coordination Ltd (SCCL)",
+        "NHS Supply Chain Operated by Health Solutions Team Limited acting as agent of Supply Chain Coordination Ltd (SCCL)"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "SCCL is the legal entity, NHS Supply Chain is the brand. DHL Supply Chain, NoE CPC, and Health Solutions Team act as operating agents under contract. All variants collapse to one canonical entry. Long-term improvement: use prefix matching on 'NHS Supply Chain' rather than alias enumeration — every observed variant starts with that exact string."
+    },
+    {
+      "canonical_id": "nhs-wales-shared-services-partnership",
+      "canonical_name": "NHS Wales Shared Services Partnership",
+      "abbreviation": "NWSSP",
+      "type": "Central buying agency",
+      "subtype": "NHS devolved central agency",
+      "parent_ids": ["welsh-government"],
+      "child_ids": [],
+      "aliases": [
+        "NHS Wales Shared Services Partnership",
+        "NHS Wales Shared Services Partnership-Procurement Services (hosted by Velindre University NHS Trust)",
+        "NHS Wales Shared Services Partnership - Procurement Services (as hosted by Velindre University NHS Trust)",
+        "Velindre NHS Trust, NHS Wales Shared Services Partnership - Procurement Services",
+        "NWSSP",
+        "NWSSP Procurement",
+        "NWSSP Procurement (sourcing)"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "crown-commercial-service",
+      "canonical_name": "Crown Commercial Service",
+      "abbreviation": "CCS",
+      "type": "Central buying agency",
+      "subtype": "Central government buying agency",
+      "parent_ids": ["cabinet-office"],
+      "child_ids": [],
+      "aliases": [
+        "Crown Commercial Service",
+        "CCS",
+        "The Minister for the Cabinet Office acting through Crown Commercial Service",
+        "The Minister for the Cabinet Office acting through Crown Commercial Service (CCS)",
+        "Minister for the Cabinet Office Acting through Crown Commercial Service",
+        "The Minister for the Cabinet Office acting through Crown Commercial  Service",
+        "Minister for the Cabinet Office acting through the Cabinet Office"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "GOV.UK marks CCS as closed since 2026-03-31, which excludes it from the GOV.UK API fetch. CCS is the largest central buying agency in UK central government and is dominant in the historical FTS data, so we add it as a hand-curated active entity. Investigate the GOV.UK closure marker — possible restructuring or merger into another body, possible data error. The 'closed' status should be re-validated when the GOV.UK fetch is next refreshed."
+    },
+    {
+      "canonical_id": "eastern-shires-purchasing-organisation",
+      "canonical_name": "Eastern Shires Purchasing Organisation",
+      "abbreviation": "ESPO",
+      "type": "Central buying agency",
+      "subtype": "Local government buying consortium",
+      "parent_ids": ["leicestershire-county-council"],
+      "child_ids": [],
+      "aliases": [
+        "ESPO",
+        "Eastern Shires Purchasing Organisation",
+        "ESPO on behalf of Leicestershire County Council",
+        "Leicestershire County Council t/a Leicestershire Traded Services (c/o ESPO)",
+        "Leicestershire County Council, trading as ESPO"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "ESPO is hosted by Leicestershire County Council. Parent ID added even though Leicestershire CC is itself in the local-government tier (will resolve when ONS LA codes are added in step 4 of Phase 1)."
+    },
+    {
+      "canonical_id": "procurement-and-logistics-service-ni",
+      "canonical_name": "Procurement and Logistics Service (Northern Ireland)",
+      "abbreviation": "PaLS",
+      "type": "Central buying agency",
+      "subtype": "NHS devolved central agency",
+      "parent_ids": ["business-services-organisation-ni"],
+      "child_ids": [],
+      "aliases": [
+        "Procurement and Logistics Service",
+        "Procurement & Logistics Service",
+        "BSO Procurement and Logistics Service",
+        "Business Services Organisation, Procurement and Logistics Service",
+        "Business Services Organisation Procurement and Logistics Service",
+        "Regional Business Services Organisation Procurement and Logistics Service",
+        "PaLS",
+        "BSO PaLS"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "PaLS is the procurement arm of the Business Services Organisation, which serves all NI HSC trusts. BSO is the parent. Both are devolved Northern Ireland entities not on the GOV.UK organisations index."
+    },
+    {
+      "canonical_id": "fusion21-members-consortium",
+      "canonical_name": "Fusion21 Members Consortium",
+      "abbreviation": "Fusion21",
+      "type": "Central buying agency",
+      "subtype": "Social housing buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Fusion21",
+        "Fusion 21",
+        "Fusion21 Members Consortium"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "scotland-excel",
+      "canonical_name": "Scotland Excel",
+      "abbreviation": "Scotland Excel",
+      "type": "Central buying agency",
+      "subtype": "Local government buying consortium (devolved)",
+      "parent_ids": ["scottish-government"],
+      "child_ids": [],
+      "aliases": [
+        "Scotland Excel"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "crescent-purchasing-consortium",
+      "canonical_name": "Crescent Purchasing Consortium",
+      "abbreviation": "CPC",
+      "type": "Central buying agency",
+      "subtype": "Education sector buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Crescent Purchasing Consortium",
+        "Crescent Purchasing Consortium Limited",
+        "Crescent Purchasing Consortium (CPC)",
+        "CRESCENT PURCHASING LIMITED",
+        "CPC"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "scape-group",
+      "canonical_name": "Scape Group",
+      "abbreviation": "Scape",
+      "type": "Central buying agency",
+      "subtype": "Public sector construction framework",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Scape",
+        "Scape Group",
+        "Scape Group Limited",
+        "Scape Group Limited (trading as SCAPE)",
+        "Scape Procure Limited",
+        "Scape Procure Limited (trading as SCAPE)",
+        "Scape Procure Scotland Ltd",
+        "SCAPE group Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "lhc-procurement-group",
+      "canonical_name": "LHC Procurement Group",
+      "abbreviation": "LHC",
+      "type": "Central buying agency",
+      "subtype": "Public sector construction framework",
+      "parent_ids": [],
+      "child_ids": ["scottish-procurement-alliance", "welsh-procurement-alliance"],
+      "aliases": [
+        "LHC",
+        "LHC Procurement Group",
+        "LHC Procurement Group Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "scottish-procurement-alliance",
+      "canonical_name": "Scottish Procurement Alliance",
+      "abbreviation": "SPA",
+      "type": "Central buying agency",
+      "subtype": "Public sector construction framework (devolved)",
+      "parent_ids": ["lhc-procurement-group"],
+      "child_ids": [],
+      "aliases": [
+        "Scottish Procurement Alliance",
+        "Scottish Procurement Alliance (SPA)",
+        "SPA",
+        "LHC for the Scottish Procurement Alliance (SPA)",
+        "LHC on behalf of the Scottish Procurement Alliance (SPA)",
+        "LHC Procurement Group for the Scottish Procurement Alliance (SPA)",
+        "LHC Procurement Group on behalf of the Scottish Procurement Alliance (SPA)",
+        "LHC on behalf of Scottish Procurement Alliance"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "welsh-procurement-alliance",
+      "canonical_name": "Welsh Procurement Alliance",
+      "abbreviation": "WPA",
+      "type": "Central buying agency",
+      "subtype": "Public sector construction framework (devolved)",
+      "parent_ids": ["lhc-procurement-group"],
+      "child_ids": [],
+      "aliases": [
+        "Welsh Procurement Alliance",
+        "Welsh Procurement Alliance (WPA)",
+        "WPA",
+        "LHC Procurement Group for the Welsh Procurement Alliance (WPA)",
+        "LHC Procurement Group Ltd for the Welsh Procurement Alliance (WPA)"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "healthtrust-europe",
+      "canonical_name": "HealthTrust Europe LLP",
+      "abbreviation": "HTE",
+      "type": "Central buying agency",
+      "subtype": "NHS group purchasing organisation",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HealthTrust Europe",
+        "HealthTrust Europe LLP",
+        "HealthTrust Europe LLP (HTE)",
+        "HTE",
+        "Health Trust Europe"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "HTE acts as agent for many individual NHS trusts. The published buyer name often takes the form 'HealthTrust Europe LLP (HTE) acting on behalf of [Trust X]'. The matcher should detect any name beginning 'HealthTrust Europe LLP (HTE)' as canonical HTE; the on-behalf-of trust is preserved as a side-channel attribute, not as a separate canonical entity."
+    },
+    {
+      "canonical_id": "nepo-association-of-north-east-councils",
+      "canonical_name": "North East Procurement Organisation",
+      "abbreviation": "NEPO",
+      "type": "Central buying agency",
+      "subtype": "Local government buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NEPO",
+        "North East Procurement Organisation",
+        "Association of North East Councils Limited trading as NEPO",
+        "The Association of North East Councils, trading as NEPO",
+        "Association of North East Councils Ltd trading as NEPO",
+        "THE ASSOCIATION OF NORTH EAST COUNCILS LIMITED T/A NORTH EAST PROCUREMENT ORGANISATION",
+        "The Association of North East Councils Limited"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "advanced-procurement-for-universities-and-colleges",
+      "canonical_name": "Advanced Procurement for Universities and Colleges (Scotland)",
+      "abbreviation": "APUC",
+      "type": "Central buying agency",
+      "subtype": "Higher education buying consortium (devolved)",
+      "parent_ids": ["scottish-government"],
+      "child_ids": [],
+      "aliases": [
+        "APUC",
+        "APUC Limited",
+        "APUC Ltd",
+        "Advanced Procurement for Universities and Colleges"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "southern-universities-purchasing-consortium",
+      "canonical_name": "Southern Universities Purchasing Consortium",
+      "abbreviation": "SUPC",
+      "type": "Central buying agency",
+      "subtype": "Higher education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "SUPC",
+        "Southern Universities Purchasing Consortium",
+        "Southern Universities Purchasing Consortium (SUPC)"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "nhs-commercial-solutions",
+      "canonical_name": "NHS Commercial Solutions",
+      "abbreviation": "NHS CS",
+      "type": "Central buying agency",
+      "subtype": "NHS regional buying organisation",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "NHS Commercial Solutions",
+        "Surrey and Borders Partnership NHS Foundation Trust on behalf of NHS Commercial Solutions"
+      ],
+      "status": "active",
+      "source": "hand_curated"
+    },
+    {
+      "canonical_id": "national-highways",
+      "canonical_name": "National Highways",
+      "abbreviation": "NH",
+      "type": "Alias merge",
+      "aliases": [
+        "National Highways Limited",
+        "NATIONAL HIGHWAYS LIMITED",
+        "national highways limited"
+      ],
+      "source": "hand_curated",
+      "notes": "Alias-merge entry. Adds the legal-entity 'Limited' suffix forms to the existing GOV.UK 'national-highways' entry. National Highways was rebranded from Highways England in 2021."
+    },
+    {
+      "canonical_id": "highways-england",
+      "canonical_name": "Highways England",
+      "type": "Alias merge",
+      "aliases": [
+        "Highways England Company Limited",
+        "Highways England",
+        "HIGHWAYS ENGLAND"
+      ],
+      "source": "hand_curated",
+      "notes": "Alias-merge entry. Highways England was the pre-2021 name for National Highways. Historical FTS records still use the old name. If GOV.UK doesn't have 'highways-england' as an active entry, this becomes a separate canonical entity (the rebrand history matters for time-bound queries)."
+    },
+    {
+      "canonical_id": "network-rail",
+      "canonical_name": "Network Rail",
+      "type": "Alias merge",
+      "aliases": [
+        "Network Rail Infrastructure Limited",
+        "Network Rail Infrastructure Ltd",
+        "NETWORK RAIL INFRASTRUCTURE LIMITED",
+        "Network Rail Infrastructure"
+      ],
+      "source": "hand_curated",
+      "notes": "Alias-merge entry. Adds the legal-entity 'Infrastructure Limited' suffix forms to the existing GOV.UK 'network-rail' entry."
+    },
+    {
+      "canonical_id": "transport-for-london",
+      "canonical_name": "Transport for London",
+      "abbreviation": "TfL",
+      "type": "Public corporation",
+      "subtype": "Functional body of the Greater London Authority",
+      "parent_ids": ["greater-london-authority"],
+      "child_ids": [],
+      "aliases": [
+        "Transport for London",
+        "TRANSPORT FOR LONDON",
+        "transport for london",
+        "TfL",
+        "TFL"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "TfL is a functional body of the Greater London Authority and one of the UK's largest non-central-gov procurement entities. Not in the GOV.UK organisations API because it sits under the GLA, not central government. 254 ≥£1m awards in the historical FTS data."
+    },
+    {
+      "canonical_id": "education-authority-northern-ireland",
+      "canonical_name": "Education Authority Northern Ireland",
+      "abbreviation": "EA NI",
+      "type": "Central buying agency",
+      "subtype": "Devolved education authority (NI)",
+      "parent_ids": ["department-of-education-northern-ireland"],
+      "child_ids": [],
+      "aliases": [
+        "Education Authority NI",
+        "Education Authority Northern Ireland",
+        "Education Authority",
+        "EA NI",
+        "EANI"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "NI's single education authority, formed in 2015 by merging the five Education and Library Boards. 267 ≥£1m awards. Devolved entity not on the GOV.UK organisations API."
+    },
+    {
+      "canonical_id": "the-hyde-group",
+      "canonical_name": "The Hyde Group",
+      "abbreviation": "Hyde",
+      "type": "Central buying agency",
+      "subtype": "Housing association",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The Hyde Group",
+        "Hyde Housing Association",
+        "Hyde Housing"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "Major housing association. 253 ≥£1m awards. Housing associations as a category are too numerous for full coverage in this glossary; the Hyde Group is added because of its scale. Future iterations may add the top 20 housing associations as a separate hand-curated bloc."
+    },
+    {
+      "canonical_id": "national-housing-maintenance-forum",
+      "canonical_name": "National Housing Maintenance Forum (NHMF Frameworx)",
+      "abbreviation": "NHMF",
+      "type": "Central buying agency",
+      "subtype": "Social housing buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NHMF",
+        "NHMF (NPC) LIMITED",
+        "NHMF (NPC) Limited",
+        "National Housing Maintenance Forum",
+        "NHMF Frameworx"
+      ],
+      "status": "active",
+      "source": "hand_curated",
+      "notes": "Identity confirmed 2026-04-11 via FTS notice titles ('NHMF Frameworx Estate Services Framework Agreements 2023'). Procurement vehicle for housing-sector estate services frameworks. (NPC) is the legal entity suffix. 605 ≥£1m awards in the historical FTS data."
+    }
+  ]
+}
