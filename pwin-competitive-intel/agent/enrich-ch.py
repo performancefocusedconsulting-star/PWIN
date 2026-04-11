@@ -205,19 +205,18 @@ def main():
         log.info("  [%d/%d] %s (CH: %s)", i + 1, total, sup["name"][:40], sup["companies_house_no"])
 
         # Clean company number — FTS data sometimes has "Company number XXXXXXXX" format
-    ch_no = sup["companies_house_no"].strip()
-    if " " in ch_no:
-        # Extract just the number part
-        import re
-        match = re.search(r'\b(\d{6,8}|[A-Z]{2}\d{6}|OC\d{6})\b', ch_no)
-        if match:
-            ch_no = match.group(1)
-        else:
-            log.warning("  Skipping — bad CH number: %s", ch_no)
-            failed += 1
-            continue
+        ch_no = sup["companies_house_no"].strip()
+        if " " in ch_no:
+            import re
+            match = re.search(r'\b(\d{6,8}|[A-Z]{2}\d{6}|OC\d{6})\b', ch_no)
+            if match:
+                ch_no = match.group(1)
+            else:
+                log.warning("  Skipping — bad CH number: %s", ch_no)
+                failed += 1
+                continue
 
-    success = enrich_company(conn, sup["id"], ch_no, api_key)
+        success = enrich_company(conn, sup["id"], ch_no, api_key)
         if success:
             enriched += 1
         else:
