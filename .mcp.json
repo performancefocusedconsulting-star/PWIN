@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "pwin-platform": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["pwin-platform/src/server.js", "--mcp"],
+      "env": {}
+    }
+  }
+}
