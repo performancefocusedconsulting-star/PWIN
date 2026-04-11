@@ -9,12 +9,12 @@ This is an **internal enrichment asset**, not a customer-facing product.
 It exists to feed the other PWIN products with credible procurement
 intelligence:
 
-- **Verdict** — incumbent detection, supplier history, buyer relationships
+- **[[bidequity-verdict/docs/BidEquity-Verdict-PRD-v2|Verdict]]** — incumbent detection, supplier history, buyer relationships
   for post-loss forensics
 - **Win Strategy** — competitor profiling, framework holders, parent groups
-- **Bid Execution** — incumbent flags, comparable awards, buyer patterns
+- **[[pwin-bid-execution/docs/methodology_gold_standard|Bid Execution]]** — incumbent flags, comparable awards, buyer patterns
   during bid production
-- **Qualify (paid tier, future)** — buyer signals and competition intensity
+- **[[pwin-qualify/content/README|Qualify]] (paid tier, future)** — buyer signals and competition intensity
   injected into AI assurance reviews
 
 The **public Qualify lead-gen experience does NOT call this layer**.

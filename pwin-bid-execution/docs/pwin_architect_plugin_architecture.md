@@ -4,7 +4,7 @@
 **Version:** 1.5 | April 2026
 **Status:** Authoritative design input for all Claude Code build sessions
 **Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, 20 AI intelligence use cases, capability-based agent architecture, cross-product interfaces, SaaS trajectory
-**Aligned with:** Architecture v6 (Session 13, 2026-04-02), Gold Standard Template (Session 11, 2026-04-01), AI Use Cases Reference v1.0, AI Suitability Assessment (295 L3 tasks, practitioner-validated)
+**Aligned with:** Architecture v6 (Session 13, 2026-04-02), [[pwin-bid-execution/docs/methodology_gold_standard|Gold Standard Template]] (Session 11, 2026-04-01), AI Use Cases Reference v1.0, [[pwin-bid-execution/docs/ai_suitability_assessment|AI Suitability Assessment]] (295 L3 tasks, practitioner-validated)
 
 ---
 

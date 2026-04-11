@@ -335,7 +335,7 @@
 <div class="cover">
   <div class="cover-label">Supplier Intelligence Dossier</div>
   <div class="cover-title">{{supplierName}}</div>
-  <div class="cover-sub">{{identity.archetype}} | {{identity.ownershipType}} | Generated {{meta.generatedAt}} | v{{meta.version}}</div>
+  <div class="cover-sub">{{identity.archetype}} | {{identity.ownershipType}} | Generated {{meta.generatedAt}} | v{{meta.version}} | Depth: {{meta.depthMode}}</div>
   <div class="cover-scores">
     <div class="cover-score-card">
       <div class="cover-score-label">Sector Strength</div>
@@ -367,7 +367,7 @@
     <div class="section-text">{{executiveSummary.overview}}</div>
   </div>
 
-  <!-- ── D1–D9 Domain Sections ──────────────────────────────── -->
+  <!-- ── D1–D10 Domain Sections ─────────────────────────────── -->
   <!-- Each domain follows the same pattern:
        1. Section title with domain name
        2. Headline finding (coloured bar)
@@ -376,7 +376,7 @@
        5. Gaps list (what could not be found)
   -->
 
-  <!-- TEMPLATE: Repeat this block for each domain d1 through d9 -->
+  <!-- TEMPLATE: Repeat this block for each domain d1 through d10 -->
   <div class="section no-break">
     <div class="section-title">D1. Identity & Archetype</div>
     <div class="section-headline">{{domains.d1_identity.headline}}</div>
@@ -449,11 +449,20 @@
     <div class="section-text">{{domains.d9_financialHealth.narrative}}</div>
   </div>
 
+  <div class="section no-break">
+    <div class="section-title">D10. Social Value & ESG Position</div>
+    <div class="section-headline">{{domains.d10_socialValueESG.headline}}</div>
+    <div class="section-text">{{domains.d10_socialValueESG.narrative}}</div>
+  </div>
+
   <!-- ── Strategic Score Cards ──────────────────────────────── -->
   <div class="section page-break">
     <div class="section-title">Strategic Score Cards</div>
 
-    <h4 style="font-size:13px;color:#021744;margin:14px 0 8px;">Sector Strength Score: {{scores.sectorStrength.overall}}/100</h4>
+    <h4 style="font-size:13px;color:#021744;margin:14px 0 8px;">Sector Strength Score: {{scores.sectorStrength.overall}}/100
+      <span style="font-size:11px;font-weight:400;color:#576482;margin-left:8px;">{{scores.sectorStrength.completeness.factorsEvidenced}}/{{scores.sectorStrength.completeness.factorsTotal}} factors evidenced</span>
+      <!-- {{#if scores.sectorStrength.completeness.incomplete}} --><span class="conf-badge conf-weak" style="margin-left:6px;">INCOMPLETE</span><!-- {{/if}} -->
+    </h4>
     <table class="score-table">
       <tr><th>Factor</th><th class="num">Weight</th><th class="num">Value</th><th>Evidence</th><th class="num">Conf.</th><th class="num">Wtd</th></tr>
       <!-- {{#each scores.sectorStrength.factors}} -->
@@ -469,7 +478,10 @@
       <tr class="total"><td>Overall</td><td></td><td></td><td></td><td></td><td class="num">{{scores.sectorStrength.overall}}</td></tr>
     </table>
 
-    <h4 style="font-size:13px;color:#021744;margin:14px 0 8px;">Competitor Threat Score: {{scores.competitorThreat.overall}}/100</h4>
+    <h4 style="font-size:13px;color:#021744;margin:14px 0 8px;">Competitor Threat Score: {{scores.competitorThreat.overall}}/100
+      <span style="font-size:11px;font-weight:400;color:#576482;margin-left:8px;">{{scores.competitorThreat.completeness.factorsEvidenced}}/{{scores.competitorThreat.completeness.factorsTotal}} factors evidenced</span>
+      <!-- {{#if scores.competitorThreat.completeness.incomplete}} --><span class="conf-badge conf-weak" style="margin-left:6px;">INCOMPLETE</span><!-- {{/if}} -->
+    </h4>
     <table class="score-table">
       <tr><th>Factor</th><th class="num">Weight</th><th class="num">Value</th><th>Evidence</th><th class="num">Conf.</th><th class="num">Wtd</th></tr>
       <!-- {{#each scores.competitorThreat.factors}} -->
@@ -485,7 +497,10 @@
       <tr class="total"><td>Overall</td><td></td><td></td><td></td><td></td><td class="num">{{scores.competitorThreat.overall}}</td></tr>
     </table>
 
-    <h4 style="font-size:13px;color:#021744;margin:14px 0 8px;">Vulnerability Score: {{scores.vulnerability.overall}}/100</h4>
+    <h4 style="font-size:13px;color:#021744;margin:14px 0 8px;">Vulnerability Score: {{scores.vulnerability.overall}}/100
+      <span style="font-size:11px;font-weight:400;color:#576482;margin-left:8px;">{{scores.vulnerability.completeness.factorsEvidenced}}/{{scores.vulnerability.completeness.factorsTotal}} factors evidenced</span>
+      <!-- {{#if scores.vulnerability.completeness.incomplete}} --><span class="conf-badge conf-weak" style="margin-left:6px;">INCOMPLETE</span><!-- {{/if}} -->
+    </h4>
     <table class="score-table">
       <tr><th>Factor</th><th class="num">Weight</th><th class="num">Value</th><th>Evidence</th><th class="num">Conf.</th><th class="num">Wtd</th></tr>
       <!-- {{#each scores.vulnerability.factors}} -->
@@ -619,6 +634,46 @@
       <li>{{this}}</li>
       <!-- {{/each}} -->
     </ul>
+  </div>
+
+  <!-- ── Version History ─────────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Version History</div>
+    <table class="kf-table">
+      <tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+      <!-- {{#each meta.versionLog}} -->
+      <tr>
+        <td>{{version}}</td>
+        <td>{{date}}</td>
+        <td>{{summary}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Linked Assets ─────────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Linked Library Assets</div>
+    <div class="section-text">
+      <!-- {{#if linkedAssets.clientProfiles}} -->
+      <div style="font-size:11px;font-weight:600;margin-bottom:4px;">Client profiles</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.clientProfiles}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.sectorBriefs}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Sector briefs</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.sectorBriefs}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.pipelineScans}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Pipeline scans</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.pipelineScans}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+    </div>
   </div>
 
   <!-- ── Refresh Guidance ───────────────────────────────────── -->

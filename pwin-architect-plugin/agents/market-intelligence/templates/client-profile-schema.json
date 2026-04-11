@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "client-profile-v1",
+  "title": "Client Intelligence Profile",
+  "description": "Structured data output for a buyer organisation profile. The human-readable report is rendered from this data. Other agents consume this directly.",
+
+  "type": "object",
+  "required": ["meta", "organisation", "sections", "evidenceQuality"],
+
+  "properties": {
+
+    "meta": {
+      "description": "Report metadata — when it was built, who it covers, depth mode used",
+      "type": "object",
+      "required": ["clientName", "generatedAt", "generatedBy", "version", "depthMode"],
+      "properties": {
+        "clientName":       { "type": "string", "description": "Full name of the buyer organisation" },
+        "slug":             { "type": "string", "description": "URL-safe identifier, e.g. ministry-of-defence" },
+        "sector":           { "type": "string", "description": "Primary sector, e.g. Defence, Health, Local Government" },
+        "generatedAt":      { "type": "string", "format": "date-time" },
+        "generatedBy":      { "type": "string", "description": "Who or what produced this profile" },
+        "version":          { "type": "string", "description": "Profile version, e.g. 1.0, 1.1" },
+        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"], "description": "Depth mode used for this run" },
+        "refreshedFrom":    { "type": "string", "description": "If this is a refresh, the version it built on" },
+        "versionLog": {
+          "type": "array",
+          "description": "What changed in each version — most recent first",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version":    { "type": "string" },
+              "date":       { "type": "string", "format": "date" },
+              "summary":    { "type": "string", "description": "What changed, e.g. 'Refreshed procurement data, added 6 new awards from Q1 2026'" }
+            }
+          }
+        }
+      }
+    },
+
+    "organisation": {
+      "description": "Section 1 — core facts about the buyer organisation",
+      "type": "object",
+      "properties": {
+        "legalName":          { "type": "string" },
+        "parentBody":         { "type": "string", "description": "Parent department or group, e.g. DHSC for NHS England" },
+        "organisationType":   { "type": "string", "enum": ["department", "agency", "ndpb", "nhs_trust", "nhs_icb", "local_authority", "devolved", "mod", "other"] },
+        "sector":             { "type": "string" },
+        "headcount":          { "type": "string", "description": "Approximate, with source" },
+        "annualBudget":       { "type": "string", "description": "Most recent, with currency and period" },
+        "geographicFootprint": { "type": "string" },
+        "keyDirectorates": {
+          "type": "array",
+          "description": "Directorates relevant to procurement",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name":       { "type": "string" },
+              "remit":      { "type": "string" },
+              "head":       { "type": "string", "description": "Director name if publicly available" }
+            }
+          }
+        }
+      }
+    },
+
+    "sections": {
+      "description": "Sections 2-7 of the client profile — each has narrative and structured data",
+      "type": "object",
+      "properties": {
+        "strategicPriorities":    { "$ref": "#/$defs/profileSection" },
+        "procurementBehaviour":   { "$ref": "#/$defs/profileSection" },
+        "relationshipHistory":    { "$ref": "#/$defs/profileSection" },
+        "cultureCommunication":   { "$ref": "#/$defs/profileSection" },
+        "risksAndSensitivities":  { "$ref": "#/$defs/profileSection" },
+        "keyPeopleStakeholders":  { "$ref": "#/$defs/profileSection" }
+      }
+    },
+
+    "procurementHistory": {
+      "description": "Structured procurement data from the database — machine-readable for other agents",
+      "type": "object",
+      "properties": {
+        "totalAwards":        { "type": "number", "description": "Total contract awards in database" },
+        "totalValue":         { "type": "number", "description": "Total award value in GBP" },
+        "dateRange":          { "type": "string", "description": "Earliest to latest award in dataset" },
+        "preferredRoutes": {
+          "type": "array",
+          "description": "Most-used procurement routes with frequency",
+          "items": {
+            "type": "object",
+            "properties": {
+              "route":      { "type": "string", "description": "e.g. Open procedure, Framework call-off, Restricted procedure" },
+              "count":      { "type": "number" },
+              "percentage": { "type": "number" }
+            }
+          }
+        },
+        "topSuppliers": {
+          "type": "array",
+          "description": "Largest suppliers by total award value",
+          "items": {
+            "type": "object",
+            "properties": {
+              "supplierName":   { "type": "string" },
+              "totalValue":     { "type": "number", "description": "GBP" },
+              "contractCount":  { "type": "number" },
+              "hasDossier":     { "type": "boolean", "description": "Whether a supplier dossier exists in the library" }
+            }
+          }
+        },
+        "typicalContractLength": { "type": "string", "description": "Most common contract duration" },
+        "typicalContractValue":  { "type": "string", "description": "Median or typical value range" },
+        "frameworkUsage": {
+          "type": "array",
+          "description": "Frameworks this buyer uses",
+          "items": {
+            "type": "object",
+            "properties": {
+              "frameworkName": { "type": "string" },
+              "provider":     { "type": "string" },
+              "awardCount":   { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+
+    "keyPeople": {
+      "description": "Structured key personnel data — factual research only, not influence analysis",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name":         { "type": "string", "description": "Only if publicly available" },
+          "title":        { "type": "string" },
+          "directorate":  { "type": "string" },
+          "relevance":    { "type": "string", "description": "Why this person matters for procurement, e.g. 'Signs contracts over £10m'" },
+          "startDate":    { "type": "string", "description": "When they took this role, if known" },
+          "source":       { "type": "string", "description": "Where this information came from" }
+        }
+      }
+    },
+
+    "intelligenceGaps": {
+      "description": "What could not be determined — with specific asks for the pursuit team",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gap":              { "type": "string", "description": "What is missing" },
+          "impact":           { "type": "string", "description": "Why it matters" },
+          "recommendedAction": { "type": "string", "description": "How the team can fill this gap" }
+        }
+      }
+    },
+
+    "evidenceQuality": {
+      "description": "Overall assessment of how much to trust this profile",
+      "type": "object",
+      "properties": {
+        "totalCitations":     { "type": "number" },
+        "tierDistribution": {
+          "type": "object",
+          "properties": {
+            "tier1": { "type": "number" },
+            "tier2": { "type": "number" },
+            "tier3": { "type": "number" },
+            "tier4": { "type": "number" },
+            "tier5": { "type": "number" },
+            "tier6": { "type": "number" }
+          }
+        },
+        "averageConfidence":  { "type": "number" },
+        "knownGaps":          { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "linkedAssets": {
+      "description": "Cross-references to related library assets",
+      "type": "object",
+      "properties": {
+        "supplierDossiers": {
+          "type": "array",
+          "description": "Supplier dossiers for this buyer's key suppliers",
+          "items": { "type": "string", "description": "Path to dossier, e.g. reference/suppliers/serco-group.json" }
+        },
+        "sectorBriefs": {
+          "type": "array",
+          "description": "Sector briefs covering this buyer's sector",
+          "items": { "type": "string", "description": "Path to brief, e.g. reference/sectors/defence.json" }
+        },
+        "pipelineScans": {
+          "type": "array",
+          "description": "Pipeline scans covering this buyer",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "profileSection": {
+      "type": "object",
+      "description": "One section of the client profile — narrative for the report, structured data for AI consumption",
+      "required": ["headline", "narrative"],
+      "properties": {
+        "headline":     { "type": "string", "description": "One-sentence finding — the most important thing about this section" },
+        "narrative":    { "type": "string", "description": "Detailed analysis in markdown — evidence-backed prose for the printed report" },
+        "keyFacts": {
+          "type": "array",
+          "description": "Structured data points for AI consumption",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label":      { "type": "string" },
+              "value":      { "type": "string" },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
+              "source":     { "type": "string" }
+            }
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "description": "What could not be found for this section",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

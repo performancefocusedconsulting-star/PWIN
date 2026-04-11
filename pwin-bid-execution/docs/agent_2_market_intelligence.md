@@ -2,7 +2,9 @@
 
 **Version:** 1.0 | April 2026
 **Status:** Design specification — authoritative input for skill implementation
-**Parent document:** `pwin_architect_plugin_architecture.md` (v1.5, Section 4.2b)
+**Parent document:** [[pwin-bid-execution/docs/pwin_architect_plugin_architecture|Plugin Architecture v1.5]] (Section 4.2b)
+**Runtime:** [[pwin-architect-plugin/agents/market-intelligence/AGENT|AGENT.md]]
+**All agents:** [[pwin-bid-execution/docs/agent_1_document_intelligence|1: Document]] | [[pwin-bid-execution/docs/agent_2_market_intelligence|2: Market]] | [[pwin-bid-execution/docs/agent_3_strategy_scoring|3: Strategy]] | [[pwin-bid-execution/docs/agent_4_commercial_financial|4: Commercial]] | [[pwin-bid-execution/docs/agent_5_content_drafting|5: Content]] | [[pwin-bid-execution/docs/agent_6_solution_delivery|6: Solution]]
 **Data model authority:** `bid_execution_architecture_v6.html`
 
 ---

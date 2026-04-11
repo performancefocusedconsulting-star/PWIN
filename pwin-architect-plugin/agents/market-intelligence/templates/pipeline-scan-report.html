@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Scan — {{meta.scope}}</title>
+<!--
+  TEMPLATE: Pipeline & Opportunity Scan Report
+  PURPOSE:  Printable HTML report rendered from pipeline-scan-schema.json data.
+            Used by Agent 2 (Market & Competitive Intelligence) to produce pipeline
+            intelligence snapshots for the consulting team and pursuit prioritisation.
+  PATTERN:  The data.json is the source of truth. This template renders it.
+            Do not hand-edit this report — regenerate it from the data.
+  PRINT:    Designed for A4 landscape, prints cleanly to PDF via browser.
+-->
+<style>
+  /* ── Reset & base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #021744;
+    line-height: 1.65;
+    font-size: 12px;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page { size: A4; margin: 18mm; }
+  @media print {
+    body { padding: 0; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  /* ── Cover / header ───────────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, #021744 0%, #0D2B5C 100%);
+    padding: 40px 36px 32px;
+    margin-bottom: 0;
+    color: #F0EDE6;
+  }
+  .cover-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(240,237,230,0.45);
+    margin-bottom: 6px;
+  }
+  .cover-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #F0EDE6;
+    margin-bottom: 4px;
+  }
+  .cover-sub {
+    font-size: 12px;
+    color: rgba(240,237,230,0.55);
+    margin-bottom: 24px;
+  }
+  .cover-facts {
+    display: flex;
+    gap: 20px;
+  }
+  .cover-fact-card {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid rgba(240,237,230,0.15);
+    background: rgba(240,237,230,0.04);
+  }
+  .cover-fact-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(240,237,230,0.5);
+    margin-bottom: 4px;
+  }
+  .cover-fact-value {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: #F0EDE6;
+    line-height: 1;
+  }
+  .cover-fact-sub {
+    font-size: 11px;
+    color: rgba(240,237,230,0.5);
+    margin-top: 4px;
+  }
+
+  /* ── Body ─────────────────────────────────────────────────── */
+  .report-body {
+    padding: 28px 36px;
+    border: 1px solid #D5D9E0;
+    border-top: none;
+  }
+
+  /* ── Section ──────────────────────────────────────────────── */
+  .section { margin-bottom: 28px; }
+  .section-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #021744;
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .section-headline {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0D2B5C;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: rgba(92,163,182,0.06);
+    border-left: 3px solid #5CA3B6;
+  }
+  .section-text {
+    font-size: 12px;
+    color: #021744;
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+
+  /* ── Tables ───────────────────────────────────────────────── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+  .data-table th {
+    background: #021744;
+    color: #F0EDE6;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .data-table th.num { text-align: right; }
+  .data-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #E8EBF0;
+    vertical-align: top;
+  }
+  .data-table td.num { text-align: right; font-family: 'JetBrains Mono', monospace; }
+  .kf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin: 10px 0 16px;
+  }
+  .kf-table th {
+    background: rgba(2,23,68,0.06);
+    padding: 5px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #576482;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .kf-table td { padding: 5px 10px; border-bottom: 1px solid #E8EBF0; }
+
+  /* ── Badges ───────────────────────────────────────────────── */
+  .conf-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .conf-high   { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .conf-good   { background: rgba(92,163,182,0.12); color: #3A8CA0; }
+  .conf-dir    { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .conf-weak   { background: rgba(193,80,80,0.12); color: #C15050; }
+  .link-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: rgba(92,163,182,0.12);
+    color: #3A8CA0;
+  }
+
+  /* ── Signal items ─────────────────────────────────────────── */
+  .signal-item {
+    padding: 8px 14px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    border-left: 3px solid #576482;
+    background: rgba(87,100,130,0.04);
+    line-height: 1.6;
+  }
+
+  /* ── Evidence quality ─────────────────────────────────────── */
+  .eq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .eq-card { padding: 12px 14px; border: 1px solid #D5D9E0; }
+  .eq-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #576482; margin-bottom: 4px; }
+  .eq-card-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; color: #021744; }
+  .eq-bar-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 11px; }
+  .eq-bar-label { width: 100px; color: #576482; }
+  .eq-bar-track { flex: 1; height: 12px; background: #F0ECE4; margin: 0 8px; position: relative; }
+  .eq-bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+  .eq-bar-count { width: 30px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+  /* ── Gaps list ────────────────────────────────────────────── */
+  .gaps-list { list-style: none; padding: 0; margin: 8px 0; }
+  .gaps-list li { font-size: 11px; color: #576482; padding: 3px 0 3px 16px; position: relative; }
+  .gaps-list li::before { content: '?'; position: absolute; left: 0; color: #C68A1D; font-weight: 700; }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  .report-footer {
+    margin-top: 32px;
+    padding-top: 14px;
+    border-top: 1px solid #D5D9E0;
+    font-size: 10px;
+    color: #818CA2;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     COVER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-label">Pipeline & Opportunity Scan</div>
+  <div class="cover-title">{{meta.scope}}</div>
+  <div class="cover-sub">Horizon: {{meta.timeHorizon}} | Generated {{meta.generatedAt}} | v{{meta.version}}</div>
+  <div class="cover-facts">
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Forward Opportunities</div>
+      <div class="cover-fact-value">{{summary.totalForwardOpportunities}}</div>
+      <div class="cover-fact-sub">Planning notices</div>
+    </div>
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Expiring Contracts</div>
+      <div class="cover-fact-value">{{summary.totalExpiringContracts}}</div>
+      <div class="cover-fact-sub">Rebid opportunities</div>
+    </div>
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Est. Total Value</div>
+      <div class="cover-fact-value">{{summary.totalEstimatedValue}}</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:13px;color:rgba(240,237,230,0.75);line-height:1.55;">{{summary.headline}}</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REPORT BODY
+     ═══════════════════════════════════════════════════════════ -->
+<div class="report-body">
+
+  <!-- ── Forward Pipeline ──────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Forward Pipeline (Planning Notices)</div>
+    <table class="data-table">
+      <tr><th>Title</th><th>Buyer</th><th class="num">Est. Value</th><th>Expected</th><th>Route</th><th>Sector</th><th>Profile?</th></tr>
+      <!-- {{#each forwardPipeline}} -->
+      <tr>
+        <td>{{title}}</td>
+        <td>{{buyer}}</td>
+        <td class="num">{{estimatedValue}}</td>
+        <td>{{expectedPublication}}</td>
+        <td>{{procurementRoute}}</td>
+        <td>{{sector}}</td>
+        <td>{{#if hasClientProfile}}<span class="link-badge">Yes</span>{{/if}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Expiry Pipeline ───────────────────────────────────── -->
+  <div class="section page-break">
+    <div class="section-title">Expiry Pipeline (Rebid Opportunities)</div>
+    <table class="data-table">
+      <tr><th>Title</th><th>Buyer</th><th>Incumbent</th><th class="num">Value</th><th>Expiry</th><th>Extensions</th><th>Dossier?</th></tr>
+      <!-- {{#each expiryPipeline}} -->
+      <tr>
+        <td>{{title}}</td>
+        <td>{{buyer}}</td>
+        <td>{{incumbentSupplier}}</td>
+        <td class="num">{{contractValue}}</td>
+        <td>{{expiryDate}}</td>
+        <td>{{extensionsRemaining}}</td>
+        <td>{{#if hasIncumbentDossier}}<span class="link-badge">Yes</span>{{/if}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Published Procurement Plans ───────────────────────── -->
+  <!-- {{#if publishedPlans}} -->
+  <div class="section no-break">
+    <div class="section-title">Published Procurement Plans</div>
+    <table class="data-table">
+      <tr><th>Buyer</th><th>Document</th><th>Published</th><th>Opportunities</th><th>Total Value</th><th>Conf.</th></tr>
+      <!-- {{#each publishedPlans}} -->
+      <tr>
+        <td>{{buyer}}</td>
+        <td>{{documentTitle}}</td>
+        <td>{{publicationDate}}</td>
+        <td>{{opportunities}}</td>
+        <td>{{totalValue}}</td>
+        <td><span class="conf-badge {{confidenceClass}}">{{confidence}}</span></td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+  <!-- {{/if}} -->
+
+  <!-- ── Framework Renewals ────────────────────────────────── -->
+  <!-- {{#if frameworkRenewals}} -->
+  <div class="section no-break">
+    <div class="section-title">Framework Renewals</div>
+    <table class="data-table">
+      <tr><th>Framework</th><th>Provider</th><th>End Date</th><th>Est. Re-let</th><th>Est. Value</th><th>Current Holders</th></tr>
+      <!-- {{#each frameworkRenewals}} -->
+      <tr>
+        <td>{{name}}</td>
+        <td>{{provider}}</td>
+        <td>{{currentEndDate}}</td>
+        <td>{{estimatedReLet}}</td>
+        <td>{{estimatedValue}}</td>
+        <td>{{currentHolders}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+  <!-- {{/if}} -->
+
+  <!-- ── Market Signals ────────────────────────────────────── -->
+  <!-- {{#if marketSignals}} -->
+  <div class="section no-break">
+    <div class="section-title">Market Signals</div>
+    <!-- {{#each marketSignals}} -->
+    <div class="signal-item">
+      <div style="font-weight:600;">{{signal}}</div>
+      <div style="font-size:11px;color:#576482;margin-top:3px;">{{implication}}</div>
+      <div style="font-size:10px;color:#818CA2;margin-top:3px;">Tier {{sourceTier}} | {{source}} | {{date}} | Confidence: {{confidence}}</div>
+    </div>
+    <!-- {{/each}} -->
+  </div>
+  <!-- {{/if}} -->
+
+  <!-- ── Opportunity Assessments ───────────────────────────── -->
+  <!-- {{#if opportunityAssessments}} -->
+  <div class="section page-break">
+    <div class="section-title">Opportunity Assessments</div>
+    <!-- {{#each opportunityAssessments}} -->
+    <div class="section no-break" style="margin-bottom:20px;padding:14px;border:1px solid #D5D9E0;">
+      <div style="font-size:14px;font-weight:600;color:#021744;margin-bottom:4px;">{{opportunityTitle}}</div>
+      <div style="font-size:11px;color:#576482;margin-bottom:10px;">{{buyer}} | Est. {{estimatedValue}} | Source: {{source}} | {{timing}}</div>
+      <table class="kf-table">
+        <tr><td style="font-weight:600;width:180px;">Expected bidders</td><td>{{estimatedCompetition.expectedBidders}} ({{estimatedCompetition.basis}})</td></tr>
+        <tr><td style="font-weight:600;">Likely route</td><td>{{routeToMarket.likelyRoute}}</td></tr>
+        <!-- {{#if routeToMarket.frameworkRequired}} -->
+        <tr><td style="font-weight:600;">Framework required</td><td>{{routeToMarket.frameworkRequired}}</td></tr>
+        <!-- {{/if}} -->
+      </table>
+      <!-- {{#if likelyCompetitors}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Likely competitors</div>
+      <table class="data-table">
+        <tr><th>Supplier</th><th>Basis</th><th>Dossier?</th></tr>
+        <!-- {{#each likelyCompetitors}} -->
+        <tr>
+          <td>{{supplierName}}</td>
+          <td>{{basis}}</td>
+          <td>{{#if hasDossier}}<span class="link-badge">Yes</span>{{/if}}</td>
+        </tr>
+        <!-- {{/each}} -->
+      </table>
+      <!-- {{/if}} -->
+    </div>
+    <!-- {{/each}} -->
+  </div>
+  <!-- {{/if}} -->
+
+  <!-- ── Intelligence Gaps ─────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Intelligence Gaps</div>
+    <table class="data-table">
+      <tr><th>Gap</th><th>Impact</th><th>Recommended Action</th></tr>
+      <!-- {{#each intelligenceGaps}} -->
+      <tr>
+        <td>{{gap}}</td>
+        <td>{{impact}}</td>
+        <td>{{recommendedAction}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Evidence Quality Summary ───────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Evidence Quality Summary</div>
+    <div class="eq-grid">
+      <div class="eq-card">
+        <div class="eq-card-label">Total citations</div>
+        <div class="eq-card-value">{{evidenceQuality.totalCitations}}</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-card-label">Average confidence</div>
+        <div class="eq-card-value">{{evidenceQuality.averageConfidence}}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Citations by source tier</div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 1 Official</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier1Pct}}%;background:#2D8A5E;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier1}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 2 Policy</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier2Pct}}%;background:#3A8CA0;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier2}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 3 Filings</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier3Pct}}%;background:#5CA3B6;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier3}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 4 Company</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier4Pct}}%;background:#C68A1D;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier4}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 5 External</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier5Pct}}%;background:#576482;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier5}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 6 Signals</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier6Pct}}%;background:#818CA2;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier6}}</span></div>
+    </div>
+    <div style="font-size:11px;font-weight:600;margin-bottom:6px;">Known gaps</div>
+    <ul class="gaps-list">
+      <!-- {{#each evidenceQuality.knownGaps}} --><li>{{this}}</li><!-- {{/each}} -->
+    </ul>
+  </div>
+
+  <!-- ── Version History ───────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Version History</div>
+    <table class="kf-table">
+      <tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+      <!-- {{#each meta.versionLog}} -->
+      <tr><td>{{version}}</td><td>{{date}}</td><td>{{summary}}</td></tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Linked Assets ─────────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Linked Library Assets</div>
+    <div class="section-text">
+      <!-- {{#if linkedAssets.supplierDossiers}} -->
+      <div style="font-size:11px;font-weight:600;margin-bottom:4px;">Supplier dossiers</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.supplierDossiers}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.clientProfiles}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Client profiles</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.clientProfiles}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.sectorBriefs}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Sector briefs</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.sectorBriefs}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<div class="report-footer">
+  <div>BidEquity Pipeline Scan | {{meta.scope}} | Generated {{meta.generatedAt}}</div>
+  <div>Confidential — BidEquity</div>
+</div>
+
+</body>
+</html>

@@ -2,10 +2,10 @@
 
 **Version:** 1.0 | April 2026
 **Status:** Design specification — authoritative input for MCP server implementation
-**Parent document:** `pwin_architect_plugin_architecture.md` (v1.5)
+**Parent document:** [[pwin-bid-execution/docs/pwin_architect_plugin_architecture|Plugin Architecture v1.5]]
 **Data model authority:** `bid_execution_architecture_v6.html`
-**Agent specifications:** `agent_1_document_intelligence.md` through `agent_6_solution_delivery.md`
-**Cross-product context:** Session 15 — multi-product platform architecture
+**Agent specifications:** [[pwin-bid-execution/docs/agent_1_document_intelligence|Agent 1]] through [[pwin-bid-execution/docs/agent_6_solution_delivery|Agent 6]]
+**Cross-product context:** [[docs/context/project_session15_multiproduct|Session 15]] — multi-product platform architecture
 
 ---
 

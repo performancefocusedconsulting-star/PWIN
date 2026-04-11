@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incumbent Assessment — {{meta.incumbentName}}</title>
+<!--
+  TEMPLATE: Incumbent Performance Assessment Report
+  PURPOSE:  Printable HTML report rendered from incumbent-assessment-schema.json data.
+            Used by Agent 2 (Market & Competitive Intelligence) to produce pursuit-specific
+            incumbent assessments for capture leads and bid directors.
+  PATTERN:  The data.json is the source of truth. This template renders it.
+            Do not hand-edit this report — regenerate it from the data.
+  PRINT:    Designed for A4, prints cleanly to PDF via browser.
+-->
+<style>
+  /* ── Reset & base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #021744;
+    line-height: 1.65;
+    font-size: 12px;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page { size: A4; margin: 18mm; }
+  @media print {
+    body { padding: 0; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  /* ── Cover / header ───────────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, #021744 0%, #0D2B5C 100%);
+    padding: 40px 36px 32px;
+    margin-bottom: 0;
+    color: #F0EDE6;
+  }
+  .cover-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(240,237,230,0.45);
+    margin-bottom: 6px;
+  }
+  .cover-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #F0EDE6;
+    margin-bottom: 4px;
+  }
+  .cover-sub {
+    font-size: 12px;
+    color: rgba(240,237,230,0.55);
+    margin-bottom: 24px;
+  }
+  .cover-facts {
+    display: flex;
+    gap: 20px;
+  }
+  .cover-fact-card {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid rgba(240,237,230,0.15);
+    background: rgba(240,237,230,0.04);
+  }
+  .cover-fact-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(240,237,230,0.5);
+    margin-bottom: 4px;
+  }
+  .cover-fact-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #F0EDE6;
+    line-height: 1.4;
+  }
+  .position-strong  { color: #C15050; }
+  .position-moderate { color: #C68A1D; }
+  .position-weak    { color: #5CA3B6; }
+
+  /* ── Enrichment banner ────────────────────────────────────── */
+  .enrichment-banner {
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .enrichment-initial          { background: rgba(193,80,80,0.1); color: #C15050; border-left: 3px solid #C15050; }
+  .enrichment-partially_enriched { background: rgba(198,138,29,0.1); color: #7C5A0A; border-left: 3px solid #C68A1D; }
+  .enrichment-fully_enriched   { background: rgba(45,138,94,0.1); color: #2D8A5E; border-left: 3px solid #2D8A5E; }
+
+  /* ── Body ─────────────────────────────────────────────────── */
+  .report-body {
+    padding: 28px 36px;
+    border: 1px solid #D5D9E0;
+    border-top: none;
+  }
+
+  /* ── Section ──────────────────────────────────────────────── */
+  .section { margin-bottom: 28px; }
+  .section-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #021744;
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .section-headline {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0D2B5C;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: rgba(92,163,182,0.06);
+    border-left: 3px solid #5CA3B6;
+  }
+  .section-text {
+    font-size: 12px;
+    color: #021744;
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+  .section-text p { margin-bottom: 8px; }
+
+  /* ── Tables ───────────────────────────────────────────────── */
+  .kf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin: 10px 0 16px;
+  }
+  .kf-table th {
+    background: rgba(2,23,68,0.06);
+    padding: 5px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #576482;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .kf-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #E8EBF0;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+  .data-table th {
+    background: #021744;
+    color: #F0EDE6;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .data-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #E8EBF0;
+    vertical-align: top;
+  }
+
+  /* ── Confidence & status badges ───────────────────────────── */
+  .conf-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .conf-high   { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .conf-good   { background: rgba(92,163,182,0.12); color: #3A8CA0; }
+  .conf-dir    { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .conf-weak   { background: rgba(193,80,80,0.12); color: #C15050; }
+  .status-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .status-complete       { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .status-partial        { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .status-awaiting_input { background: rgba(193,80,80,0.12); color: #C15050; }
+
+  /* ── Stickiness / vulnerability items ─────────────────────── */
+  .stick-item {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    border-left: 3px solid;
+    line-height: 1.6;
+  }
+  .stick-high   { background: rgba(193,80,80,0.06); border-color: #C15050; }
+  .stick-medium { background: rgba(198,138,29,0.06); border-color: #C68A1D; }
+  .stick-low    { background: rgba(92,163,182,0.06); border-color: #5CA3B6; }
+  .stick-unknown { background: rgba(129,140,162,0.06); border-color: #818CA2; }
+  .stick-label {
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+
+  .vuln-item {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    border-left: 3px solid;
+    line-height: 1.6;
+  }
+  .vuln-critical { background: rgba(193,80,80,0.08); border-color: #C15050; }
+  .vuln-high     { background: rgba(193,80,80,0.05); border-color: #C15050; }
+  .vuln-medium   { background: rgba(198,138,29,0.08); border-color: #C68A1D; }
+  .vuln-low      { background: rgba(92,163,182,0.08); border-color: #5CA3B6; }
+  .vuln-label {
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+
+  /* ── Evidence quality ─────────────────────────────────────── */
+  .eq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .eq-card { padding: 12px 14px; border: 1px solid #D5D9E0; }
+  .eq-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #576482; margin-bottom: 4px; }
+  .eq-card-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; color: #021744; }
+  .eq-bar-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 11px; }
+  .eq-bar-label { width: 100px; color: #576482; }
+  .eq-bar-track { flex: 1; height: 12px; background: #F0ECE4; margin: 0 8px; position: relative; }
+  .eq-bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+  .eq-bar-count { width: 30px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+  /* ── Gaps list ────────────────────────────────────────────── */
+  .gaps-list { list-style: none; padding: 0; margin: 8px 0; }
+  .gaps-list li { font-size: 11px; color: #576482; padding: 3px 0 3px 16px; position: relative; }
+  .gaps-list li::before { content: '?'; position: absolute; left: 0; color: #C68A1D; font-weight: 700; }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  .report-footer {
+    margin-top: 32px;
+    padding-top: 14px;
+    border-top: 1px solid #D5D9E0;
+    font-size: 10px;
+    color: #818CA2;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     COVER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-label">Incumbent Performance Assessment</div>
+  <div class="cover-title">{{meta.incumbentName}}</div>
+  <div class="cover-sub">{{meta.contractTitle}} | {{meta.pursuitName}} | Generated {{meta.generatedAt}} | v{{meta.version}}</div>
+  <div class="cover-facts">
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Overall Position</div>
+      <div class="cover-fact-value {{overallPositionColor}}">{{overallPosition.rating}}</div>
+    </div>
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Contract Value</div>
+      <div class="cover-fact-value">{{incumbent.contractValue}}</div>
+    </div>
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Contract End</div>
+      <div class="cover-fact-value">{{incumbent.contractEnd}}</div>
+    </div>
+    <div class="cover-fact-card">
+      <div class="cover-fact-label">Overall Stickiness</div>
+      <div class="cover-fact-value">{{stickiness.overallStickiness}}</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Enrichment state banner ──────────────────────────────── -->
+<div class="enrichment-banner enrichment-{{meta.enrichmentState}}">
+  <!-- {{#if (eq meta.enrichmentState "initial")}} -->
+  INITIAL ASSESSMENT — based on public sources only. Team input required for sections marked [AWAITING INPUT].
+  <!-- {{else if (eq meta.enrichmentState "partially_enriched")}} -->
+  PARTIALLY ENRICHED — some team input incorporated. See Awaiting Input section for remaining questions.
+  <!-- {{else}} -->
+  FULLY ENRICHED — team input incorporated across all sections.
+  <!-- {{/if}} -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REPORT BODY
+     ═══════════════════════════════════════════════════════════ -->
+<div class="report-body">
+
+  <!-- ── Overall Position ──────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Overall Incumbent Position: {{overallPosition.rating}}</div>
+    <div class="section-headline">{{overallPosition.displacementNarrative}}</div>
+    <table class="kf-table">
+      <tr><td style="font-weight:600;width:180px;">Key vulnerability</td><td>{{overallPosition.keyVulnerability}}</td></tr>
+      <tr><td style="font-weight:600;">Key strength</td><td>{{overallPosition.keyStrength}}</td></tr>
+      <!-- {{#if overallPosition.rebidAdvice}} -->
+      <tr><td style="font-weight:600;">Re-bid advice</td><td>{{overallPosition.rebidAdvice}}</td></tr>
+      <!-- {{/if}} -->
+    </table>
+  </div>
+
+  <!-- ── Incumbent Profile ─────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Incumbent Profile</div>
+    <table class="kf-table">
+      <tr><td style="font-weight:600;width:180px;">Company</td><td>{{incumbent.companyName}}</td></tr>
+      <tr><td style="font-weight:600;">Contract scope</td><td>{{incumbent.scope}}</td></tr>
+      <tr><td style="font-weight:600;">Delivery model</td><td>{{incumbent.deliveryModel}}</td></tr>
+      <tr><td style="font-weight:600;">Contract period</td><td>{{incumbent.contractStart}} to {{incumbent.contractEnd}}</td></tr>
+      <tr><td style="font-weight:600;">Extensions</td><td>{{incumbent.extensionsGranted}} granted, {{incumbent.extensionsRemaining}} remaining</td></tr>
+      <!-- {{#if incumbent.hasDossier}} -->
+      <tr><td style="font-weight:600;">Supplier dossier</td><td><a href="{{incumbent.dossierPath}}">View full dossier</a></td></tr>
+      <!-- {{/if}} -->
+    </table>
+  </div>
+
+  <!-- ── Performance Assessment ────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Performance Assessment <span class="status-badge status-{{sections.performanceAssessment.status}}">{{sections.performanceAssessment.status}}</span></div>
+    <div class="section-headline">{{sections.performanceAssessment.headline}}</div>
+    <div class="section-text">{{sections.performanceAssessment.narrative}}</div>
+    <!-- Performance evidence -->
+    <table class="data-table">
+      <tr><th>Source</th><th>Finding</th><th>Sentiment</th><th>Date</th><th>Conf.</th></tr>
+      <!-- {{#each performanceData.publicEvidence}} -->
+      <tr>
+        <td>{{source}}</td>
+        <td>{{finding}}</td>
+        <td>{{sentiment}}</td>
+        <td>{{date}}</td>
+        <td><span class="conf-badge {{confidenceClass}}">{{confidence}}</span></td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Stickiness Analysis ───────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Stickiness Analysis <span class="status-badge status-{{sections.stickinessAnalysis.status}}">{{sections.stickinessAnalysis.status}}</span>
+      <span style="font-size:11px;font-weight:400;color:#576482;margin-left:8px;">{{stickiness.completeness.dimensionsEvidenced}}/{{stickiness.completeness.dimensionsTotal}} dimensions evidenced</span>
+      <!-- {{#if stickiness.completeness.incomplete}} --><span class="conf-badge conf-weak" style="margin-left:6px;">INCOMPLETE</span><!-- {{/if}} -->
+    </div>
+    <div class="section-headline">Overall stickiness: {{stickiness.overallStickiness}}</div>
+    <div class="section-text">{{sections.stickinessAnalysis.narrative}}</div>
+    <!-- {{#each stickiness.dimensions}} -->
+    <div class="stick-item stick-{{rating}}">
+      <div class="stick-label">{{dimension}} — {{rating}}</div>
+      <div>{{keyFactors}}</div>
+      <div style="font-size:11px;color:#576482;margin-top:4px;">Mitigation: {{mitigation}} | Confidence: {{confidence}} | {{#if evidenced}}Evidenced{{else}}Inferred{{/if}}</div>
+    </div>
+    <!-- {{/each}} -->
+  </div>
+
+  <!-- ── Vulnerability Analysis ────────────────────────────── -->
+  <div class="section no-break page-break">
+    <div class="section-title">Vulnerability Analysis <span class="status-badge status-{{sections.vulnerabilityAnalysis.status}}">{{sections.vulnerabilityAnalysis.status}}</span></div>
+    <div class="section-headline">{{sections.vulnerabilityAnalysis.headline}}</div>
+    <div class="section-text">{{sections.vulnerabilityAnalysis.narrative}}</div>
+    <!-- {{#each vulnerabilities}} -->
+    <div class="vuln-item vuln-{{severity}}">
+      <div class="vuln-label">{{severity}} — {{area}}</div>
+      <div>{{evidence}}</div>
+      <div style="font-size:11px;color:#576482;margin-top:4px;">Exploitable by: {{exploitableBy}} | Confidence: {{confidence}} | {{#if evidenced}}Evidenced{{else}}Inferred{{/if}}</div>
+    </div>
+    <!-- {{/each}} -->
+  </div>
+
+  <!-- ── Transformation Opportunities ──────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Transformation Opportunities <span class="status-badge status-{{sections.transformationOpportunity.status}}">{{sections.transformationOpportunity.status}}</span></div>
+    <div class="section-headline">{{sections.transformationOpportunity.headline}}</div>
+    <div class="section-text">{{sections.transformationOpportunity.narrative}}</div>
+    <table class="data-table">
+      <tr><th>Domain</th><th>Opportunity</th><th>Evidence</th><th>Feasibility</th><th>Client Appetite</th><th>Conf.</th></tr>
+      <!-- {{#each transformationOpportunities}} -->
+      <tr>
+        <td>{{domain}}</td>
+        <td>{{opportunity}}</td>
+        <td>{{evidence}}</td>
+        <td>{{feasibility}}</td>
+        <td>{{clientAppetite}}</td>
+        <td><span class="conf-badge {{confidenceClass}}">{{confidence}}</span></td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Displacement Narrative ────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Displacement Narrative</div>
+    <div class="section-headline">{{sections.displacementNarrative.headline}}</div>
+    <div class="section-text">{{sections.displacementNarrative.narrative}}</div>
+  </div>
+
+  <!-- ── Re-bid Scenario ───────────────────────────────────── -->
+  <!-- {{#if sections.rebidScenario.headline}} -->
+  <div class="section no-break">
+    <div class="section-title">Re-bid Scenario (If We Are the Incumbent)</div>
+    <div class="section-headline">{{sections.rebidScenario.headline}}</div>
+    <div class="section-text">{{sections.rebidScenario.narrative}}</div>
+  </div>
+  <!-- {{/if}} -->
+
+  <!-- ── Awaiting Input ────────────────────────────────────── -->
+  <!-- {{#if awaitingInput}} -->
+  <div class="section no-break">
+    <div class="section-title">Awaiting Team Input</div>
+    <table class="data-table">
+      <tr><th>Question</th><th>Section</th><th>Impact</th></tr>
+      <!-- {{#each awaitingInput}} -->
+      <tr>
+        <td>{{question}}</td>
+        <td>{{section}}</td>
+        <td>{{impact}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+  <!-- {{/if}} -->
+
+  <!-- ── Evidence Quality Summary ───────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Evidence Quality Summary</div>
+    <div class="eq-grid">
+      <div class="eq-card">
+        <div class="eq-card-label">Total citations</div>
+        <div class="eq-card-value">{{evidenceQuality.totalCitations}}</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-card-label">Average confidence</div>
+        <div class="eq-card-value">{{evidenceQuality.averageConfidence}}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Citations by source tier</div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 1 Official</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier1Pct}}%;background:#2D8A5E;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier1}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 2 Policy</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier2Pct}}%;background:#3A8CA0;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier2}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 3 Filings</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier3Pct}}%;background:#5CA3B6;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier3}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 4 Company</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier4Pct}}%;background:#C68A1D;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier4}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 5 External</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier5Pct}}%;background:#576482;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier5}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 6 Signals</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier6Pct}}%;background:#818CA2;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier6}}</span></div>
+    </div>
+    <div style="font-size:11px;font-weight:600;margin-bottom:6px;">Known gaps</div>
+    <ul class="gaps-list">
+      <!-- {{#each evidenceQuality.knownGaps}} --><li>{{this}}</li><!-- {{/each}} -->
+    </ul>
+  </div>
+
+  <!-- ── Version History ───────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Version History</div>
+    <table class="kf-table">
+      <tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+      <!-- {{#each meta.versionLog}} -->
+      <tr><td>{{version}}</td><td>{{date}}</td><td>{{summary}}</td></tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Linked Assets ─────────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Linked Library Assets</div>
+    <div class="section-text">
+      <!-- {{#if linkedAssets.supplierDossier}} -->
+      <div style="font-size:11px;margin-bottom:4px;">Supplier dossier: {{linkedAssets.supplierDossier}}</div>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.clientProfile}} -->
+      <div style="font-size:11px;margin-bottom:4px;">Client profile: {{linkedAssets.clientProfile}}</div>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.sectorBrief}} -->
+      <div style="font-size:11px;margin-bottom:4px;">Sector brief: {{linkedAssets.sectorBrief}}</div>
+      <!-- {{/if}} -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<div class="report-footer">
+  <div>BidEquity Incumbent Assessment | {{meta.incumbentName}} | {{meta.pursuitName}} | Generated {{meta.generatedAt}}</div>
+  <div>Confidential — BidEquity</div>
+</div>
+
+</body>
+</html>

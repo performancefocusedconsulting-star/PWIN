@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector Intelligence Scan — {{sectorName}}</title>
+<!--
+  TEMPLATE: Sector Intelligence Scan Report
+  PURPOSE:  Printable HTML report rendered from sector-scan-schema.json data.
+            Used by Agent 2 (Market & Competitive Intelligence) to produce uniform
+            sector briefings for bid directors and capture leads.
+  PATTERN:  The data.json is the source of truth. This template renders it.
+            Do not hand-edit this report — regenerate it from the data.
+  PRINT:    Designed for A4, prints cleanly to PDF via browser.
+-->
+<style>
+  /* ── Reset & base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #021744;
+    line-height: 1.65;
+    font-size: 12px;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page { size: A4; margin: 18mm; }
+  @media print {
+    body { padding: 0; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  /* ── Cover / header ───────────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, #021744 0%, #0D2B5C 100%);
+    padding: 40px 36px 32px;
+    margin-bottom: 0;
+    color: #F0EDE6;
+  }
+  .cover-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(240,237,230,0.45);
+    margin-bottom: 6px;
+  }
+  .cover-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #F0EDE6;
+    margin-bottom: 4px;
+  }
+  .cover-sub {
+    font-size: 12px;
+    color: rgba(240,237,230,0.55);
+    margin-bottom: 24px;
+  }
+  .cover-facts {
+    display: flex;
+    gap: 20px;
+  }
+  .cover-fact-card {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid rgba(240,237,230,0.15);
+    background: rgba(240,237,230,0.04);
+  }
+  .cover-fact-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(240,237,230,0.5);
+    margin-bottom: 4px;
+  }
+  .cover-fact-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #F0EDE6;
+    line-height: 1.4;
+  }
+
+  /* ── Body ─────────────────────────────────────────────────── */
+  .report-body {
+    padding: 28px 36px;
+    border: 1px solid #D5D9E0;
+    border-top: none;
+  }
+
+  /* ── Section ──────────────────────────────────────────────── */
+  .section { margin-bottom: 28px; }
+  .section-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #021744;
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .section-headline {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0D2B5C;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: rgba(92,163,182,0.06);
+    border-left: 3px solid #5CA3B6;
+  }
+  .section-text {
+    font-size: 12px;
+    color: #021744;
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+  .section-text p { margin-bottom: 8px; }
+
+  /* ── Tables ───────────────────────────────────────────────── */
+  .kf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin: 10px 0 16px;
+  }
+  .kf-table th {
+    background: rgba(2,23,68,0.06);
+    padding: 5px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #576482;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .kf-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #E8EBF0;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+  .data-table th {
+    background: #021744;
+    color: #F0EDE6;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .data-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #E8EBF0;
+    vertical-align: top;
+  }
+
+  /* ── Confidence badge ─────────────────────────────────────── */
+  .conf-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .conf-high   { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .conf-good   { background: rgba(92,163,182,0.12); color: #3A8CA0; }
+  .conf-dir    { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .conf-weak   { background: rgba(193,80,80,0.12); color: #C15050; }
+
+  /* ── Trend direction badges ───────────────────────────────── */
+  .trend-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .trend-accelerating { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .trend-stable       { background: rgba(92,163,182,0.12); color: #3A8CA0; }
+  .trend-emerging     { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .trend-declining    { background: rgba(193,80,80,0.12); color: #C15050; }
+
+  /* ── Evidence quality ─────────────────────────────────────── */
+  .eq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .eq-card { padding: 12px 14px; border: 1px solid #D5D9E0; }
+  .eq-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #576482; margin-bottom: 4px; }
+  .eq-card-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; color: #021744; }
+  .eq-bar-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 11px; }
+  .eq-bar-label { width: 100px; color: #576482; }
+  .eq-bar-track { flex: 1; height: 12px; background: #F0ECE4; margin: 0 8px; position: relative; }
+  .eq-bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+  .eq-bar-count { width: 30px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+  /* ── Gaps list ────────────────────────────────────────────── */
+  .gaps-list { list-style: none; padding: 0; margin: 8px 0; }
+  .gaps-list li { font-size: 11px; color: #576482; padding: 3px 0 3px 16px; position: relative; }
+  .gaps-list li::before { content: '?'; position: absolute; left: 0; color: #C68A1D; font-weight: 700; }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  .report-footer {
+    margin-top: 32px;
+    padding-top: 14px;
+    border-top: 1px solid #D5D9E0;
+    font-size: 10px;
+    color: #818CA2;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     COVER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-label">Sector Intelligence Scan</div>
+  <div class="cover-title">{{meta.sectorName}}</div>
+  <div class="cover-sub">{{meta.scope}} | Period: {{meta.periodCovered}} | Generated {{meta.generatedAt}} | v{{meta.version}} | Depth: {{meta.depthMode}}</div>
+  <!-- {{#if meta.pursuitReference}} -->
+  <div class="cover-facts">
+    <div class="cover-fact-card" style="flex:none;width:100%;">
+      <div class="cover-fact-label">Pursuit Context</div>
+      <div class="cover-fact-value">{{meta.pursuitReference}}</div>
+    </div>
+  </div>
+  <!-- {{/if}} -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REPORT BODY
+     ═══════════════════════════════════════════════════════════ -->
+<div class="report-body">
+
+  <!-- ── Section 1: Policy & Regulatory Landscape ──────────── -->
+  <div class="section no-break">
+    <div class="section-title">Policy & Regulatory Landscape</div>
+    <div class="section-headline">{{sections.policyAndRegulatory.headline}}</div>
+    <div class="section-text">{{sections.policyAndRegulatory.narrative}}</div>
+    <table class="data-table">
+      <tr><th>Policy / Regulation</th><th>Type</th><th>Status</th><th>Sector Impact</th><th>Bid Implication</th><th>Conf.</th></tr>
+      <!-- {{#each policyDrivers}} -->
+      <tr>
+        <td>{{name}}</td>
+        <td>{{type}}</td>
+        <td>{{status}}</td>
+        <td>{{impactOnSector}}</td>
+        <td>{{implicationForBid}}</td>
+        <td><span class="conf-badge {{confidenceClass}}">{{confidence}}</span></td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Section 2: Spending & Budget Signals ──────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Spending & Budget Signals</div>
+    <div class="section-headline">{{sections.spendingAndBudget.headline}}</div>
+    <div class="section-text">{{sections.spendingAndBudget.narrative}}</div>
+    <table class="data-table">
+      <tr><th>Signal</th><th>Value</th><th>Period</th><th>Source</th><th>Conf.</th></tr>
+      <!-- {{#each spendingSignals}} -->
+      <tr>
+        <td>{{signal}}</td>
+        <td>{{value}}</td>
+        <td>{{period}}</td>
+        <td>{{source}}</td>
+        <td><span class="conf-badge {{confidenceClass}}">{{confidence}}</span></td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Section 3: Market Trends ──────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Market Trends</div>
+    <div class="section-headline">{{sections.marketTrends.headline}}</div>
+    <div class="section-text">{{sections.marketTrends.narrative}}</div>
+    <table class="data-table">
+      <tr><th>Trend</th><th>Category</th><th>Direction</th><th>Evidence</th><th>Bid Implication</th><th>Conf.</th></tr>
+      <!-- {{#each marketTrends}} -->
+      <tr>
+        <td>{{trend}}</td>
+        <td>{{category}}</td>
+        <td><span class="trend-badge trend-{{direction}}">{{direction}}</span></td>
+        <td>{{evidence}}</td>
+        <td>{{bidImplication}}</td>
+        <td><span class="conf-badge {{confidenceClass}}">{{confidence}}</span></td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Section 4: Trade Press & Industry Commentary ──────── -->
+  <div class="section no-break">
+    <div class="section-title">Trade Press & Industry Commentary</div>
+    <div class="section-headline">{{sections.tradePressAndCommentary.headline}}</div>
+    <div class="section-text">{{sections.tradePressAndCommentary.narrative}}</div>
+  </div>
+
+  <!-- ── Section 5: Peer Comparisons ───────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Peer Comparisons</div>
+    <div class="section-headline">{{sections.peerComparisons.headline}}</div>
+    <div class="section-text">{{sections.peerComparisons.narrative}}</div>
+  </div>
+
+  <!-- ── Section 6: Implications ───────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Implications for Positioning</div>
+    <div class="section-headline">{{sections.implications.headline}}</div>
+    <div class="section-text">{{sections.implications.narrative}}</div>
+  </div>
+
+  <!-- ── Frameworks ────────────────────────────────────────── -->
+  <div class="section no-break page-break">
+    <div class="section-title">Framework Landscape</div>
+    <table class="data-table">
+      <tr><th>Framework</th><th>Provider</th><th>Status</th><th>End Date</th><th>Re-let Timeline</th><th>Est. Value</th></tr>
+      <!-- {{#each frameworks}} -->
+      <tr>
+        <td>{{name}}</td>
+        <td>{{provider}}</td>
+        <td>{{status}}</td>
+        <td>{{endDate}}</td>
+        <td>{{reLetTimeline}}</td>
+        <td>{{estimatedValue}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Intelligence Gaps ─────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Intelligence Gaps</div>
+    <table class="data-table">
+      <tr><th>Gap</th><th>Impact</th><th>Recommended Action</th></tr>
+      <!-- {{#each intelligenceGaps}} -->
+      <tr>
+        <td>{{gap}}</td>
+        <td>{{impact}}</td>
+        <td>{{recommendedAction}}</td>
+      </tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Evidence Quality Summary ───────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Evidence Quality Summary</div>
+    <div class="eq-grid">
+      <div class="eq-card">
+        <div class="eq-card-label">Total citations</div>
+        <div class="eq-card-value">{{evidenceQuality.totalCitations}}</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-card-label">Average confidence</div>
+        <div class="eq-card-value">{{evidenceQuality.averageConfidence}}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Citations by source tier</div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 1 Official</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier1Pct}}%;background:#2D8A5E;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier1}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 2 Policy</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier2Pct}}%;background:#3A8CA0;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier2}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 3 Filings</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier3Pct}}%;background:#5CA3B6;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier3}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 4 Company</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier4Pct}}%;background:#C68A1D;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier4}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 5 External</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier5Pct}}%;background:#576482;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier5}}</span></div>
+      <div class="eq-bar-row"><span class="eq-bar-label">Tier 6 Signals</span><div class="eq-bar-track"><div class="eq-bar-fill" style="width:{{tier6Pct}}%;background:#818CA2;"></div></div><span class="eq-bar-count">{{evidenceQuality.tierDistribution.tier6}}</span></div>
+    </div>
+    <div style="font-size:11px;font-weight:600;margin-bottom:6px;">Known gaps</div>
+    <ul class="gaps-list">
+      <!-- {{#each evidenceQuality.knownGaps}} --><li>{{this}}</li><!-- {{/each}} -->
+    </ul>
+  </div>
+
+  <!-- ── Version History ───────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Version History</div>
+    <table class="kf-table">
+      <tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+      <!-- {{#each meta.versionLog}} -->
+      <tr><td>{{version}}</td><td>{{date}}</td><td>{{summary}}</td></tr>
+      <!-- {{/each}} -->
+    </table>
+  </div>
+
+  <!-- ── Linked Assets ─────────────────────────────────────── -->
+  <div class="section no-break">
+    <div class="section-title">Linked Library Assets</div>
+    <div class="section-text">
+      <!-- {{#if linkedAssets.supplierDossiers}} -->
+      <div style="font-size:11px;font-weight:600;margin-bottom:4px;">Supplier dossiers</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.supplierDossiers}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.clientProfiles}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Client profiles</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.clientProfiles}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+      <!-- {{#if linkedAssets.pipelineScans}} -->
+      <div style="font-size:11px;font-weight:600;margin:8px 0 4px;">Pipeline scans</div>
+      <ul class="gaps-list">
+        <!-- {{#each linkedAssets.pipelineScans}} --><li>{{this}}</li><!-- {{/each}} -->
+      </ul>
+      <!-- {{/if}} -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<div class="report-footer">
+  <div>BidEquity Sector Intelligence Scan | {{meta.sectorName}} | Generated {{meta.generatedAt}}</div>
+  <div>Confidential — BidEquity</div>
+</div>
+
+</body>
+</html>

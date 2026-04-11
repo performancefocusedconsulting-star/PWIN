@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pipeline-scan-v1",
+  "title": "Pipeline & Opportunity Scan",
+  "description": "Structured data output for a pipeline intelligence scan. Stored in the bid library as a time-stamped snapshot. Used by the consulting team for pursuit prioritisation and by Qualify for opportunity context.",
+
+  "type": "object",
+  "required": ["meta", "forwardPipeline", "expiryPipeline", "evidenceQuality"],
+
+  "properties": {
+
+    "meta": {
+      "description": "Report metadata — what was scanned, when, scope",
+      "type": "object",
+      "required": ["scope", "generatedAt", "generatedBy", "version"],
+      "properties": {
+        "scope":            { "type": "string", "description": "What was scanned, e.g. 'Defence IT', 'NHS Digital', 'Local Government > £1m'" },
+        "slug":             { "type": "string", "description": "URL-safe identifier for filing, e.g. defence-it-2026-q2" },
+        "scopeType":        { "type": "string", "enum": ["sector", "buyer", "category", "custom"], "description": "How the scope was defined" },
+        "timeHorizon":      { "type": "string", "description": "How far forward the scan looks, e.g. '18 months'" },
+        "valueThreshold":   { "type": "number", "description": "Minimum contract value in GBP included in the scan, if filtered" },
+        "generatedAt":      { "type": "string", "format": "date-time" },
+        "generatedBy":      { "type": "string" },
+        "version":          { "type": "string" },
+        "versionLog": {
+          "type": "array",
+          "description": "What changed in each version — most recent first",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version":    { "type": "string" },
+              "date":       { "type": "string", "format": "date" },
+              "summary":    { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "summary": {
+      "description": "Top-level scan summary for the cover",
+      "type": "object",
+      "properties": {
+        "totalForwardOpportunities":  { "type": "number" },
+        "totalExpiringContracts":     { "type": "number" },
+        "totalEstimatedValue":        { "type": "string", "description": "Combined estimated value across all opportunities, GBP" },
+        "topBuyers":                  { "type": "array", "items": { "type": "string" }, "description": "Top 5 buyers by opportunity count or value" },
+        "headline":                   { "type": "string", "description": "One-sentence summary of the pipeline picture" }
+      }
+    },
+
+    "forwardPipeline": {
+      "description": "Section 1 — planning notices and prior information notices from the procurement database",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title":              { "type": "string" },
+          "buyer":              { "type": "string" },
+          "estimatedValue":     { "type": "number", "description": "GBP" },
+          "expectedPublication": { "type": "string", "description": "When the full notice is expected" },
+          "cpvCodes":           { "type": "array", "items": { "type": "string" } },
+          "procurementRoute":   { "type": "string", "description": "If stated in the planning notice" },
+          "sector":             { "type": "string" },
+          "ocid":               { "type": "string", "description": "OCDS identifier for traceability" },
+          "source":             { "type": "string" },
+          "confidence":         { "type": "number", "minimum": 0, "maximum": 100 },
+          "hasClientProfile":   { "type": "boolean", "description": "Whether a client profile exists for this buyer" },
+          "notes":              { "type": "string" }
+        }
+      }
+    },
+
+    "expiryPipeline": {
+      "description": "Section 2 — live contracts approaching expiry within the scan timeframe",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title":              { "type": "string" },
+          "buyer":              { "type": "string" },
+          "incumbentSupplier":  { "type": "string" },
+          "contractValue":      { "type": "number", "description": "GBP" },
+          "expiryDate":         { "type": "string", "format": "date" },
+          "extensionsRemaining": { "type": "string", "description": "Extension options left, e.g. '1x12 months'" },
+          "sector":             { "type": "string" },
+          "ocid":               { "type": "string" },
+          "hasIncumbentDossier": { "type": "boolean", "description": "Whether a supplier dossier exists for the incumbent" },
+          "hasClientProfile":   { "type": "boolean", "description": "Whether a client profile exists for the buyer" },
+          "confidence":         { "type": "number", "minimum": 0, "maximum": 100 },
+          "notes":              { "type": "string" }
+        }
+      }
+    },
+
+    "publishedPlans": {
+      "description": "Section 3 — procurement plans published by major buyers (PDFs, spreadsheets, pipeline events)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "buyer":          { "type": "string" },
+          "documentTitle":  { "type": "string" },
+          "publicationDate": { "type": "string", "format": "date" },
+          "opportunities":  { "type": "number", "description": "Number of opportunities listed in the plan" },
+          "totalValue":     { "type": "string", "description": "Aggregate value if stated" },
+          "sourceUrl":      { "type": "string" },
+          "highlights":     { "type": "array", "items": { "type": "string" }, "description": "Key opportunities relevant to the scan scope" },
+          "confidence":     { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+
+    "frameworkRenewals": {
+      "description": "Section 4 — major frameworks approaching re-competition",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name":           { "type": "string" },
+          "provider":       { "type": "string", "description": "e.g. CCS, NHS SBS, YPO" },
+          "currentEndDate": { "type": "string", "format": "date" },
+          "estimatedReLet": { "type": "string", "description": "Expected re-competition timeline" },
+          "estimatedValue": { "type": "string" },
+          "relevantLots":   { "type": "array", "items": { "type": "string" } },
+          "currentHolders": { "type": "array", "items": { "type": "string" }, "description": "Known suppliers on relevant lots" },
+          "source":         { "type": "string" },
+          "confidence":     { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+
+    "marketSignals": {
+      "description": "Section 5 — trade press, policy announcements, spending commitments indicating upcoming activity",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "signal":           { "type": "string" },
+          "source":           { "type": "string" },
+          "sourceTier":       { "type": "number" },
+          "date":             { "type": "string", "format": "date" },
+          "implication":      { "type": "string", "description": "What procurement activity this might indicate" },
+          "confidence":       { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+
+    "opportunityAssessments": {
+      "description": "Section 6 — for opportunities above the value threshold, estimated competition and route-to-market",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "opportunityTitle": { "type": "string" },
+          "buyer":            { "type": "string" },
+          "estimatedValue":   { "type": "number", "description": "GBP" },
+          "source":           { "type": "string", "enum": ["forward_pipeline", "expiry_pipeline", "published_plan", "market_signal"] },
+          "estimatedCompetition": {
+            "type": "object",
+            "properties": {
+              "expectedBidders":    { "type": "string", "description": "Estimated range, e.g. '4-6'" },
+              "basis":              { "type": "string", "description": "How this was estimated — historic bidder counts for this buyer/category" },
+              "confidence":         { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          },
+          "likelyCompetitors": {
+            "type": "array",
+            "description": "Known or likely competitors — cross-referenced against supplier dossiers",
+            "items": {
+              "type": "object",
+              "properties": {
+                "supplierName":   { "type": "string" },
+                "basis":          { "type": "string", "description": "Why they are likely — incumbent, framework holder, recent winner in sector" },
+                "hasDossier":     { "type": "boolean" }
+              }
+            }
+          },
+          "routeToMarket": {
+            "type": "object",
+            "properties": {
+              "likelyRoute":      { "type": "string", "description": "e.g. Open procedure, Framework call-off, Restricted" },
+              "frameworkRequired": { "type": "string", "description": "Framework membership needed, if framework route" },
+              "preQualification":  { "type": "string", "description": "Any pre-qualification requirements" }
+            }
+          },
+          "timing":           { "type": "string", "description": "Expected timeline" }
+        }
+      }
+    },
+
+    "intelligenceGaps": {
+      "description": "What could not be determined",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gap":              { "type": "string" },
+          "impact":           { "type": "string" },
+          "recommendedAction": { "type": "string" }
+        }
+      }
+    },
+
+    "evidenceQuality": {
+      "description": "Overall assessment of how much to trust this scan",
+      "type": "object",
+      "properties": {
+        "totalCitations":     { "type": "number" },
+        "tierDistribution": {
+          "type": "object",
+          "properties": {
+            "tier1": { "type": "number" },
+            "tier2": { "type": "number" },
+            "tier3": { "type": "number" },
+            "tier4": { "type": "number" },
+            "tier5": { "type": "number" },
+            "tier6": { "type": "number" }
+          }
+        },
+        "averageConfidence":  { "type": "number" },
+        "knownGaps":          { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "linkedAssets": {
+      "description": "Cross-references to related library assets",
+      "type": "object",
+      "properties": {
+        "supplierDossiers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "clientProfiles": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "sectorBriefs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

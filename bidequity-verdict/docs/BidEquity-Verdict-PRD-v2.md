@@ -1,5 +1,7 @@
 # BidEquity Verdict — Product Requirements Document
 
+> **See also:** [[pwin-bid-execution/docs/mcp_server_architecture|MCP Server Architecture]] | [[pwin-competitive-intel/README|Competitive Intel DB]] | [[HOME|Map of Content]]
+
 **Version:** 2.0
 **Date:** 3 April 2026
 **Author:** Paul Fenton

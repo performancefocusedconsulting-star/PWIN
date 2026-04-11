@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "incumbent-assessment-v1",
+  "title": "Incumbent Performance Assessment",
+  "description": "Structured data output for a pursuit-specific incumbent assessment. Stored inside the pursuit record, not the bid library. Other agents (particularly Agent 3) consume this directly for displacement strategy.",
+
+  "type": "object",
+  "required": ["meta", "incumbent", "sections", "overallPosition", "evidenceQuality"],
+
+  "properties": {
+
+    "meta": {
+      "description": "Report metadata — pursuit context, when built, completeness state",
+      "type": "object",
+      "required": ["pursuitName", "incumbentName", "generatedAt", "generatedBy", "version"],
+      "properties": {
+        "pursuitName":      { "type": "string", "description": "Name of the pursuit this assessment supports" },
+        "pursuitId":        { "type": "string", "description": "Platform pursuit ID if available" },
+        "incumbentName":    { "type": "string", "description": "Name of the incumbent supplier" },
+        "contractTitle":    { "type": "string", "description": "Title of the contract being defended/challenged" },
+        "generatedAt":      { "type": "string", "format": "date-time" },
+        "generatedBy":      { "type": "string" },
+        "version":          { "type": "string" },
+        "refreshedFrom":    { "type": "string", "description": "If enriched from a prior version" },
+        "enrichmentState":  { "type": "string", "enum": ["initial", "partially_enriched", "fully_enriched"], "description": "How much team input has been incorporated" },
+        "versionLog": {
+          "type": "array",
+          "description": "What changed in each version — most recent first",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version":    { "type": "string" },
+              "date":       { "type": "string", "format": "date" },
+              "summary":    { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "incumbent": {
+      "description": "Section 1 — core facts about the incumbent and the contract",
+      "type": "object",
+      "properties": {
+        "companyName":        { "type": "string" },
+        "companiesHouseNo":   { "type": "string" },
+        "contractValue":      { "type": "number", "description": "GBP" },
+        "contractStart":      { "type": "string", "format": "date" },
+        "contractEnd":        { "type": "string", "format": "date" },
+        "extensionsGranted":  { "type": "number" },
+        "extensionsRemaining": { "type": "number" },
+        "scope":              { "type": "string", "description": "Brief description of contract scope" },
+        "deliveryModel":      { "type": "string", "description": "How they deliver: onshore, blended, outsourced, etc." },
+        "keyPersonnel":       { "type": "array", "items": { "type": "string" }, "description": "Named individuals if known — often [AWAITING INPUT]" },
+        "hasDossier":         { "type": "boolean", "description": "Whether a supplier dossier exists in the library for this incumbent" },
+        "dossierPath":        { "type": "string", "description": "Path to supplier dossier if it exists" }
+      }
+    },
+
+    "sections": {
+      "description": "Sections 2-7 of the assessment — each has narrative and structured data",
+      "type": "object",
+      "properties": {
+        "performanceAssessment":    { "$ref": "#/$defs/assessmentSection" },
+        "stickinessAnalysis":       { "$ref": "#/$defs/assessmentSection" },
+        "vulnerabilityAnalysis":    { "$ref": "#/$defs/assessmentSection" },
+        "transformationOpportunity": { "$ref": "#/$defs/assessmentSection" },
+        "displacementNarrative":    { "$ref": "#/$defs/assessmentSection" },
+        "rebidScenario":            { "$ref": "#/$defs/assessmentSection" }
+      }
+    },
+
+    "performanceData": {
+      "description": "Structured performance evidence — machine-readable for Agent 3",
+      "type": "object",
+      "properties": {
+        "overallRating":    { "type": "string", "enum": ["strong", "adequate", "weak", "unknown"] },
+        "publicEvidence": {
+          "type": "array",
+          "description": "Each piece of performance evidence from public sources",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source":       { "type": "string", "description": "FOI, NAO, PAC, news, Procurement Act disclosure" },
+              "finding":      { "type": "string" },
+              "sentiment":    { "type": "string", "enum": ["positive", "neutral", "negative"] },
+              "date":         { "type": "string", "format": "date" },
+              "confidence":   { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          }
+        },
+        "remediationNotices": { "type": "number", "description": "Count of formal remediation notices if known" },
+        "serviceCredits":     { "type": "string", "description": "Value of service credits applied if known" }
+      }
+    },
+
+    "stickiness": {
+      "description": "Structured stickiness assessment across five dimensions",
+      "type": "object",
+      "required": ["dimensions", "overallStickiness"],
+      "properties": {
+        "overallStickiness": { "type": "string", "enum": ["high", "medium", "low"] },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dimension", "rating"],
+            "properties": {
+              "dimension":    { "type": "string", "enum": ["tupe", "technology", "knowledge", "service_criticality", "political"] },
+              "rating":       { "type": "string", "enum": ["high", "medium", "low", "unknown"] },
+              "keyFactors":   { "type": "string", "description": "What drives this rating" },
+              "mitigation":   { "type": "string", "description": "How a challenger could mitigate this stickiness" },
+              "confidence":   { "type": "number", "minimum": 0, "maximum": 100 },
+              "evidenced":    { "type": "boolean", "description": "True if based on evidence, false if inferred or defaulted" }
+            }
+          }
+        },
+        "completeness": {
+          "type": "object",
+          "properties": {
+            "dimensionsEvidenced": { "type": "number" },
+            "dimensionsTotal":     { "type": "number", "const": 5 },
+            "incomplete":          { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "vulnerabilities": {
+      "description": "Structured vulnerability data — what Agent 3 uses for positioning",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "area":         { "type": "string" },
+          "severity":     { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "evidence":     { "type": "string" },
+          "confidence":   { "type": "number", "minimum": 0, "maximum": 100 },
+          "evidenced":    { "type": "boolean" },
+          "exploitableBy": { "type": "string", "description": "What kind of alternative or approach could exploit this" }
+        }
+      }
+    },
+
+    "transformationOpportunities": {
+      "description": "What a challenger can offer that the incumbent has not",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "domain":       { "type": "string", "enum": ["organisational", "process", "technology", "data", "performance", "commercial", "social_value"] },
+          "opportunity":  { "type": "string" },
+          "evidence":     { "type": "string" },
+          "feasibility":  { "type": "string", "enum": ["high", "medium", "low"] },
+          "clientAppetite": { "type": "string", "enum": ["high", "medium", "low", "unknown"] },
+          "confidence":   { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+
+    "overallPosition": {
+      "description": "Synthesis — the bottom line for the capture lead",
+      "type": "object",
+      "required": ["rating"],
+      "properties": {
+        "rating":               { "type": "string", "enum": ["strong", "moderate", "weak"], "description": "Overall incumbent position" },
+        "displacementNarrative": { "type": "string", "description": "1-2 sentence professional, non-disparaging positioning for why the client should consider change" },
+        "keyVulnerability":     { "type": "string", "description": "Single biggest weakness to position against" },
+        "keyStrength":          { "type": "string", "description": "Single biggest barrier to displacement" },
+        "rebidAdvice":          { "type": "string", "description": "If WE are the incumbent: key message for re-bid strategy" }
+      }
+    },
+
+    "awaitingInput": {
+      "description": "Specific questions for the pursuit team — the enrichment loop",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question":     { "type": "string", "description": "Specific, targeted question — not generic" },
+          "section":      { "type": "string", "description": "Which section this input will enrich" },
+          "impact":       { "type": "string", "description": "What difference this answer will make to the assessment" }
+        }
+      }
+    },
+
+    "evidenceQuality": {
+      "description": "Overall assessment of how much to trust this assessment",
+      "type": "object",
+      "properties": {
+        "totalCitations":     { "type": "number" },
+        "tierDistribution": {
+          "type": "object",
+          "properties": {
+            "tier1": { "type": "number" },
+            "tier2": { "type": "number" },
+            "tier3": { "type": "number" },
+            "tier4": { "type": "number" },
+            "tier5": { "type": "number" },
+            "tier6": { "type": "number" }
+          }
+        },
+        "averageConfidence":  { "type": "number" },
+        "knownGaps":          { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "linkedAssets": {
+      "description": "Cross-references to related library assets",
+      "type": "object",
+      "properties": {
+        "supplierDossier":  { "type": "string", "description": "Path to incumbent's supplier dossier if it exists" },
+        "clientProfile":    { "type": "string", "description": "Path to buyer's client profile if it exists" },
+        "sectorBrief":      { "type": "string", "description": "Path to relevant sector brief if it exists" }
+      }
+    }
+  },
+
+  "$defs": {
+    "assessmentSection": {
+      "type": "object",
+      "description": "One section of the assessment — narrative for the report, structured data for AI consumption",
+      "required": ["headline", "narrative"],
+      "properties": {
+        "headline":     { "type": "string", "description": "One-sentence finding" },
+        "narrative":    { "type": "string", "description": "Detailed analysis in markdown" },
+        "status":       { "type": "string", "enum": ["complete", "partial", "awaiting_input"], "description": "Whether this section has sufficient evidence" },
+        "keyFacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label":      { "type": "string" },
+              "value":      { "type": "string" },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
+              "source":     { "type": "string" }
+            }
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

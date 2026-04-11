@@ -12,21 +12,35 @@
     "meta": {
       "description": "Report metadata — when it was built, who it covers, when it goes stale",
       "type": "object",
-      "required": ["supplierName", "generatedAt", "generatedBy", "version"],
+      "required": ["supplierName", "generatedAt", "generatedBy", "version", "depthMode"],
       "properties": {
         "supplierName":     { "type": "string", "description": "Full legal name of the supplier" },
         "slug":             { "type": "string", "description": "URL-safe identifier, e.g. serco-group" },
         "generatedAt":      { "type": "string", "format": "date-time" },
         "generatedBy":      { "type": "string", "description": "Who or what produced this dossier" },
         "version":          { "type": "string", "description": "Dossier version, e.g. 1.0, 1.1" },
+        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"], "description": "Depth mode used for this run" },
+        "refreshedFrom":    { "type": "string", "description": "If this is a refresh, the version it built on" },
         "refreshDue": {
           "type": "object",
-          "description": "When each data category goes stale",
+          "description": "When each data category goes stale — checked when the dossier is pulled for an active pursuit, not on a rolling calendar",
           "properties": {
             "procurementData":      { "type": "string", "format": "date", "description": "Stale after 7 days" },
             "frameworkData":        { "type": "string", "format": "date", "description": "Stale after 30 days" },
             "corporateDisclosures": { "type": "string", "format": "date", "description": "Stale after 30 days or on new filing" },
             "weakSignals":          { "type": "string", "format": "date", "description": "Stale after 14 days" }
+          }
+        },
+        "versionLog": {
+          "type": "array",
+          "description": "What changed in each version — most recent first",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version":    { "type": "string" },
+              "date":       { "type": "string", "format": "date" },
+              "summary":    { "type": "string", "description": "What changed, e.g. 'Refreshed procurement data, added 3 new awards from Q1 2026'" }
+            }
           }
         }
       }
@@ -75,7 +89,8 @@
         "d6_commercialModel":   { "$ref": "#/$defs/domainSection" },
         "d7_deliveryCapability":{ "$ref": "#/$defs/domainSection" },
         "d8_leadershipPartners":{ "$ref": "#/$defs/domainSection" },
-        "d9_financialHealth":   { "$ref": "#/$defs/domainSection" }
+        "d9_financialHealth":   { "$ref": "#/$defs/domainSection" },
+        "d10_socialValueESG":   { "$ref": "#/$defs/domainSection" }
       }
     },
 
@@ -232,16 +247,48 @@
           }
         }
       }
+    },
+
+    "linkedAssets": {
+      "description": "Cross-references to related library assets",
+      "type": "object",
+      "properties": {
+        "clientProfiles": {
+          "type": "array",
+          "description": "Client profiles for this supplier's key buyers",
+          "items": { "type": "string", "description": "Path to profile, e.g. reference/clients/ministry-of-defence.json" }
+        },
+        "sectorBriefs": {
+          "type": "array",
+          "description": "Sector briefs covering sectors this supplier operates in",
+          "items": { "type": "string", "description": "Path to brief, e.g. reference/sectors/defence.json" }
+        },
+        "pipelineScans": {
+          "type": "array",
+          "description": "Pipeline scans relevant to this supplier's markets",
+          "items": { "type": "string" }
+        }
+      }
     }
   },
 
   "$defs": {
     "strategicScore": {
       "type": "object",
-      "description": "A strategic score with per-factor breakdown",
-      "required": ["overall", "factors"],
+      "description": "A strategic score with per-factor breakdown and data completeness indicator",
+      "required": ["overall", "factors", "completeness"],
       "properties": {
         "overall": { "type": "number", "minimum": 0, "maximum": 100 },
+        "completeness": {
+          "type": "object",
+          "description": "How much evidence backs this score — a score of 62 from 7 evidenced factors means something different from 62 where 4 factors defaulted to 50",
+          "required": ["factorsEvidenced", "factorsTotal"],
+          "properties": {
+            "factorsEvidenced": { "type": "number", "description": "Number of factors with supporting evidence" },
+            "factorsTotal":     { "type": "number", "description": "Total number of factors in this score" },
+            "incomplete":       { "type": "boolean", "description": "True if fewer than half the factors have evidence — score should be flagged prominently" }
+          }
+        },
         "factors": {
           "type": "array",
           "items": {
@@ -251,7 +298,8 @@
               "name":           { "type": "string" },
               "weight":         { "type": "number", "description": "Factor weight, e.g. 0.20" },
               "value":          { "type": "number", "minimum": 0, "maximum": 100, "description": "Assessed value before weighting" },
-              "evidenceSummary": { "type": "string", "description": "Key evidence supporting this assessment" },
+              "evidenced":      { "type": "boolean", "description": "True if this factor has supporting evidence, false if defaulted to midpoint" },
+              "evidenceSummary": { "type": "string", "description": "Key evidence supporting this assessment, or 'No evidence — defaulted to 50' if unevidenced" },
               "confidence":     { "type": "number", "minimum": 0, "maximum": 100 },
               "weighted":       { "type": "number", "description": "value * weight — the contribution to the overall score" }
             }

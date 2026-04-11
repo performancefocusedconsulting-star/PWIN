@@ -1,5 +1,7 @@
 # Qualify Content System
 
+> **See also:** [[pwin-qualify/content/qualify-master-spec-v0.1|Master Spec]] | [[pwin-qualify/content/rubric-authoring-guide|Rubric Guide]] | [[pwin-qualify/docs/qualify-execute-alignment-analysis|Qualify-Execute Alignment]] | [[HOME|Map of Content]]
+
 This directory holds the **single source of truth** for everything that drives the Qualify product's scoring and AI behaviour: questions, rubrics, persona, opportunity-type calibration, and the rebid modifier layer.
 
 Both Qualify HTML apps — the consulting standalone ([pwin-qualify/docs/PWIN_Architect_v1.html](../docs/PWIN_Architect_v1.html)) and the website MVP ([bidequity-co/qualify-app.html](../../bidequity-co/qualify-app.html)) — load their content from this directory at build time. They share one scoring brain. UX, branding, and feature flags can drift freely between them; the intelligence cannot.
