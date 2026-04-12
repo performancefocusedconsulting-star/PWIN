@@ -1,0 +1,86 @@
+{
+  "_comment": "Service taxonomy for classifying FTS contract awards by service type. 13 categories designed around how a bid director searches for opportunities — by what the service IS, not which procurement vehicle was used. Classification is done by LLM reading title + description + CPV context.",
+  "version": "2.0",
+  "created": "2026-04-12",
+  "supersedes": "v1.0 (framework-lot based, overcomplicated, scrapped)",
+  "categories": [
+    {
+      "id": "professional-services",
+      "name": "Professional Services & Consulting",
+      "description": "Strategy, advisory, business change, organisational design, legal advisory, financial audit, actuarial, property advisory, specialist regulated professions. The thinking and advising, not the doing.",
+      "examples": ["strategy review", "organisational redesign", "legal advisory", "financial audit", "business case development", "due diligence", "policy advisory", "commercial strategy"]
+    },
+    {
+      "id": "p3m",
+      "name": "Programme & Project Management",
+      "description": "Programme, project and portfolio management. PMO setup and operation, programme assurance, delivery management. Cross-cuts all sectors and service types but is a distinct sell and a distinct procurement category.",
+      "examples": ["PMO services", "programme management", "project management office", "programme assurance", "delivery partner", "portfolio management", "programme controls"]
+    },
+    {
+      "id": "digital",
+      "name": "Digital",
+      "description": "Design, build and deploy digital services — apps, platforms, user-centred services, GDS-standard delivery. The new-build digital world, not managed IT.",
+      "examples": ["digital service", "user research", "service design", "agile delivery", "app development", "digital platform", "digital transformation delivery", "UX design", "content design"]
+    },
+    {
+      "id": "software-systems-integration",
+      "name": "Software & Systems Integration",
+      "description": "ERP/CRM/EDRMS implementation, SAP/Oracle/ServiceNow/Dynamics deployments, systems configuration, data migration, integration. Making commercial software work in an organisation.",
+      "examples": ["SAP implementation", "Oracle deployment", "ServiceNow configuration", "ERP rollout", "CRM implementation", "systems integration", "data migration", "software deployment"]
+    },
+    {
+      "id": "technology-services",
+      "name": "Technology Services",
+      "description": "Managed IT, infrastructure management, networks, service desks, SIAM, end-user computing, telecoms. Running the IT shop, not building new things.",
+      "examples": ["managed IT services", "service desk", "network management", "infrastructure support", "SIAM", "desktop support", "telecoms", "WAN", "unified communications"]
+    },
+    {
+      "id": "cyber-security",
+      "name": "Cyber Security",
+      "description": "Security assessment, penetration testing, security advisory, SOC operations, incident response, security architecture, crypto. All of information security.",
+      "examples": ["penetration testing", "cyber assessment", "security operations centre", "incident response", "security architecture", "IT health check", "security consultancy", "CREST"]
+    },
+    {
+      "id": "software-cloud-products",
+      "name": "Software & Cloud Products",
+      "description": "Buying software — SaaS subscriptions, COTS licences, cloud hosting, platform products. The product purchase, not the implementation or the support.",
+      "examples": ["SaaS licence", "cloud hosting", "software licence", "Microsoft 365", "AWS hosting", "Azure subscription", "COTS software"]
+    },
+    {
+      "id": "ai-data",
+      "name": "AI & Data",
+      "description": "Artificial intelligence, machine learning, data platforms, analytics, automation, intelligent document processing, data engineering. A growing standalone category.",
+      "examples": ["AI services", "machine learning", "data platform", "analytics", "RPA", "intelligent automation", "data science", "data engineering", "NLP", "chatbot", "predictive analytics"]
+    },
+    {
+      "id": "bpo-outsourced-services",
+      "name": "BPO / Outsourced Services",
+      "description": "Business process outsourcing and operational service delivery. Pensions administration, HR services, contact centres, citizen services, facilities management, payroll, back-office operations. People-intensive operational delivery.",
+      "examples": ["pensions administration", "contact centre", "citizen services", "facilities management", "payroll services", "HR outsourcing", "back office", "waste management", "catering", "cleaning", "security guarding"]
+    },
+    {
+      "id": "it-outsourcing",
+      "name": "IT Outsourcing",
+      "description": "Application management, ERP support, managed applications, IT operations outsourcing. Technology-led operational delivery, distinct from BPO (people-led) and Technology Services (shorter-term managed services).",
+      "examples": ["application management", "managed application services", "ERP support", "IT outsourcing", "application support and maintenance", "managed hosting with application layer"]
+    },
+    {
+      "id": "workforce-contingent-labour",
+      "name": "Workforce / Contingent Labour",
+      "description": "Staffing, interim management, agency workers, specialist contractors. Buying people by the day/hour, not outcomes or deliverables.",
+      "examples": ["interim management", "temporary staff", "agency workers", "contingent labour", "staff augmentation", "locum", "contractor", "resource augmentation"]
+    },
+    {
+      "id": "construction",
+      "name": "Construction",
+      "description": "Major works, refurbishment, estate services, new build, infrastructure construction, professional construction services. A distinct market with distinct suppliers, large deals, and complex delivery.",
+      "examples": ["construction", "building works", "refurbishment", "new build", "civil engineering", "mechanical and electrical", "demolition", "highway works", "estate services"]
+    },
+    {
+      "id": "training-education",
+      "name": "Training & Education",
+      "description": "Learning and development, professional training, simulation, apprenticeships, e-learning. Building capability in people.",
+      "examples": ["training", "learning and development", "professional development", "simulation", "apprenticeship", "e-learning", "coaching", "leadership development"]
+    }
+  ]
+}
