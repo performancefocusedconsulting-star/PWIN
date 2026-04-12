@@ -359,28 +359,26 @@
     },
 
     "evidenceRegister": {
-      "description": "Per-claim evidence ledger for material claims only — anything feeding a score, structured field, contract row, financial metric, or executive summary. Supporting narrative prose uses inline citation, not a ledger entry.",
+      "description": "Per-claim evidence ledger for material claims — anything feeding a score, structured field, contract row, financial metric, service line classification, or executive summary. The model emits the core fields; the renderer hydrates claimId, retrievedAt, staleAfterDays, and runs contradiction detection as a post-processing pass. A deep dossier should have 50-70 claims; standard 30-50; snapshot 10-20.",
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["claimId", "claimText", "claimType", "fieldPath", "sourceTier", "sourceName", "confidence"],
+        "required": ["claimText", "claimType", "fieldPath", "sourceTier", "sourceName", "confidence"],
         "properties": {
-          "claimId":            { "type": "string", "description": "Unique identifier, e.g. C001" },
-          "claimText":          { "type": "string", "description": "The claim itself" },
+          "claimId":            { "type": "string", "description": "Sequential identifier (C001, C002...). Assigned by renderer if omitted by model." },
+          "claimText":          { "type": "string", "description": "The claim itself — concise, one sentence" },
           "claimType":          { "type": "string", "enum": ["verified_fact", "derived_estimate", "analytical_hypothesis", "signal_to_monitor"] },
-          "fieldPath":          { "type": "string", "description": "Which schema field this supports — e.g. financialTrajectory.years[0].revenue or scores.sectorStrength" },
+          "fieldPath":          { "type": "string", "description": "Which schema field this supports — e.g. financialTrajectory.years[0].revenue, serviceLineProfile[0].significance, scores.sectorStrength" },
           "value":              { "type": "string", "description": "The specific value asserted" },
           "sourceTier":         { "type": "number", "minimum": 1, "maximum": 6, "description": "1-6 per the Agent 2 source hierarchy" },
-          "sourceName":         { "type": "string", "description": "e.g. Serco Group Annual Report 2025" },
-          "sourceUrl":          { "type": ["string", "null"], "description": "If available" },
-          "publicationDate":    { "type": ["string", "null"], "format": "date", "description": "When the source was published" },
-          "retrievedAt":        { "type": "string", "format": "date-time", "description": "When the AI accessed it" },
-          "effectiveDate":      { "type": ["string", "null"], "format": "date", "description": "What date the claim is true as of — distinct from publication date" },
+          "sourceName":         { "type": "string", "description": "e.g. Find a Tender award data, Serco Annual Report 2025" },
+          "publicationDate":    { "type": ["string", "null"], "format": "date", "description": "When the source was published, if known" },
           "isDirect":           { "type": "boolean", "description": "Did the source state this directly, or was it inferred" },
           "confidence":         { "type": "number", "minimum": 0, "maximum": 100 },
-          "staleAfterDays":     { "type": "number", "description": "How long before this claim should be rechecked" },
-          "contradictionFlag":  { "type": "boolean", "description": "Is there a conflicting claim elsewhere in the register" },
-          "contradicts":        { "type": "array", "items": { "type": "string" }, "description": "Array of claimId refs if flagged" }
+          "retrievedAt":        { "type": "string", "format": "date-time", "description": "Renderer sets this to meta.generatedAt" },
+          "staleAfterDays":     { "type": "number", "description": "Renderer derives from the section's freshness window" },
+          "contradictionFlag":  { "type": "boolean", "description": "Renderer sets via post-processing contradiction scan" },
+          "contradicts":        { "type": "array", "items": { "type": "string" }, "description": "Renderer populates — array of claimId refs" }
         }
       }
     },

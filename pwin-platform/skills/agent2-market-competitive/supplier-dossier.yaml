@@ -252,7 +252,7 @@ system_prompt: |
     "bidOutcomeSignals": { dataWindow, totalAwardsObserved, totalValueObserved, summaryNarrative, patterns: [ { patternType, description, rivals, serviceLines, sector, inferenceLevel, occurrences, dateRange } ], sectorConcentration: [ { sector, awardCount, totalValue, trend } ] },
     "riskExposureProfile": { summaryNarrative, factors: [ { factorId, factorName, level, narrative, claimType, keyEvidence } ] },
     "signalSynthesis": { summaryNarrative, signals: [ { signal, sourceSection, priority, claimType, triggerCondition, reviewBy } ] },
-    "evidenceRegister": [ { claimId, claimText, claimType, fieldPath, value, sourceTier, sourceName, sourceUrl, publicationDate, retrievedAt, effectiveDate, isDirect, confidence, staleAfterDays, contradictionFlag, contradicts } ],
+    "evidenceRegister": [ { claimText, claimType, fieldPath, value, sourceTier, sourceName, publicationDate, isDirect, confidence } ],
     "executiveSummary": { headline, overview, scoreRationales: { sectorStrength, scrutinyExposure, strategicIdentityConfidence, supplierBreadth, serviceLineConcentration, evidenceQuality }, keyRisks },
     "linkedAssets": { clientProfiles, sectorBriefs, pipelineScans }
   }
@@ -269,9 +269,42 @@ system_prompt: |
     the renderer fills these from the computed scores
   - Use ISO 8601 dates throughout
   - Use null for unknown/unavailable fields, not empty strings
-  - Evidence register claim IDs should be sequential: C001, C002, etc.
   - `refreshDue` dates should be calculated from the current date plus the
     freshness window for each section
+  - `ownershipType` must be one of: listed, private_equity, private,
+    employee_owned, public_sector
+
+  **Evidence register — critical workflow instruction:**
+
+  Build the evidence register AS YOU WORK THROUGH EACH SECTION, not as a
+  retrospective pass at the end. Every time you populate a structured field
+  (a contract row, a financial metric, a service line classification, a score
+  factor, an identity fact, a risk factor finding), simultaneously append an
+  entry to the evidenceRegister array.
+
+  The model emits 9 fields per claim — keep entries concise:
+  - claimText: one sentence
+  - claimType: verified_fact / derived_estimate / analytical_hypothesis / signal_to_monitor
+  - fieldPath: which schema field this supports (e.g. contracts[3].value, serviceLineProfile[0].significance)
+  - value: the specific value asserted
+  - sourceTier: 1-6
+  - sourceName: source name
+  - publicationDate: if known, else null
+  - isDirect: true if stated directly, false if inferred
+  - confidence: 0-100
+
+  The renderer hydrates: claimId (sequential), retrievedAt, staleAfterDays,
+  contradictionFlag, contradicts. You do NOT need to fill these.
+
+  **Expected claim counts by depth mode:**
+  - **deep**: 50-70 claims (identity ~5, financials ~10-15, contracts ~10-15,
+    service lines ~7, score factors ~10-15, risk factors ~8, market voice ~3-5)
+  - **standard**: 30-50 claims
+  - **snapshot**: 10-20 claims
+
+  If your register has fewer than 30 entries on a deep run, you are
+  under-registering. Review each section and ensure every structured field
+  value has a corresponding evidence entry.
 
   ---
 

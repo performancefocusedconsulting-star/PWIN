@@ -167,6 +167,65 @@ data.scores.supplierBreadth = computeSupplierBreadth(data);
 data.scores.serviceLineConcentration = computeServiceLineConcentration(data);
 data.scores.evidenceQuality = computeEvidenceQuality(data);
 
+// ─── Hydrate evidence register ──────────────────────────────────────────────
+// The model emits core fields; the renderer fills in claimId, retrievedAt,
+// staleAfterDays, and runs contradiction detection.
+
+function hydrateEvidenceRegister(data) {
+  const register = data.evidenceRegister || [];
+  const generatedAt = data.meta?.generatedAt || new Date().toISOString();
+
+  // Section → staleness window mapping
+  const stalenessMap = {
+    'contracts': 7, 'frameworks': 7, 'bidOutcomeSignals': 7,
+    'financialTrajectory': 90, 'marketVoiceSignals': 30,
+    'leadership': 60, 'partnerships': 60,
+    'riskExposureProfile': 30, 'serviceLineProfile': 30,
+    'identity': 90, 'scores': 30, 'executiveSummary': 30,
+  };
+
+  // Assign sequential claimIds and fill renderer fields
+  register.forEach((claim, i) => {
+    if (!claim.claimId) claim.claimId = `C${String(i + 1).padStart(3, '0')}`;
+    if (!claim.retrievedAt) claim.retrievedAt = generatedAt;
+
+    // Derive staleAfterDays from fieldPath section
+    if (!claim.staleAfterDays && claim.fieldPath) {
+      const section = claim.fieldPath.split('.')[0].split('[')[0];
+      claim.staleAfterDays = stalenessMap[section] || 30;
+    }
+
+    // Default contradiction fields
+    if (claim.contradictionFlag === undefined) claim.contradictionFlag = false;
+    if (!claim.contradicts) claim.contradicts = [];
+  });
+
+  // Simple contradiction scan: flag claims on the same fieldPath with different values
+  const byField = {};
+  register.forEach(claim => {
+    if (!claim.fieldPath) return;
+    if (!byField[claim.fieldPath]) byField[claim.fieldPath] = [];
+    byField[claim.fieldPath].push(claim);
+  });
+
+  for (const [, claims] of Object.entries(byField)) {
+    if (claims.length < 2) continue;
+    const values = new Set(claims.map(c => c.value).filter(Boolean));
+    if (values.size > 1) {
+      // Different values for the same field — flag all as contradictions
+      const ids = claims.map(c => c.claimId);
+      claims.forEach(c => {
+        c.contradictionFlag = true;
+        c.contradicts = ids.filter(id => id !== c.claimId);
+      });
+    }
+  }
+
+  data.evidenceRegister = register;
+}
+
+hydrateEvidenceRegister(data);
+
 // ─── HTML helpers ───────────────────────────────────────────────────────────
 
 function esc(s) {
