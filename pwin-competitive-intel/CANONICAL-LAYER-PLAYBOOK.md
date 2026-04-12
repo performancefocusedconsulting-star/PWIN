@@ -391,9 +391,58 @@ ODS names are typically **UPPERCASE** (e.g. "STOCKPORT NHS FOUNDATION TRUST") wh
 
 The initial ODS fetch used the list endpoint (fast, no per-org detail calls). Parent-child relationships (trust → ICB → NHS England) are available via the ODS detail endpoint but were deferred to keep the first pass fast. When hierarchy matters for the query layer, a follow-up pass should call `GET /organisations/{OrgId}` for each entity and extract the `Rels` array.
 
+## 14. Next steps for the residual 29.7% (2026-04-12)
+
+As of five-source coverage at **70.3%** (1,928 canonical entities, 36,048 of 51,286 £1m+ awards matched), the remaining 29.7% splits into two distinct problems that require different tools.
+
+### Bucket A — entities genuinely not in the glossary (~20-25pp)
+
+These buyers are not in any of the five sources and no amount of fuzzy matching will find them. They need **new source data or targeted hand-curation rounds**. The composition:
+
+- Housing associations (The Hyde Group is already added; the rest of the top 20 housing associations are not)
+- Universities and FE colleges
+- Police forces (43 territorial + specialist)
+- Academy trusts and multi-academy trusts
+- Utilities (Southern Water, Network Rail subsidiaries, etc.)
+- One-off or obscure buyers
+
+**Recommendation:** do NOT chase this tail proactively. Add entities one-by-one when specific dossier or query work demands them. The 70.3% coverage is sufficient for Skill 1 v2 Phase 3 validation, which only needs Serco/Capita/Mitie and their top buyers to be canonical. If a specific bid pursuit names a buyer that isn't in the glossary, add it then.
+
+### Bucket B — name-variant drift from entities that ARE in the glossary (~5-8pp)
+
+These buyers are in the glossary under a slightly different name. Examples:
+- Word-order differences: "NHS North East Ambulance Service" vs ODS "NORTH EAST AMBULANCE SERVICE NHS FOUNDATION TRUST"
+- Missed normalisation: ampersand vs "and", "Ltd" vs "Limited" variants not yet aliased
+- Prefix-match cases: HealthTrust Europe agent-of-trust variants, NHS Supply Chain operator variants not yet enumerated
+
+Two approaches were evaluated:
+
+| Approach | Time | Expected gain | Complexity | Dependencies |
+|---|---|---|---|---|
+| **Improved token matching** — Jaccard similarity on word tokens + prefix rules for known patterns (NHS Supply Chain, HTE) | ~2 hours | ~3-5pp | Low — pure Python, no new deps | None |
+| **Full Splink** — install, configure blocking rules, train model, run, review, tune | ~half day | ~4-6pp | Medium — adds splink + duckdb as deps | None (Splink is free, open source, MIT, runs locally) |
+
+Splink gives ~1-2pp more than token matching for this dataset but costs 3× the setup time. **Splink becomes genuinely valuable later for the supplier entity resolution work** (161k entities, real fuzzy-match problem at scale) — that's where the probabilistic model training and blocking rules earn their keep. For 1,500 residual buyer names against a 1,928-entity glossary, simple token matching is proportionate.
+
+**Decision (2026-04-12):** defer both approaches. The 70.3% coverage is sufficient for immediate downstream needs. When the next round of work demands higher buyer coverage, start with the 2-hour token matching pass. Reserve Splink setup for the supplier dedup workstream.
+
+### Current coverage summary for reference
+
+| Source | Entities | Step gain | Cumulative |
+|---|---|---|---|
+| GOV.UK organisations API | 1,090 | 11.2% | 11.2% |
+| Hand-curated central buying agencies | +24 | +21.8pp | 33.0% |
+| NHS ODS (England trusts, ICBs, SHAs) | +391 | +5.8pp | 38.8% |
+| ONS Local Authorities (361 LADs + 21 counties) | +382 | +28.2pp | 67.0% |
+| Devolved/combined (Scottish NHS, NI HSC, CAs, misc) | +42 | +3.3pp | 70.3% |
+| **Token matching (deferred)** | 0 | est. +3-5pp | ~73-75% |
+| **Splink fuzzy (deferred to supplier dedup)** | 0 | est. +1-2pp on top | ~75-77% |
+| **New source data for long tail (on demand)** | varies | the remaining ~23% | ~varies |
+
 ## Change log
 
 | Version | Date | Summary |
 |---|---|---|
 | 1.0 | 2026-04-11 | Initial playbook from Phase 0 Discovery + Phase 1 GOV.UK and central buying agencies builds. 12 sections, ~3,000 words. |
 | 1.1 | 2026-04-12 | Added §13: NHS ODS lessons learned — England-only gap, naming conventions, deferred hierarchy. |
+| 1.2 | 2026-04-12 | Added §14: Next steps for the residual 29.7%. Token matching vs Splink analysis. Five-source coverage at 70.3%. |
