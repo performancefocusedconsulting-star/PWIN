@@ -313,6 +313,7 @@ async function callClaude(systemPrompt, messages, tools, model) {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'web-search-2025-03-05',
       },
       body: JSON.stringify(body),
     });
@@ -339,19 +340,12 @@ function buildClaudeTools(skill) {
   const researchTools = skill.research_tools || [];
   if (writeTools.length === 0 && researchTools.length === 0) return [];
 
-  // Research tools — read-only, available to skills that need external data
+  // Research tools — server-side tools handled by the Anthropic API
   const researchToolDefs = {
     web_search: {
+      type: 'web_search_20250305',
       name: 'web_search',
-      description: 'Search the web for information. Use for annual reports, financial results, leadership teams, news articles, parliamentary material, audit reports, and any Tier 3-6 source. Returns a summary of search results.',
-      input_schema: {
-        type: 'object',
-        properties: {
-          query: { type: 'string', description: 'The search query' },
-          purpose: { type: 'string', description: 'Brief note on what you are looking for and which dossier section it feeds' },
-        },
-        required: ['query'],
-      },
+      max_uses: 15,
     },
   };
 
@@ -600,61 +594,9 @@ async function executeWriteBacks(skill, pursuitId, claudeResponse) {
   return results;
 }
 
-async function executeWebSearch(query) {
-  // Use Brave Search API if available, otherwise fall back to a simple fetch
-  const braveKey = process.env.BRAVE_SEARCH_API_KEY;
-  if (braveKey) {
-    const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=8`;
-    const resp = await fetch(url, {
-      headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip', 'X-Subscription-Token': braveKey },
-    });
-    if (!resp.ok) {
-      throw new Error(`Brave Search API error ${resp.status}: ${await resp.text()}`);
-    }
-    const data = await resp.json();
-    const results = (data.web?.results || []).map(r => ({
-      title: r.title,
-      url: r.url,
-      description: r.description,
-      age: r.age,
-    }));
-    return { query, resultCount: results.length, results };
-  }
-
-  // Fallback: use Google Custom Search if configured
-  const googleKey = process.env.GOOGLE_SEARCH_API_KEY;
-  const googleCx = process.env.GOOGLE_SEARCH_CX;
-  if (googleKey && googleCx) {
-    const url = `https://www.googleapis.com/customsearch/v1?key=${googleKey}&cx=${googleCx}&q=${encodeURIComponent(query)}&num=8`;
-    const resp = await fetch(url);
-    if (!resp.ok) {
-      throw new Error(`Google Search API error ${resp.status}: ${await resp.text()}`);
-    }
-    const data = await resp.json();
-    const results = (data.items || []).map(r => ({
-      title: r.title,
-      url: r.link,
-      description: r.snippet,
-    }));
-    return { query, resultCount: results.length, results };
-  }
-
-  // No search API configured — return a clear error so the model knows
-  return {
-    query,
-    resultCount: 0,
-    results: [],
-    error: 'No search API configured. Set BRAVE_SEARCH_API_KEY or GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_CX environment variables.',
-  };
-}
-
 async function executeToolCall(toolName, pursuitId, input) {
-  // Research tools (read-only)
-  if (toolName === 'web_search') {
-    return executeWebSearch(input.query);
-  }
-
-  // Write tools — route to the store
+  // Server-side tools (web_search) are handled by the Anthropic API —
+  // they never reach this function. Only write tools route here.
   switch (toolName) {
     case 'batch_create_response_sections': {
       const data = await store.getProductData(pursuitId, 'bid_execution') || {};
@@ -822,10 +764,23 @@ async function executeSkill(skillId, input) {
     // If no tool use, we're done
     if (response.stop_reason !== 'tool_use') break;
 
-    // Execute tool calls and build tool results for next turn
+    // Server-side tools (web_search) are executed by the Anthropic API
+    // and their results appear as content blocks in the response. We only
+    // need to execute our own write tools (store_intelligence_dossier etc).
+    // If the only tool_use blocks are server-side, the API handles them
+    // internally and stop_reason will be 'tool_use' to continue the loop.
+
     const toolResults = [];
+    let hasClientToolCalls = false;
     for (const block of response.content || []) {
       if (block.type !== 'tool_use') continue;
+      // Server-side tools are identified by their type prefix or by not
+      // being in our write tools list. The API returns server tool results
+      // automatically — we only execute client-side write tools.
+      const isServerTool = block.name === 'web_search';
+      if (isServerTool) continue; // API handles these
+
+      hasClientToolCalls = true;
       const { id, name, input: toolInput } = block;
       try {
         const result = await executeToolCall(name, input.pursuitId, toolInput);
@@ -841,7 +796,7 @@ async function executeSkill(skillId, input) {
     messages = [
       ...messages,
       { role: 'assistant', content: response.content },
-      { role: 'user', content: toolResults },
+      ...(toolResults.length > 0 ? [{ role: 'user', content: toolResults }] : []),
     ];
   }
 
