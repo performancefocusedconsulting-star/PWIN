@@ -1,34 +1,50 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "supplier-dossier-v1",
-  "title": "Supplier Intelligence Dossier",
-  "description": "Structured data output for a single-supplier intelligence dossier. The human-readable report is rendered from this data. Other agents consume this directly.",
+  "$id": "supplier-dossier-v2",
+  "title": "Supplier Intelligence Dossier v2",
+  "description": "Structured data output for a single-supplier intelligence dossier. Neutral upstream intelligence asset — no strategy, displacement, or attack language. JSON is canonical; the human-readable report is rendered from this data by a deterministic template engine. Other agents consume this directly.",
 
   "type": "object",
-  "required": ["meta", "identity", "scores", "domains", "vulnerabilityMap", "evidenceQuality"],
+  "required": ["meta", "identity", "scores", "serviceLineProfile", "financialTrajectory", "contracts", "riskExposureProfile", "evidenceRegister", "executiveSummary"],
 
   "properties": {
 
     "meta": {
-      "description": "Report metadata — when it was built, who it covers, when it goes stale",
+      "description": "Report metadata — when it was built, who it covers, what taxonomy version, when sections go stale",
       "type": "object",
-      "required": ["supplierName", "generatedAt", "generatedBy", "version", "depthMode"],
+      "required": ["supplierName", "generatedAt", "generatedBy", "version", "depthMode", "taxonomyVersion"],
       "properties": {
         "supplierName":     { "type": "string", "description": "Full legal name of the supplier" },
         "slug":             { "type": "string", "description": "URL-safe identifier, e.g. serco-group" },
         "generatedAt":      { "type": "string", "format": "date-time" },
         "generatedBy":      { "type": "string", "description": "Who or what produced this dossier" },
-        "version":          { "type": "string", "description": "Dossier version, e.g. 1.0, 1.1" },
-        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"], "description": "Depth mode used for this run" },
+        "version":          { "type": "string", "description": "Dossier version, e.g. 2.0, 2.1" },
+        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"] },
         "refreshedFrom":    { "type": "string", "description": "If this is a refresh, the version it built on" },
+        "taxonomyVersion":  { "type": "string", "description": "Version of service-taxonomy.json used for classification, e.g. 2.0" },
+        "sourcesSummary": {
+          "type": "object",
+          "description": "Quick count of raw material the AI had to work with",
+          "properties": {
+            "ftsRecords":        { "type": "number", "description": "Number of FTS award/notice records for this supplier" },
+            "chPopulated":       { "type": "boolean", "description": "Whether Companies House data was available" },
+            "annualReportYears": { "type": "number", "description": "How many years of annual report data were available" },
+            "pressReleases":     { "type": "number", "description": "Number of press releases / public statements reviewed" }
+          }
+        },
         "refreshDue": {
           "type": "object",
-          "description": "When each data category goes stale — checked when the dossier is pulled for an active pursuit, not on a rolling calendar",
+          "description": "When each section goes stale — checked when the dossier is pulled for an active pursuit",
           "properties": {
-            "procurementData":      { "type": "string", "format": "date", "description": "Stale after 7 days" },
-            "frameworkData":        { "type": "string", "format": "date", "description": "Stale after 30 days" },
-            "corporateDisclosures": { "type": "string", "format": "date", "description": "Stale after 30 days or on new filing" },
-            "weakSignals":          { "type": "string", "format": "date", "description": "Stale after 14 days" }
+            "contracts":            { "type": "string", "format": "date", "description": "Stale after 7 days" },
+            "frameworks":           { "type": "string", "format": "date", "description": "Stale after 7 days" },
+            "financialTrajectory":  { "type": "string", "format": "date", "description": "Stale after 90 days" },
+            "bidOutcomeSignals":    { "type": "string", "format": "date", "description": "Stale after 7 days" },
+            "marketVoiceSignals":   { "type": "string", "format": "date", "description": "Stale after 30 days" },
+            "leadership":           { "type": "string", "format": "date", "description": "Stale after 60 days" },
+            "partnerships":         { "type": "string", "format": "date", "description": "Stale after 60 days" },
+            "riskExposureProfile":  { "type": "string", "format": "date", "description": "Stale after 30 days" },
+            "serviceLineProfile":   { "type": "string", "format": "date", "description": "Stale after 30 days" }
           }
         },
         "versionLog": {
@@ -37,9 +53,9 @@
           "items": {
             "type": "object",
             "properties": {
-              "version":    { "type": "string" },
-              "date":       { "type": "string", "format": "date" },
-              "summary":    { "type": "string", "description": "What changed, e.g. 'Refreshed procurement data, added 3 new awards from Q1 2026'" }
+              "version": { "type": "string" },
+              "date":    { "type": "string", "format": "date" },
+              "summary": { "type": "string" }
             }
           }
         }
@@ -47,204 +63,349 @@
     },
 
     "identity": {
-      "description": "D1 — core facts about who this organisation is",
+      "description": "Core facts about who this organisation is",
       "type": "object",
+      "required": ["legalName", "ownershipType"],
       "properties": {
-        "legalName":          { "type": "string" },
-        "tradingNames":       { "type": "array", "items": { "type": "string" } },
-        "parentGroup":        { "type": "string" },
-        "companiesHouseNo":   { "type": "string" },
-        "headquarters":       { "type": "string" },
-        "ownershipType":      { "type": "string", "enum": ["listed", "private_equity", "private", "employee_owned", "public_sector"] },
-        "archetype":          { "type": "string", "enum": ["systems_integrator", "bpo_bps", "consulting", "digital_native", "msp", "hybrid"] },
-        "crownRepresentative":           { "type": "boolean" },
-        "strategicSupplierCentral":      { "type": "boolean" },
-        "strategicSupplierLocalGov":     { "type": "boolean" },
-        "employeeCount":      { "type": "number", "description": "Total headcount, UK or group as available" },
-        "annualRevenue":      { "type": "string", "description": "Most recent, with currency and period, e.g. £4.7bn FY2025" },
-        "ukPublicSectorRevenue": { "type": "string", "description": "If disclosed or estimable — label estimated if inferred" }
+        "legalName":                  { "type": "string" },
+        "tradingNames":               { "type": "array", "items": { "type": "string" } },
+        "parentGroup":                { "type": "string" },
+        "ultimateParentGroup":        { "type": "string", "description": "If parentGroup is an intermediate holding company, the top of the chain" },
+        "companiesHouseNo":           { "type": "string" },
+        "sicCodes":                   { "type": "array", "items": { "type": "string" }, "description": "From Companies House" },
+        "registeredAddress":          { "type": "string", "description": "Companies House registered office — may differ from trading HQ" },
+        "headquarters":               { "type": "string", "description": "Trading headquarters" },
+        "incorporatedDate":           { "type": "string", "format": "date", "description": "From Companies House" },
+        "ownershipType":              { "type": "string", "enum": ["listed", "private_equity", "private", "employee_owned", "public_sector"] },
+        "listedExchange":             { "type": ["string", "null"], "description": "If listed — e.g. LSE, AIM. Null if not listed" },
+        "crownRepresentative":        { "type": "boolean" },
+        "strategicSupplierCentral":   { "type": "boolean" },
+        "strategicSupplierLocalGov":  { "type": "boolean" },
+        "employeeCount":              { "type": "number", "description": "Total headcount, UK or group as available" }
       }
     },
 
     "scores": {
-      "description": "The three strategic scores — each 0-100 with per-factor breakdowns",
+      "description": "Five AI-assessed headline scores. A sixth score (evidenceQuality) is computed by the renderer from the evidenceRegister, not assessed here.",
       "type": "object",
-      "required": ["sectorStrength", "competitorThreat", "vulnerability"],
+      "required": ["sectorStrength", "supplierBreadth", "scrutinyExposure", "serviceLineConcentration", "strategicIdentityConfidence"],
       "properties": {
-        "sectorStrength": { "$ref": "#/$defs/strategicScore" },
-        "competitorThreat": { "$ref": "#/$defs/strategicScore" },
-        "vulnerability": { "$ref": "#/$defs/strategicScore" }
+        "sectorStrength":              { "$ref": "#/$defs/strategicScore", "description": "How deeply embedded in UK public sector" },
+        "supplierBreadth":             { "$ref": "#/$defs/strategicScore", "description": "How diversified across service lines, sectors, and buyers" },
+        "scrutinyExposure":            { "$ref": "#/$defs/strategicScore", "description": "How much public scrutiny, regulatory attention, and media risk" },
+        "serviceLineConcentration":    { "$ref": "#/$defs/strategicScore", "description": "How dependent on a single service line — high = specialist, low = generalist" },
+        "strategicIdentityConfidence": { "$ref": "#/$defs/strategicScore", "description": "How clearly we can characterise what this supplier is and where it's heading" }
       }
     },
 
-    "domains": {
-      "description": "D1-D9 intelligence domains — each has structured data for AI and narrative for the report",
+    "serviceLineProfile": {
+      "description": "Decomposition against the platform service taxonomy. Only categories with evidence appear — no not_evidenced padding.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["categoryId", "significance"],
+        "properties": {
+          "categoryId":       { "type": "string", "description": "References service-taxonomy.json, e.g. bpo-outsourced-services" },
+          "significance":     { "type": "string", "enum": ["core", "significant", "supporting", "peripheral"] },
+          "confidenceBand":   { "type": "number", "minimum": 0, "maximum": 100 },
+          "revenueIndicator": { "type": "string", "enum": ["dominant", "major", "moderate", "minor", "trace"], "description": "Qualitative — precise per-service-line revenue rarely available" },
+          "trend":            { "type": "string", "enum": ["growing", "stable", "declining", "unknown"] },
+          "flagshipEvidence": { "type": "string", "description": "Single strongest proof point — a named contract, framework position, or public statement" },
+          "contractCount":    { "type": "number", "description": "How many contracts in the FTS data map to this service line" },
+          "notableContracts": { "type": "array", "items": { "type": "string" }, "description": "References to contracts in the contracts array by title or OCID" }
+        }
+      }
+    },
+
+    "financialTrajectory": {
+      "description": "Multi-year financial trend analysis. Minimum 3 years, target 5. Replaces the single-year snapshot from v1.",
       "type": "object",
+      "required": ["disclosureLevel", "currency", "years", "trajectoryNarrative"],
       "properties": {
-        "d1_identity":          { "$ref": "#/$defs/domainSection" },
-        "d2_marketPosition":    { "$ref": "#/$defs/domainSection" },
-        "d3_sectorPenetration": { "$ref": "#/$defs/domainSection" },
-        "d4_routeToMarket":     { "$ref": "#/$defs/domainSection" },
-        "d5_contractPortfolio": { "$ref": "#/$defs/domainSection" },
-        "d6_commercialModel":   { "$ref": "#/$defs/domainSection" },
-        "d7_deliveryCapability":{ "$ref": "#/$defs/domainSection" },
-        "d8_leadershipPartners":{ "$ref": "#/$defs/domainSection" },
-        "d9_financialHealth":   { "$ref": "#/$defs/domainSection" },
-        "d10_socialValueESG":   { "$ref": "#/$defs/domainSection" }
-      }
-    },
-
-    "contracts": {
-      "description": "Structured contract data for D5 — machine-readable for Agent 3 attack planning",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "title":            { "type": "string" },
-          "buyer":            { "type": "string" },
-          "sector":           { "type": "string" },
-          "value":            { "type": "number", "description": "GBP" },
-          "startDate":        { "type": "string", "format": "date" },
-          "endDate":          { "type": "string", "format": "date" },
-          "extensionOptions":  { "type": "string" },
-          "status":           { "type": "string", "enum": ["live", "expiring_12m", "expiring_24m", "expiring_36m", "expired", "terminated"] },
-          "performanceSignals": { "type": "array", "items": { "type": "string" } },
-          "defensibility":    { "type": "string", "enum": ["strong", "moderate", "weak"], "description": "How defensible this contract is against a challenger" },
-          "confidence":       { "type": "number", "minimum": 0, "maximum": 100 }
-        }
-      }
-    },
-
-    "frameworks": {
-      "description": "Framework memberships for D4 — machine-readable for route-to-market analysis",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name":       { "type": "string" },
-          "provider":   { "type": "string", "description": "e.g. CCS, NHS SBS" },
-          "lots":       { "type": "array", "items": { "type": "string" } },
-          "status":     { "type": "string", "enum": ["live", "expired", "pipeline"] },
-          "startDate":  { "type": "string", "format": "date" },
-          "endDate":    { "type": "string", "format": "date" }
-        }
-      }
-    },
-
-    "leadership": {
-      "description": "Key personnel for D8 — machine-readable for stakeholder and influence analysis",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name":       { "type": "string" },
-          "role":       { "type": "string" },
-          "function":   { "type": "string", "enum": ["ceo", "cfo", "public_sector_lead", "sector_md", "partnerships", "delivery", "commercial", "other"] },
-          "startDate":  { "type": "string", "description": "When they took this role, if known" },
-          "background": { "type": "string", "description": "Brief relevant background" },
-          "publicSectorExperience": { "type": "boolean" }
-        }
-      }
-    },
-
-    "partnerships": {
-      "description": "Alliance and subcontracting relationships for D8",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "partnerName":  { "type": "string" },
-          "partnerType":  { "type": "string", "enum": ["hyperscaler", "isv", "sme", "prime", "subcontractor", "joint_venture"] },
-          "sectors":      { "type": "array", "items": { "type": "string" } },
-          "strengthScore": { "type": "number", "minimum": 0, "maximum": 100 },
-          "notes":        { "type": "string" }
-        }
-      }
-    },
-
-    "vulnerabilityMap": {
-      "description": "Synthesis of where this supplier is most exposed — the section Agent 3 uses for attack planning",
-      "type": "object",
-      "properties": {
-        "summary":    { "type": "string", "description": "2-3 sentence overview of vulnerability posture" },
-        "exposures": {
+        "disclosureLevel":    { "type": "string", "enum": ["full_listed", "annual_report_only", "companies_house_only", "opaque"], "description": "Sets expectations for how much data follows" },
+        "currency":           { "type": "string", "description": "GBP unless non-UK parent reports in another currency" },
+        "trajectoryNarrative": { "type": "string", "description": "2-3 paragraphs: what changed over the period, what's driving it, what the trend signals" },
+        "years": {
           "type": "array",
+          "description": "Year objects, most recent first. All numeric fields nullable — Companies House-only suppliers may have limited data.",
           "items": {
             "type": "object",
+            "required": ["period", "source"],
             "properties": {
-              "area":         { "type": "string", "description": "What they are exposed on — name the contract, sector, or financial pressure" },
-              "severity":     { "type": "string", "enum": ["critical", "high", "medium", "low"] },
-              "evidence":     { "type": "string", "description": "What supports this assessment" },
-              "confidence":   { "type": "number", "minimum": 0, "maximum": 100 },
-              "exploitableBy": { "type": "string", "description": "What kind of challenger or strategy could exploit this" }
+              "period":              { "type": "string", "description": "e.g. FY2025, FY2024/25" },
+              "endDate":             { "type": "string", "format": "date", "description": "Financial year end date" },
+              "source":              { "type": "string", "description": "e.g. Annual Report 2025, Companies House filing" },
+              "revenue":             { "type": ["number", "null"] },
+              "operatingProfit":     { "type": ["number", "null"] },
+              "operatingMargin":     { "type": ["number", "null"], "description": "Percentage" },
+              "orderIntake":         { "type": ["number", "null"] },
+              "bookToBill":          { "type": ["number", "null"], "description": "Ratio" },
+              "orderBook":           { "type": ["number", "null"] },
+              "pipeline":            { "type": ["number", "null"], "description": "If disclosed" },
+              "freeCashConversion":  { "type": ["number", "null"], "description": "Percentage" },
+              "netDebt":             { "type": ["number", "null"] },
+              "leverage":            { "type": ["number", "null"], "description": "Ratio — net debt / EBITDA or similar" },
+              "dividendPerShare":    { "type": ["number", "null"] },
+              "significantEvents":   { "type": "array", "items": { "type": "string" }, "description": "M&A, restructuring, write-downs, disposals that year" }
             }
           }
         }
       }
     },
 
-    "signalWatchList": {
-      "description": "Weak signals that don't yet meet the threshold for conclusions but should be monitored",
+    "contracts": {
+      "description": "Structured contract data enriched with service-line tags, strategic importance, and business context. Neutral — no defensibility or attack language.",
       "type": "array",
       "items": {
         "type": "object",
+        "required": ["title", "buyer"],
         "properties": {
-          "signal":           { "type": "string", "description": "What was observed" },
-          "source":           { "type": "string" },
-          "sourceTier":       { "type": "number" },
-          "observedDate":     { "type": "string", "format": "date" },
-          "potentialMeaning": { "type": "string", "description": "What it might mean if confirmed" },
-          "corroborationNeeded": { "type": "string", "description": "What evidence to look for" },
-          "reviewBy":         { "type": "string", "format": "date" }
+          "ocid":                       { "type": "string", "description": "OCDS identifier — ties back to the competitive intel DB" },
+          "title":                      { "type": "string" },
+          "buyer":                      { "type": "string" },
+          "sector":                     { "type": "string", "description": "Public sector domain — defence, health, central gov, local gov, justice, etc" },
+          "serviceLines":               { "type": "array", "items": { "type": "string" }, "description": "Array of categoryId refs from service-taxonomy.json — a contract can span multiple categories" },
+          "strategicImportance":        { "type": "string", "enum": ["core", "significant", "supporting", "peripheral"] },
+          "value":                      { "type": "number", "description": "GBP" },
+          "startDate":                  { "type": "string", "format": "date" },
+          "endDate":                    { "type": "string", "format": "date" },
+          "extensionOptions":           { "type": "string" },
+          "status":                     { "type": "string", "enum": ["live", "expiring_12m", "expiring_24m", "expiring_36m", "expired", "terminated"] },
+          "routeToMarket":              { "type": "string", "description": "How they got it — framework call-off, open competition, single source, incumbent rebid" },
+          "businessContext":            { "type": "string", "description": "1-2 sentences: why does this contract matter? What does it prove about the supplier?" },
+          "capabilityProof":            { "type": "string", "description": "What capability does winning/holding this contract demonstrate" },
+          "deliveryNotes":              { "type": "string", "description": "Factual observations about delivery — NAO findings, service credits, public reporting. Neutral." },
+          "successorRouteExpectation":  { "type": "string", "description": "When this expires, what's the likely re-procurement route" },
+          "confidence":                 { "type": "number", "minimum": 0, "maximum": 100 }
         }
       }
     },
 
-    "evidenceQuality": {
-      "description": "Overall assessment of how much to trust this dossier",
+    "frameworks": {
+      "description": "Framework memberships enriched with service-line tags, supplier position, and significance assessment",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "provider"],
+        "properties": {
+          "name":              { "type": "string" },
+          "provider":          { "type": "string", "description": "e.g. CCS, NHS SBS" },
+          "lots":              { "type": "array", "items": { "type": "string" } },
+          "serviceLines":      { "type": "array", "items": { "type": "string" }, "description": "Array of categoryId refs from service-taxonomy.json" },
+          "status":            { "type": "string", "enum": ["live", "expired", "pipeline"] },
+          "startDate":         { "type": "string", "format": "date" },
+          "endDate":           { "type": "string", "format": "date" },
+          "estimatedValue":    { "type": ["number", "null"], "description": "Framework ceiling value if published, GBP" },
+          "supplierPosition":  { "type": "string", "enum": ["sole", "panel_small", "panel_large"], "description": "sole / panel under 10 / panel 10+" },
+          "callOffActivity":   { "type": "string", "enum": ["active", "moderate", "low", "unknown"], "description": "Is this framework actually generating deal flow" },
+          "significance":      { "type": "string", "enum": ["primary_route", "important", "minor"], "description": "How much does this supplier rely on this framework" }
+        }
+      }
+    },
+
+    "leadership": {
+      "description": "Key personnel — public sector experience as a descriptive string, not a boolean",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "role"],
+        "properties": {
+          "name":                    { "type": "string" },
+          "role":                    { "type": "string" },
+          "function":                { "type": "string", "enum": ["ceo", "cfo", "public_sector_lead", "sector_md", "partnerships", "delivery", "commercial", "other"] },
+          "startDate":               { "type": "string", "description": "When they took this role, if known" },
+          "background":              { "type": "string", "description": "Brief relevant background" },
+          "publicSectorBackground":  { "type": ["string", "null"], "description": "One sentence describing public sector experience, or null if none known" }
+        }
+      }
+    },
+
+    "partnerships": {
+      "description": "Alliance and subcontracting relationships with qualitative depth assessment replacing the v1 numeric strengthScore",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["partnerName", "partnerType"],
+        "properties": {
+          "partnerName":  { "type": "string" },
+          "partnerType":  { "type": "string", "enum": ["hyperscaler", "isv", "sme", "prime", "subcontractor", "joint_venture"] },
+          "serviceLines": { "type": "array", "items": { "type": "string" }, "description": "Array of categoryId refs from service-taxonomy.json" },
+          "sectors":      { "type": "array", "items": { "type": "string" } },
+          "depth":        { "type": "string", "enum": ["strategic_alliance", "preferred_partner", "project_level", "announced_only"], "description": "How real is this partnership" },
+          "evidence":     { "type": "string", "description": "What proves this partnership exists — a joint bid, a press release, a framework lot" },
+          "notes":        { "type": "string" }
+        }
+      }
+    },
+
+    "marketVoiceSignals": {
+      "description": "How the supplier talks about themselves vs what the evidence shows. Narrative-to-reality alignment analysis from annual reports, CEO statements, press releases, thought leadership.",
       "type": "object",
+      "required": ["alignmentVerdict", "verdictNarrative", "themes"],
       "properties": {
-        "totalCitations":     { "type": "number" },
-        "tierDistribution": {
-          "type": "object",
-          "properties": {
-            "tier1": { "type": "number" },
-            "tier2": { "type": "number" },
-            "tier3": { "type": "number" },
-            "tier4": { "type": "number" },
-            "tier5": { "type": "number" },
-            "tier6": { "type": "number" }
+        "alignmentVerdict":  { "type": "string", "enum": ["aligned", "partial", "aspirational", "misleading"], "description": "Headline: does reality match the story" },
+        "verdictNarrative":  { "type": "string", "description": "2-3 paragraphs explaining the verdict" },
+        "themes": {
+          "type": "array",
+          "description": "One entry per narrative theme detected. Open vocabulary — not restricted to a fixed enum.",
+          "items": {
+            "type": "object",
+            "required": ["theme", "prominence", "evidenceAlignment"],
+            "properties": {
+              "theme":                  { "type": "string", "description": "What the supplier is claiming — e.g. AI-led transformation" },
+              "prominence":             { "type": "string", "enum": ["primary", "secondary", "incidental"] },
+              "evidenceAlignment":      { "type": "string", "enum": ["supported", "partially_supported", "aspirational", "contradicted"] },
+              "supportingEvidence":     { "type": "string", "description": "AI characterisation of what supports the claim" },
+              "contradictingEvidence":  { "type": ["string", "null"], "description": "AI characterisation of what undermines it, or null" },
+              "signalType":             { "type": "string", "enum": ["strategic_pivot", "established_position", "defensive_repositioning", "marketing_only"] }
+            }
+          }
+        }
+      }
+    },
+
+    "bidOutcomeSignals": {
+      "description": "Pattern analysis from FTS procurement data. Observable patterns, not win rates. Strict inference-vs-confirmation honesty.",
+      "type": "object",
+      "required": ["dataWindow", "totalAwardsObserved", "summaryNarrative", "patterns"],
+      "properties": {
+        "dataWindow":           { "type": "string", "description": "Period covered, e.g. 2021-01 to 2026-04" },
+        "totalAwardsObserved":  { "type": "number" },
+        "totalValueObserved":   { "type": "number", "description": "Sum of award values, GBP" },
+        "summaryNarrative":     { "type": "string", "description": "2-3 paragraphs: what the patterns show" },
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["patternType", "description", "inferenceLevel"],
+            "properties": {
+              "patternType":    { "type": "string", "enum": ["incumbent_retained", "incumbent_displaced", "new_market_entry", "framework_gain", "framework_loss", "rival_succession"] },
+              "description":    { "type": "string", "description": "Plain English — e.g. Serco lost 3 of 5 NHS FM rebids to Mitie between 2023-2025" },
+              "rivals":         { "type": "array", "items": { "type": "string" }, "description": "Supplier names involved" },
+              "serviceLines":   { "type": "array", "items": { "type": "string" }, "description": "Array of categoryId refs" },
+              "sector":         { "type": "string" },
+              "inferenceLevel": { "type": "string", "enum": ["confirmed", "inferred_from_succession", "inferred_from_gap"], "description": "Strict honesty: did we see a loss or infer one" },
+              "occurrences":    { "type": "number" },
+              "dateRange":      { "type": "string", "description": "Period over which the pattern was observed" }
+            }
           }
         },
-        "confidenceBandDistribution": {
-          "type": "object",
-          "properties": {
-            "highlyReliable":  { "type": "number", "description": "Count of citations 85-100" },
-            "reliable":        { "type": "number", "description": "Count of citations 70-84" },
-            "directional":     { "type": "number", "description": "Count of citations 55-69" },
-            "weakSignal":      { "type": "number", "description": "Count of citations 45-54" },
-            "belowThreshold":  { "type": "number", "description": "Count of citations below 45" }
+        "sectorConcentration": {
+          "type": "array",
+          "description": "Award distribution across public sector domains",
+          "items": {
+            "type": "object",
+            "required": ["sector", "awardCount", "totalValue"],
+            "properties": {
+              "sector":     { "type": "string" },
+              "awardCount": { "type": "number" },
+              "totalValue": { "type": "number" },
+              "trend":      { "type": "string", "enum": ["growing", "stable", "declining"] }
+            }
           }
-        },
-        "averageConfidence":  { "type": "number" },
-        "contradictions":     { "type": "array", "items": { "type": "string" }, "description": "List of identified contradictions between sources" },
-        "knownGaps":          { "type": "array", "items": { "type": "string" }, "description": "List of things that could not be found" }
+        }
+      }
+    },
+
+    "riskExposureProfile": {
+      "description": "Neutral factor-level risk and exposure assessment. Replaces v1 vulnerabilityMap. No scores, no weights, no rolled-up number — Agent 3 computes its own rollups from these factors.",
+      "type": "object",
+      "required": ["summaryNarrative", "factors"],
+      "properties": {
+        "summaryNarrative": { "type": "string", "description": "2-3 paragraphs: the overall risk and exposure picture" },
+        "factors": {
+          "type": "array",
+          "description": "Expected factors: margin_pressure, contract_friction, concentration_risk, delivery_complexity, commercial_stance, organisational_change, buyer_relationship_stress, partner_dependency. Open — AI may add others.",
+          "items": {
+            "type": "object",
+            "required": ["factorId", "factorName", "level"],
+            "properties": {
+              "factorId":    { "type": "string", "description": "Identifier — one of the expected set or an AI-identified factor" },
+              "factorName":  { "type": "string", "description": "Human-readable label" },
+              "level":       { "type": "string", "enum": ["high", "moderate", "low", "not_observed"] },
+              "narrative":   { "type": "string", "description": "2-3 sentences: what was found, what it means" },
+              "claimType":   { "type": "string", "enum": ["verified_fact", "derived_estimate", "analytical_hypothesis", "signal_to_monitor"] },
+              "keyEvidence":  { "type": "string", "description": "Single strongest proof point" }
+            }
+          }
+        }
+      }
+    },
+
+    "signalSynthesis": {
+      "description": "Curation layer — pulls forward-looking signals from other sections into a single watchlist with review dates. No independent research.",
+      "type": "object",
+      "required": ["summaryNarrative", "signals"],
+      "properties": {
+        "summaryNarrative": { "type": "string", "description": "1 paragraph: the overall watchlist picture" },
+        "signals": {
+          "type": "array",
+          "description": "Priority-ordered list of signals to monitor",
+          "items": {
+            "type": "object",
+            "required": ["signal", "sourceSection", "priority", "reviewBy"],
+            "properties": {
+              "signal":           { "type": "string", "description": "What to watch — plain English" },
+              "sourceSection":    { "type": "string", "enum": ["financialTrajectory", "marketVoiceSignals", "bidOutcomeSignals", "riskExposureProfile", "contracts", "leadership", "partnerships"] },
+              "priority":         { "type": "string", "enum": ["critical", "watch", "background"] },
+              "claimType":        { "type": "string", "enum": ["analytical_hypothesis", "signal_to_monitor"], "description": "Signals are by definition not verified facts" },
+              "triggerCondition": { "type": "string", "description": "What would confirm or invalidate this" },
+              "reviewBy":         { "type": "string", "format": "date" }
+            }
+          }
+        }
+      }
+    },
+
+    "evidenceRegister": {
+      "description": "Per-claim evidence ledger for material claims only — anything feeding a score, structured field, contract row, financial metric, or executive summary. Supporting narrative prose uses inline citation, not a ledger entry.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claimId", "claimText", "claimType", "fieldPath", "sourceTier", "sourceName", "confidence"],
+        "properties": {
+          "claimId":            { "type": "string", "description": "Unique identifier, e.g. C001" },
+          "claimText":          { "type": "string", "description": "The claim itself" },
+          "claimType":          { "type": "string", "enum": ["verified_fact", "derived_estimate", "analytical_hypothesis", "signal_to_monitor"] },
+          "fieldPath":          { "type": "string", "description": "Which schema field this supports — e.g. financialTrajectory.years[0].revenue or scores.sectorStrength" },
+          "value":              { "type": "string", "description": "The specific value asserted" },
+          "sourceTier":         { "type": "number", "minimum": 1, "maximum": 6, "description": "1-6 per the Agent 2 source hierarchy" },
+          "sourceName":         { "type": "string", "description": "e.g. Serco Group Annual Report 2025" },
+          "sourceUrl":          { "type": ["string", "null"], "description": "If available" },
+          "publicationDate":    { "type": ["string", "null"], "format": "date", "description": "When the source was published" },
+          "retrievedAt":        { "type": "string", "format": "date-time", "description": "When the AI accessed it" },
+          "effectiveDate":      { "type": ["string", "null"], "format": "date", "description": "What date the claim is true as of — distinct from publication date" },
+          "isDirect":           { "type": "boolean", "description": "Did the source state this directly, or was it inferred" },
+          "confidence":         { "type": "number", "minimum": 0, "maximum": 100 },
+          "staleAfterDays":     { "type": "number", "description": "How long before this claim should be rechecked" },
+          "contradictionFlag":  { "type": "boolean", "description": "Is there a conflicting claim elsewhere in the register" },
+          "contradicts":        { "type": "array", "items": { "type": "string" }, "description": "Array of claimId refs if flagged" }
+        }
       }
     },
 
     "executiveSummary": {
       "description": "One-page overview for the top of the printed report",
       "type": "object",
+      "required": ["headline", "overview", "scoreRationales"],
       "properties": {
-        "headline":           { "type": "string", "description": "The single most important thing a bid team should know" },
-        "overview":           { "type": "string", "description": "2-3 paragraph summary of who they are and where they operate" },
+        "headline": { "type": "string", "description": "The single most important thing a bid team should know" },
+        "overview": { "type": "string", "description": "2-3 paragraph summary of who they are and where they operate" },
         "scoreRationales": {
           "type": "object",
+          "description": "One sentence per assessed headline score explaining the rating",
           "properties": {
-            "sectorStrength":   { "type": "string", "description": "One sentence explaining the score" },
-            "competitorThreat": { "type": "string", "description": "One sentence explaining the score" },
-            "vulnerability":    { "type": "string", "description": "One sentence explaining the score" }
+            "sectorStrength":              { "type": "string" },
+            "supplierBreadth":             { "type": "string" },
+            "scrutinyExposure":            { "type": "string" },
+            "serviceLineConcentration":    { "type": "string" },
+            "strategicIdentityConfidence": { "type": "string" }
           }
+        },
+        "keyRisks": {
+          "type": "array",
+          "description": "2-3 most important items from the risk exposure profile, surfaced to the front page",
+          "items": { "type": "string" }
         }
       }
     },
@@ -261,7 +422,7 @@
         "sectorBriefs": {
           "type": "array",
           "description": "Sector briefs covering sectors this supplier operates in",
-          "items": { "type": "string", "description": "Path to brief, e.g. reference/sectors/defence.json" }
+          "items": { "type": "string" }
         },
         "pipelineScans": {
           "type": "array",
@@ -275,7 +436,7 @@
   "$defs": {
     "strategicScore": {
       "type": "object",
-      "description": "A strategic score with per-factor breakdown and data completeness indicator",
+      "description": "A strategic score with per-factor breakdown and data completeness indicator. Same shape for all five assessed scores.",
       "required": ["overall", "factors", "completeness"],
       "properties": {
         "overall": { "type": "number", "minimum": 0, "maximum": 100 },
@@ -295,42 +456,15 @@
             "type": "object",
             "required": ["name", "weight", "value"],
             "properties": {
-              "name":           { "type": "string" },
-              "weight":         { "type": "number", "description": "Factor weight, e.g. 0.20" },
-              "value":          { "type": "number", "minimum": 0, "maximum": 100, "description": "Assessed value before weighting" },
-              "evidenced":      { "type": "boolean", "description": "True if this factor has supporting evidence, false if defaulted to midpoint" },
+              "name":            { "type": "string" },
+              "weight":          { "type": "number", "description": "Factor weight, e.g. 0.20" },
+              "value":           { "type": "number", "minimum": 0, "maximum": 100, "description": "Assessed value before weighting" },
+              "evidenced":       { "type": "boolean", "description": "True if this factor has supporting evidence, false if defaulted to midpoint" },
               "evidenceSummary": { "type": "string", "description": "Key evidence supporting this assessment, or 'No evidence — defaulted to 50' if unevidenced" },
-              "confidence":     { "type": "number", "minimum": 0, "maximum": 100 },
-              "weighted":       { "type": "number", "description": "value * weight — the contribution to the overall score" }
+              "confidence":      { "type": "number", "minimum": 0, "maximum": 100 },
+              "weighted":        { "type": "number", "description": "value * weight — the contribution to the overall score" }
             }
           }
-        }
-      }
-    },
-    "domainSection": {
-      "type": "object",
-      "description": "One intelligence domain — contains both the narrative (for the report) and structured highlights (for AI consumption)",
-      "required": ["headline", "narrative"],
-      "properties": {
-        "headline":     { "type": "string", "description": "One-sentence finding — the most important thing about this domain" },
-        "narrative":    { "type": "string", "description": "Detailed analysis in markdown — evidence-backed prose for the printed report" },
-        "keyFacts": {
-          "type": "array",
-          "description": "Structured data points for AI consumption — things another agent would want to query directly",
-          "items": {
-            "type": "object",
-            "properties": {
-              "label":      { "type": "string", "description": "What this fact is, e.g. 'UK public sector revenue'" },
-              "value":      { "type": "string", "description": "The fact itself, e.g. '£2.1bn (estimated)'" },
-              "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
-              "source":     { "type": "string", "description": "Source citation, e.g. 'Tier 3, Annual Report 2025'" }
-            }
-          }
-        },
-        "gaps": {
-          "type": "array",
-          "description": "What could not be found for this domain",
-          "items": { "type": "string" }
         }
       }
     }
