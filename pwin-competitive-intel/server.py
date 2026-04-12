@@ -355,6 +355,102 @@ def api_pwin(params):
         conn.close()
 
 
+def api_service_categories():
+    """Return the list of service categories and their award counts."""
+    conn = get_db()
+    if not conn: return {"error": "Database not found"}
+    try:
+        rows = conn.execute("""
+            SELECT n.service_category, COUNT(DISTINCT a.id) AS awards,
+                   SUM(a.value_amount_gross) AS total_value
+            FROM notices n JOIN awards a ON a.ocid = n.ocid
+            WHERE a.status IN ('active','pending') AND n.service_category IS NOT NULL
+              AND a.value_amount_gross >= 1e6
+            GROUP BY n.service_category ORDER BY awards DESC
+        """).fetchall()
+        return {"categories": [
+            {"id": r["service_category"], "awards": r["awards"], "total_value": r["total_value"]}
+            for r in rows
+        ]}
+    finally:
+        conn.close()
+
+
+def api_search(params):
+    """Three-dimension bid-director search: service × buyer × value."""
+    service = params.get("service", [""])[0]
+    buyer = params.get("buyer", [""])[0]
+    min_value = float(params.get("minValue", ["1000000"])[0])
+    limit = int(params.get("limit", ["100"])[0])
+    conn = get_db()
+    if not conn: return {"error": "Database not found"}
+    try:
+        sql = """
+            SELECT n.title, n.service_category,
+                   COALESCE(cb.canonical_name, b.name) AS buyer_name,
+                   cb.type AS buyer_type,
+                   GROUP_CONCAT(DISTINCT s.name) AS suppliers,
+                   a.value_amount_gross, a.award_date,
+                   a.contract_start_date, a.contract_end_date,
+                   n.procurement_method_detail, n.notice_url,
+                   n.is_framework
+            FROM notices n
+            JOIN awards a ON a.ocid = n.ocid
+            JOIN buyers b ON n.buyer_id = b.id
+            LEFT JOIN canonical_buyers cb ON b.canonical_id = cb.canonical_id
+            LEFT JOIN award_suppliers asup ON a.id = asup.award_id
+            LEFT JOIN suppliers s ON asup.supplier_id = s.id
+            WHERE a.status IN ('active','pending')
+              AND a.value_amount_gross >= ?
+        """
+        p = [min_value]
+
+        if service:
+            sql += " AND n.service_category = ?"
+            p.append(service)
+
+        if buyer:
+            # Search canonical name OR raw buyer name, with hierarchy traversal
+            sql += """ AND (
+                b.canonical_id IN (
+                    WITH RECURSIVE descendants AS (
+                        SELECT canonical_id FROM canonical_buyers
+                        WHERE LOWER(canonical_name) LIKE LOWER(?)
+                        UNION ALL
+                        SELECT cb2.canonical_id FROM canonical_buyers cb2
+                        JOIN descendants d ON cb2.parent_canonical_id = d.canonical_id
+                    )
+                    SELECT canonical_id FROM descendants
+                )
+                OR LOWER(b.name) LIKE LOWER(?)
+            )"""
+            p.extend([f"%{buyer}%", f"%{buyer}%"])
+
+        sql += " GROUP BY a.id ORDER BY a.value_amount_gross DESC LIMIT ?"
+        p.append(limit)
+
+        rows = conn.execute(sql, p).fetchall()
+
+        results = [{
+            "title": r["title"],
+            "service": r["service_category"],
+            "buyer": r["buyer_name"],
+            "buyer_type": r["buyer_type"],
+            "suppliers": r["suppliers"],
+            "value": r["value_amount_gross"],
+            "award_date": r["award_date"],
+            "start_date": r["contract_start_date"],
+            "end_date": r["contract_end_date"],
+            "method": r["procurement_method_detail"],
+            "notice_url": r["notice_url"],
+            "is_framework": bool(r["is_framework"]),
+        } for r in rows]
+
+        return {"count": len(results), "awards": results}
+    finally:
+        conn.close()
+
+
 # ── HTTP Server ───────────────────────────────────────────────────────────
 
 ROUTES = {
@@ -364,6 +460,8 @@ ROUTES = {
     "/api/expiring": api_expiring,
     "/api/pipeline": api_pipeline,
     "/api/pwin": api_pwin,
+    "/api/categories": lambda p: api_service_categories(),
+    "/api/search": api_search,
 }
 
 class Handler(SimpleHTTPRequestHandler):

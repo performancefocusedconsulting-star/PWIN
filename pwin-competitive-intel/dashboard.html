@@ -442,6 +442,7 @@ input[type="range"]::-webkit-slider-thumb {
 <!-- ── TABS ───────────────────────────────────────────────── -->
 <nav class="tabs" id="tabs">
   <div class="tab active" data-view="summary">Summary</div>
+  <div class="tab" data-view="search">Service Search</div>
   <div class="tab" data-view="buyer">Buyer Intelligence</div>
   <div class="tab" data-view="supplier">Supplier Intelligence</div>
   <div class="tab" data-view="expiry">Expiry Pipeline</div>
@@ -472,6 +473,61 @@ input[type="range"]::-webkit-slider-thumb {
           <div class="card-title" style="font-size:16px">Database Coverage</div>
           <div id="summaryCoverage"></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE SEARCH VIEW -->
+  <section class="view" id="view-search">
+    <div class="filters">
+      <div class="filter-group">
+        <label>Service Category</label>
+        <select id="searchService" style="min-width:220px;">
+          <option value="">All Services</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Buyer / Sector</label>
+        <input type="text" id="searchBuyer" placeholder="e.g. Ministry of Defence, NHS..." style="width:220px;" />
+      </div>
+      <div class="filter-group">
+        <label>Min Value (£)</label>
+        <select id="searchMinValue">
+          <option value="1000000">£1M+</option>
+          <option value="2000000">£2M+</option>
+          <option value="5000000">£5M+</option>
+          <option value="10000000">£10M+</option>
+          <option value="50000000">£50M+</option>
+        </select>
+      </div>
+      <div style="margin-left:auto;align-self:flex-end;">
+        <button class="btn" onclick="runServiceSearch()">Search</button>
+      </div>
+    </div>
+    <div id="searchSummary" style="margin-bottom:12px;"></div>
+    <div class="card">
+      <div class="card-title">Awards <span id="searchTitle"></span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="width:14%">Buyer</th>
+            <th style="width:14%">Supplier</th>
+            <th style="width:22%">Title</th>
+            <th style="width:10%">Service</th>
+            <th style="text-align:right;width:10%">Value</th>
+            <th style="width:10%">Method</th>
+            <th style="width:10%">End Date</th>
+            <th style="width:10%">FW</th>
+          </tr></thead>
+          <tbody id="searchTable"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="searchResults">
+      <div class="empty-state">
+        <div class="icon">&#x1F50D;</div>
+        <h3>Service Search</h3>
+        <p>Search by service category, buyer, and value. Example: "P3M" + "Ministry of Defence" + £5M+</p>
       </div>
     </div>
   </section>
@@ -708,6 +764,9 @@ document.getElementById('tabs').addEventListener('click', (e) => {
   const view = document.getElementById(viewId);
   view.classList.add('active');
   // trigger load on first switch
+  if (e.target.dataset.view === 'search' && !view.dataset.loaded) {
+    loadServiceCategories(); view.dataset.loaded = '1';
+  }
   if (e.target.dataset.view === 'expiry' && !view.dataset.loaded) {
     loadExpiry(); view.dataset.loaded = '1';
   }
@@ -771,6 +830,83 @@ async function loadSummary() {
     document.getElementById('summaryCoverage').innerHTML = covHtml;
   } catch (e) {
     showError('summaryStats');
+  }
+}
+
+/* ── SERVICE SEARCH ─────────────────────────────────────────── */
+const SERVICE_LABELS = {
+  'professional-services': 'Professional Services',
+  'p3m': 'P3M',
+  'digital': 'Digital',
+  'software-systems-integration': 'Software & SI',
+  'technology-services': 'Technology Services',
+  'cyber-security': 'Cyber Security',
+  'software-cloud-products': 'Software & Cloud',
+  'ai-data': 'AI & Data',
+  'bpo-outsourced-services': 'BPO / Outsourced',
+  'it-outsourcing': 'IT Outsourcing',
+  'workforce-contingent-labour': 'Workforce / Labour',
+  'construction': 'Construction',
+  'training-education': 'Training & Education',
+  'goods-supplies': 'Goods & Supplies',
+};
+
+async function loadServiceCategories() {
+  try {
+    const data = await apiFetch('categories');
+    const sel = document.getElementById('searchService');
+    (data.categories || []).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${SERVICE_LABELS[c.id] || c.id} (${fmtNumber(c.awards)})`;
+      sel.appendChild(opt);
+    });
+  } catch (e) { /* silent — dropdown just stays at "All" */ }
+}
+
+async function runServiceSearch() {
+  const service = document.getElementById('searchService').value;
+  const buyer = document.getElementById('searchBuyer').value.trim();
+  const minValue = document.getElementById('searchMinValue').value;
+
+  document.getElementById('searchResults').style.display = 'none';
+
+  const params = { minValue };
+  if (service) params.service = service;
+  if (buyer) params.buyer = buyer;
+
+  showLoading('searchTable');
+  try {
+    const data = await apiFetch('search', params);
+    const awards = data.awards || [];
+
+    // Summary line
+    const totalValue = awards.reduce((s, a) => s + (a.value || 0), 0);
+    const svcLabel = service ? (SERVICE_LABELS[service] || service) : 'All services';
+    const buyerLabel = buyer || 'all buyers';
+    document.getElementById('searchSummary').innerHTML = `
+      <span class="mono" style="color:var(--gold)">${fmtNumber(data.count)}</span> awards matching
+      <strong>${svcLabel}</strong> at <strong>${buyerLabel}</strong> ≥ ${fmtCurrency(Number(minValue))}
+      — total value <span class="mono" style="color:var(--gold)">${fmtCurrency(totalValue)}</span>
+    `;
+    document.getElementById('searchTitle').textContent = `— ${svcLabel}`;
+
+    const rows = awards.map(a => `
+      <tr>
+        <td title="${a.buyer || ''}">${truncate(a.buyer, 30)}</td>
+        <td title="${a.suppliers || ''}">${truncate(a.suppliers, 30)}</td>
+        <td title="${a.title || ''}">${truncate(a.title, 45)}</td>
+        <td><span class="badge badge-green" style="font-size:10px">${SERVICE_LABELS[a.service] || a.service || '—'}</span></td>
+        <td class="num">${fmtCurrency(a.value)}</td>
+        <td title="${a.method || ''}" style="font-size:11px">${truncate(a.method, 18)}</td>
+        <td class="mono">${fmtDate(a.end_date)}</td>
+        <td>${a.is_framework ? '<span class="badge badge-amber">FW</span>' : ''}</td>
+      </tr>
+    `).join('');
+    document.getElementById('searchTable').innerHTML = rows || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted)">No matching awards found</td></tr>';
+
+  } catch (e) {
+    showError('searchTable');
   }
 }
 
