@@ -1,7 +1,7 @@
 ---
 document_type: skill_redesign_decision_register
 skill: Agent 2 Skill 1 — Supplier Intelligence Dossier
-status: phase_0_in_progress
+status: phase_0_complete
 version: 1.0
 created: 2026-04-11
 source_review: Serco_Dossier_Review_and_Recommendations.md (user-provided, 2026-04-11)
@@ -84,7 +84,7 @@ Three focused working sessions, each producing a concrete committed artefact:
 |---|---|---|
 | **Taxonomy design** | 3–4 hours | `~/.pwin/platform/service-taxonomy.json` stress-tested against 6–8 real suppliers | **DONE** 2026-04-12 — v2.0, 13 categories |
 | **Schema design** | 2–3 hours | Updated `supplier-dossier-schema.json` with evidence ledger, claim taxonomy, new module fields, machine output structure | **DONE** 2026-04-12 — v2 schema, 16 sections |
-| **Scoring model** | 1–2 hours | Scoring spec: exact factors and weights for the five new headline scores and the Risk & Exposure factor list | Pending |
+| **Scoring model** | 1–2 hours | Scoring spec: exact factors and weights for the five new headline scores and the Risk & Exposure factor list | **DONE** 2026-04-12 — 4-colour RAG, 3 assessed + 3 computed, no numeric headlines |
 
 **Recommendation: run these as three separate sessions, not one marathon.** Taxonomy session first — it's the structural spine everything else hangs off.
 
@@ -124,3 +124,4 @@ To be resolved in the design sessions:
 |---|---|---|
 | 1.0 | 2026-04-11 | Initial decision register. All 12 decisions agreed in theme-by-theme working session. Phase 0 pending. |
 | 1.1 | 2026-04-12 | Taxonomy design complete (service-taxonomy.json v2.0, 13 categories). Schema design complete (supplier-dossier-schema.json v2, 16 sections, all 12 decisions implemented). Scoring model session remains. |
+| 1.2 | 2026-04-12 | Scoring model finalised. Replaced 0-100 numeric scores with 4-colour RAG system (red/amber/green/grey). Split into 3 AI-assessed (sectorStrength, scrutinyExposure, strategicIdentityConfidence) and 3 computed (supplierBreadth, serviceLineConcentration, evidenceQuality). Factor-level detail retained in JSON for Agent 3 but never shown as numbers in human report. Weights deferred until validated against real output. **Phase 0 complete — all three design sessions done.** |

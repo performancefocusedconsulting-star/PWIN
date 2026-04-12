@@ -86,15 +86,16 @@
     },
 
     "scores": {
-      "description": "Five AI-assessed headline scores. A sixth score (evidenceQuality) is computed by the renderer from the evidenceRegister, not assessed here.",
+      "description": "Six headline scores — three AI-assessed (qualitative judgement), three computed by the renderer from structured data. All display as a 4-colour RAG rating (red/amber/green/grey) with a one-sentence rationale. Factor-level detail stays in JSON for Agent 3 machine consumption but never surfaces as a number in the human report.",
       "type": "object",
-      "required": ["sectorStrength", "supplierBreadth", "scrutinyExposure", "serviceLineConcentration", "strategicIdentityConfidence"],
+      "required": ["sectorStrength", "supplierBreadth", "scrutinyExposure", "serviceLineConcentration", "strategicIdentityConfidence", "evidenceQuality"],
       "properties": {
-        "sectorStrength":              { "$ref": "#/$defs/strategicScore", "description": "How deeply embedded in UK public sector" },
-        "supplierBreadth":             { "$ref": "#/$defs/strategicScore", "description": "How diversified across service lines, sectors, and buyers" },
-        "scrutinyExposure":            { "$ref": "#/$defs/strategicScore", "description": "How much public scrutiny, regulatory attention, and media risk" },
-        "serviceLineConcentration":    { "$ref": "#/$defs/strategicScore", "description": "How dependent on a single service line — high = specialist, low = generalist" },
-        "strategicIdentityConfidence": { "$ref": "#/$defs/strategicScore", "description": "How clearly we can characterise what this supplier is and where it's heading" }
+        "sectorStrength":              { "$ref": "#/$defs/scoreCard", "description": "AI-assessed. How deeply embedded in UK public sector — framework positions, Crown Rep status, contract longevity, buyer relationships" },
+        "scrutinyExposure":            { "$ref": "#/$defs/scoreCard", "description": "AI-assessed. How much public scrutiny, regulatory attention, and media risk — NAO reports, PAC hearings, delivery failures" },
+        "strategicIdentityConfidence": { "$ref": "#/$defs/scoreCard", "description": "AI-assessed. How clearly we can characterise what this supplier is and where it's heading — coherence across narrative, contracts, and strategy" },
+        "supplierBreadth":             { "$ref": "#/$defs/scoreCard", "description": "Computed. How diversified across service lines, sectors, and buyers — derived from serviceLineProfile, contracts, and frameworks" },
+        "serviceLineConcentration":    { "$ref": "#/$defs/scoreCard", "description": "Computed. How dependent on a single service line — derived from serviceLineProfile contract values" },
+        "evidenceQuality":             { "$ref": "#/$defs/scoreCard", "description": "Computed. How much of this dossier is backed by hard evidence — derived from evidenceRegister tier distribution, confidence, and claim types" }
       }
     },
 
@@ -393,13 +394,14 @@
         "overview": { "type": "string", "description": "2-3 paragraph summary of who they are and where they operate" },
         "scoreRationales": {
           "type": "object",
-          "description": "One sentence per assessed headline score explaining the rating",
+          "description": "One sentence per headline score explaining the RAG rating. All six scores represented — three AI-assessed, three computed.",
           "properties": {
             "sectorStrength":              { "type": "string" },
-            "supplierBreadth":             { "type": "string" },
             "scrutinyExposure":            { "type": "string" },
+            "strategicIdentityConfidence": { "type": "string" },
+            "supplierBreadth":             { "type": "string" },
             "serviceLineConcentration":    { "type": "string" },
-            "strategicIdentityConfidence": { "type": "string" }
+            "evidenceQuality":             { "type": "string" }
           }
         },
         "keyRisks": {
@@ -434,35 +436,31 @@
   },
 
   "$defs": {
-    "strategicScore": {
+    "scoreCard": {
       "type": "object",
-      "description": "A strategic score with per-factor breakdown and data completeness indicator. Same shape for all five assessed scores.",
-      "required": ["overall", "factors", "completeness"],
+      "description": "A headline score displayed as a 4-colour RAG rating with rationale. Factor-level detail retained for machine consumption by Agent 3 — never shown as numbers in the human report.",
+      "required": ["rating", "rationale"],
       "properties": {
-        "overall": { "type": "number", "minimum": 0, "maximum": 100 },
-        "completeness": {
-          "type": "object",
-          "description": "How much evidence backs this score — a score of 62 from 7 evidenced factors means something different from 62 where 4 factors defaulted to 50",
-          "required": ["factorsEvidenced", "factorsTotal"],
-          "properties": {
-            "factorsEvidenced": { "type": "number", "description": "Number of factors with supporting evidence" },
-            "factorsTotal":     { "type": "number", "description": "Total number of factors in this score" },
-            "incomplete":       { "type": "boolean", "description": "True if fewer than half the factors have evidence — score should be flagged prominently" }
-          }
+        "rating": {
+          "type": "string",
+          "enum": ["red", "amber", "green", "grey"],
+          "description": "red = material concern or significant gap. amber = notable but manageable. green = healthy, well evidenced. grey = insufficient evidence to assess."
+        },
+        "rationale": {
+          "type": "string",
+          "description": "One sentence explaining the rating — what drove it to this colour"
         },
         "factors": {
           "type": "array",
+          "description": "Machine-readable factor breakdown for Agent 3 consumption. Not rendered in the human report. For computed scores, factors are populated by the renderer. For AI-assessed scores, factors are populated by the model.",
           "items": {
             "type": "object",
-            "required": ["name", "weight", "value"],
+            "required": ["name", "finding"],
             "properties": {
-              "name":            { "type": "string" },
-              "weight":          { "type": "number", "description": "Factor weight, e.g. 0.20" },
-              "value":           { "type": "number", "minimum": 0, "maximum": 100, "description": "Assessed value before weighting" },
-              "evidenced":       { "type": "boolean", "description": "True if this factor has supporting evidence, false if defaulted to midpoint" },
-              "evidenceSummary": { "type": "string", "description": "Key evidence supporting this assessment, or 'No evidence — defaulted to 50' if unevidenced" },
-              "confidence":      { "type": "number", "minimum": 0, "maximum": 100 },
-              "weighted":        { "type": "number", "description": "value * weight — the contribution to the overall score" }
+              "name":            { "type": "string", "description": "Factor name" },
+              "finding":         { "type": "string", "description": "What was found — plain English" },
+              "evidenced":       { "type": "boolean", "description": "True if this factor has supporting evidence" },
+              "evidenceSummary": { "type": "string", "description": "Key evidence, or 'No evidence available' if unevidenced" }
             }
           }
         }
