@@ -336,9 +336,26 @@ async function callClaude(systemPrompt, messages, tools, model) {
 
 function buildClaudeTools(skill) {
   const writeTools = skill.write_tools || [];
-  if (writeTools.length === 0) return [];
+  const researchTools = skill.research_tools || [];
+  if (writeTools.length === 0 && researchTools.length === 0) return [];
 
-  // Map skill tool names to Claude tool definitions
+  // Research tools — read-only, available to skills that need external data
+  const researchToolDefs = {
+    web_search: {
+      name: 'web_search',
+      description: 'Search the web for information. Use for annual reports, financial results, leadership teams, news articles, parliamentary material, audit reports, and any Tier 3-6 source. Returns a summary of search results.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'The search query' },
+          purpose: { type: 'string', description: 'Brief note on what you are looking for and which dossier section it feeds' },
+        },
+        required: ['query'],
+      },
+    },
+  };
+
+  // Map skill tool names to Claude tool definitions (write tools)
   const toolDefs = {
     batch_create_response_sections: {
       name: 'batch_create_response_sections',
@@ -554,9 +571,11 @@ function buildClaudeTools(skill) {
     },
   };
 
-  return writeTools
-    .filter(name => toolDefs[name])
-    .map(name => toolDefs[name]);
+  const tools = [
+    ...writeTools.filter(name => toolDefs[name]).map(name => toolDefs[name]),
+    ...researchTools.filter(name => researchToolDefs[name]).map(name => researchToolDefs[name]),
+  ];
+  return tools;
 }
 
 // ---------------------------------------------------------------------------
@@ -581,8 +600,61 @@ async function executeWriteBacks(skill, pursuitId, claudeResponse) {
   return results;
 }
 
+async function executeWebSearch(query) {
+  // Use Brave Search API if available, otherwise fall back to a simple fetch
+  const braveKey = process.env.BRAVE_SEARCH_API_KEY;
+  if (braveKey) {
+    const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=8`;
+    const resp = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip', 'X-Subscription-Token': braveKey },
+    });
+    if (!resp.ok) {
+      throw new Error(`Brave Search API error ${resp.status}: ${await resp.text()}`);
+    }
+    const data = await resp.json();
+    const results = (data.web?.results || []).map(r => ({
+      title: r.title,
+      url: r.url,
+      description: r.description,
+      age: r.age,
+    }));
+    return { query, resultCount: results.length, results };
+  }
+
+  // Fallback: use Google Custom Search if configured
+  const googleKey = process.env.GOOGLE_SEARCH_API_KEY;
+  const googleCx = process.env.GOOGLE_SEARCH_CX;
+  if (googleKey && googleCx) {
+    const url = `https://www.googleapis.com/customsearch/v1?key=${googleKey}&cx=${googleCx}&q=${encodeURIComponent(query)}&num=8`;
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      throw new Error(`Google Search API error ${resp.status}: ${await resp.text()}`);
+    }
+    const data = await resp.json();
+    const results = (data.items || []).map(r => ({
+      title: r.title,
+      url: r.link,
+      description: r.snippet,
+    }));
+    return { query, resultCount: results.length, results };
+  }
+
+  // No search API configured — return a clear error so the model knows
+  return {
+    query,
+    resultCount: 0,
+    results: [],
+    error: 'No search API configured. Set BRAVE_SEARCH_API_KEY or GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_CX environment variables.',
+  };
+}
+
 async function executeToolCall(toolName, pursuitId, input) {
-  // Route tool calls to the store
+  // Research tools (read-only)
+  if (toolName === 'web_search') {
+    return executeWebSearch(input.query);
+  }
+
+  // Write tools — route to the store
   switch (toolName) {
     case 'batch_create_response_sections': {
       const data = await store.getProductData(pursuitId, 'bid_execution') || {};

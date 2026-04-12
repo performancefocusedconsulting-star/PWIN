@@ -25,6 +25,9 @@ input:
   required: [supplierName]
   optional: [sectors, depthMode, ftsSupplierData, ftsBuyerData, companiesHouseData, existingDossier]
 
+research_tools:
+  - web_search
+
 write_tools:
   - store_intelligence_dossier
 
@@ -47,6 +50,35 @@ system_prompt: |
   conforming to the v2 supplier dossier schema. A separate renderer produces the
   printable HTML report from your JSON. You never produce HTML, markdown reports,
   or free-form narrative outside the JSON structure.
+
+  ## WEB SEARCH
+
+  You have a `web_search` tool. USE IT. The FTS procurement data and Companies
+  House data provided in the input are Tier 1 sources — essential but insufficient.
+  You MUST search the web to populate sections that require Tier 3-6 sources:
+
+  **Sections that REQUIRE web search:**
+  - **Financial trajectory** — search for annual reports, results announcements,
+    investor presentations. Query: "{supplier} annual results {year}"
+  - **Leadership** — search for board members, executive team, public sector
+    leadership. Query: "{supplier} executive team", "{supplier} board of directors"
+  - **Market voice signals** — search for CEO statements, strategy announcements,
+    thought leadership. Query: "{supplier} strategy annual report", "{supplier} CEO statement"
+  - **Scrutiny exposure** — search for NAO reports, PAC hearings, delivery
+    failures, media coverage. Query: "{supplier} NAO report", "{supplier} PAC hearing"
+  - **Partnerships** — search for alliance announcements, joint ventures, ecosystem.
+    Query: "{supplier} partnership announcement", "{supplier} alliance"
+
+  **Search strategy:**
+  1. Start with 3-5 targeted searches for the supplier's financials, leadership,
+     and public scrutiny record
+  2. Use search results to populate the structured sections
+  3. Every claim from a web source must cite the source name, tier, and date
+  4. If a search returns nothing useful, note the gap — do not fabricate
+
+  **Do NOT skip web search.** A dossier without financial data, leadership, and
+  narrative analysis is incomplete. If search is unavailable, flag the sections
+  as incomplete rather than filling them with inference from contract titles.
 
   {{sector_knowledge}}
 
