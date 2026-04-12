@@ -355,8 +355,45 @@ Anti-patterns we have already encountered or considered:
 - **Don't merge alias supplements blind** — always print what was merged, so human reviewers can spot bad merges (e.g. an alias supplement targeted the wrong canonical entity).
 - **Don't silently drop unmatched entries** — always log them, count them, and surface the top-N to the next iteration's curation list.
 
+## 13. NHS ODS — lessons learned (2026-04-12)
+
+### NHS ODS is England-only
+
+The ODS API at `directory.spineservices.nhs.uk` covers **English NHS organisations only**. Scottish NHS boards, Northern Ireland HSC trusts, and Welsh NHS bodies beyond those already in the hand-curated NWSSP entry are NOT included. This was not obvious before the build and caused the coverage estimate to be wrong (+5.8pp actual vs ~+20pp estimated).
+
+**What ODS does cover (391 entities fetched):**
+- 248 NHS Trusts (acute, community, mental health, ambulance)
+- 121 ICBs and sub-ICB locations
+- 14 Special Health Authorities
+- 8 NHS Support Agencies
+
+**What ODS does NOT cover (remaining ~3,104 unmatched NHS awards):**
+
+| Gap | Entities needed | Source |
+|---|---|---|
+| Scottish NHS boards | ~15 (GGC, Highland, Lothian, Tayside, Fife, Forth Valley, Grampian, Lanarkshire, Ayrshire & Arran, Borders, D&G, Orkney, Shetland, Western Isles) | NHS Scotland ODS or hand-curate |
+| NI HSC trusts | ~6 (Belfast, South Eastern, Northern, Southern, Western, NI Ambulance) | Hand-curate from NI HSC data |
+| NHS procurement vehicles | ~5–10 (NOE CPC, NHS London Procurement Partnership, East of England NHS Collaborative Hub) | Hand-curate |
+| Legacy CCGs | ~50+ (now Inactive since ICB transition July 2022) | Fetch with `--include-inactive` flag if historical matching matters |
+| NHS England regional teams | ~7 ("NHS England (North)", "NHSE (London region)") | Hand-curate as children of NHS England |
+
+**Rule for future operators:** when estimating coverage gain from a government data source, always check whether it covers all four UK nations or only England. Major sources that are England-only: NHS ODS, Ofsted, CQC. Sources that cover UK-wide: GOV.UK organisations API (mostly), Companies House, FTS itself.
+
+### ODS naming conventions vs FTS naming conventions
+
+ODS names are typically **UPPERCASE** (e.g. "STOCKPORT NHS FOUNDATION TRUST") which matches the FTS convention well. The alias builder generates title-case variants with `NHS` kept uppercase, which catches most FTS forms. However:
+
+- FTS occasionally uses "NHS [Place] Integrated Care Board" while ODS uses "NHS [PLACE] INTEGRATED CARE BOARD" — the lowercase/title-case/uppercase alias triplet in the builder handles this.
+- ICB names in FTS sometimes include the abbreviated form "ICB" while ODS uses "INTEGRATED CARE BOARD" — the alias builder adds both forms.
+- Ambulance trusts in FTS may appear as "NHS North East Ambulance Service" while ODS has "NORTH EAST AMBULANCE SERVICE NHS FOUNDATION TRUST" — word order differs. **This is NOT caught by exact alias matching and needs Splink or a normalised-token matching approach.**
+
+### Hierarchy not yet captured
+
+The initial ODS fetch used the list endpoint (fast, no per-org detail calls). Parent-child relationships (trust → ICB → NHS England) are available via the ODS detail endpoint but were deferred to keep the first pass fast. When hierarchy matters for the query layer, a follow-up pass should call `GET /organisations/{OrgId}` for each entity and extract the `Rels` array.
+
 ## Change log
 
 | Version | Date | Summary |
 |---|---|---|
 | 1.0 | 2026-04-11 | Initial playbook from Phase 0 Discovery + Phase 1 GOV.UK and central buying agencies builds. 12 sections, ~3,000 words. |
+| 1.1 | 2026-04-12 | Added §13: NHS ODS lessons learned — England-only gap, naming conventions, deferred hierarchy. |
