@@ -1,7 +1,7 @@
 ---
 document_type: skill_redesign_decision_register
 skill: Agent 2 Skill 1 — Supplier Intelligence Dossier
-status: phase_2_complete
+status: complete
 version: 1.0
 created: 2026-04-11
 source_review: Serco_Dossier_Review_and_Recommendations.md (user-provided, 2026-04-11)
@@ -127,3 +127,4 @@ To be resolved in the design sessions:
 | 1.2 | 2026-04-12 | Scoring model finalised. Replaced 0-100 numeric scores with 4-colour RAG system (red/amber/green/grey). Split into 3 AI-assessed (sectorStrength, scrutinyExposure, strategicIdentityConfidence) and 3 computed (supplierBreadth, serviceLineConcentration, evidenceQuality). Factor-level detail retained in JSON for Agent 3 but never shown as numbers in human report. Weights deferred until validated against real output. **Phase 0 complete — all three design sessions done.** |
 | 1.3 | 2026-04-12 | **Phase 1 complete.** render-dossier.js built (JSON→HTML, computes 3 derived scores, zero deps). AGENT.md Skill 1 rewritten (D03 language cleanup, v2 scoring model, v2 output structure, dual-file storage). narrative-theme-taxonomy.json committed (12 themes with evidence markers). v1 HTML template superseded by the renderer. |
 | 1.4 | 2026-04-12 | **Phase 2 complete.** supplier-dossier.yaml skill config written (v2 schema, RAG scoring, claim taxonomy, market voice, bid outcomes, risk exposure, evidence register, 3 depth modes). store_intelligence_dossier tool updated for v2 JSON + directory storage. v1 competitor-profiling.yaml retained for reference. |
+| 1.5 | 2026-04-12 | **Phase 3 complete — v2 redesign done.** Serco deep validation: 132 FTS awards → skill (Sonnet, 165s, $0.35) → 16-section v2 JSON → rendered HTML. 7 service lines, 10 contracts enriched, 8 risk factors, market voice aligned, 3 bid outcome patterns, 10 evidence claims, 5 forward signals. Remaining: run 1-2 contrasting suppliers (Capita, Mitie) for cross-validation. |
