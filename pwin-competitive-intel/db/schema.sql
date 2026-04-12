@@ -115,6 +115,13 @@ CREATE TABLE IF NOT EXISTS notices (
     -- Latest release tag seen
     latest_tag              TEXT,
 
+    -- Framework fields (added 2026-04-12 for Decision C06)
+    is_framework            INTEGER DEFAULT 0,          -- TRUE if this notice establishes a framework agreement
+    framework_method        TEXT,                        -- e.g. withReopeningCompetition, withAndWithoutReopeningCompetition
+    framework_type          TEXT,                        -- e.g. closed, open
+    parent_framework_ocid   TEXT,                        -- OCID of the parent framework (for call-offs)
+    parent_framework_title  TEXT,                        -- Name of the parent framework (for call-offs)
+
     ingested_at             TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated            TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -122,6 +129,8 @@ CREATE TABLE IF NOT EXISTS notices (
 CREATE INDEX IF NOT EXISTS idx_notices_buyer ON notices(buyer_id);
 CREATE INDEX IF NOT EXISTS idx_notices_status ON notices(tender_status);
 CREATE INDEX IF NOT EXISTS idx_notices_published ON notices(published_date);
+CREATE INDEX IF NOT EXISTS idx_notices_framework ON notices(is_framework);
+CREATE INDEX IF NOT EXISTS idx_notices_parent_fw ON notices(parent_framework_ocid);
 
 -- ============================================================
 -- LOTS (one row per lot within a notice)

@@ -431,6 +431,22 @@ def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
     has_renewal = any(a.get("hasRenewal") for a in awards)
     renewal_desc = next((a.get("renewal", {}).get("description") for a in awards if a.get("hasRenewal")), None)
 
+    # Framework fields — Decision C06 (added 2026-04-12)
+    techniques = tender.get("techniques", {})
+    fa = techniques.get("frameworkAgreement", {})
+    is_framework = 1 if fa else 0
+    framework_method = fa.get("method")
+    framework_type = fa.get("type")
+
+    # Parent framework reference (for call-offs referencing their framework)
+    parent_framework_ocid = None
+    parent_framework_title = None
+    for rp in release.get("relatedProcesses", []):
+        if "framework" in (rp.get("relationship") or []):
+            parent_framework_ocid = rp.get("identifier")
+            parent_framework_title = rp.get("title")
+            break
+
     conn.execute("""
         INSERT INTO notices (
             ocid, buyer_id, latest_release_id,
@@ -440,8 +456,11 @@ def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
             tender_end_date, published_date, tender_status,
             total_bids, final_stage_bids, sme_bids, vcse_bids,
             has_renewal, renewal_description,
-            notice_type, notice_url, latest_tag, last_updated
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
+            notice_type, notice_url, latest_tag,
+            is_framework, framework_method, framework_type,
+            parent_framework_ocid, parent_framework_title,
+            last_updated
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
         ON CONFLICT(ocid) DO UPDATE SET
             latest_release_id=excluded.latest_release_id,
             tender_status=COALESCE(excluded.tender_status, tender_status),
@@ -453,6 +472,11 @@ def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
             renewal_description=COALESCE(excluded.renewal_description, renewal_description),
             notice_url=COALESCE(excluded.notice_url, notice_url),
             latest_tag=excluded.latest_tag,
+            is_framework=COALESCE(excluded.is_framework, is_framework),
+            framework_method=COALESCE(excluded.framework_method, framework_method),
+            framework_type=COALESCE(excluded.framework_type, framework_type),
+            parent_framework_ocid=COALESCE(excluded.parent_framework_ocid, parent_framework_ocid),
+            parent_framework_title=COALESCE(excluded.parent_framework_title, parent_framework_title),
             last_updated=datetime('now')
     """, (
         release.get("ocid"), buyer_id, release.get("id"),
@@ -472,6 +496,8 @@ def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
         int(has_renewal), renewal_desc,
         notice.get("noticeType"), notice.get("url"),
         ",".join(tags),
+        is_framework, framework_method, framework_type,
+        parent_framework_ocid, parent_framework_title,
     ))
 
 
