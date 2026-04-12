@@ -47,6 +47,7 @@ KNOWLEDGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 HAND_CURATED = os.path.join(KNOWLEDGE_DIR, "central-buying-agencies.json")
 NHS_ODS = os.path.join(KNOWLEDGE_DIR, "nhs-organisations.json")
 LOCAL_AUTH = os.path.join(KNOWLEDGE_DIR, "local-authorities.json")
+DEVOLVED = os.path.join(KNOWLEDGE_DIR, "devolved-and-combined.json")
 
 
 def fetch_page(page: int) -> dict:
@@ -349,8 +350,12 @@ def main():
     print(f"  +{nhs_added} new NHS entities")
 
     print(f"\nMerging local authorities from {LOCAL_AUTH}...")
-    la_added = merge_nhs_ods(glossary, LOCAL_AUTH)  # Same merge logic works
+    la_added = merge_nhs_ods(glossary, LOCAL_AUTH)
     print(f"  +{la_added} new local authority entities")
+
+    print(f"\nMerging devolved/combined authorities from {DEVOLVED}...")
+    dev_added, dev_merged = merge_hand_curated(glossary, DEVOLVED)
+    print(f"  +{dev_added} new entities, {dev_merged} alias merges")
 
     write_output(glossary, args.output)
     print_stats(glossary)
