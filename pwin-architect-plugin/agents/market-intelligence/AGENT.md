@@ -136,8 +136,8 @@ You have five skills. Three produce reusable reference assets for the bid librar
 
 | Mode | When to use | What it covers | Typical effort |
 |------|-------------|----------------|----------------|
-| **Snapshot** | Quick check, early shortlisting, "is this company credible?" | D1 (identity), D3 (sector penetration headline), D5 (contract count and top contracts), D9 (latest financials). Three scores produced but flagged as incomplete. No narrative sections — structured data only. | Minutes |
-| **Standard** | Active pursuit, competitor profiling for a live bid | All ten domains with evidence. Full strategic scores. Narrative sections for the report. Evidence quality summary. | The default mode. |
+| **Snapshot** | Quick check, early shortlisting, "is this company credible?" | D1 (identity), D3 (sector penetration headline), D5 (contract count and top contracts), D9 (latest financials). Six RAG scores produced but flagged as incomplete where evidence is thin. No narrative sections — structured data only. | Minutes |
+| **Standard** | Active pursuit, competitor profiling for a live bid | All ten domains with evidence. Full headline scores. Narrative sections for the report. Evidence quality summary. | The default mode. |
 | **Deep** | Strategic account, major pursuit, or when the team needs maximum intelligence before a gate decision | Standard plus: full contract-by-contract analysis, framework lot mapping, leadership background research, teaming history reconstruction, social value evidence audit, signal watch list. Cross-references against existing client and sector profiles in the library. | Comprehensive. |
 
 If no depth is specified, use **standard**.
@@ -152,7 +152,7 @@ If no depth is specified, use **standard**.
 
 **D4. Route-to-Market & Procurement Mechanics** — Framework memberships (live and pipeline). Lot positions. Dynamic market registrations. Preferred procurement routes by sector. Direct award history. How their route access compares to peers.
 
-**D5. Contract Portfolio & Attack Surface** — Live contracts by sector, value, and remaining term. Expiry profile — rebids due within 12, 24, and 36 months. Extension options. Contract changes, scope reductions, early terminations. Performance signals from FOI, audit, or parliamentary scrutiny. Where they are most and least defensible.
+**D5. Contract Portfolio & Business Context** — Live contracts by sector, value, and remaining term. Expiry profile — rebids due within 12, 24, and 36 months. Extension options. Contract changes, scope reductions, early terminations. Performance signals from FOI, audit, or parliamentary scrutiny. Where their portfolio is concentrated and where it is thinning.
 
 **D6. Commercial Model & Deal Economics** — Typical deal structures (fixed price, cost-plus, outcome-based, managed service). Pricing posture (aggressive, value, premium). Public sector revenue as a proportion of group revenue. Margin indicators. Commercial aggressiveness signals.
 
@@ -164,45 +164,38 @@ If no depth is specified, use **standard**.
 
 **D10. Social Value & ESG Position** — Published social value commitments and delivery track record. Net-zero strategy and carbon reduction targets. Local employment and skills commitments (apprenticeships, STEM programmes, veterans hiring). Community investment and voluntary sector partnerships. Modern slavery statement quality. Diversity and inclusion published data. Since 2021, social value has been a mandatory evaluation criterion in UK central government procurement (typically 10% of quality score via PPN 06/20). A supplier's published social value position is directly scoreable intelligence — what they have committed to, what they have evidenced delivery against, and where their commitments are vague or absent.
 
-**Strategic scores — produce three, each on a 0–100 scale:**
+**Headline scores — six scores displayed as 4-colour RAG (red / amber / green / grey):**
 
-**Sector Strength Score** — How strong are they in the sectors they operate in?
-- Award velocity (0.20) — rate and recency of new wins
-- Incumbent density (0.20) — proportion of sector spend where they're the incumbent
-- Framework presence (0.15) — coverage of major live frameworks
-- Buyer coverage (0.15) — number and diversity of authorities served
-- Delivery credentials (0.10) — case studies, accreditations, performance record
-- Financial resilience (0.10) — ability to sustain investment and absorb risk
-- Partner ecosystem (0.10) — strength of alliance and subcontracting relationships
+Each score shows a RAG colour and a one-sentence rationale. Factor-level detail is included in the JSON output for machine consumption only. Grey means insufficient evidence to assess.
 
-**Competitor Threat Score** — How dangerous are they as a competitor?
-- Sector strength (0.35) — the score above
-- Commercial aggressiveness (0.20) — history of aggressive pricing, market-share buying
-- Route-to-market advantage (0.15) — framework positions giving preferential access
-- Relationship depth (0.15) — strength and longevity of buyer relationships
-- Brand trust (0.15) — reputation and perceived reliability
+**Sector Strength** (AI-assessed) — How deeply embedded in UK public sector. Factors: framework positions, Crown Representative status, contract longevity, buyer relationships.
 
-**Vulnerability Score** — How exposed are they to displacement?
-- Margin pressure (0.20) — unsustainable pricing, margin erosion, cost overruns
-- Contract friction (0.20) — performance issues, terminations, scope reductions, FOI criticism
-- Concentration risk (0.15) — revenue dependency on a few accounts or sectors
-- Delivery complexity (0.15) — over-extension, subcontractor dependency, capability gaps
-- Restructuring signal (0.10) — active transformation, leadership instability
-- Buyer dissatisfaction (0.10) — published criticism, audit findings, parliamentary scrutiny
-- Partner dependency (0.10) — critical reliance on partners who could be engaged directly
+**Scrutiny Exposure** (AI-assessed) — How much public scrutiny, regulatory attention, and media risk this supplier attracts. Factors: NAO reports, PAC hearings, delivery failures, Crown Representative oversight.
 
-Scores must be confidence-weighted. Weak evidence pulls the score toward the midpoint (50), not toward an extreme.
+**Strategic Identity Confidence** (AI-assessed) — How clearly we can characterise what this supplier is and where it is heading. Factors: narrative coherence across annual reports, contracts, and strategy statements.
+
+**Supplier Breadth** (Computed) — How diversified across service lines, sectors, and buyers. Derived from serviceLineProfile, contracts, and frameworks data.
+
+**Service-Line Concentration** (Computed) — How dependent on a single service line. Derived from serviceLineProfile contract values.
+
+**Evidence Quality** (Computed) — How much of this dossier is backed by hard evidence. Derived from evidenceRegister tier distribution, confidence, and claim types.
 
 **Output structure:**
-1. Executive summary — one page: who they are, the three scores, the single most important thing a bid team should know
-2. D1–D10 domain sections — each with headline finding, detailed analysis, evidence citations, gaps
-3. Strategic score cards — per-factor breakdown with evidence summary and confidence bands
-4. Vulnerability map — synthesis of D5, D6, D7, D9 identifying where they are most exposed
-5. Signal watch list — weak signals to monitor, what they might mean, when to review
-6. Evidence quality summary — total citations, tier distribution, confidence band percentages, contradictions, data gaps
-7. As-of date and refresh guidance — when key sections become stale
+1. Executive summary — one page: who they are, six RAG score cards, the single most important thing a bid team should know, top 2–3 risks
+2. Service Line Profile — decomposition against 13-category taxonomy, only evidenced categories shown
+3. Financial Trajectory — multi-year trend (minimum 3 years, target 5), not just latest snapshot
+4. Contracts — enriched with service-line tags, strategic importance, business context, route-to-market
+5. Frameworks — enriched with service-line tags, supplier position, call-off activity
+6. Leadership & Partnerships — key personnel with public sector background, alliances with depth assessment
+7. Market Voice Signals — narrative-to-reality alignment verdict, per-theme analysis
+8. Bid Outcome Signals — FTS procurement patterns, inference level honesty
+9. Risk & Exposure Profile — neutral factor-level assessment, no rolled-up scores
+10. Signal Synthesis — curated watchlist from other sections with review dates
+11. Evidence Register — per-claim ledger for material claims, claim type taxonomy
+12. Evidence Quality Summary — computed from register: tier distribution, confidence bands, contradictions, gaps
+13. As-of date and per-section refresh guidance
 
-**Where to store it:** Bid library at `reference/suppliers/{name}.json`. Include the markdown report, the three scores, sectors covered, and the evidence quality summary as structured data.
+**Where to store it:** Two files per supplier in the bid library: `reference/suppliers/{slug}/data.json` (canonical structured data) and `reference/suppliers/{slug}/report.html` (rendered from JSON by the template engine).
 
 **Freshness:** Dossiers are refreshed when pulled for an active pursuit, not on a rolling calendar. When a dossier is loaded for a live bid decision, check the age of each data category and refresh if stale: procurement data older than 7 days, framework data older than 30 days, corporate disclosures older than 30 days or superseded by a new filing, weak signals older than 14 days. A dossier sitting in the library untouched does not need refreshing until someone needs it.
 
@@ -278,7 +271,7 @@ If no depth is specified, use **standard**.
 1. **Incumbent profile** — company, contract history with this buyer, value, duration, scope, delivery model, key personnel. If unknown, provide the framework for the team to complete
 2. **Performance assessment** — publicly available delivery evidence: FOI disclosures, performance reports, audit findings, news coverage. Rate as strong, adequate, or weak with evidence
 3. **Stickiness analysis** — factors making displacement difficult: embedded systems, data migration, TUPE, client dependency, political relationships, switching costs. Score as high, medium, or low
-4. **Vulnerability analysis** — where the incumbent is exposed: service failures, technology debt, innovation gaps, staffing problems, subcontractor issues, strategic misalignment. Each vulnerability must be evidenced, not assumed
+4. **Exposure analysis** — where the incumbent is exposed: service failures, technology debt, innovation gaps, staffing problems, subcontractor issues, strategic misalignment. Each exposure must be evidenced, not assumed
 5. **Transformation opportunity** — what a challenger can offer that the incumbent has not: fresh perspective, modern technology, better commercial model, social value
 6. **Displacement narrative** — professional, non-disparaging positioning. Frame as evolution, not criticism. Specific language recommendations
 7. **Re-bid scenario** — if the client IS the incumbent: strengths to emphasise, weaknesses to address proactively, how to demonstrate continuous improvement

@@ -1,0 +1,79 @@
+{
+  "_comment": "Narrative theme taxonomy for classifying supplier self-positioning. Used by Agent 2 Skill 1 (Market Voice Signals) to map how a supplier talks about themselves against a consistent vocabulary. Open — suppliers may push themes not on this list. These are the expected ones.",
+  "version": "1.0",
+  "created": "2026-04-12",
+  "themes": [
+    {
+      "id": "operational-excellence",
+      "name": "Operational Excellence",
+      "description": "Efficiency, reliability, continuous improvement, lean operations, service quality, SLA performance. The 'we run things well' message.",
+      "evidenceMarkers": ["SLA metrics cited", "operational KPIs", "efficiency gains quantified", "ISO certifications", "ITIL/process maturity references"]
+    },
+    {
+      "id": "digital-transformation",
+      "name": "Digital Transformation",
+      "description": "Modernisation, digital-first, cloud migration, legacy replacement, user-centred design, GDS alignment. The 'we make things modern' message.",
+      "evidenceMarkers": ["digital delivery case studies", "GDS assessments cited", "cloud migration volumes", "user satisfaction metrics", "digital platform investments"]
+    },
+    {
+      "id": "ai-automation",
+      "name": "AI & Intelligent Automation",
+      "description": "Artificial intelligence, machine learning, RPA, intelligent document processing, predictive analytics, data-driven decision making. The 'we're leading on AI' message.",
+      "evidenceMarkers": ["named AI products/platforms", "automation volumes quantified", "AI-related contracts won", "research partnerships", "patent/IP claims"]
+    },
+    {
+      "id": "resilience-continuity",
+      "name": "Resilience & Business Continuity",
+      "description": "Operational resilience, disaster recovery, supply chain resilience, cyber resilience, pandemic response capability. The 'we keep things running when they break' message.",
+      "evidenceMarkers": ["business continuity certifications", "incident response track record", "resilience testing evidence", "supply chain diversification"]
+    },
+    {
+      "id": "citizen-outcomes",
+      "name": "Citizen & Patient Outcomes",
+      "description": "Outcome-focused delivery, citizen experience, patient outcomes, service user satisfaction, public value. The 'we deliver results for people' message.",
+      "evidenceMarkers": ["outcome metrics published", "user satisfaction scores", "case studies with measured impact", "outcome-based contracts held"]
+    },
+    {
+      "id": "social-value",
+      "name": "Social Value",
+      "description": "Community investment, local employment, apprenticeships, STEM programmes, veterans hiring, SME supply chain, voluntary sector partnerships. The 'we give back' message.",
+      "evidenceMarkers": ["social value commitments quantified", "apprenticeship numbers", "local employment percentages", "SME spend percentages", "community investment figures"]
+    },
+    {
+      "id": "partnership-ecosystem",
+      "name": "Partnership & Ecosystem",
+      "description": "Alliance strategy, hyperscaler partnerships, SME ecosystem, joint ventures, teaming, collaborative delivery. The 'we work with the best' message.",
+      "evidenceMarkers": ["named partnership tiers", "joint case studies", "co-investment evidence", "ecosystem programme details", "SME pipeline published"]
+    },
+    {
+      "id": "sustainability-netzero",
+      "name": "Sustainability & Net Zero",
+      "description": "Carbon reduction, net-zero targets, environmental management, circular economy, Scope 1/2/3 reporting. The 'we're going green' message.",
+      "evidenceMarkers": ["carbon targets with dates", "Scope 1/2/3 figures published", "science-based targets", "environmental certifications", "carbon reduction trajectory"]
+    },
+    {
+      "id": "innovation",
+      "name": "Innovation",
+      "description": "R&D investment, innovation labs, proof of concepts, technology incubation, creative problem solving. The 'we invent new things' message. Distinct from digital transformation (which is about modernising) and AI (which is a specific technology).",
+      "evidenceMarkers": ["R&D spend figures", "innovation lab/centre named", "patents filed", "proof of concept case studies", "innovation awards"]
+    },
+    {
+      "id": "sector-depth",
+      "name": "Sector Depth & Domain Expertise",
+      "description": "Deep domain knowledge, sector specialisation, regulatory understanding, subject matter expertise. The 'we understand your world' message.",
+      "evidenceMarkers": ["sector-specific case studies", "regulatory expertise cited", "domain-qualified staff numbers", "sector awards", "thought leadership in sector publications"]
+    },
+    {
+      "id": "people-talent",
+      "name": "People & Talent",
+      "description": "Workforce quality, retention, training investment, employer brand, diversity, wellbeing, professional development. The 'our people are our strength' message.",
+      "evidenceMarkers": ["staff retention rates", "training investment figures", "employer awards", "diversity statistics published", "professional qualification programmes"]
+    },
+    {
+      "id": "global-scale",
+      "name": "Global Scale & Reach",
+      "description": "International presence, multi-country delivery, offshore/nearshore capability, global best practice transfer. The 'we operate at scale worldwide' message.",
+      "evidenceMarkers": ["country count cited", "offshore delivery centres named", "international case studies", "multi-geography contract examples"]
+    }
+  ]
+}
