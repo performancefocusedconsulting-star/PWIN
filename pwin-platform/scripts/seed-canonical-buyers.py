@@ -43,11 +43,9 @@ from datetime import datetime, timezone
 API_BASE = "https://www.gov.uk/api/organisations"
 USER_AGENT = "PWIN-CanonicalGlossary/1.0 (UK public sector procurement intelligence)"
 DEFAULT_OUT = os.path.join(os.path.expanduser("~"), ".pwin", "platform", "buyer-canonical-glossary.json")
-HAND_CURATED = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "knowledge",
-    "central-buying-agencies.json",
-)
+KNOWLEDGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "knowledge")
+HAND_CURATED = os.path.join(KNOWLEDGE_DIR, "central-buying-agencies.json")
+NHS_ODS = os.path.join(KNOWLEDGE_DIR, "nhs-organisations.json")
 
 
 def fetch_page(page: int) -> dict:
@@ -248,6 +246,47 @@ def merge_hand_curated(glossary: dict, hand_curated_path: str) -> tuple[int, int
     return added, merged
 
 
+def merge_nhs_ods(glossary: dict, nhs_path: str) -> int:
+    """Merge NHS ODS entities into the glossary in-place. Returns added count."""
+    if not os.path.exists(nhs_path):
+        print(f"  WARNING: NHS ODS file not found at {nhs_path}")
+        print(f"  Run: python3 scripts/seed-nhs-ods.py  to generate it")
+        return 0
+
+    with open(nhs_path) as f:
+        nhs = json.load(f)
+
+    by_id = {e["canonical_id"]: e for e in glossary["entities"]}
+
+    added = 0
+    merged = 0
+    for entry in nhs.get("entities", []):
+        cid = entry["canonical_id"]
+        if cid in by_id:
+            # Merge aliases
+            existing = by_id[cid]
+            seen = set(a.lower() for a in existing["aliases"])
+            new_aliases = [a for a in entry.get("aliases", []) if a.lower() not in seen]
+            existing["aliases"].extend(new_aliases)
+            if new_aliases:
+                merged += 1
+            continue
+
+        entry.setdefault("closed_at", None)
+        entry.setdefault("superseded_by", [])
+        entry.setdefault("gov_uk_url", None)
+        entry.setdefault("gov_uk_id", None)
+        glossary["entities"].append(entry)
+        by_id[cid] = entry
+        added += 1
+
+    glossary["entity_count"] = len(glossary["entities"])
+    glossary["entities"] = sorted(glossary["entities"], key=lambda e: (e["type"], e["canonical_name"]))
+    if merged:
+        print(f"    {merged} alias merges into existing entries")
+    return added
+
+
 def write_output(glossary: dict, output_path: str) -> None:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
@@ -301,8 +340,12 @@ def main():
         glossary = transform(orgs, include_closed=args.include_closed)
 
     print(f"\nMerging hand-curated central buying agencies from {HAND_CURATED}...")
-    added, alias_supps = merge_hand_curated(glossary, HAND_CURATED)
-    print(f"  +{added} new entities, {alias_supps} alias-supplement merges")
+    added, merges = merge_hand_curated(glossary, HAND_CURATED)
+    print(f"  +{added} new entities, {merges} alias merges")
+
+    print(f"\nMerging NHS ODS organisations from {NHS_ODS}...")
+    nhs_added = merge_nhs_ods(glossary, NHS_ODS)
+    print(f"  +{nhs_added} new NHS entities")
 
     write_output(glossary, args.output)
     print_stats(glossary)
