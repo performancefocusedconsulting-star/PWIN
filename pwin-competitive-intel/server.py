@@ -177,95 +177,121 @@ def api_supplier(params):
     conn = get_db()
     if not conn: return {"error": "Database not found"}
     try:
-        suppliers = conn.execute("""
-            SELECT id, name, scale, is_vcse, companies_house_no,
-                   ch_company_name, ch_status, ch_type, ch_incorporated, ch_sic_codes,
-                   ch_address, ch_turnover, ch_net_assets, ch_employees,
-                   ch_accounts_date, ch_directors, ch_parent, ch_enriched_at
+        # Aggregate across all supplier_ids that share the same normalised name.
+        # This collapses "SERCO LIMITED", "Serco Ltd", "Serco Limited" etc. into one result.
+        supplier_groups = conn.execute("""
+            SELECT LOWER(TRIM(name)) AS norm_name,
+                   GROUP_CONCAT(DISTINCT id) AS all_ids,
+                   MAX(name) AS display_name,
+                   MAX(companies_house_no) AS ch_no,
+                   MAX(scale) AS scale,
+                   MAX(is_vcse) AS is_vcse,
+                   MAX(ch_company_name) AS ch_company_name, MAX(ch_status) AS ch_status,
+                   MAX(ch_type) AS ch_type, MAX(ch_incorporated) AS ch_incorporated,
+                   MAX(ch_sic_codes) AS ch_sic_codes, MAX(ch_address) AS ch_address,
+                   MAX(ch_turnover) AS ch_turnover, MAX(ch_net_assets) AS ch_net_assets,
+                   MAX(ch_employees) AS ch_employees, MAX(ch_accounts_date) AS ch_accounts_date,
+                   MAX(ch_directors) AS ch_directors, MAX(ch_parent) AS ch_parent,
+                   MAX(ch_enriched_at) AS ch_enriched_at
             FROM suppliers
-            WHERE LOWER(name) LIKE LOWER(?) ORDER BY name LIMIT 10
+            WHERE LOWER(name) LIKE LOWER(?)
+            GROUP BY LOWER(TRIM(name))
+            ORDER BY display_name LIMIT 10
         """, (f"%{name}%",)).fetchall()
 
-        if not suppliers: return {"suppliers": [], "message": f"No suppliers matching '{name}'"}
+        if not supplier_groups: return {"suppliers": [], "message": f"No suppliers matching '{name}'"}
 
         results = []
-        for sup in suppliers:
-            stats = conn.execute("""
+        for grp in supplier_groups:
+            ids = grp["all_ids"].split(",")
+            placeholders = ",".join("?" for _ in ids)
+
+            stats = conn.execute(f"""
                 SELECT COUNT(DISTINCT a.id) AS total_wins, SUM(a.value_amount_gross) AS total_value,
                        AVG(a.value_amount_gross) AS avg_value, MAX(a.value_amount_gross) AS max_value,
                        MIN(a.award_date) AS first_win, MAX(a.award_date) AS last_win
                 FROM award_suppliers asup JOIN awards a ON asup.award_id = a.id
-                WHERE asup.supplier_id = ?
-            """, (sup["id"],)).fetchone()
+                WHERE asup.supplier_id IN ({placeholders})
+            """, ids).fetchone()
 
             buyer_rels = [
                 {"name": r["name"], "awards": r["awards"], "value": r["total_value"]}
-                for r in conn.execute("""
-                    SELECT b.name, COUNT(DISTINCT a.id) AS awards,
+                for r in conn.execute(f"""
+                    SELECT COALESCE(cb.canonical_name, b.name) AS name,
+                           COUNT(DISTINCT a.id) AS awards,
                            SUM(a.value_amount_gross) AS total_value
                     FROM award_suppliers asup
                     JOIN awards a ON asup.award_id = a.id
                     JOIN notices n ON a.ocid = n.ocid
                     JOIN buyers b ON n.buyer_id = b.id
-                    WHERE asup.supplier_id = ?
-                    GROUP BY b.id ORDER BY awards DESC LIMIT 15
-                """, (sup["id"],)).fetchall()
+                    LEFT JOIN canonical_buyers cb ON b.canonical_id = cb.canonical_id
+                    WHERE asup.supplier_id IN ({placeholders})
+                    GROUP BY COALESCE(cb.canonical_id, b.id) ORDER BY awards DESC LIMIT 15
+                """, ids).fetchall()
             ]
 
-            active = [
+            # Show ALL awards (not just active contracts with future end dates)
+            awards_list = [
                 {"title": r["title"], "buyer": r["buyer"], "value": r["value_amount_gross"],
-                 "end_date": r["contract_end_date"], "max_extend": r["contract_max_extend"]}
-                for r in conn.execute("""
-                    SELECT n.title, b.name AS buyer, a.value_amount_gross,
-                           a.contract_end_date, a.contract_max_extend
+                 "service": r["service_category"],
+                 "end_date": r["contract_end_date"], "award_date": r["award_date"],
+                 "method": r["procurement_method_detail"]}
+                for r in conn.execute(f"""
+                    SELECT n.title, COALESCE(cb.canonical_name, b.name) AS buyer,
+                           a.value_amount_gross, n.service_category,
+                           a.contract_end_date, a.award_date, n.procurement_method_detail
                     FROM award_suppliers asup
                     JOIN awards a ON asup.award_id = a.id
                     JOIN notices n ON a.ocid = n.ocid
                     JOIN buyers b ON n.buyer_id = b.id
-                    WHERE asup.supplier_id = ? AND a.contract_end_date > datetime('now')
-                    ORDER BY a.contract_end_date ASC LIMIT 20
-                """, (sup["id"],)).fetchall()
+                    LEFT JOIN canonical_buyers cb ON b.canonical_id = cb.canonical_id
+                    WHERE asup.supplier_id IN ({placeholders}) AND a.status IN ('active', 'pending')
+                    ORDER BY a.value_amount_gross DESC NULLS LAST LIMIT 50
+                """, ids).fetchall()
             ]
 
             # Companies House enrichment (if available)
             ch = None
-            if sup["ch_enriched_at"]:
+            if grp["ch_enriched_at"]:
                 directors = []
-                try: directors = json.loads(sup["ch_directors"] or "[]")
+                try: directors = json.loads(grp["ch_directors"] or "[]")
                 except: pass
                 sic = []
-                try: sic = json.loads(sup["ch_sic_codes"] or "[]")
+                try: sic = json.loads(grp["ch_sic_codes"] or "[]")
                 except: pass
                 ch = {
-                    "company_name": sup["ch_company_name"],
-                    "status": sup["ch_status"],
-                    "type": sup["ch_type"],
-                    "incorporated": sup["ch_incorporated"],
+                    "company_name": grp["ch_company_name"],
+                    "status": grp["ch_status"],
+                    "type": grp["ch_type"],
+                    "incorporated": grp["ch_incorporated"],
                     "sic_codes": sic,
-                    "address": sup["ch_address"],
-                    "turnover": sup["ch_turnover"],
-                    "net_assets": sup["ch_net_assets"],
-                    "employees": sup["ch_employees"],
-                    "accounts_date": sup["ch_accounts_date"],
+                    "address": grp["ch_address"],
+                    "turnover": grp["ch_turnover"],
+                    "net_assets": grp["ch_net_assets"],
+                    "employees": grp["ch_employees"],
+                    "accounts_date": grp["ch_accounts_date"],
                     "directors": directors,
-                    "parent": sup["ch_parent"],
+                    "parent": grp["ch_parent"],
                 }
 
             results.append({
-                "name": sup["name"],
-                "scale": sup["scale"],
-                "is_vcse": bool(sup["is_vcse"]),
-                "companies_house_no": sup["companies_house_no"],
+                "name": grp["display_name"],
+                "variant_count": len(ids),
+                "scale": grp["scale"],
+                "is_vcse": bool(grp["is_vcse"]),
+                "companies_house_no": grp["ch_no"],
                 "wins": stats["total_wins"],
                 "total_value": stats["total_value"],
                 "avg_value": stats["avg_value"],
                 "first_win": stats["first_win"],
                 "last_win": stats["last_win"],
                 "buyers": buyer_rels,
-                "active_contracts": active,
+                "active_contracts": awards_list,
                 "companies_house": ch,
             })
 
+        # Sort by total wins descending so the most relevant result is first
+        results.sort(key=lambda r: -(r["wins"] or 0))
         return {"suppliers": results}
     finally:
         conn.close()
