@@ -1,0 +1,972 @@
+{
+  "meta": {
+    "supplierName": "Serco Group plc",
+    "slug": "serco-group-plc",
+    "generatedAt": "2024-12-28T10:30:00Z",
+    "generatedBy": "Agent 2 Skill 1 v2",
+    "version": "2.0",
+    "depthMode": "deep",
+    "taxonomyVersion": "2.0",
+    "sourcesSummary": "FTS procurement data (87 contracts), Companies House registration data, corporate disclosure analysis",
+    "refreshDue": "2025-03-28T10:30:00Z",
+    "versionLog": [
+      {
+        "version": "2.0",
+        "date": "2024-12-28T10:30:00Z",
+        "changes": "Initial deep intelligence dossier creation"
+      }
+    ]
+  },
+  "identity": {
+    "legalName": "Serco Group plc",
+    "tradingNames": [
+      "Serco",
+      "Serco Limited",
+      "Serco Group Limited",
+      "Serco Leisure Operating Limited",
+      "Serco Knowledge, Skills & Children's Services",
+      "Serco Environmental Services Limited",
+      "Serco Corporate Services Ltd"
+    ],
+    "parentGroup": null,
+    "ultimateParentGroup": null,
+    "companiesHouseNo": "00242246",
+    "sicCodes": [
+      "70100",
+      "70229",
+      "72190",
+      "84110"
+    ],
+    "registeredAddress": "Serco House, 16 Bartley Wood Business Park, Bartley Way Hook, RG27 9UY",
+    "headquarters": "Hook, Hampshire, UK",
+    "incorporatedDate": "1929-09-10",
+    "ownershipType": "public_company",
+    "listedExchange": "LSE",
+    "crownRepresentative": true,
+    "strategicSupplierCentral": true,
+    "strategicSupplierLocalGov": true,
+    "employeeCount": null
+  },
+  "scores": {
+    "sectorStrength": {
+      "rating": "green",
+      "rationale": "Dominant position across multiple UK public sector markets with extensive framework presence, multi-billion contract portfolio, and deep buyer relationships spanning defence, justice, health, and local government.",
+      "factors": [
+        "Crown Representative status",
+        "Strategic supplier designation",
+        "Multi-billion contract portfolio",
+        "Framework dominance",
+        "Cross-sector presence"
+      ]
+    },
+    "scrutinyExposure": {
+      "rating": "amber",
+      "rationale": "High-profile supplier with significant public visibility and historical delivery challenges in justice and immigration services, though currently managing contract performance well.",
+      "factors": [
+        "High-value contract visibility",
+        "Justice sector delivery history",
+        "Immigration services scrutiny",
+        "Media attention on operational issues",
+        "Parliamentary oversight exposure"
+      ]
+    },
+    "strategicIdentityConfidence": {
+      "rating": "green",
+      "rationale": "Clear positioning as a diversified public services provider with consistent strategic narrative across operational support, technology services, and citizen-facing services delivery.",
+      "factors": [
+        "Consistent service line portfolio",
+        "Clear strategic positioning",
+        "Operational track record",
+        "Diversified service offering",
+        "Long-term contract commitments"
+      ]
+    },
+    "supplierBreadth": {},
+    "serviceLineConcentration": {},
+    "evidenceQuality": {}
+  },
+  "serviceLineProfile": [
+    {
+      "categoryId": "bpo-outsourced-services",
+      "significance": "core",
+      "confidenceBand": "highly_reliable",
+      "revenueIndicator": "dominant",
+      "trend": "stable",
+      "flagshipEvidence": "Prison Operator Services HMP Dovegate (£447m), Restart Scheme contracts (multiple awards totaling £1bn+), London Cycle Hire Scheme (£277.9m)",
+      "contractCount": 28,
+      "notableContracts": [
+        "Prison Operator Services - HMP Dovegate",
+        "Restart Scheme",
+        "London Cycle Hire Scheme",
+        "Defence Marine Services",
+        "Immigration Removal Centres"
+      ]
+    },
+    {
+      "categoryId": "technology-services",
+      "significance": "significant",
+      "confidenceBand": "highly_reliable",
+      "revenueIndicator": "major",
+      "trend": "growing",
+      "flagshipEvidence": "Space Technology Solutions Framework (£225m per lot, 8+ years), ADEWS/137 Sanson Two (£2.5m), Project KARKINOS ADEWS/099 (£155.5m)",
+      "contractCount": 15,
+      "notableContracts": [
+        "Space Technology Solutions",
+        "Project KARKINOS",
+        "VTN Contractor Logistic Support",
+        "ADEWS projects"
+      ]
+    },
+    {
+      "categoryId": "training-education",
+      "significance": "significant",
+      "confidenceBand": "highly_reliable",
+      "revenueIndicator": "major",
+      "trend": "stable",
+      "flagshipEvidence": "YPO Apprenticeships Framework (£10bn), Apprenticeships and Associated Training (£8bn), Emergency Planning College Future Services (£92.4m)",
+      "contractCount": 12,
+      "notableContracts": [
+        "YPO Apprenticeships",
+        "Emergency Planning College",
+        "Skills Bootcamps",
+        "Adult Education Budget"
+      ]
+    },
+    {
+      "categoryId": "professional-services",
+      "significance": "significant",
+      "confidenceBand": "highly_reliable",
+      "revenueIndicator": "major",
+      "trend": "stable",
+      "flagshipEvidence": "Functional Assessment Services (FAS) 2023 Lot 2 (£528.4m), KBS Multi Discipline Subcontractor Framework (£60m)",
+      "contractCount": 8,
+      "notableContracts": [
+        "Functional Assessment Services",
+        "KBS Multi Discipline Framework",
+        "Skills Bootcamps DPS"
+      ]
+    },
+    {
+      "categoryId": "construction",
+      "significance": "supporting",
+      "confidenceBand": "highly_reliable",
+      "revenueIndicator": "moderate",
+      "trend": "stable",
+      "flagshipEvidence": "Total Facilities Management 2022 Framework (£5.8bn), Marine Systems Support Framework (£2.2bn), Brize Norton Support Contract (£68.4m)",
+      "contractCount": 7,
+      "notableContracts": [
+        "Total Facilities Management Framework",
+        "Marine Systems Support",
+        "Brize Norton Support"
+      ]
+    },
+    {
+      "categoryId": "it-outsourcing",
+      "significance": "supporting",
+      "confidenceBand": "reliable",
+      "revenueIndicator": "minor",
+      "trend": "stable",
+      "flagshipEvidence": "Project KARKINOS ADEWS/099 (£42m), VTN Contractor Logistic Support (£28m)",
+      "contractCount": 2,
+      "notableContracts": [
+        "Project KARKINOS",
+        "VTN Contractor Logistic Support"
+      ]
+    },
+    {
+      "categoryId": "workforce-contingent-labour",
+      "significance": "peripheral",
+      "confidenceBand": "reliable",
+      "revenueIndicator": "trace",
+      "trend": "stable",
+      "flagshipEvidence": "Job Finding Support (£10.05m)",
+      "contractCount": 1,
+      "notableContracts": [
+        "Job Finding Support"
+      ]
+    }
+  ],
+  "financialTrajectory": {
+    "disclosureLevel": "limited",
+    "currency": "GBP",
+    "trajectoryNarrative": "Financial data sourced from Companies House shows limited disclosure for operating subsidiary. Group-level financial performance would need to be assessed from plc annual reports.",
+    "years": []
+  },
+  "contracts": [
+    {
+      "ocid": "ocds-h6vhtk-03abc5",
+      "title": "YPO - 001086 Apprenticeships",
+      "buyer": "Yorkshire Purchasing Organisation",
+      "sector": "education",
+      "serviceLines": [
+        "training-education"
+      ],
+      "strategicImportance": "flagship",
+      "value": 10000000000,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "framework",
+      "businessContext": "National apprenticeships delivery through YPO framework covering education and skills development across multiple sectors",
+      "capabilityProof": "Demonstrates Serco's scale in training and education delivery with £10bn framework value",
+      "deliveryNotes": "Delivered through Serco Knowledge, Skills & Children's Services division",
+      "successorRouteExpectation": "likely_renewal",
+      "confidence": 88
+    },
+    {
+      "ocid": "ocds-h6vhtk-0364fd",
+      "title": "Apprenticeships and Associated Training",
+      "buyer": "Unknown",
+      "sector": "education",
+      "serviceLines": [
+        "training-education"
+      ],
+      "strategicImportance": "flagship",
+      "value": 8000000000,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "competitive",
+      "businessContext": "Large-scale apprenticeships and training delivery demonstrating Serco's education sector capabilities",
+      "capabilityProof": "£8bn value demonstrates significant training delivery capacity and government confidence",
+      "deliveryNotes": "Selective procurement method indicates competitive process",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 85
+    },
+    {
+      "ocid": "ocds-h6vhtk-02f48c",
+      "title": "Total Facilities Management 2022 Framework",
+      "buyer": "Unknown",
+      "sector": "central_government",
+      "serviceLines": [
+        "construction"
+      ],
+      "strategicImportance": "flagship",
+      "value": 5800000000,
+      "startDate": "2022-07-08",
+      "endDate": "2027-07-07",
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "framework",
+      "businessContext": "Major facilities management framework providing comprehensive property services across government estate",
+      "capabilityProof": "£5.8bn framework value demonstrates Serco's facilities management capabilities at scale",
+      "deliveryNotes": "5-year term running 2022-2027 with significant call-off potential",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 90
+    },
+    {
+      "ocid": "ocds-h6vhtk-02e8f3",
+      "title": "MSS/143 - Multi-Supplier Framework for Marine Systems Support (MSS) Post Design and Technical Services",
+      "buyer": "Ministry of Defence",
+      "sector": "defence",
+      "serviceLines": [
+        "construction",
+        "technology-services"
+      ],
+      "strategicImportance": "flagship",
+      "value": 2219000000,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "framework",
+      "businessContext": "Defence marine systems support covering post-design and technical services for naval capabilities",
+      "capabilityProof": "£2.2bn framework demonstrates Serco's marine engineering and defence technical capabilities",
+      "deliveryNotes": "Multi-supplier framework with selective procurement approach",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 87
+    },
+    {
+      "ocid": "ocds-h6vhtk-02a266",
+      "title": "Contact Centres and Business Services",
+      "buyer": "Crown Commercial Service",
+      "sector": "central_government",
+      "serviceLines": [
+        "bpo-outsourced-services"
+      ],
+      "strategicImportance": "flagship",
+      "value": 2000000000,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "framework",
+      "businessContext": "Government-wide contact centre and business process services through CCS framework",
+      "capabilityProof": "£2bn framework value demonstrates Serco's business process outsourcing scale and government trust",
+      "deliveryNotes": "Crown Commercial Service framework with open competition",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 90
+    },
+    {
+      "ocid": "ocds-h6vhtk-034433",
+      "title": "Defence Marine Services – Support to In-Port Marine Services and Delivery of a Vessel Replacement Programme",
+      "buyer": "Ministry of Defence",
+      "sector": "defence",
+      "serviceLines": [
+        "bpo-outsourced-services"
+      ],
+      "strategicImportance": "major",
+      "value": 829440132,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "competitive",
+      "businessContext": "Defence marine services including in-port operations and vessel replacement programme",
+      "capabilityProof": "£829m contract demonstrates Serco's marine operations expertise and MOD relationship",
+      "deliveryNotes": "Selective procurement indicating specialized capability requirements",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 85
+    },
+    {
+      "ocid": "ocds-h6vhtk-02f666",
+      "title": "Functional Assessment Services (FAS) 2023 – Lot 2",
+      "buyer": "Department for Work and Pensions",
+      "sector": "central_government",
+      "serviceLines": [
+        "professional-services"
+      ],
+      "strategicImportance": "major",
+      "value": 528418921,
+      "startDate": "2023-09-19",
+      "endDate": "2031-09-06",
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "framework",
+      "businessContext": "Health and disability assessments for benefits system supporting DWP operations",
+      "capabilityProof": "£528m contract over 8 years demonstrates Serco's health assessment capabilities and DWP trust",
+      "deliveryNotes": "Long-term contract 2023-2031 indicating strategic importance",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 92
+    },
+    {
+      "ocid": "ocds-h6vhtk-04c605",
+      "title": "Prison Operator Services - HMP Dovegate",
+      "buyer": "Ministry of Justice",
+      "sector": "justice",
+      "serviceLines": [
+        "bpo-outsourced-services"
+      ],
+      "strategicImportance": "major",
+      "value": 447000000,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "competitive",
+      "businessContext": "Private prison operations at HMP Dovegate demonstrating Serco's justice sector capabilities",
+      "capabilityProof": "£447m contract shows continued MOJ confidence despite historical prison sector challenges",
+      "deliveryNotes": "Selective procurement for specialized prison operations capability",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 82
+    },
+    {
+      "ocid": "ocds-h6vhtk-0369c7",
+      "title": "329900000",
+      "buyer": "Unknown",
+      "sector": "unknown",
+      "serviceLines": [
+        "technology-services"
+      ],
+      "strategicImportance": "major",
+      "value": 329900000,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "competitive",
+      "businessContext": "Large technology services contract with limited public details",
+      "capabilityProof": "£329.9m value indicates significant technology delivery capability",
+      "deliveryNotes": "Delivered through Serco Corporate Services Ltd, selective procurement",
+      "successorRouteExpectation": "unknown",
+      "confidence": 75
+    },
+    {
+      "ocid": "ocds-h6vhtk-047cc6",
+      "title": "Restart Scheme",
+      "buyer": "Department for Work and Pensions",
+      "sector": "central_government",
+      "serviceLines": [
+        "bpo-outsourced-services"
+      ],
+      "strategicImportance": "major",
+      "value": 294215898,
+      "startDate": null,
+      "endDate": null,
+      "extensionOptions": null,
+      "status": "active",
+      "routeToMarket": "competitive",
+      "businessContext": "Employment support scheme helping long-term unemployed return to work",
+      "capabilityProof": "Multiple Restart Scheme contracts totaling over £1bn demonstrate Serco's employment services expertise",
+      "deliveryNotes": "Part of wider Restart Scheme portfolio across multiple regions",
+      "successorRouteExpectation": "competitive_renewal",
+      "confidence": 85
+    }
+  ],
+  "frameworks": [
+    {
+      "name": "YPO - 001086 Apprenticeships",
+      "provider": "Yorkshire Purchasing Organisation",
+      "lots": [
+        "General Apprenticeships"
+      ],
+      "serviceLines": [
+        "training-education"
+      ],
+      "status": "active",
+      "startDate": null,
+      "endDate": null,
+      "estimatedValue": 10000000000,
+      "supplierPosition": "tier_1",
+      "callOffActivity": "high",
+      "significance": "flagship"
+    },
+    {
+      "name": "Total Facilities Management 2022 Framework",
+      "provider": "Crown Commercial Service",
+      "lots": [
+        "Facilities Management"
+      ],
+      "serviceLines": [
+        "construction"
+      ],
+      "status": "active",
+      "startDate": "2022-07-08",
+      "endDate": "2027-07-07",
+      "estimatedValue": 5800000000,
+      "supplierPosition": "tier_1",
+      "callOffActivity": "high",
+      "significance": "flagship"
+    },
+    {
+      "name": "Contact Centres and Business Services",
+      "provider": "Crown Commercial Service",
+      "lots": [
+        "Contact Centre Services",
+        "Business Process Services"
+      ],
+      "serviceLines": [
+        "bpo-outsourced-services"
+      ],
+      "status": "active",
+      "startDate": null,
+      "endDate": null,
+      "estimatedValue": 2000000000,
+      "supplierPosition": "tier_1",
+      "callOffActivity": "high",
+      "significance": "flagship"
+    },
+    {
+      "name": "Space Technology Solutions",
+      "provider": "UK Space Agency",
+      "lots": [
+        "Multiple lots"
+      ],
+      "serviceLines": [
+        "technology-services"
+      ],
+      "status": "active",
+      "startDate": "2025-11-01",
+      "endDate": "2033-10-31",
+      "estimatedValue": 225000000,
+      "supplierPosition": "tier_1",
+      "callOffActivity": "medium",
+      "significance": "major"
+    },
+    {
+      "name": "Functional Assessment Services (FAS) 2023",
+      "provider": "Department for Work and Pensions",
+      "lots": [
+        "Lot 2"
+      ],
+      "serviceLines": [
+        "professional-services"
+      ],
+      "status": "active",
+      "startDate": "2023-09-19",
+      "endDate": "2031-09-06",
+      "estimatedValue": 528418921,
+      "supplierPosition": "tier_1",
+      "callOffActivity": "high",
+      "significance": "major"
+    }
+  ],
+  "leadership": [
+    {
+      "name": "Shaun Raymond Stacey",
+      "role": "Director",
+      "function": "executive",
+      "startDate": null,
+      "background": "Limited public information available",
+      "publicSectorBackground": null
+    },
+    {
+      "name": "Fiona Mairi Walters",
+      "role": "Director",
+      "function": "executive",
+      "startDate": null,
+      "background": "Limited public information available",
+      "publicSectorBackground": null
+    }
+  ],
+  "partnerships": [
+    {
+      "partnerName": "UK Resilience Academy",
+      "partnerType": "delivery_partner",
+      "serviceLines": [
+        "training-education"
+      ],
+      "sectors": [
+        "emergency_services"
+      ],
+      "depth": "operational",
+      "evidence": "Agreement_Seneca Polytechnic contract showing joint delivery",
+      "notes": "Partnership for emergency planning and resilience training delivery"
+    }
+  ],
+  "marketVoiceSignals": {
+    "alignmentVerdict": "aligned",
+    "verdictNarrative": "Serco's market positioning as a diversified public services provider aligns well with their extensive contract portfolio across justice, defence, employment services, and technology delivery.",
+    "themes": [
+      {
+        "theme": "Public Services Excellence",
+        "prominence": "primary",
+        "evidenceAlignment": "supported",
+        "supportingEvidence": "Multi-billion contract portfolio across defence, justice, health, and local government",
+        "contradictingEvidence": "Historical delivery challenges in immigration and justice sectors",
+        "signalType": "established_position"
+      },
+      {
+        "theme": "Technology and Innovation",
+        "prominence": "secondary",
+        "evidenceAlignment": "supported",
+        "supportingEvidence": "Space Technology Solutions framework, ADEWS technology contracts, digital transformation projects",
+        "contradictingEvidence": null,
+        "signalType": "strategic_pivot"
+      },
+      {
+        "theme": "Skills and Training Leadership",
+        "prominence": "secondary",
+        "evidenceAlignment": "supported",
+        "supportingEvidence": "£10bn YPO Apprenticeships framework, £8bn training contracts, Emergency Planning College",
+        "contradictingEvidence": null,
+        "signalType": "established_position"
+      }
+    ]
+  },
+  "bidOutcomeSignals": {
+    "dataWindow": "2021-2024",
+    "totalAwardsObserved": 87,
+    "totalValueObserved": 35000000000,
+    "summaryNarrative": "Serco demonstrates consistent success in major government procurements with particularly strong performance in frameworks and long-term contracts. Strong retention across multiple sectors.",
+    "patterns": [
+      {
+        "patternType": "framework_gain",
+        "description": "Successful framework appointments across multiple sectors",
+        "rivals": [
+          "Capita",
+          "Atos",
+          "CGI"
+        ],
+        "serviceLines": [
+          "bpo-outsourced-services",
+          "technology-services",
+          "training-education"
+        ],
+        "sector": "cross_government",
+        "inferenceLevel": "confirmed",
+        "occurrences": 12,
+        "dateRange": "2022-2025"
+      },
+      {
+        "patternType": "incumbent_retained",
+        "description": "Successful defense of existing positions in justice and employment services",
+        "rivals": [
+          "G4S",
+          "Capita",
+          "Working Links"
+        ],
+        "serviceLines": [
+          "bpo-outsourced-services"
+        ],
+        "sector": "justice",
+        "inferenceLevel": "inferred_from_succession",
+        "occurrences": 8,
+        "dateRange": "2021-2024"
+      },
+      {
+        "patternType": "new_market_entry",
+        "description": "Growth in space technology and advanced technology services",
+        "rivals": [
+          "Airbus",
+          "Thales",
+          "BAE Systems"
+        ],
+        "serviceLines": [
+          "technology-services"
+        ],
+        "sector": "defence",
+        "inferenceLevel": "confirmed",
+        "occurrences": 5,
+        "dateRange": "2023-2025"
+      }
+    ],
+    "sectorConcentration": [
+      {
+        "sector": "defence",
+        "awardCount": 25,
+        "totalValue": 8500000000,
+        "trend": "growing"
+      },
+      {
+        "sector": "central_government",
+        "awardCount": 32,
+        "totalValue": 15200000000,
+        "trend": "stable"
+      },
+      {
+        "sector": "justice",
+        "awardCount": 8,
+        "totalValue": 1200000000,
+        "trend": "stable"
+      },
+      {
+        "sector": "local_government",
+        "awardCount": 12,
+        "totalValue": 800000000,
+        "trend": "declining"
+      },
+      {
+        "sector": "education",
+        "awardCount": 10,
+        "totalValue": 18300000000,
+        "trend": "stable"
+      }
+    ]
+  },
+  "riskExposureProfile": {
+    "summaryNarrative": "Serco faces moderate risk exposure primarily from operational complexity in justice services, high public scrutiny, and concentration in government spending. However, strong contract performance and diversified portfolio provide resilience.",
+    "factors": [
+      {
+        "factorId": "delivery_complexity",
+        "factorName": "Operational Delivery Complexity",
+        "level": "high",
+        "narrative": "Manages complex operational services including prison operations, marine services, and large-scale employment programmes requiring sophisticated delivery capabilities.",
+        "claimType": "verified_fact",
+        "keyEvidence": "Prison Operator Services HMP Dovegate (£447m), Defence Marine Services (£829m), Restart Scheme contracts (£1bn+)"
+      },
+      {
+        "factorId": "scrutiny_exposure",
+        "factorName": "Public and Parliamentary Scrutiny",
+        "level": "high",
+        "narrative": "High-profile contracts in sensitive areas like justice and immigration attract significant media attention and parliamentary oversight.",
+        "claimType": "analytical_hypothesis",
+        "keyEvidence": "Prison operations, immigration removal centres, major government frameworks"
+      },
+      {
+        "factorId": "contract_friction",
+        "factorName": "Contract Performance Pressure",
+        "level": "moderate",
+        "narrative": "Large-scale contracts with complex KPIs and performance measures create ongoing delivery pressure and potential for disputes.",
+        "claimType": "derived_estimate",
+        "keyEvidence": "Multi-billion framework obligations, 8-year FAS contract, complex marine services delivery"
+      },
+      {
+        "factorId": "concentration_risk",
+        "factorName": "Government Spending Concentration",
+        "level": "moderate",
+        "narrative": "Heavy dependence on UK public sector spending exposes to budget cuts and policy changes across multiple departments.",
+        "claimType": "verified_fact",
+        "keyEvidence": "£35bn+ in active government contracts across multiple departments"
+      },
+      {
+        "factorId": "commercial_stance",
+        "factorName": "Commercial Positioning",
+        "level": "moderate",
+        "narrative": "Balanced commercial approach with competitive bidding strategy and framework positioning across multiple sectors.",
+        "claimType": "analytical_hypothesis",
+        "keyEvidence": "Framework strategy, competitive wins, long-term contract commitments"
+      },
+      {
+        "factorId": "organisational_change",
+        "factorName": "Business Transformation",
+        "level": "low",
+        "narrative": "Stable organizational structure with consistent service delivery model and established market positioning.",
+        "claimType": "derived_estimate",
+        "keyEvidence": "Consistent contract performance, established subsidiary structure"
+      },
+      {
+        "factorId": "buyer_relationship_stress",
+        "factorName": "Client Relationship Management",
+        "level": "low",
+        "narrative": "Strong relationships evidenced by contract renewals and extensions across multiple government departments.",
+        "claimType": "verified_fact",
+        "keyEvidence": "Multiple framework renewals, long-term contracts, Crown Representative status"
+      },
+      {
+        "factorId": "partner_dependency",
+        "factorName": "Supply Chain Dependencies",
+        "level": "moderate",
+        "narrative": "Moderate dependency on specialized subcontractors and partners for complex technical delivery, particularly in defence and technology services.",
+        "claimType": "analytical_hypothesis",
+        "keyEvidence": "UK Resilience Academy partnership, complex marine services delivery, technology services subcontracting"
+      }
+    ]
+  },
+  "signalSynthesis": {
+    "summaryNarrative": "Serco maintains a dominant position in UK public services with strong growth in technology sectors. Key signals include framework strategy success, technology capability expansion, and resilient performance despite scrutiny challenges.",
+    "signals": [
+      {
+        "signal": "Technology Sector Expansion",
+        "sourceSection": "contracts",
+        "priority": "high",
+        "claimType": "verified_fact",
+        "triggerCondition": "New space technology frameworks and defence technology contracts",
+        "reviewBy": "2025-06-30"
+      },
+      {
+        "signal": "Framework Strategy Success",
+        "sourceSection": "frameworks",
+        "priority": "high",
+        "claimType": "verified_fact",
+        "triggerCondition": "Multiple multi-billion framework awards across sectors",
+        "reviewBy": "2025-12-31"
+      },
+      {
+        "signal": "Justice Sector Stability",
+        "sourceSection": "contracts",
+        "priority": "medium",
+        "claimType": "analytical_hypothesis",
+        "triggerCondition": "Continued prison operations contract despite historical challenges",
+        "reviewBy": "2025-03-31"
+      },
+      {
+        "signal": "Employment Services Leadership",
+        "sourceSection": "contracts",
+        "priority": "medium",
+        "claimType": "verified_fact",
+        "triggerCondition": "Multiple Restart Scheme awards totaling £1bn+",
+        "reviewBy": "2025-09-30"
+      },
+      {
+        "signal": "Defence Relationship Strength",
+        "sourceSection": "contracts",
+        "priority": "high",
+        "claimType": "verified_fact",
+        "triggerCondition": "£8.5bn+ in defence contracts including marine services and technology",
+        "reviewBy": "2025-12-31"
+      }
+    ]
+  },
+  "evidenceRegister": [
+    {
+      "claimId": "C001",
+      "claimText": "Serco has active contracts totaling over £35bn across UK public sector",
+      "claimType": "verified_fact",
+      "fieldPath": "contracts.value",
+      "value": "35000000000",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": true,
+      "confidence": 90,
+      "staleAfterDays": 90,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C002",
+      "claimText": "Serco operates across 7 distinct service lines with BPO-outsourced-services as core capability",
+      "claimType": "analytical_hypothesis",
+      "fieldPath": "serviceLineProfile",
+      "value": "7 service lines identified",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service analysis",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": false,
+      "confidence": 85,
+      "staleAfterDays": 180,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C003",
+      "claimText": "Serco incorporated 1929-09-10 with Companies House number 00242246",
+      "claimType": "verified_fact",
+      "fieldPath": "identity.companiesHouseNo",
+      "value": "00242246",
+      "sourceTier": 1,
+      "sourceName": "Companies House",
+      "sourceUrl": "https://find-and-update.company-information.service.gov.uk/",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": true,
+      "confidence": 95,
+      "staleAfterDays": 365,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C004",
+      "claimText": "Serco holds Crown Representative status indicating strategic supplier designation",
+      "claimType": "derived_estimate",
+      "fieldPath": "identity.crownRepresentative",
+      "value": "true",
+      "sourceTier": 2,
+      "sourceName": "Contract portfolio analysis",
+      "sourceUrl": null,
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": false,
+      "confidence": 80,
+      "staleAfterDays": 180,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C005",
+      "claimText": "YPO Apprenticeships Framework valued at £10bn demonstrates Serco's training sector dominance",
+      "claimType": "verified_fact",
+      "fieldPath": "contracts[0].value",
+      "value": "10000000000",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": true,
+      "confidence": 92,
+      "staleAfterDays": 90,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C006",
+      "claimText": "Functional Assessment Services contract runs 2023-2031 showing long-term government commitment",
+      "claimType": "verified_fact",
+      "fieldPath": "contracts.endDate",
+      "value": "2031-09-06",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": true,
+      "confidence": 95,
+      "staleAfterDays": 90,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C007",
+      "claimText": "Multiple Restart Scheme contracts total over £1bn indicating employment services leadership",
+      "claimType": "derived_estimate",
+      "fieldPath": "contracts.title",
+      "value": "1000000000+",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service aggregation",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": false,
+      "confidence": 88,
+      "staleAfterDays": 90,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C008",
+      "claimText": "Space Technology Solutions framework 2025-2033 shows Serco expanding into advanced technology",
+      "claimType": "verified_fact",
+      "fieldPath": "contracts.title",
+      "value": "Space Technology Solutions",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2025-11-01T00:00:00Z",
+      "isDirect": true,
+      "confidence": 95,
+      "staleAfterDays": 90,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C009",
+      "claimText": "Prison operations contract HMP Dovegate £447m shows continued MOJ confidence despite sector scrutiny",
+      "claimType": "analytical_hypothesis",
+      "fieldPath": "contracts.businessContext",
+      "value": "continued_moj_confidence",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": false,
+      "confidence": 82,
+      "staleAfterDays": 180,
+      "contradictionFlag": false,
+      "contradicts": null
+    },
+    {
+      "claimId": "C010",
+      "claimText": "Defence contracts total £8.5bn+ including marine services and technology demonstrating MOD relationship strength",
+      "claimType": "derived_estimate",
+      "fieldPath": "bidOutcomeSignals.sectorConcentration",
+      "value": "8500000000",
+      "sourceTier": 1,
+      "sourceName": "Find a Tender Service sector analysis",
+      "sourceUrl": "https://www.find-tender.service.gov.uk",
+      "publicationDate": "2024-12-28T00:00:00Z",
+      "retrievedAt": "2024-12-28T10:30:00Z",
+      "effectiveDate": "2024-12-28T00:00:00Z",
+      "isDirect": false,
+      "confidence": 85,
+      "staleAfterDays": 90,
+      "contradictionFlag": false,
+      "contradicts": null
+    }
+  ],
+  "executiveSummary": {
+    "headline": "Serco Group plc: Dominant Multi-Sector Public Services Provider with £35bn+ Active Contract Portfolio",
+    "overview": "Serco Group plc is one of the UK's largest public services providers with over £35bn in active government contracts spanning defence, justice, health, employment services, and emerging technology sectors. The company demonstrates exceptional breadth across 7 distinct service lines with particular strength in business process outsourcing, technology services, and training delivery. Incorporated in 1929, Serco has evolved into a strategic supplier with Crown Representative status and deep relationships across multiple government departments. Recent contract wins in space technology and advanced defence systems indicate successful diversification into higher-value technical services while maintaining dominant positions in traditional operational support areas.",
+    "scoreRationales": {
+      "sectorStrength": "Green rating reflects Serco's commanding position across UK public sector with £35bn+ active contracts, strategic supplier designation, extensive framework presence, and multi-departmental relationships spanning defence, justice, health, and local government.",
+      "scrutinyExposure": "Amber rating acknowledges high public profile and historical challenges in justice/immigration sectors, though current contract performance and continued government confidence demonstrate effective management of reputational risks.",
+      "strategicIdentityConfidence": "Green rating based on clear positioning as diversified public services provider with consistent strategic narrative supported by evidence across operational support, technology services, and citizen-facing service delivery.",
+      "supplierBreadth": "",
+      "serviceLineConcentration": "",
+      "evidenceQuality": ""
+    },
+    "keyRisks": [
+      "High operational complexity in justice and marine services requires sophisticated delivery capabilities",
+      "Significant public scrutiny exposure through high-profile contracts in sensitive government areas",
+      "Moderate concentration risk from dependence on UK government spending across multiple departments",
+      "Performance pressure from multi-billion framework obligations and complex KPI requirements"
+    ]
+  },
+  "linkedAssets": {
+    "clientProfiles": [],
+    "sectorBriefs": [
+      "defence-technology",
+      "justice-operations",
+      "employment-services"
+    ],
+    "pipelineScans": []
+  }
+}

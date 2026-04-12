@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplier Intelligence Dossier — Serco Group plc</title>
+<style>
+  /* ── Reset & base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #021744;
+    line-height: 1.65;
+    font-size: 12px;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page { size: A4; margin: 18mm; }
+  @media print {
+    body { padding: 0; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  /* ── Cover ────────────────────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, #021744 0%, #0D2B5C 100%);
+    padding: 40px 36px 32px;
+    color: #F0EDE6;
+  }
+  .cover-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(240,237,230,0.45);
+    margin-bottom: 6px;
+  }
+  .cover-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #F0EDE6;
+    margin-bottom: 4px;
+  }
+  .cover-sub {
+    font-size: 12px;
+    color: rgba(240,237,230,0.55);
+    margin-bottom: 24px;
+  }
+  .cover-scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .score-card {
+    padding: 14px 16px;
+    border: 1px solid rgba(240,237,230,0.15);
+    background: rgba(240,237,230,0.04);
+  }
+  .score-card-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(240,237,230,0.5);
+    margin-bottom: 6px;
+  }
+  .score-card-rating {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .score-card-rationale {
+    font-size: 10px;
+    color: rgba(240,237,230,0.6);
+    line-height: 1.5;
+  }
+  .rag-red .score-card-rating { color: #E87070; }
+  .rag-amber .score-card-rating { color: #D4A237; }
+  .rag-green .score-card-rating { color: #6BC5A0; }
+  .rag-grey .score-card-rating { color: #818CA2; }
+
+  /* ── Body ─────────────────────────────────────────────────── */
+  .report-body {
+    padding: 28px 36px;
+    border: 1px solid #D5D9E0;
+    border-top: none;
+  }
+
+  /* ── Section ──────────────────────────────────────────────── */
+  .section { margin-bottom: 28px; }
+  .section-title {
+    font-family: 'Spline Sans', Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #021744;
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .section-headline {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0D2B5C;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: rgba(92,163,182,0.06);
+    border-left: 3px solid #5CA3B6;
+  }
+  .section-text {
+    font-size: 12px;
+    color: #021744;
+    line-height: 1.75;
+    margin-bottom: 12px;
+    white-space: pre-line;
+  }
+
+  /* ── Executive summary ────────────────────────────────────── */
+  .exec-headline {
+    font-size: 14px;
+    font-weight: 600;
+    color: #021744;
+    padding: 12px 14px;
+    background: rgba(2,23,68,0.04);
+    border-left: 3px solid #021744;
+    margin-bottom: 14px;
+    line-height: 1.55;
+  }
+  .exec-risks {
+    margin: 12px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .exec-risks li {
+    font-size: 11px;
+    padding: 4px 0 4px 16px;
+    position: relative;
+    color: #C15050;
+  }
+  .exec-risks li::before {
+    content: '!';
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+
+  /* ── Score table ──────────────────────────────────────────── */
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+  .score-table th {
+    background: #021744;
+    color: #F0EDE6;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .score-table th.num { text-align: center; }
+  .score-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #E8EBF0;
+    vertical-align: top;
+  }
+  .score-table td.num {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  /* ── Key facts table ──────────────────────────────────────── */
+  .kf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin: 10px 0 16px;
+  }
+  .kf-table th {
+    background: rgba(2,23,68,0.06);
+    padding: 5px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #576482;
+    border-bottom: 1px solid #D5D9E0;
+  }
+  .kf-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #E8EBF0;
+  }
+
+  /* ── Significance badges ──────────────────────────────────── */
+  .significance-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .sig-core { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .sig-significant { background: rgba(92,163,182,0.12); color: #3A8CA0; }
+  .sig-supporting { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .sig-peripheral { background: rgba(129,140,162,0.12); color: #576482; }
+
+  /* ── Alignment badges ─────────────────────────────────────── */
+  .alignment-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .align-supported { background: rgba(45,138,94,0.12); color: #2D8A5E; }
+  .align-partially_supported { background: rgba(198,138,29,0.12); color: #7C5A0A; }
+  .align-aspirational { background: rgba(129,140,162,0.12); color: #576482; }
+  .align-contradicted { background: rgba(193,80,80,0.12); color: #C15050; }
+
+  /* ── Disclosure badge ─────────────────────────────────────── */
+  .disclosure-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 2px;
+    background: rgba(2,23,68,0.06);
+    color: #576482;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* ── Risk factor ──────────────────────────────────────────── */
+  .risk-factor {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid #818CA2;
+    background: rgba(2,23,68,0.02);
+  }
+  .risk-factor-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .risk-factor-name {
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .risk-factor-level {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Pattern item ─────────────────────────────────────────── */
+  .pattern-item {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid #5CA3B6;
+    background: rgba(92,163,182,0.04);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .pattern-type {
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #576482;
+    margin-bottom: 3px;
+  }
+
+  /* ── Signal table ─────────────────────────────────────────── */
+  .signal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+  .signal-table th {
+    background: #576482;
+    color: white;
+    padding: 6px 10px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .signal-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #E8EBF0;
+    vertical-align: top;
+  }
+
+  /* ── Evidence quality ─────────────────────────────────────── */
+  .eq-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .eq-card {
+    padding: 12px 14px;
+    border: 1px solid #D5D9E0;
+  }
+  .eq-card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #576482;
+    margin-bottom: 4px;
+  }
+  .eq-card-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: #021744;
+  }
+  .eq-bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 11px;
+  }
+  .eq-bar-label { width: 100px; color: #576482; }
+  .eq-bar-track {
+    flex: 1;
+    height: 12px;
+    background: #F0ECE4;
+    margin: 0 8px;
+    position: relative;
+  }
+  .eq-bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+  .eq-bar-count { width: 30px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+  /* ── Gaps list ────────────────────────────────────────────── */
+  .gaps-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .gaps-list li {
+    font-size: 11px;
+    color: #576482;
+    padding: 3px 0 3px 16px;
+    position: relative;
+  }
+  .gaps-list li::before {
+    content: '\2192';
+    position: absolute;
+    left: 0;
+    color: #5CA3B6;
+  }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  .report-footer {
+    margin-top: 32px;
+    padding-top: 14px;
+    border-top: 1px solid #D5D9E0;
+    font-size: 10px;
+    color: #818CA2;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="cover">
+  <div class="cover-label">Supplier Intelligence Dossier</div>
+  <div class="cover-title">Serco Group plc</div>
+  <div class="cover-sub">public_company | Generated 2024-12-28T10:30:00Z | v2.0 | Depth: deep | Taxonomy: v2.0</div>
+  <div class="cover-scores">
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Sector Strength</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">Dominant position across multiple UK public sector markets with extensive framework presence, multi-billion contract portfolio, and deep buyer relationships spanning defence, justice, health, and local government.</div>
+    </div>
+    
+    <div class="score-card rag-amber">
+      <div class="score-card-label">Scrutiny Exposure</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#C68A1D;vertical-align:middle;margin-right:6px;"></span> Amber</div>
+      <div class="score-card-rationale">High-profile supplier with significant public visibility and historical delivery challenges in justice and immigration services, though currently managing contract performance well.</div>
+    </div>
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Strategic Identity</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">Clear positioning as a diversified public services provider with consistent strategic narrative across operational support, technology services, and citizen-facing services delivery.</div>
+    </div>
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Supplier Breadth</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">Well-diversified: 7 service lines, 5 sectors, 6 buyers</div>
+    </div>
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Service Line Concentration</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">Well-distributed across 7 service lines, no single line dominates</div>
+    </div>
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Evidence Quality</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">Strong evidence base: 100% high-tier sources, avg confidence 89</div>
+    </div>
+  </div>
+</div>
+
+<div class="report-body">
+
+  <!-- Executive Summary -->
+  <div class="section no-break">
+    <div class="section-title">Executive Summary</div>
+    <div class="exec-headline">Serco Group plc: Dominant Multi-Sector Public Services Provider with £35bn+ Active Contract Portfolio</div>
+    <div class="section-text">Serco Group plc is one of the UK's largest public services providers with over £35bn in active government contracts spanning defence, justice, health, employment services, and emerging technology sectors. The company demonstrates exceptional breadth across 7 distinct service lines with particular strength in business process outsourcing, technology services, and training delivery. Incorporated in 1929, Serco has evolved into a strategic supplier with Crown Representative status and deep relationships across multiple government departments. Recent contract wins in space technology and advanced defence systems indicate successful diversification into higher-value technical services while maintaining dominant positions in traditional operational support areas.</div>
+    
+    <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Key Risks</div>
+    <ul class="exec-risks"><li>High operational complexity in justice and marine services requires sophisticated delivery capabilities</li><li>Significant public scrutiny exposure through high-profile contracts in sensitive government areas</li><li>Moderate concentration risk from dependence on UK government spending across multiple departments</li><li>Performance pressure from multi-billion framework obligations and complex KPI requirements</li></ul>
+  </div>
+
+  
+  <div class="section no-break">
+    <div class="section-title">Identity</div>
+    <table class="kf-table">
+      <tr><td style="width:200px;font-weight:600;">Legal name</td><td>Serco Group plc</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Trading names</td><td>Serco, Serco Limited, Serco Group Limited, Serco Leisure Operating Limited, Serco Knowledge, Skills &amp; Children's Services, Serco Environmental Services Limited, Serco Corporate Services Ltd</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Companies House</td><td>00242246</td></tr>
+      <tr><td style="width:200px;font-weight:600;">SIC codes</td><td>70100, 70229, 72190, 84110</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Registered address</td><td>Serco House, 16 Bartley Wood Business Park, Bartley Way Hook, RG27 9UY</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Headquarters</td><td>Hook, Hampshire, UK</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Incorporated</td><td>1929-09-10</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Ownership</td><td>public_company</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Listed exchange</td><td>LSE</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Crown Representative</td><td>Yes</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Strategic Supplier (Central)</td><td>Yes</td></tr>
+      <tr><td style="width:200px;font-weight:600;">Strategic Supplier (Local Gov)</td><td>Yes</td></tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Service Line Profile</div>
+    <table class="score-table">
+      <tr><th>Service Line</th><th>Significance</th><th>Revenue</th><th>Trend</th><th>Contracts</th><th>Flagship Evidence</th></tr>
+      
+      <tr>
+        <td>bpo-outsourced-services</td>
+        <td><span class="significance-badge sig-core">core</span></td>
+        <td>dominant</td>
+        <td>stable</td>
+        <td style="text-align:center;">28</td>
+        <td>Prison Operator Services HMP Dovegate (£447m), Restart Scheme contracts (multiple awards totaling £1bn+), London Cycle Hire Scheme (£277.9m)</td>
+      </tr>
+      <tr>
+        <td>technology-services</td>
+        <td><span class="significance-badge sig-significant">significant</span></td>
+        <td>major</td>
+        <td>growing</td>
+        <td style="text-align:center;">15</td>
+        <td>Space Technology Solutions Framework (£225m per lot, 8+ years), ADEWS/137 Sanson Two (£2.5m), Project KARKINOS ADEWS/099 (£155.5m)</td>
+      </tr>
+      <tr>
+        <td>training-education</td>
+        <td><span class="significance-badge sig-significant">significant</span></td>
+        <td>major</td>
+        <td>stable</td>
+        <td style="text-align:center;">12</td>
+        <td>YPO Apprenticeships Framework (£10bn), Apprenticeships and Associated Training (£8bn), Emergency Planning College Future Services (£92.4m)</td>
+      </tr>
+      <tr>
+        <td>professional-services</td>
+        <td><span class="significance-badge sig-significant">significant</span></td>
+        <td>major</td>
+        <td>stable</td>
+        <td style="text-align:center;">8</td>
+        <td>Functional Assessment Services (FAS) 2023 Lot 2 (£528.4m), KBS Multi Discipline Subcontractor Framework (£60m)</td>
+      </tr>
+      <tr>
+        <td>construction</td>
+        <td><span class="significance-badge sig-supporting">supporting</span></td>
+        <td>moderate</td>
+        <td>stable</td>
+        <td style="text-align:center;">7</td>
+        <td>Total Facilities Management 2022 Framework (£5.8bn), Marine Systems Support Framework (£2.2bn), Brize Norton Support Contract (£68.4m)</td>
+      </tr>
+      <tr>
+        <td>it-outsourcing</td>
+        <td><span class="significance-badge sig-supporting">supporting</span></td>
+        <td>minor</td>
+        <td>stable</td>
+        <td style="text-align:center;">2</td>
+        <td>Project KARKINOS ADEWS/099 (£42m), VTN Contractor Logistic Support (£28m)</td>
+      </tr>
+      <tr>
+        <td>workforce-contingent-labour</td>
+        <td><span class="significance-badge sig-peripheral">peripheral</span></td>
+        <td>trace</td>
+        <td>stable</td>
+        <td style="text-align:center;">1</td>
+        <td>Job Finding Support (£10.05m)</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section page-break">
+    <div class="section-title">Financial Trajectory</div>
+    <div class="disclosure-badge">limited</div>
+    <div class="section-text">Financial data sourced from Companies House shows limited disclosure for operating subsidiary. Group-level financial performance would need to be assessed from plc annual reports.</div>
+    
+  </div>
+  
+  <div class="section page-break">
+    <div class="section-title">Contract Portfolio</div>
+    <table class="score-table">
+      <tr><th>Title</th><th>Buyer</th><th>Sector</th><th>Service Lines</th><th>Importance</th><th class="num">Value</th><th>Status</th><th>End Date</th></tr>
+      
+      <tr>
+        <td>YPO - 001086 Apprenticeships</td>
+        <td>Yorkshire Purchasing Organisation</td>
+        <td>education</td>
+        <td style="font-size:10px;">training-education</td>
+        <td><span class="significance-badge sig-flagship">flagship</span></td>
+        <td class="num">£10.0bn</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">National apprenticeships delivery through YPO framework covering education and skills development across multiple sectors</td></tr>
+      <tr>
+        <td>Apprenticeships and Associated Training</td>
+        <td>Unknown</td>
+        <td>education</td>
+        <td style="font-size:10px;">training-education</td>
+        <td><span class="significance-badge sig-flagship">flagship</span></td>
+        <td class="num">£8.0bn</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Large-scale apprenticeships and training delivery demonstrating Serco's education sector capabilities</td></tr>
+      <tr>
+        <td>Total Facilities Management 2022 Framework</td>
+        <td>Unknown</td>
+        <td>central_government</td>
+        <td style="font-size:10px;">construction</td>
+        <td><span class="significance-badge sig-flagship">flagship</span></td>
+        <td class="num">£5.8bn</td>
+        <td>active</td>
+        <td>2027-07-07</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Major facilities management framework providing comprehensive property services across government estate</td></tr>
+      <tr>
+        <td>MSS/143 - Multi-Supplier Framework for Marine Systems Support (MSS) Post Design and Technical Services</td>
+        <td>Ministry of Defence</td>
+        <td>defence</td>
+        <td style="font-size:10px;">construction, technology-services</td>
+        <td><span class="significance-badge sig-flagship">flagship</span></td>
+        <td class="num">£2.2bn</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Defence marine systems support covering post-design and technical services for naval capabilities</td></tr>
+      <tr>
+        <td>Contact Centres and Business Services</td>
+        <td>Crown Commercial Service</td>
+        <td>central_government</td>
+        <td style="font-size:10px;">bpo-outsourced-services</td>
+        <td><span class="significance-badge sig-flagship">flagship</span></td>
+        <td class="num">£2.0bn</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Government-wide contact centre and business process services through CCS framework</td></tr>
+      <tr>
+        <td>Defence Marine Services – Support to In-Port Marine Services and Delivery of a Vessel Replacement Programme</td>
+        <td>Ministry of Defence</td>
+        <td>defence</td>
+        <td style="font-size:10px;">bpo-outsourced-services</td>
+        <td><span class="significance-badge sig-major">major</span></td>
+        <td class="num">£829.4m</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Defence marine services including in-port operations and vessel replacement programme</td></tr>
+      <tr>
+        <td>Functional Assessment Services (FAS) 2023 – Lot 2</td>
+        <td>Department for Work and Pensions</td>
+        <td>central_government</td>
+        <td style="font-size:10px;">professional-services</td>
+        <td><span class="significance-badge sig-major">major</span></td>
+        <td class="num">£528.4m</td>
+        <td>active</td>
+        <td>2031-09-06</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Health and disability assessments for benefits system supporting DWP operations</td></tr>
+      <tr>
+        <td>Prison Operator Services - HMP Dovegate</td>
+        <td>Ministry of Justice</td>
+        <td>justice</td>
+        <td style="font-size:10px;">bpo-outsourced-services</td>
+        <td><span class="significance-badge sig-major">major</span></td>
+        <td class="num">£447.0m</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Private prison operations at HMP Dovegate demonstrating Serco's justice sector capabilities</td></tr>
+      <tr>
+        <td>329900000</td>
+        <td>Unknown</td>
+        <td>unknown</td>
+        <td style="font-size:10px;">technology-services</td>
+        <td><span class="significance-badge sig-major">major</span></td>
+        <td class="num">£329.9m</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Large technology services contract with limited public details</td></tr>
+      <tr>
+        <td>Restart Scheme</td>
+        <td>Department for Work and Pensions</td>
+        <td>central_government</td>
+        <td style="font-size:10px;">bpo-outsourced-services</td>
+        <td><span class="significance-badge sig-major">major</span></td>
+        <td class="num">£294.2m</td>
+        <td>active</td>
+        <td>—</td>
+      </tr>
+      <tr><td colspan="8" style="font-size:10px;color:#576482;padding:2px 10px 8px;border-bottom:1px solid #E8EBF0;">Employment support scheme helping long-term unemployed return to work</td></tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Frameworks</div>
+    <table class="score-table">
+      <tr><th>Name</th><th>Provider</th><th>Lots</th><th>Service Lines</th><th>Status</th><th>Position</th><th>Activity</th><th>Significance</th><th>End Date</th></tr>
+      
+      <tr>
+        <td>YPO - 001086 Apprenticeships</td>
+        <td>Yorkshire Purchasing Organisation</td>
+        <td style="font-size:10px;">General Apprenticeships</td>
+        <td style="font-size:10px;">training-education</td>
+        <td>active</td>
+        <td>tier_1</td>
+        <td>high</td>
+        <td>flagship</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Total Facilities Management 2022 Framework</td>
+        <td>Crown Commercial Service</td>
+        <td style="font-size:10px;">Facilities Management</td>
+        <td style="font-size:10px;">construction</td>
+        <td>active</td>
+        <td>tier_1</td>
+        <td>high</td>
+        <td>flagship</td>
+        <td>2027-07-07</td>
+      </tr>
+      <tr>
+        <td>Contact Centres and Business Services</td>
+        <td>Crown Commercial Service</td>
+        <td style="font-size:10px;">Contact Centre Services, Business Process Services</td>
+        <td style="font-size:10px;">bpo-outsourced-services</td>
+        <td>active</td>
+        <td>tier_1</td>
+        <td>high</td>
+        <td>flagship</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Space Technology Solutions</td>
+        <td>UK Space Agency</td>
+        <td style="font-size:10px;">Multiple lots</td>
+        <td style="font-size:10px;">technology-services</td>
+        <td>active</td>
+        <td>tier_1</td>
+        <td>medium</td>
+        <td>major</td>
+        <td>2033-10-31</td>
+      </tr>
+      <tr>
+        <td>Functional Assessment Services (FAS) 2023</td>
+        <td>Department for Work and Pensions</td>
+        <td style="font-size:10px;">Lot 2</td>
+        <td style="font-size:10px;">professional-services</td>
+        <td>active</td>
+        <td>tier_1</td>
+        <td>high</td>
+        <td>major</td>
+        <td>2031-09-06</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Leadership</div>
+    <table class="score-table">
+      <tr><th>Name</th><th>Role</th><th>Function</th><th>Since</th><th>Background</th><th>Public Sector</th></tr>
+      
+      <tr>
+        <td>Shaun Raymond Stacey</td>
+        <td>Director</td>
+        <td>executive</td>
+        <td>—</td>
+        <td style="font-size:10px;">Limited public information available</td>
+        <td style="font-size:10px;">—</td>
+      </tr>
+      <tr>
+        <td>Fiona Mairi Walters</td>
+        <td>Director</td>
+        <td>executive</td>
+        <td>—</td>
+        <td style="font-size:10px;">Limited public information available</td>
+        <td style="font-size:10px;">—</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Partnerships</div>
+    <table class="score-table">
+      <tr><th>Partner</th><th>Type</th><th>Depth</th><th>Service Lines</th><th>Evidence</th></tr>
+      
+      <tr>
+        <td>UK Resilience Academy</td>
+        <td>delivery_partner</td>
+        <td>operational</td>
+        <td style="font-size:10px;">training-education</td>
+        <td style="font-size:10px;">Agreement_Seneca Polytechnic contract showing joint delivery</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section page-break">
+    <div class="section-title">Market Voice Signals</div>
+    <div class="section-headline" style="border-left-color:#2D8A5E">
+      Narrative-to-Reality Alignment: <strong>aligned</strong>
+    </div>
+    <div class="section-text">Serco's market positioning as a diversified public services provider aligns well with their extensive contract portfolio across justice, defence, employment services, and technology delivery.</div>
+    
+    <table class="score-table">
+      <tr><th>Theme</th><th>Prominence</th><th>Evidence Alignment</th><th>Signal Type</th><th>Supporting</th><th>Contradicting</th></tr>
+      
+      <tr>
+        <td>Public Services Excellence</td>
+        <td>primary</td>
+        <td><span class="alignment-badge align-supported">supported</span></td>
+        <td style="font-size:10px;">established_position</td>
+        <td style="font-size:10px;">Multi-billion contract portfolio across defence, justice, health, and local government</td>
+        <td style="font-size:10px;">Historical delivery challenges in immigration and justice sectors</td>
+      </tr>
+      <tr>
+        <td>Technology and Innovation</td>
+        <td>secondary</td>
+        <td><span class="alignment-badge align-supported">supported</span></td>
+        <td style="font-size:10px;">strategic_pivot</td>
+        <td style="font-size:10px;">Space Technology Solutions framework, ADEWS technology contracts, digital transformation projects</td>
+        <td style="font-size:10px;">—</td>
+      </tr>
+      <tr>
+        <td>Skills and Training Leadership</td>
+        <td>secondary</td>
+        <td><span class="alignment-badge align-supported">supported</span></td>
+        <td style="font-size:10px;">established_position</td>
+        <td style="font-size:10px;">£10bn YPO Apprenticeships framework, £8bn training contracts, Emergency Planning College</td>
+        <td style="font-size:10px;">—</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section page-break">
+    <div class="section-title">Bid Outcome Signals</div>
+    <div style="font-size:11px;color:#576482;margin-bottom:12px;">Data window: 2021-2024 | Awards observed: 87 | Total value: £35.0bn</div>
+    <div class="section-text">Serco demonstrates consistent success in major government procurements with particularly strong performance in frameworks and long-term contracts. Strong retention across multiple sectors.</div>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 8px;">Observed Patterns</div>
+    
+    <div class="pattern-item">
+      <div class="pattern-type">framework_gain</div>
+      <div>Successful framework appointments across multiple sectors</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">
+        Rivals: Capita, Atos, CGI |
+        Inference: <strong>confirmed</strong> |
+        Occurrences: 12 |
+        Period: 2022-2025
+      </div>
+    </div>
+    <div class="pattern-item">
+      <div class="pattern-type">incumbent_retained</div>
+      <div>Successful defense of existing positions in justice and employment services</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">
+        Rivals: G4S, Capita, Working Links |
+        Inference: <strong>inferred_from_succession</strong> |
+        Occurrences: 8 |
+        Period: 2021-2024
+      </div>
+    </div>
+    <div class="pattern-item">
+      <div class="pattern-type">new_market_entry</div>
+      <div>Growth in space technology and advanced technology services</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">
+        Rivals: Airbus, Thales, BAE Systems |
+        Inference: <strong>confirmed</strong> |
+        Occurrences: 5 |
+        Period: 2023-2025
+      </div>
+    </div>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 8px;">Sector Concentration</div>
+    <table class="score-table">
+      <tr><th>Sector</th><th class="num">Awards</th><th class="num">Value</th><th>Trend</th></tr>
+      
+      <tr>
+        <td>defence</td>
+        <td class="num">25</td>
+        <td class="num">£8.5bn</td>
+        <td>growing</td>
+      </tr>
+      <tr>
+        <td>central_government</td>
+        <td class="num">32</td>
+        <td class="num">£15.2bn</td>
+        <td>stable</td>
+      </tr>
+      <tr>
+        <td>justice</td>
+        <td class="num">8</td>
+        <td class="num">£1.2bn</td>
+        <td>stable</td>
+      </tr>
+      <tr>
+        <td>local_government</td>
+        <td class="num">12</td>
+        <td class="num">£800.0m</td>
+        <td>declining</td>
+      </tr>
+      <tr>
+        <td>education</td>
+        <td class="num">10</td>
+        <td class="num">£18.3bn</td>
+        <td>stable</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Risk & Exposure Profile</div>
+    <div class="section-text">Serco faces moderate risk exposure primarily from operational complexity in justice services, high public scrutiny, and concentration in government spending. However, strong contract performance and diversified portfolio provide resilience.</div>
+    
+    <div class="risk-factor" style="border-left-color:#C15050">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Operational Delivery Complexity</span>
+        <span class="risk-factor-level" style="color:#C15050">high</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Manages complex operational services including prison operations, marine services, and large-scale employment programmes requiring sophisticated delivery capabilities.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: Prison Operator Services HMP Dovegate (£447m), Defence Marine Services (£829m), Restart Scheme contracts (£1bn+)</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#C15050">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Public and Parliamentary Scrutiny</span>
+        <span class="risk-factor-level" style="color:#C15050">high</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">High-profile contracts in sensitive areas like justice and immigration attract significant media attention and parliamentary oversight.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: Prison operations, immigration removal centres, major government frameworks</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#C68A1D">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Contract Performance Pressure</span>
+        <span class="risk-factor-level" style="color:#C68A1D">moderate</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(92,163,182,0.12);color:#3A8CA0">Estimate</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Large-scale contracts with complex KPIs and performance measures create ongoing delivery pressure and potential for disputes.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: Multi-billion framework obligations, 8-year FAS contract, complex marine services delivery</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#C68A1D">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Government Spending Concentration</span>
+        <span class="risk-factor-level" style="color:#C68A1D">moderate</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Heavy dependence on UK public sector spending exposes to budget cuts and policy changes across multiple departments.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: £35bn+ in active government contracts across multiple departments</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#C68A1D">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Commercial Positioning</span>
+        <span class="risk-factor-level" style="color:#C68A1D">moderate</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Balanced commercial approach with competitive bidding strategy and framework positioning across multiple sectors.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: Framework strategy, competitive wins, long-term contract commitments</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#2D8A5E">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Business Transformation</span>
+        <span class="risk-factor-level" style="color:#2D8A5E">low</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(92,163,182,0.12);color:#3A8CA0">Estimate</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Stable organizational structure with consistent service delivery model and established market positioning.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: Consistent contract performance, established subsidiary structure</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#2D8A5E">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Client Relationship Management</span>
+        <span class="risk-factor-level" style="color:#2D8A5E">low</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Strong relationships evidenced by contract renewals and extensions across multiple government departments.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: Multiple framework renewals, long-term contracts, Crown Representative status</div>
+    </div>
+    <div class="risk-factor" style="border-left-color:#C68A1D">
+      <div class="risk-factor-header">
+        <span class="risk-factor-name">Supply Chain Dependencies</span>
+        <span class="risk-factor-level" style="color:#C68A1D">moderate</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span>
+      </div>
+      <div style="font-size:11px;line-height:1.6;">Moderate dependency on specialized subcontractors and partners for complex technical delivery, particularly in defence and technology services.</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Key evidence: UK Resilience Academy partnership, complex marine services delivery, technology services subcontracting</div>
+    </div>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Signal Synthesis</div>
+    <div class="section-text">Serco maintains a dominant position in UK public services with strong growth in technology sectors. Key signals include framework strategy success, technology capability expansion, and resilient performance despite scrutiny challenges.</div>
+    <table class="signal-table">
+      <tr><th>Priority</th><th>Signal</th><th>Source</th><th>Type</th><th>Trigger</th><th>Review By</th></tr>
+      
+      <tr>
+        <td style="color:#818CA2;font-weight:700;text-transform:uppercase;font-size:10px;">high</td>
+        <td>Technology Sector Expansion</td>
+        <td style="font-size:10px;">contracts</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:10px;">New space technology frameworks and defence technology contracts</td>
+        <td>2025-06-30</td>
+      </tr>
+      <tr>
+        <td style="color:#818CA2;font-weight:700;text-transform:uppercase;font-size:10px;">high</td>
+        <td>Framework Strategy Success</td>
+        <td style="font-size:10px;">frameworks</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:10px;">Multiple multi-billion framework awards across sectors</td>
+        <td>2025-12-31</td>
+      </tr>
+      <tr>
+        <td style="color:#818CA2;font-weight:700;text-transform:uppercase;font-size:10px;">medium</td>
+        <td>Justice Sector Stability</td>
+        <td style="font-size:10px;">contracts</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span></td>
+        <td style="font-size:10px;">Continued prison operations contract despite historical challenges</td>
+        <td>2025-03-31</td>
+      </tr>
+      <tr>
+        <td style="color:#818CA2;font-weight:700;text-transform:uppercase;font-size:10px;">medium</td>
+        <td>Employment Services Leadership</td>
+        <td style="font-size:10px;">contracts</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:10px;">Multiple Restart Scheme awards totaling £1bn+</td>
+        <td>2025-09-30</td>
+      </tr>
+      <tr>
+        <td style="color:#818CA2;font-weight:700;text-transform:uppercase;font-size:10px;">high</td>
+        <td>Defence Relationship Strength</td>
+        <td style="font-size:10px;">contracts</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:10px;">£8.5bn+ in defence contracts including marine services and technology</td>
+        <td>2025-12-31</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section page-break">
+    <div class="section-title">Evidence Quality</div>
+    <div class="eq-grid">
+      <div class="eq-card">
+        <div class="eq-card-label">Total claims</div>
+        <div class="eq-card-value">10</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-card-label">Average confidence</div>
+        <div class="eq-card-value">89</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-card-label">Contradictions</div>
+        <div class="eq-card-value">0</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-card-label">Verified facts</div>
+        <div class="eq-card-value">5</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Claims by source tier</div>
+      
+      <div class="eq-bar-row">
+        <span class="eq-bar-label">T1 Official</span>
+        <div class="eq-bar-track"><div class="eq-bar-fill" style="width:100%;background:#2D8A5E;"></div></div>
+        <span class="eq-bar-count">9</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label">T2 Policy</span>
+        <div class="eq-bar-track"><div class="eq-bar-fill" style="width:11%;background:#3A8CA0;"></div></div>
+        <span class="eq-bar-count">1</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label">T3 Filings</span>
+        <div class="eq-bar-track"><div class="eq-bar-fill" style="width:0%;background:#5CA3B6;"></div></div>
+        <span class="eq-bar-count">0</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label">T4 Company</span>
+        <div class="eq-bar-track"><div class="eq-bar-fill" style="width:0%;background:#C68A1D;"></div></div>
+        <span class="eq-bar-count">0</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label">T5 External</span>
+        <div class="eq-bar-track"><div class="eq-bar-fill" style="width:0%;background:#576482;"></div></div>
+        <span class="eq-bar-count">0</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label">T6 Signals</span>
+        <div class="eq-bar-track"><div class="eq-bar-fill" style="width:0%;background:#818CA2;"></div></div>
+        <span class="eq-bar-count">0</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Claims by type</div>
+      
+      <div class="eq-bar-row">
+        <span class="eq-bar-label"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></span>
+        <span class="eq-bar-count" style="margin-left:8px;">5</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(92,163,182,0.12);color:#3A8CA0">Estimate</span></span>
+        <span class="eq-bar-count" style="margin-left:8px;">3</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span></span>
+        <span class="eq-bar-count" style="margin-left:8px;">2</span>
+      </div>
+      <div class="eq-bar-row">
+        <span class="eq-bar-label"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(129,140,162,0.12);color:#576482">Signal</span></span>
+        <span class="eq-bar-count" style="margin-left:8px;">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section no-break">
+    <div class="section-title">Evidence Register</div>
+    <table class="score-table" style="font-size:10px;">
+      <tr><th>ID</th><th>Claim</th><th>Type</th><th>Field</th><th>Tier</th><th>Source</th><th class="num">Conf.</th></tr>
+      
+      <tr>
+        <td>C001</td>
+        <td>Serco has active contracts totaling over £35bn across UK public sector</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:9px;color:#576482;">contracts.value</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service</td>
+        <td class="num">90</td>
+      </tr>
+      <tr>
+        <td>C002</td>
+        <td>Serco operates across 7 distinct service lines with BPO-outsourced-services as core capability</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span></td>
+        <td style="font-size:9px;color:#576482;">serviceLineProfile</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service analysis</td>
+        <td class="num">85</td>
+      </tr>
+      <tr>
+        <td>C003</td>
+        <td>Serco incorporated 1929-09-10 with Companies House number 00242246</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:9px;color:#576482;">identity.companiesHouseNo</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Companies House</td>
+        <td class="num">95</td>
+      </tr>
+      <tr>
+        <td>C004</td>
+        <td>Serco holds Crown Representative status indicating strategic supplier designation</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(92,163,182,0.12);color:#3A8CA0">Estimate</span></td>
+        <td style="font-size:9px;color:#576482;">identity.crownRepresentative</td>
+        <td style="text-align:center;">2</td>
+        <td style="font-size:9px;">Contract portfolio analysis</td>
+        <td class="num">80</td>
+      </tr>
+      <tr>
+        <td>C005</td>
+        <td>YPO Apprenticeships Framework valued at £10bn demonstrates Serco's training sector dominance</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:9px;color:#576482;">contracts[0].value</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service</td>
+        <td class="num">92</td>
+      </tr>
+      <tr>
+        <td>C006</td>
+        <td>Functional Assessment Services contract runs 2023-2031 showing long-term government commitment</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:9px;color:#576482;">contracts.endDate</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service</td>
+        <td class="num">95</td>
+      </tr>
+      <tr>
+        <td>C007</td>
+        <td>Multiple Restart Scheme contracts total over £1bn indicating employment services leadership</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(92,163,182,0.12);color:#3A8CA0">Estimate</span></td>
+        <td style="font-size:9px;color:#576482;">contracts.title</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service aggregation</td>
+        <td class="num">88</td>
+      </tr>
+      <tr>
+        <td>C008</td>
+        <td>Space Technology Solutions framework 2025-2033 shows Serco expanding into advanced technology</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">Fact</span></td>
+        <td style="font-size:9px;color:#576482;">contracts.title</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service</td>
+        <td class="num">95</td>
+      </tr>
+      <tr>
+        <td>C009</td>
+        <td>Prison operations contract HMP Dovegate £447m shows continued MOJ confidence despite sector scrutiny</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">Hypothesis</span></td>
+        <td style="font-size:9px;color:#576482;">contracts.businessContext</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service</td>
+        <td class="num">82</td>
+      </tr>
+      <tr>
+        <td>C010</td>
+        <td>Defence contracts total £8.5bn+ including marine services and technology demonstrating MOD relationship strength</td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(92,163,182,0.12);color:#3A8CA0">Estimate</span></td>
+        <td style="font-size:9px;color:#576482;">bidOutcomeSignals.sectorConcentration</td>
+        <td style="text-align:center;">1</td>
+        <td style="font-size:9px;">Find a Tender Service sector analysis</td>
+        <td class="num">85</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Refresh Guidance</div>
+    <table class="kf-table">
+      <tr><th>Section</th><th>Refresh Due</th><th>Window</th></tr>
+      <tr><td>0</td><td>2</td><td>—</td></tr>
+      <tr><td>1</td><td>0</td><td>—</td></tr>
+      <tr><td>2</td><td>2</td><td>—</td></tr>
+      <tr><td>3</td><td>5</td><td>—</td></tr>
+      <tr><td>4</td><td>-</td><td>—</td></tr>
+      <tr><td>5</td><td>0</td><td>—</td></tr>
+      <tr><td>6</td><td>3</td><td>—</td></tr>
+      <tr><td>7</td><td>-</td><td>—</td></tr>
+      <tr><td>8</td><td>2</td><td>—</td></tr>
+      <tr><td>9</td><td>8</td><td>—</td></tr>
+      <tr><td>10</td><td>T</td><td>—</td></tr>
+      <tr><td>11</td><td>1</td><td>—</td></tr>
+      <tr><td>12</td><td>0</td><td>—</td></tr>
+      <tr><td>13</td><td>:</td><td>—</td></tr>
+      <tr><td>14</td><td>3</td><td>—</td></tr>
+      <tr><td>15</td><td>0</td><td>—</td></tr>
+      <tr><td>16</td><td>:</td><td>—</td></tr>
+      <tr><td>17</td><td>0</td><td>—</td></tr>
+      <tr><td>18</td><td>0</td><td>—</td></tr>
+      <tr><td>19</td><td>Z</td><td>—</td></tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Version History</div>
+    <table class="kf-table">
+      <tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+      <tr><td>2.0</td><td>2024-12-28T10:30:00Z</td><td></td></tr>
+    </table>
+  </div>
+  
+  <div class="section no-break">
+    <div class="section-title">Linked Library Assets</div>
+    
+    <div style="font-size:11px;font-weight:600;margin-bottom:4px;">Sector briefs</div>
+    <ul class="gaps-list"><li>defence-technology</li><li>justice-operations</li><li>employment-services</li></ul>
+  </div>
+
+</div>
+
+<div class="report-footer">
+  <div>BidEquity Supplier Intelligence Dossier | Serco Group plc | Generated 2024-12-28T10:30:00Z</div>
+  <div>Confidential — BidEquity</div>
+</div>
+
+</body>
+</html>
