@@ -540,34 +540,16 @@ function buildClaudeTools(skill) {
     },
     store_intelligence_dossier: {
       name: 'store_intelligence_dossier',
-      description: 'Store a supplier intelligence dossier as a reusable reference asset in the platform library (not pursuit-scoped)',
+      description: 'Store a v2 supplier intelligence dossier as structured JSON in the platform library. The dossier object must conform to supplier-dossier-schema v2. The renderer will produce the HTML report from this data.',
       input_schema: {
         type: 'object',
         properties: {
-          supplierName: { type: 'string', description: 'The supplier name (used to derive the storage key)' },
-          dossierContent: { type: 'string', description: 'The full dossier content (markdown)' },
-          scores: {
+          dossier: {
             type: 'object',
-            description: 'Strategic scores with per-factor breakdowns',
-            properties: {
-              sectorStrength: { type: 'number' },
-              competitorThreat: { type: 'number' },
-              vulnerability: { type: 'number' },
-            },
-          },
-          sectors: { type: 'array', items: { type: 'string' }, description: 'Sectors covered' },
-          archetype: { type: 'string', description: 'Supplier archetype (systems_integrator, bpo_bps, consulting, digital_native, etc.)' },
-          evidenceQuality: {
-            type: 'object',
-            description: 'Evidence quality summary',
-            properties: {
-              totalCitations: { type: 'number' },
-              tierDistribution: { type: 'object' },
-              averageConfidence: { type: 'number' },
-            },
+            description: 'The complete v2 dossier object conforming to supplier-dossier-schema.json. Must include meta (with supplierName, slug), identity, scores, serviceLineProfile, financialTrajectory, contracts, riskExposureProfile, evidenceRegister, and executiveSummary.',
           },
         },
-        required: ['supplierName', 'dossierContent'],
+        required: ['dossier'],
       },
     },
   };
@@ -689,19 +671,16 @@ async function executeToolCall(toolName, pursuitId, input) {
       return { generated: true };
     }
     case 'store_intelligence_dossier': {
-      const slug = input.supplierName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const dossier = {
-        supplierName: input.supplierName,
-        slug,
-        content: input.dossierContent,
-        scores: input.scores || null,
-        sectors: input.sectors || [],
-        archetype: input.archetype || null,
-        evidenceQuality: input.evidenceQuality || null,
-        generatedAt: new Date().toISOString(),
-      };
-      await store.saveReferenceData('suppliers', slug, dossier);
-      return { stored: true, path: `reference/suppliers/${slug}.json` };
+      const dossier = input.dossier;
+      const slug = dossier.meta?.slug || dossier.meta?.supplierName?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'unknown';
+      // v2: store as {slug}/data.json inside reference/suppliers/
+      const { writeFile, mkdir } = await import('node:fs/promises');
+      const { join } = await import('node:path');
+      const dirPath = join(store.DATA_ROOT, 'reference', 'suppliers', slug);
+      await mkdir(dirPath, { recursive: true });
+      const dataPath = join(dirPath, 'data.json');
+      await writeFile(dataPath, JSON.stringify(dossier, null, 2), 'utf-8');
+      return { stored: true, path: `reference/suppliers/${slug}/data.json` };
     }
     default:
       throw new Error(`Unknown tool: ${toolName}`);
