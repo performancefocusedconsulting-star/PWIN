@@ -77,7 +77,10 @@
         "geographicRemit":    { "type": "string", "description": "national / regional / local, with description" },
         "headcount":          { "$ref": "#/$defs/evidencedField" },
         "annualBudget":       { "$ref": "#/$defs/evidencedField" },
-        "buyerArchetype":     { "type": ["string", "null"], "enum": ["centralised_strategic", "devolved_operational", "transformation_driven", "compliance_driven", "mixed", null], "description": "Computed label derived from procurement behaviour, culture, and risk posture" },
+        "organisationalArchetype": {
+          "$ref": "#/$defs/evidencedField",
+          "description": "AI-assessed organisational buying archetype. Describes how this institution generally behaves as a buyer. The same enum applies at opportunity level in the pursuit record but is assessed separately per procurement."
+        },
         "executiveSummary":   { "type": "string", "description": "2-3 paragraphs: who they are and what a bid team needs to know" },
         "keyRisks":           { "type": "array", "items": { "type": "string" }, "description": "2-3 most important items from risks section" }
       }
@@ -522,6 +525,19 @@
         "rating":     { "type": "string", "enum": ["red", "amber", "green", "grey"] },
         "rationale":  { "type": "string", "description": "One sentence explaining the rating" }
       }
+    },
+    "buyerArchetypeEnum": {
+      "type": "string",
+      "description": "Buyer archetype — describes procurement behaviour, not organisation type. Applied at two levels: organisational (buyer dossier) and opportunity (pursuit record). Same enum, different assessment.",
+      "enum": [
+        "strategic_central_commissioner",
+        "framework_first_operator",
+        "devolved_capacity_constrained",
+        "programme_led_transformer",
+        "incumbent_locked_risk_averse",
+        "politically_sensitive_high_scrutiny",
+        "compliance_procurement_machine"
+      ]
     }
   }
 }

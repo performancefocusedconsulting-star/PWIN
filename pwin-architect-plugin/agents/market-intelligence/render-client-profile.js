@@ -99,45 +99,10 @@ function computeFreshnessScore(data) {
   return { rating: 'red', rationale: `${stalePct}% of sources are past their freshness window` };
 }
 
-function computeBuyerArchetype(data) {
-  // Simple heuristic from procurement behaviour + culture + risk posture
-  const culture = data.cultureAndPreferences || {};
-  const risk = data.commercialAndRiskPosture || {};
-  const proc = data.procurementBehaviour || {};
-
-  const signals = {
-    centralised_strategic: 0,
-    devolved_operational: 0,
-    transformation_driven: 0,
-    compliance_driven: 0,
-  };
-
-  // Governance intensity
-  const gov = culture.governanceIntensity?.value?.toLowerCase() || '';
-  if (gov.includes('high') || gov.includes('formal')) signals.centralised_strategic++;
-  if (gov.includes('low') || gov.includes('pragmatic')) signals.devolved_operational++;
-
-  // Risk tolerance
-  const risk_val = culture.riskTolerance?.value?.toLowerCase() || '';
-  if (risk_val.includes('low') || risk_val.includes('risk-averse')) signals.compliance_driven++;
-  if (risk_val.includes('high') || risk_val.includes('innovation')) signals.transformation_driven++;
-
-  // Innovation preference
-  const innov = proc.innovationVsProven?.value?.toLowerCase() || '';
-  if (innov.includes('innovation') || innov.includes('digital')) signals.transformation_driven++;
-  if (innov.includes('proven') || innov.includes('established')) signals.compliance_driven++;
-
-  // Org type
-  const orgType = data.buyerSnapshot?.organisationType || '';
-  if (['department', 'mod'].includes(orgType)) signals.centralised_strategic++;
-  if (['local_authority', 'nhs_trust'].includes(orgType)) signals.devolved_operational++;
-  if (['regulator'].includes(orgType)) signals.compliance_driven++;
-
-  const sorted = Object.entries(signals).sort((a, b) => b[1] - a[1]);
-  if (sorted[0][1] === 0) return null;
-  if (sorted[0][1] === sorted[1][1]) return 'mixed';
-  return sorted[0][0];
-}
+// Buyer archetype is AI-assessed (evidenced field), not computed by the renderer.
+// The archetype enum is defined in the schema: strategic_central_commissioner,
+// framework_first_operator, devolved_capacity_constrained, programme_led_transformer,
+// incumbent_locked_risk_averse, politically_sensitive_high_scrutiny, compliance_procurement_machine.
 
 // Apply computed values
 data.computedScores = {
@@ -145,9 +110,7 @@ data.computedScores = {
   coverageScore: computeCoverageScore(data),
   freshnessScore: computeFreshnessScore(data),
 };
-if (data.buyerSnapshot) {
-  data.buyerSnapshot.buyerArchetype = data.buyerSnapshot.buyerArchetype || computeBuyerArchetype(data);
-}
+// Archetype is read directly from the AI-assessed evidenced field — no computation needed
 
 // ─── HTML helpers ───────────────────────────────────────────────────────────
 
@@ -225,7 +188,7 @@ function renderSnapshot(snap) {
     ['Geographic Remit', snap.geographicRemit],
     ['Headcount', snap.headcount?.value],
     ['Annual Budget', snap.annualBudget?.value],
-    ['Buyer Archetype', snap.buyerArchetype?.replace(/_/g, ' ')],
+    ['Organisational Archetype', snap.organisationalArchetype?.value?.replace(/_/g, ' ')],
   ].filter(([, v]) => v != null);
 
   return `
@@ -602,6 +565,6 @@ writeFileSync(outputPath, html, 'utf-8');
 console.log(`Rendered: ${outputPath}`);
 console.log(`  Buyer: ${meta.buyerName}`);
 console.log(`  Scores: profileConfidence=${scores.profileConfidence?.rating}, coverage=${scores.coverageScore?.rating}, freshness=${scores.freshnessScore?.rating}`);
-console.log(`  Archetype: ${data.buyerSnapshot?.buyerArchetype || 'not computed'}`);
+console.log(`  Archetype: ${data.buyerSnapshot?.organisationalArchetype?.value || 'not assessed'}`);
 console.log(`  Sources: ${(data.sourceRegister?.sources || []).length}`);
 console.log(`  Gaps: ${(data.sourceRegister?.gaps || []).length}`);

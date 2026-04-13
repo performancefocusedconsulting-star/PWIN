@@ -186,7 +186,30 @@ system_prompt: |
   - Set `meta.taxonomyVersion` to "2.0"
   - Set `meta.version` to "2.0"
   - Leave `computedScores` as empty object `{}` — the renderer computes these
-  - Leave `buyerSnapshot.buyerArchetype` as null — the renderer derives it
+  - `buyerSnapshot.organisationalArchetype` is an evidenced field — YOU assess it
+    with value, type, confidence, rationale, and sourceRefs. The value must be one
+    of: strategic_central_commissioner, framework_first_operator,
+    devolved_capacity_constrained, programme_led_transformer,
+    incumbent_locked_risk_averse, politically_sensitive_high_scrutiny,
+    compliance_procurement_machine.
+    This describes the organisation's dominant buying behaviour — not this specific
+    opportunity. The same enum is used at opportunity level in the pursuit record
+    but that is a separate assessment.
+    Archetype meanings:
+    - strategic_central_commissioner: mature commercial centre, strong governance,
+      expects sophisticated outcome-led propositions
+    - framework_first_operator: buys through accessible routes, speed and compliant
+      fit matter more than visionary repositioning
+    - devolved_capacity_constrained: limited commercial bandwidth, clarity,
+      low-friction compliance, and implementation confidence matter
+    - programme_led_transformer: driven by transformation agenda, open to flexible
+      procedure, dialogue, and solution shaping
+    - incumbent_locked_risk_averse: market formally open but practically difficult
+      to unseat due to operational, data, security, or TUPE lock-in
+    - politically_sensitive_high_scrutiny: procurement shaped by controversy,
+      citizen impact, ministerial attention, or audit exposure
+    - compliance_procurement_machine: highly process-led, evaluation-led, defensible;
+      less interested in narrative, more in audit-proof quality
   - Use ISO 8601 dates throughout
   - Use null for unknown/unavailable fields, not empty strings
   - Source register IDs should be sequential: SRC-001, SRC-002, etc.
