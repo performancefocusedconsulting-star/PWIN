@@ -1,177 +1,482 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "client-profile-v1",
-  "title": "Client Intelligence Profile",
-  "description": "Structured data output for a buyer organisation profile. The human-readable report is rendered from this data. Other agents consume this directly.",
+  "$id": "client-profile-v2",
+  "title": "Buyer Intelligence Dossier v2",
+  "description": "Structured data output for a buyer organisation profile. Neutral upstream intelligence asset — researches and compiles how a buyer operates, buys, and is structured. JSON is canonical; the human-readable report is rendered from this data by a deterministic template engine. Interpretive fields carry inline evidence (value, type, confidence, rationale, sourceRefs). Hypothesis sections are explicitly labelled. Phase 1: static dossier, no win-strategy reasoning.",
 
   "type": "object",
-  "required": ["meta", "organisation", "sections", "evidenceQuality"],
+  "required": ["meta", "buyerSnapshot", "organisationContext", "procurementBehaviour", "supplierEcosystem", "sourceRegister"],
 
   "properties": {
 
     "meta": {
-      "description": "Report metadata — when it was built, who it covers, depth mode used",
+      "description": "Report metadata — when built, who it covers, depth mode, staleness, refresh triggers",
       "type": "object",
-      "required": ["clientName", "generatedAt", "generatedBy", "version", "depthMode"],
+      "required": ["buyerName", "generatedAt", "generatedBy", "version", "depthMode"],
       "properties": {
-        "clientName":       { "type": "string", "description": "Full name of the buyer organisation" },
+        "buyerName":        { "type": "string", "description": "Full name of the buying organisation" },
         "slug":             { "type": "string", "description": "URL-safe identifier, e.g. ministry-of-defence" },
-        "sector":           { "type": "string", "description": "Primary sector, e.g. Defence, Health, Local Government" },
+        "sector":           { "type": "string", "description": "Primary sector — defence, health, central_gov, local_gov, justice, education, etc" },
         "generatedAt":      { "type": "string", "format": "date-time" },
         "generatedBy":      { "type": "string", "description": "Who or what produced this profile" },
-        "version":          { "type": "string", "description": "Profile version, e.g. 1.0, 1.1" },
-        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"], "description": "Depth mode used for this run" },
-        "refreshedFrom":    { "type": "string", "description": "If this is a refresh, the version it built on" },
+        "version":          { "type": "string" },
+        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"] },
+        "refreshedFrom":    { "type": ["string", "null"], "description": "If this is a refresh, the version it built on" },
+        "taxonomyVersion":  { "type": "string", "description": "Version of service-taxonomy.json used for supplier ecosystem classification" },
+        "sourcesSummary": {
+          "type": "object",
+          "description": "Quick count of raw material available",
+          "properties": {
+            "ftsRecords":       { "type": "number", "description": "Number of FTS award/notice records for this buyer" },
+            "webSourcesReviewed": { "type": "number", "description": "Number of web sources accessed" },
+            "internalDataProvided": { "type": "boolean", "description": "Whether any internal/account data was supplied" }
+          }
+        },
+        "refreshDue": {
+          "type": "object",
+          "description": "Per-section staleness dates",
+          "properties": {
+            "procurementBehaviour":   { "type": "string", "format": "date", "description": "7 days — FTS data" },
+            "supplierEcosystem":      { "type": "string", "format": "date", "description": "7 days — FTS data" },
+            "strategicPriorities":    { "type": "string", "format": "date", "description": "90 days — strategy documents" },
+            "organisationContext":    { "type": "string", "format": "date", "description": "60 days — leadership, structure" },
+            "risksAndSensitivities":  { "type": "string", "format": "date", "description": "30 days — media, audit" },
+            "commercialAndRiskPosture": { "type": "string", "format": "date", "description": "60 days" },
+            "cultureAndPreferences":  { "type": "string", "format": "date", "description": "90 days" }
+          }
+        },
+        "refreshTriggers": {
+          "type": "array",
+          "description": "Events that should trigger a profile refresh",
+          "items": { "type": "string" }
+        },
         "versionLog": {
           "type": "array",
-          "description": "What changed in each version — most recent first",
           "items": {
             "type": "object",
             "properties": {
-              "version":    { "type": "string" },
-              "date":       { "type": "string", "format": "date" },
-              "summary":    { "type": "string", "description": "What changed, e.g. 'Refreshed procurement data, added 6 new awards from Q1 2026'" }
+              "version": { "type": "string" },
+              "date":    { "type": "string", "format": "date" },
+              "summary": { "type": "string" }
             }
           }
         }
       }
     },
 
-    "organisation": {
-      "description": "Section 1 — core facts about the buyer organisation",
+    "buyerSnapshot": {
+      "description": "Section 1 — one-page summary for fast consumption",
       "type": "object",
+      "required": ["legalName", "organisationType", "sector"],
       "properties": {
         "legalName":          { "type": "string" },
-        "parentBody":         { "type": "string", "description": "Parent department or group, e.g. DHSC for NHS England" },
-        "organisationType":   { "type": "string", "enum": ["department", "agency", "ndpb", "nhs_trust", "nhs_icb", "local_authority", "devolved", "mod", "other"] },
+        "parentBody":         { "type": ["string", "null"], "description": "Sponsor department, e.g. DHSC for NHS England" },
+        "organisationType":   { "type": "string", "enum": ["department", "agency", "ndpb", "nhs_trust", "nhs_icb", "local_authority", "devolved", "mod", "regulator", "other"] },
         "sector":             { "type": "string" },
-        "headcount":          { "type": "string", "description": "Approximate, with source" },
-        "annualBudget":       { "type": "string", "description": "Most recent, with currency and period" },
-        "geographicFootprint": { "type": "string" },
-        "keyDirectorates": {
+        "subSector":          { "type": ["string", "null"], "description": "e.g. acute hospital trust within health" },
+        "geographicRemit":    { "type": "string", "description": "national / regional / local, with description" },
+        "headcount":          { "$ref": "#/$defs/evidencedField" },
+        "annualBudget":       { "$ref": "#/$defs/evidencedField" },
+        "buyerArchetype":     { "type": ["string", "null"], "enum": ["centralised_strategic", "devolved_operational", "transformation_driven", "compliance_driven", "mixed", null], "description": "Computed label derived from procurement behaviour, culture, and risk posture" },
+        "executiveSummary":   { "type": "string", "description": "2-3 paragraphs: who they are and what a bid team needs to know" },
+        "keyRisks":           { "type": "array", "items": { "type": "string" }, "description": "2-3 most important items from risks section" }
+      }
+    },
+
+    "organisationContext": {
+      "description": "Section 2 — mandate, structure, leadership, operating model",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":      { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "mandate":                { "$ref": "#/$defs/evidencedField", "description": "Statutory function or mandate" },
+        "operatingModel":         { "$ref": "#/$defs/evidencedField", "description": "How the organisation operates" },
+        "organisationStructure":  { "type": "string", "description": "Narrative — how they're structured for procurement" },
+        "keyBusinessUnits": {
           "type": "array",
-          "description": "Directorates relevant to procurement",
           "items": {
             "type": "object",
             "properties": {
               "name":       { "type": "string" },
               "remit":      { "type": "string" },
-              "head":       { "type": "string", "description": "Director name if publicly available" }
+              "relevance":  { "type": "string", "description": "Why this unit matters for procurement" }
+            }
+          }
+        },
+        "seniorLeadership": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name":       { "type": "string" },
+              "title":      { "type": "string" },
+              "relevance":  { "type": "string", "description": "Why this person matters — e.g. signs contracts over £10m" },
+              "startDate":  { "type": ["string", "null"] },
+              "source":     { "type": "string" }
+            }
+          }
+        },
+        "fundingModel":           { "$ref": "#/$defs/evidencedField" },
+        "recentChanges":          { "type": "array", "items": { "type": "string" }, "description": "Structural or leadership changes" }
+      }
+    },
+
+    "strategicPriorities": {
+      "description": "Section 3 — published strategy, programmes, external pressures",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":          { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "summaryNarrative":           { "type": "string", "description": "2-3 paragraphs: what's driving this organisation" },
+        "publishedStrategyThemes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "theme":        { "type": "string" },
+              "description":  { "type": "string" },
+              "sourceRefs":   { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "majorProgrammes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name":         { "type": "string" },
+              "description":  { "type": "string" },
+              "status":       { "type": "string" },
+              "value":        { "type": ["string", "null"] },
+              "sourceRefs":   { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "regulatoryPressures":        { "$ref": "#/$defs/evidencedField" },
+        "politicalPressures":         { "$ref": "#/$defs/evidencedField" },
+        "fiscalPressures":            { "$ref": "#/$defs/evidencedField" },
+        "servicePerformancePressures": { "$ref": "#/$defs/evidencedField" },
+        "publicStatementsOfIntent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "statement":    { "type": "string" },
+              "speaker":      { "type": ["string", "null"] },
+              "date":         { "type": ["string", "null"] },
+              "sourceRefs":   { "type": "array", "items": { "type": "string" } }
             }
           }
         }
       }
     },
 
-    "sections": {
-      "description": "Sections 2-7 of the client profile — each has narrative and structured data",
+    "commissioningContextHypotheses": {
+      "description": "Section 4 — interpretive layer, explicitly labelled as hypotheses. Every field is an inference requiring validation.",
       "type": "object",
+      "required": ["sectionConfidence", "sectionCaveat"],
       "properties": {
-        "strategicPriorities":    { "$ref": "#/$defs/profileSection" },
-        "procurementBehaviour":   { "$ref": "#/$defs/profileSection" },
-        "relationshipHistory":    { "$ref": "#/$defs/profileSection" },
-        "cultureCommunication":   { "$ref": "#/$defs/profileSection" },
-        "risksAndSensitivities":  { "$ref": "#/$defs/profileSection" },
-        "keyPeopleStakeholders":  { "$ref": "#/$defs/profileSection" }
+        "sectionConfidence":        { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "sectionCaveat":            { "type": "string", "description": "Fixed: These are hypotheses derived from available evidence. They require validation by the pursuit team." },
+        "driversOfExternalBuying":  { "$ref": "#/$defs/evidencedField" },
+        "pressuresShapingSpend":    { "$ref": "#/$defs/evidencedField" },
+        "operationalPainPoints":    { "$ref": "#/$defs/evidencedField" },
+        "outcomesSought":           { "$ref": "#/$defs/evidencedField" },
+        "consequencesOfInaction":   { "$ref": "#/$defs/evidencedField" }
       }
     },
 
-    "procurementHistory": {
-      "description": "Structured procurement data from the database — machine-readable for other agents",
+    "procurementBehaviour": {
+      "description": "Section 5 — data-rich, driven by FTS procurement data. Highest-confidence section.",
       "type": "object",
+      "required": ["sectionConfidence"],
       "properties": {
-        "totalAwards":        { "type": "number", "description": "Total contract awards in database" },
-        "totalValue":         { "type": "number", "description": "Total award value in GBP" },
-        "dateRange":          { "type": "string", "description": "Earliest to latest award in dataset" },
+        "sectionConfidence":    { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "summaryNarrative":     { "type": "string", "description": "What the procurement data tells us about how they buy" },
+        "totalAwards":          { "type": "number" },
+        "totalValue":           { "type": "number", "description": "GBP" },
+        "dataWindow":           { "type": "string", "description": "Period covered, e.g. 2021-01 to 2026-04" },
         "preferredRoutes": {
           "type": "array",
-          "description": "Most-used procurement routes with frequency",
           "items": {
             "type": "object",
+            "required": ["route", "count"],
             "properties": {
-              "route":      { "type": "string", "description": "e.g. Open procedure, Framework call-off, Restricted procedure" },
-              "count":      { "type": "number" },
-              "percentage": { "type": "number" }
+              "route":        { "type": "string", "description": "e.g. Open procedure, Framework call-off, Restricted procedure" },
+              "count":        { "type": "number" },
+              "percentage":   { "type": "number" }
             }
           }
         },
-        "topSuppliers": {
-          "type": "array",
-          "description": "Largest suppliers by total award value",
-          "items": {
-            "type": "object",
-            "properties": {
-              "supplierName":   { "type": "string" },
-              "totalValue":     { "type": "number", "description": "GBP" },
-              "contractCount":  { "type": "number" },
-              "hasDossier":     { "type": "boolean", "description": "Whether a supplier dossier exists in the library" }
-            }
-          }
-        },
-        "typicalContractLength": { "type": "string", "description": "Most common contract duration" },
-        "typicalContractValue":  { "type": "string", "description": "Median or typical value range" },
         "frameworkUsage": {
           "type": "array",
-          "description": "Frameworks this buyer uses",
           "items": {
             "type": "object",
             "properties": {
               "frameworkName": { "type": "string" },
               "provider":     { "type": "string" },
-              "awardCount":   { "type": "number" }
+              "awardCount":   { "type": "number" },
+              "totalValue":   { "type": ["number", "null"] }
+            }
+          }
+        },
+        "typicalContractLength":  { "$ref": "#/$defs/evidencedField" },
+        "typicalContractValue":   { "$ref": "#/$defs/evidencedField" },
+        "categoryConcentration": {
+          "type": "array",
+          "description": "Award distribution by service taxonomy category",
+          "items": {
+            "type": "object",
+            "required": ["serviceCategory", "awardCount"],
+            "properties": {
+              "serviceCategory": { "type": "string", "description": "categoryId from service-taxonomy.json" },
+              "awardCount":      { "type": "number" },
+              "totalValue":      { "type": ["number", "null"] }
+            }
+          }
+        },
+        "innovationVsProven":     { "$ref": "#/$defs/evidencedField" },
+        "priceVsQualityBias":     { "$ref": "#/$defs/evidencedField" },
+        "renewalPatterns":        { "$ref": "#/$defs/evidencedField" }
+      }
+    },
+
+    "decisionUnitAssumptions": {
+      "description": "Section 6 — inferred stakeholder map. Hypothesis section, explicitly labelled.",
+      "type": "object",
+      "required": ["sectionConfidence", "sectionCaveat"],
+      "properties": {
+        "sectionConfidence":      { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "sectionCaveat":          { "type": "string", "description": "Fixed: Inferred from published structures and procurement patterns. Requires pursuit-team validation." },
+        "businessOwnerRoles":     { "$ref": "#/$defs/evidencedField" },
+        "commercialRoles":        { "$ref": "#/$defs/evidencedField" },
+        "technicalStakeholders":  { "$ref": "#/$defs/evidencedField" },
+        "financeAssuranceRoles":  { "$ref": "#/$defs/evidencedField" },
+        "evaluatorGroups":        { "$ref": "#/$defs/evidencedField" },
+        "intelligenceGaps": {
+          "type": "array",
+          "description": "Specific questions for the pursuit team",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "cultureAndPreferences": {
+      "description": "Section 7 — observable or well-supported inference only",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":        { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "decisionMakingFormality":  { "$ref": "#/$defs/evidencedField" },
+        "governanceIntensity":      { "$ref": "#/$defs/evidencedField" },
+        "riskTolerance":            { "$ref": "#/$defs/evidencedField" },
+        "evidencePreferences":      { "$ref": "#/$defs/evidencedField" },
+        "supplierInteractionStyle": { "$ref": "#/$defs/evidencedField" },
+        "presentationStyle":        { "$ref": "#/$defs/evidencedField" }
+      }
+    },
+
+    "commercialAndRiskPosture": {
+      "description": "Section 8 — affordability sensitivity, risk transfer, contractual caution",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":        { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "affordabilitySensitivity": { "$ref": "#/$defs/evidencedField" },
+        "riskTransferPosture":      { "$ref": "#/$defs/evidencedField" },
+        "contractualCaution":       { "$ref": "#/$defs/evidencedField" },
+        "cyberDataSensitivity":     { "$ref": "#/$defs/evidencedField" },
+        "mobilisationSensitivity":  { "$ref": "#/$defs/evidencedField" },
+        "auditFoiExposure":         { "$ref": "#/$defs/evidencedField" }
+      }
+    },
+
+    "supplierEcosystem": {
+      "description": "Section 9 — who delivers what, how important, how entrenched. The buyer's view of their supplier landscape. Links to supplier dossiers for deep dives.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":  { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "summaryNarrative":   { "type": "string", "description": "Overall picture of the supplier landscape" },
+        "incumbents": {
+          "type": "array",
+          "description": "Current suppliers with active contracts — the competitive terrain from the buyer's side",
+          "items": {
+            "type": "object",
+            "required": ["supplierName"],
+            "properties": {
+              "supplierName":           { "type": "string" },
+              "serviceLines":           { "type": "array", "items": { "type": "string" }, "description": "categoryId refs from service-taxonomy.json" },
+              "contractCount":          { "type": "number" },
+              "totalValue":             { "type": ["number", "null"], "description": "GBP" },
+              "longestRelationship":    { "type": "string", "description": "Years, or 'since {date}'" },
+              "strategicImportance":    { "type": "string", "enum": ["critical", "major", "moderate", "minor"] },
+              "recentActivity":         { "$ref": "#/$defs/evidencedField", "description": "growing / stable / thinning" },
+              "entrenchmentIndicators": { "type": "array", "items": { "type": "string" }, "description": "What makes them hard to displace — systems, TUPE, data, relationships" },
+              "dossierRef":             { "type": ["string", "null"], "description": "Path to supplier dossier if one exists" }
+            }
+          }
+        },
+        "adjacentSuppliers": {
+          "type": "array",
+          "description": "Suppliers with a presence but not currently holding major contracts",
+          "items": {
+            "type": "object",
+            "properties": {
+              "supplierName":       { "type": "string" },
+              "serviceLines":       { "type": "array", "items": { "type": "string" } },
+              "evidenceOfPresence": { "type": "string" },
+              "dossierRef":         { "type": ["string", "null"] }
+            }
+          }
+        },
+        "supplierConcentration":  { "$ref": "#/$defs/evidencedField", "description": "How dependent on a few suppliers" },
+        "switchingEvidence":      { "$ref": "#/$defs/evidencedField", "description": "Evidence of churn or loyalty" },
+        "marketRefreshAreas": {
+          "type": "array",
+          "description": "Service areas where incumbent positions look open — based on contract expiry, switching history, or buyer signals",
+          "items": {
+            "type": "object",
+            "properties": {
+              "area":       { "type": "string" },
+              "evidence":   { "type": "string" },
+              "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
             }
           }
         }
       }
     },
 
-    "keyPeople": {
-      "description": "Structured key personnel data — factual research only, not influence analysis",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name":         { "type": "string", "description": "Only if publicly available" },
-          "title":        { "type": "string" },
-          "directorate":  { "type": "string" },
-          "relevance":    { "type": "string", "description": "Why this person matters for procurement, e.g. 'Signs contracts over £10m'" },
-          "startDate":    { "type": "string", "description": "When they took this role, if known" },
-          "source":       { "type": "string", "description": "Where this information came from" }
-        }
-      }
-    },
-
-    "intelligenceGaps": {
-      "description": "What could not be determined — with specific asks for the pursuit team",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "gap":              { "type": "string", "description": "What is missing" },
-          "impact":           { "type": "string", "description": "Why it matters" },
-          "recommendedAction": { "type": "string", "description": "How the team can fill this gap" }
-        }
-      }
-    },
-
-    "evidenceQuality": {
-      "description": "Overall assessment of how much to trust this profile",
+    "risksAndSensitivities": {
+      "description": "Section 10 — procurement controversies, programme failures, audit findings, media scrutiny, positioning sensitivities",
       "type": "object",
+      "required": ["sectionConfidence"],
       "properties": {
-        "totalCitations":     { "type": "number" },
-        "tierDistribution": {
-          "type": "object",
-          "properties": {
-            "tier1": { "type": "number" },
-            "tier2": { "type": "number" },
-            "tier3": { "type": "number" },
-            "tier4": { "type": "number" },
-            "tier5": { "type": "number" },
-            "tier6": { "type": "number" }
+        "sectionConfidence":  { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "summaryNarrative":   { "type": "string" },
+        "procurementControversies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "date":        { "type": ["string", "null"] },
+              "severity":    { "type": "string", "enum": ["high", "medium", "low"] },
+              "sourceRefs":  { "type": "array", "items": { "type": "string" } }
+            }
           }
         },
-        "averageConfidence":  { "type": "number" },
-        "knownGaps":          { "type": "array", "items": { "type": "string" } }
+        "programmeFailures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "date":        { "type": ["string", "null"] },
+              "severity":    { "type": "string", "enum": ["high", "medium", "low"] },
+              "sourceRefs":  { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "auditFindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "body":        { "type": "string", "description": "e.g. NAO, PAC, GIAA, ICO" },
+              "date":        { "type": ["string", "null"] },
+              "sourceRefs":  { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "mediaScrutiny": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "date":        { "type": ["string", "null"] },
+              "sourceRefs":  { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "publicSensitivities":      { "type": "array", "items": { "type": "string" } },
+        "positioningSensitivities":  { "type": "array", "items": { "type": "string" }, "description": "Language or framing to avoid" }
+      }
+    },
+
+    "sourceRegister": {
+      "description": "Section 11 — master index of all sources used. Per-field sourceRefs reference these IDs.",
+      "type": "object",
+      "required": ["sources"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sourceId", "sourceName", "sourceType"],
+            "properties": {
+              "sourceId":           { "type": "string", "description": "e.g. SRC-001" },
+              "sourceName":         { "type": "string", "description": "e.g. MOD Annual Report 2025" },
+              "sourceType":         { "type": "string", "enum": ["tier1_official", "tier2_procurement", "tier3_secondary", "tier4_internal"] },
+              "publicationDate":    { "type": ["string", "null"], "format": "date" },
+              "accessDate":         { "type": ["string", "null"], "format": "date" },
+              "reliability":        { "type": "string", "enum": ["high", "medium", "low"] },
+              "sectionsSupported":  { "type": "array", "items": { "type": "string" }, "description": "Which sections this source informed" },
+              "url":                { "type": ["string", "null"] }
+            }
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "description": "Intelligence gaps with recommended actions",
+          "items": {
+            "type": "object",
+            "required": ["description", "impact"],
+            "properties": {
+              "description":       { "type": "string", "description": "What is missing" },
+              "impact":            { "type": "string", "description": "Why it matters" },
+              "recommendedAction": { "type": "string", "description": "How the team can fill this gap" }
+            }
+          }
+        },
+        "staleFields": {
+          "type": "array",
+          "description": "Fields that are approaching or past their freshness window",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fieldPath":      { "type": "string" },
+              "lastUpdated":    { "type": "string", "format": "date" },
+              "staleAfterDays": { "type": "number" }
+            }
+          }
+        },
+        "lowConfidenceInferences": {
+          "type": "array",
+          "description": "Fields where the inference confidence is low — flagged for reviewer attention",
+          "items": { "type": "string", "description": "fieldPath" }
+        }
+      }
+    },
+
+    "computedScores": {
+      "description": "Renderer-derived RAG scores. Not assessed by the model — computed from source register and section coverage.",
+      "type": "object",
+      "properties": {
+        "profileConfidence": {
+          "$ref": "#/$defs/ragScore",
+          "description": "Derived from source register reliability distribution"
+        },
+        "coverageScore": {
+          "$ref": "#/$defs/ragScore",
+          "description": "Derived from how many sections have meaningful content vs gaps"
+        },
+        "freshnessScore": {
+          "$ref": "#/$defs/ragScore",
+          "description": "Derived from source dates vs staleness windows"
+        }
       }
     },
 
@@ -182,16 +487,14 @@
         "supplierDossiers": {
           "type": "array",
           "description": "Supplier dossiers for this buyer's key suppliers",
-          "items": { "type": "string", "description": "Path to dossier, e.g. reference/suppliers/serco-group.json" }
+          "items": { "type": "string", "description": "Path, e.g. reference/suppliers/serco-group-plc/data.json" }
         },
         "sectorBriefs": {
           "type": "array",
-          "description": "Sector briefs covering this buyer's sector",
-          "items": { "type": "string", "description": "Path to brief, e.g. reference/sectors/defence.json" }
+          "items": { "type": "string" }
         },
         "pipelineScans": {
           "type": "array",
-          "description": "Pipeline scans covering this buyer",
           "items": { "type": "string" }
         }
       }
@@ -199,31 +502,25 @@
   },
 
   "$defs": {
-    "profileSection": {
+    "evidencedField": {
       "type": "object",
-      "description": "One section of the client profile — narrative for the report, structured data for AI consumption",
-      "required": ["headline", "narrative"],
+      "description": "A field that carries inline evidence. Used for any interpretive or material claim. Plain identifiers (names, dates, codes) use simple types instead.",
+      "required": ["value", "type", "confidence"],
       "properties": {
-        "headline":     { "type": "string", "description": "One-sentence finding — the most important thing about this section" },
-        "narrative":    { "type": "string", "description": "Detailed analysis in markdown — evidence-backed prose for the printed report" },
-        "keyFacts": {
-          "type": "array",
-          "description": "Structured data points for AI consumption",
-          "items": {
-            "type": "object",
-            "properties": {
-              "label":      { "type": "string" },
-              "value":      { "type": "string" },
-              "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
-              "source":     { "type": "string" }
-            }
-          }
-        },
-        "gaps": {
-          "type": "array",
-          "description": "What could not be found for this section",
-          "items": { "type": "string" }
-        }
+        "value":      { "type": "string", "description": "The finding or assessment" },
+        "type":       { "type": "string", "enum": ["fact", "inference", "unknown"], "description": "fact = directly sourced, inference = derived from evidence, unknown = gap flagged" },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low"], "description": "How reliable this finding is" },
+        "rationale":  { "type": "string", "description": "Why this conclusion was reached — the reasoning chain" },
+        "sourceRefs": { "type": "array", "items": { "type": "string" }, "description": "Array of sourceId refs from the source register, e.g. ['SRC-001', 'SRC-005']" }
+      }
+    },
+    "ragScore": {
+      "type": "object",
+      "description": "A computed RAG score with rationale. Renderer-derived, not AI-assessed.",
+      "required": ["rating", "rationale"],
+      "properties": {
+        "rating":     { "type": "string", "enum": ["red", "amber", "green", "grey"] },
+        "rationale":  { "type": "string", "description": "One sentence explaining the rating" }
       }
     }
   }
