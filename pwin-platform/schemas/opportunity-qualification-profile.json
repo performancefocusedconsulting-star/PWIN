@@ -1,0 +1,483 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opportunity-qualification-profile-v1",
+  "title": "Opportunity Qualification Profile",
+  "description": "Pursuit-level assessment of a specific procurement opportunity. Sits between the buyer intelligence dossier (library asset, what we know about the buyer) and the bid strategy (how we win). Answers: should we bid, what kind of procurement is this, what is our realistic chance, and what should we do next. Assessed per opportunity using the buyer dossier, FTS data, and ITT specifics as inputs. Per-field evidence pattern on interpretive fields. Governance layer supports analyst review and override.",
+
+  "type": "object",
+  "required": ["meta", "opportunity", "procurementSignal", "buyingCell", "opportunityBehaviour", "incumbentReality", "qualificationAssessment", "opportunityArchetype", "pursuitImplications", "sourceRegister", "governance"],
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "required": ["pursuitId", "opportunityTitle", "buyerName", "generatedAt", "generatedBy", "version"],
+      "properties": {
+        "pursuitId":        { "type": "string", "description": "Links to the pursuit record in the platform" },
+        "opportunityTitle": { "type": "string" },
+        "opportunityReference": { "type": ["string", "null"], "description": "FTS notice reference, framework lot reference, or internal reference" },
+        "buyerName":        { "type": "string" },
+        "buyerDossierRef":  { "type": ["string", "null"], "description": "Path to buyer intelligence dossier if one exists, e.g. reference/clients/ministry-of-defence/data.json" },
+        "generatedAt":      { "type": "string", "format": "date-time" },
+        "generatedBy":      { "type": "string" },
+        "version":          { "type": "string" },
+        "versionLog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version": { "type": "string" },
+              "date":    { "type": "string", "format": "date" },
+              "summary": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "opportunity": {
+      "description": "Basic opportunity facts — what is being bought, how big, where",
+      "type": "object",
+      "required": ["category", "estimatedValueBand", "contractLengthBand", "geography"],
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "Service category from service-taxonomy.json, or 'mixed' / 'other'",
+          "enum": [
+            "professional-services", "p3m", "digital", "software-systems-integration",
+            "technology-services", "cyber-security", "software-cloud-products", "ai-data",
+            "bpo-outsourced-services", "it-outsourcing", "workforce-contingent-labour",
+            "construction", "training-education", "mixed", "other"
+          ]
+        },
+        "estimatedValueBand": {
+          "type": "string",
+          "enum": ["unknown", "sub_100k", "100k_to_1m", "1m_to_5m", "5m_to_20m", "20m_to_100m", "100m_plus"]
+        },
+        "contractLengthBand": {
+          "type": "string",
+          "enum": ["unknown", "under_1_year", "1_to_2_years", "3_to_4_years", "5_plus_years"]
+        },
+        "geography": {
+          "type": "string",
+          "enum": ["national", "regional", "local", "multi_region", "unknown"]
+        },
+        "description": { "type": ["string", "null"], "description": "Brief description of the requirement" }
+      }
+    },
+
+    "procurementSignal": {
+      "description": "What the procurement notice and route tell us about how this will be bought",
+      "type": "object",
+      "required": ["noticeStage", "routeType", "routeAccess", "timescaleSignal"],
+      "properties": {
+        "noticeStage": {
+          "type": "string",
+          "enum": ["pipeline", "pre_market_engagement", "planned_procurement", "tender_live", "award_announced", "unknown"]
+        },
+        "routeType": {
+          "type": "object",
+          "required": ["primary", "confidence"],
+          "properties": {
+            "primary": {
+              "type": "string",
+              "enum": ["framework_call_off", "open_procedure", "competitive_flexible_procedure", "dynamic_market", "direct_award_or_transparency", "below_threshold", "unknown"]
+            },
+            "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+          }
+        },
+        "routeAccess": {
+          "description": "Can we actually access this procurement route? Fatal if not.",
+          "type": "object",
+          "required": ["canPrime", "practicalAccessRisk"],
+          "properties": {
+            "canPrime":                   { "type": ["boolean", "null"], "description": "Can we bid as prime, or only as sub?" },
+            "accessibleFrameworkRequired": { "type": ["boolean", "null"] },
+            "frameworkName":              { "type": ["string", "null"] },
+            "frameworkAccessStatus":      { "type": "string", "enum": ["on_framework", "not_on_framework", "unclear", "not_applicable"] },
+            "practicalAccessRisk":        { "type": "string", "enum": ["low", "medium", "high", "fatal"], "description": "fatal = no point qualifying further" }
+          }
+        },
+        "timescaleSignal": {
+          "description": "Three dimensions of timing that affect pursuit investment",
+          "type": "object",
+          "required": ["mobilisationUrgency", "bidWindowTightness", "likelyBuyerPreparedness"],
+          "properties": {
+            "mobilisationUrgency":      { "type": "string", "enum": ["low", "medium", "high"] },
+            "bidWindowTightness":       { "type": "string", "enum": ["low", "medium", "high"] },
+            "likelyBuyerPreparedness":  { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        }
+      }
+    },
+
+    "buyingCell": {
+      "description": "Who within the buyer is running this procurement, and how capable are they. Inferred from buyer dossier + opportunity specifics.",
+      "type": "object",
+      "required": ["buyingCellType", "inferredCapability"],
+      "properties": {
+        "buyingCellType": {
+          "type": "string",
+          "enum": ["central_commercial_team", "programme_team", "transformation_office", "digital_function", "operational_business_unit", "arm_length_body", "mixed", "unknown"]
+        },
+        "buyingCellName": { "type": ["string", "null"], "description": "Named unit if known, e.g. DE&S Land Equipment, Dstl Cyber" },
+        "inferredCapability": {
+          "description": "How capable is this buying cell? Directly shapes bid approach — low spec maturity means shape the solution, high evaluation sophistication means answer the question asked.",
+          "type": "object",
+          "required": ["commercialCapability", "specificationMaturity", "evaluationSophistication", "supplierManagementMaturity"],
+          "properties": {
+            "commercialCapability":       { "$ref": "#/$defs/evidencedField", "description": "How strong is the commercial team running this procurement" },
+            "specificationMaturity":      { "$ref": "#/$defs/evidencedField", "description": "How well-defined are the requirements — vague = shape the solution, tight = answer the question" },
+            "evaluationSophistication":   { "$ref": "#/$defs/evidencedField", "description": "How rigorously will they score — determines how precisely to write against criteria" },
+            "supplierManagementMaturity": { "$ref": "#/$defs/evidencedField", "description": "How well do they manage contracts post-award — affects transition and mobilisation risk" }
+          }
+        }
+      }
+    },
+
+    "opportunityBehaviour": {
+      "description": "What the buyer is actually trying to achieve with this procurement and how they will evaluate",
+      "type": "object",
+      "required": ["buyerIntent", "riskAndControl", "evaluationStyle"],
+      "properties": {
+        "buyerIntent": {
+          "type": "object",
+          "required": ["primary"],
+          "properties": {
+            "primary": {
+              "$ref": "#/$defs/evidencedField",
+              "description": "What is the buyer really trying to achieve? Values: speed_to_award, incumbent_continuity, market_testing, genuine_recompetition, solution_shaping, compliance_first, cost_reduction, transformation_outcome"
+            }
+          }
+        },
+        "riskAndControl": {
+          "type": "object",
+          "required": ["governanceBurden", "changeTolerance", "innovationTolerance", "riskTransferPosture"],
+          "properties": {
+            "governanceBurden":       { "$ref": "#/$defs/evidencedField" },
+            "auditDefensibilityNeed": { "$ref": "#/$defs/evidencedField" },
+            "changeTolerance":        { "$ref": "#/$defs/evidencedField" },
+            "innovationTolerance":    { "$ref": "#/$defs/evidencedField" },
+            "riskTransferPosture":    { "$ref": "#/$defs/evidencedField", "description": "collaborative / balanced / buyer_protective / supplier_transfer_heavy" }
+          }
+        },
+        "evaluationStyle": {
+          "type": "object",
+          "required": ["likelyEvaluationMode", "likelyDecisionBiases"],
+          "properties": {
+            "likelyEvaluationMode": {
+              "$ref": "#/$defs/evidencedField",
+              "description": "price_led / balanced_meat / quality_heavy / compliance_gate_heavy / dialogue_and_refinement"
+            },
+            "likelyDecisionBiases": {
+              "type": "array",
+              "description": "What evaluators actually value beyond stated criteria. Directly shapes response emphasis.",
+              "uniqueItems": true,
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "incumbent_safety",
+                  "delivery_credibility",
+                  "domain_referenceability",
+                  "speed_and_mobilisation",
+                  "social_value_visibility",
+                  "security_and_assurance",
+                  "commercial_compliance",
+                  "price_pressure"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "incumbentReality": {
+      "description": "The real competitive landscape for this specific opportunity — not the buyer's overall supplier ecosystem (that's in the buyer dossier), but what displacement actually looks like here.",
+      "type": "object",
+      "required": ["incumbentPresent"],
+      "properties": {
+        "incumbentPresent":  { "type": ["boolean", "null"] },
+        "incumbentName":     { "type": ["string", "null"] },
+        "incumbentDossierRef": { "type": ["string", "null"], "description": "Path to supplier dossier if one exists" },
+        "incumbentStrength": { "$ref": "#/$defs/evidencedField", "description": "low / medium / high / locked_in" },
+        "switchingBarriers": {
+          "description": "Decomposed switching barriers — each separately assessed. More structured than free-text entrenchment indicators.",
+          "type": "object",
+          "properties": {
+            "tupeExposure":               { "type": "string", "enum": ["none", "possible", "likely", "material", "unknown"] },
+            "embeddedTechnology":         { "type": "string", "enum": ["none", "low", "medium", "high", "unknown"] },
+            "dataDependency":             { "type": "string", "enum": ["none", "low", "medium", "high", "unknown"] },
+            "securityClearanceDependency": { "type": "string", "enum": ["none", "low", "medium", "high", "unknown"] },
+            "operationalContinuityRisk":  { "type": "string", "enum": ["none", "low", "medium", "high", "unknown"] }
+          }
+        },
+        "displacementReality": {
+          "$ref": "#/$defs/evidencedField",
+          "description": "Overall displacement assessment: highly_open / contestable / difficult / highly_protected"
+        }
+      }
+    },
+
+    "qualificationAssessment": {
+      "description": "Structured qualification scoring and bid/no-bid recommendation",
+      "type": "object",
+      "required": ["scores", "bidNoBid"],
+      "properties": {
+        "scores": {
+          "description": "Six qualification dimensions, each RAG-rated. These map to the key qualification questions.",
+          "type": "object",
+          "required": ["routeFit", "accessibility", "timing", "buyerFit", "incumbentBarrier", "differentiationPotential"],
+          "properties": {
+            "routeFit":                 { "$ref": "#/$defs/ragScore", "description": "Does the procurement route suit us?" },
+            "accessibility":            { "$ref": "#/$defs/ragScore", "description": "Can we actually access this opportunity?" },
+            "timing":                   { "$ref": "#/$defs/ragScore", "description": "Is the timing workable?" },
+            "buyerFit":                 { "$ref": "#/$defs/ragScore", "description": "Do we understand and fit this buyer?" },
+            "incumbentBarrier":         { "$ref": "#/$defs/ragScore", "description": "Can we realistically displace the incumbent?" },
+            "differentiationPotential": { "$ref": "#/$defs/ragScore", "description": "Can we credibly differentiate our offer?" }
+          }
+        },
+        "bidNoBid": {
+          "type": "object",
+          "required": ["recommendation", "rationaleSummary"],
+          "properties": {
+            "recommendation": {
+              "type": "string",
+              "enum": ["pursue", "pursue_selectively", "monitor", "no_go"]
+            },
+            "rationaleSummary": { "type": "string", "description": "2-3 sentences explaining the recommendation" },
+            "killerFlags": {
+              "type": "array",
+              "description": "Factors that individually justify no_go. Required if recommendation is no_go.",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "inaccessible_route",
+                  "incumbent_lock_in",
+                  "unrealistic_timescale",
+                  "poor_fit_to_requirement",
+                  "low_probability_recompete",
+                  "price_floor_unworkable",
+                  "insufficient_credentials",
+                  "security_barrier"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "opportunityArchetype": {
+      "description": "Opportunity-level archetype — what kind of procurement event is this. Same taxonomy as buyer-archetype-taxonomy.json opportunity level. Primary + optional secondary.",
+      "type": "object",
+      "required": ["primary"],
+      "properties": {
+        "primary": {
+          "$ref": "#/$defs/evidencedField",
+          "description": "Dominant procurement behaviour. Value must be from the opportunity archetype enum."
+        },
+        "secondary": {
+          "$ref": "#/$defs/evidencedField",
+          "description": "Secondary characteristic if mixed. Null if single archetype is clear."
+        }
+      }
+    },
+
+    "pursuitImplications": {
+      "description": "The 'so what' — what should the bid team do based on this assessment. This is the bridge from qualification to capture planning.",
+      "type": "object",
+      "required": ["pursuitPosture"],
+      "properties": {
+        "pursuitPosture": {
+          "type": "object",
+          "required": ["tone", "priorityActions"],
+          "properties": {
+            "tone": {
+              "type": "string",
+              "description": "Single actionable label that shapes the entire bid approach",
+              "enum": [
+                "reassure_and_de_risk",
+                "differentiate_and_shape",
+                "simplify_and_comply",
+                "challenge_incumbent",
+                "low_cost_fast_response",
+                "do_not_invest_heavily"
+              ]
+            },
+            "priorityActions": {
+              "type": "array",
+              "description": "Ordered list of what the capture lead should do next",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": { "type": "string" }
+            },
+            "evidenceNeededToProgress": {
+              "type": "array",
+              "description": "What intelligence gaps must be filled before committing to pursue",
+              "maxItems": 10,
+              "items": { "type": "string" }
+            },
+            "likelyQuestionsToResolve": {
+              "type": "array",
+              "description": "Questions the pursuit team needs to answer — for pre-market engagement, clarification, or internal research",
+              "maxItems": 10,
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "sourceRegister": {
+      "description": "Sources used for this assessment. Per-field sourceRefs reference these IDs.",
+      "type": "object",
+      "required": ["sources"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sourceId", "sourceName", "sourceType"],
+            "properties": {
+              "sourceId":     { "type": "string" },
+              "sourceName":   { "type": "string" },
+              "sourceType":   { "type": "string", "enum": ["tender_notice", "pipeline_notice", "framework_document", "buyer_dossier", "supplier_dossier", "fts_data", "buyer_strategy_document", "procurement_guidance", "analyst_inference", "pursuit_team_input"] },
+              "freshness":    { "type": "string", "enum": ["high", "medium", "low"] },
+              "url":          { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+
+    "governance": {
+      "description": "Review and approval status. Supports analyst override of AI-derived assessments.",
+      "type": "object",
+      "required": ["derivedBy", "reviewStatus"],
+      "properties": {
+        "derivedBy": {
+          "type": "string",
+          "enum": ["ai_assessment", "analyst_override", "hybrid"],
+          "description": "Who produced this profile — AI, human analyst, or human-reviewed AI"
+        },
+        "analystOverrideReason": {
+          "type": ["string", "null"],
+          "description": "Required if derivedBy is analyst_override. Why did the analyst change the AI's assessment?"
+        },
+        "reviewStatus": {
+          "type": "string",
+          "enum": ["draft", "analyst_reviewed", "approved_for_use"],
+          "description": "draft = AI-generated, not yet reviewed. analyst_reviewed = human has checked it. approved_for_use = cleared for bid/no-bid decision."
+        },
+        "reviewedBy":   { "type": ["string", "null"] },
+        "reviewedAt":   { "type": ["string", "null"], "format": "date-time" },
+        "qualityScores": {
+          "description": "Computed quality indicators for this profile",
+          "type": "object",
+          "properties": {
+            "sourceCoverage":  { "$ref": "#/$defs/ragScore", "description": "How many key fields have source backing" },
+            "freshness":       { "$ref": "#/$defs/ragScore", "description": "How current are the sources" },
+            "completeness":    { "$ref": "#/$defs/ragScore", "description": "How many sections are populated vs gaps" }
+          }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "evidencedField": {
+      "type": "object",
+      "description": "Interpretive field with inline evidence. Same pattern as buyer dossier.",
+      "required": ["value", "type", "confidence"],
+      "properties": {
+        "value":      { "type": "string" },
+        "type":       { "type": "string", "enum": ["fact", "inference", "unknown"] },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+        "rationale":  { "type": "string" },
+        "sourceRefs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ragScore": {
+      "type": "object",
+      "required": ["rating", "rationale"],
+      "properties": {
+        "rating":    { "type": "string", "enum": ["red", "amber", "green", "grey"] },
+        "rationale": { "type": "string" }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "procurementSignal": {
+            "properties": {
+              "routeType": { "properties": { "primary": { "const": "framework_call_off" } } }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "procurementSignal": {
+            "properties": {
+              "routeAccess": {
+                "required": ["accessibleFrameworkRequired", "frameworkAccessStatus"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "qualificationAssessment": {
+            "properties": {
+              "bidNoBid": { "properties": { "recommendation": { "const": "no_go" } } }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "qualificationAssessment": {
+            "properties": {
+              "bidNoBid": {
+                "properties": {
+                  "killerFlags": { "minItems": 1 }
+                },
+                "required": ["killerFlags"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "derivedBy": { "const": "analyst_override" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "analystOverrideReason": { "type": "string", "minLength": 1 }
+            },
+            "required": ["analystOverrideReason"]
+          }
+        }
+      }
+    }
+  ]
+}
