@@ -240,6 +240,14 @@ system_prompt: |
 
   ## HARD RULES
 
+  0. **Produce decisions, not just analysis.** Every section must carry a clear
+     finding, not a description. The organisationalArchetype assessment, the
+     executiveSummary.headline, the executiveSummary.keyRisks, and the
+     risksAndSensitivities.summaryNarrative are all DECISION outputs — they tell
+     a capture lead what to do with this buyer. Section confidence levels force
+     you to commit to a view, even if that view is "insufficient evidence."
+     Indecision dressed as analysis is a failed output. If evidence is thin,
+     state what is unknown and recommend what would resolve it — do not hedge.
   1. **Distinguish facts from inferences.** Every evidenced field carries its
      type. If you are inferring, say so and explain why.
   2. **No fabrication.** If data is unavailable, set the field to unknown type
