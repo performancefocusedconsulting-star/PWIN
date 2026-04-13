@@ -1,0 +1,545 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sector-intelligence-dossier-v1",
+  "title": "Sector Intelligence Dossier",
+  "description": "Reusable sector intelligence asset answering: given this sector context, how should we qualify, shape, position, and decide whether to pursue a named opportunity? Not a sector research report — an intelligence reduction engine that turns messy public-sector context into pursuit implications, route-to-market hypotheses, buyer-behaviour patterns, and qualification signals. 12 sections plus pursuit handoff payload and forward signal model. Per-field evidence with 4-layer truth model (fact/signal/inference/unknown).",
+
+  "type": "object",
+  "required": ["meta", "sectorIdentity", "sectorAnatomy", "financialAndDemandContext", "procurementBehaviour", "demandDrivers", "buyerArchetypes", "opportunityArchetypes", "competitiveLandscape", "winImplications", "forwardSignalModel", "evidenceRegister"],
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "required": ["sectorName", "jurisdiction", "generatedAt", "generatedBy", "version"],
+      "properties": {
+        "dossierId":        { "type": "string", "description": "e.g. sector.health.england.v1" },
+        "sectorName":       { "type": "string" },
+        "jurisdiction":     { "type": "string", "description": "e.g. England, UK, Scotland" },
+        "generatedAt":      { "type": "string", "format": "date-time" },
+        "generatedBy":      { "type": "string" },
+        "version":          { "type": "string" },
+        "depthMode":        { "type": "string", "enum": ["snapshot", "standard", "deep"] },
+        "taxonomyVersion":  { "type": "string" },
+        "overallConfidence": { "type": "string", "enum": ["high", "medium", "low"] },
+        "freshnessRisk":    { "type": "string", "enum": ["low", "medium", "high"] },
+        "coverageGaps":     { "type": "array", "items": { "type": "string" } },
+        "refreshSchedule": {
+          "type": "object",
+          "properties": {
+            "quarterly": { "type": "array", "items": { "type": "string" }, "description": "Sections refreshed quarterly: structure, archetypes, procurement behaviour, market map" },
+            "monthly":   { "type": "array", "items": { "type": "string" }, "description": "Sections refreshed monthly: policy shifts, financial pressure, pipeline, frameworks, leadership" },
+            "onTrigger": { "type": "array", "items": { "type": "string" }, "description": "Events that trigger immediate refresh" }
+          }
+        },
+        "versionLog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version": { "type": "string" },
+              "date":    { "type": "string", "format": "date" },
+              "summary": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "sectorIdentity": {
+      "description": "Section 1 — prevents treating the sector as a monolith. Defines scope, subsectors, and which buyer/opportunity archetypes apply.",
+      "type": "object",
+      "required": ["inScopeDefinition", "subsectors"],
+      "properties": {
+        "inScopeDefinition":  { "type": "string", "description": "What this dossier covers" },
+        "outOfScopeDefinition": { "type": ["string", "null"], "description": "What is explicitly excluded" },
+        "subsectors": {
+          "type": "array",
+          "description": "The meaningful subdivisions — e.g. for Local Government: county, district, unitary, metropolitan, London borough, combined authority",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name":        { "type": "string" },
+              "description": { "type": "string" },
+              "significance": { "type": "string", "description": "Why this subdivision matters for procurement" }
+            }
+          }
+        },
+        "serviceDomains": {
+          "type": "array",
+          "description": "Service taxonomy categories relevant to this sector",
+          "items": { "type": "string", "description": "categoryId from service-taxonomy.json" }
+        },
+        "buyerArchetypeIds": {
+          "type": "array",
+          "description": "IDs of buyer archetypes defined in section 6",
+          "items": { "type": "string" }
+        },
+        "opportunityArchetypeIds": {
+          "type": "array",
+          "description": "IDs of opportunity archetypes defined in section 8",
+          "items": { "type": "string" }
+        },
+        "jurisdictionNotes": { "type": ["string", "null"], "description": "Devolution, regional variation, or cross-border considerations" }
+      }
+    },
+
+    "sectorAnatomy": {
+      "description": "Section 2 — who exists in the market and how it's structured. For Health: NHS England, ICBs, provider trusts, place-based partnerships. For Local Gov: county/district/unitary/metro/London/combined authority with their different responsibilities.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence": { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "formalStructure":   { "$ref": "#/$defs/evidencedField", "description": "How the sector is formally organised" },
+        "commissioningModel": { "$ref": "#/$defs/evidencedField", "description": "How services are commissioned — centralised, devolved, federated" },
+        "deliveryModel":     { "$ref": "#/$defs/evidencedField", "description": "How services are delivered — in-house, outsourced, mixed" },
+        "oversightBodies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name":      { "type": "string" },
+              "role":      { "type": "string" },
+              "relevance": { "type": "string", "description": "Why this body matters for procurement" }
+            }
+          }
+        },
+        "regulators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name":      { "type": "string" },
+              "scope":     { "type": "string" },
+              "procurementImpact": { "type": "string" }
+            }
+          }
+        },
+        "fundingFlows":      { "$ref": "#/$defs/evidencedField", "description": "How money flows — Treasury to departments to buyers" },
+        "crossSectorDependencies": {
+          "type": "array",
+          "description": "Where this sector intersects with others — e.g. Health and Social Care, Defence and Intelligence",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "financialAndDemandContext": {
+      "description": "Section 3 — where the dossier becomes commercially useful. Financial pressures directly affect qualification: tight budgets mean tougher affordability scrutiny, delayed starts, and savings-led transformation.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":         { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "fundingSources":            { "$ref": "#/$defs/evidencedField" },
+        "budgetCycle":               { "$ref": "#/$defs/evidencedField", "description": "When budgets are set, when spending peaks, when financial year pressure bites" },
+        "financialPressureIndicators": {
+          "type": "array",
+          "description": "Specific financial stress signals — e.g. s114 notices in local gov, deficit recovery plans in NHS",
+          "items": { "$ref": "#/$defs/evidencedField" }
+        },
+        "savingsTargets":            { "$ref": "#/$defs/evidencedField" },
+        "demandPressures":           { "$ref": "#/$defs/evidencedField", "description": "Service demand drivers — ageing population, case backlogs, etc" },
+        "capitalVsRevenueBias":      { "$ref": "#/$defs/evidencedField", "description": "Is the sector capital-constrained, revenue-constrained, or both" },
+        "mandatoryVsDiscretionarySpend": { "$ref": "#/$defs/evidencedField", "description": "What proportion of spend is statutory vs discretionary — affects ability to defer procurement" },
+        "reformDependency":          { "$ref": "#/$defs/evidencedField", "description": "Is spending tied to specific reform programmes that could be cancelled or delayed" }
+      }
+    },
+
+    "procurementBehaviour": {
+      "description": "Section 4 — first-class structured data about how this sector buys. Route to market directly alters pursuit strategy. Framework-heavy environments require a different motion than sectors running open or competitive flexible procurements.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence": { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "summaryNarrative":  { "type": "string" },
+        "commonRoutesToMarket": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["route"],
+            "properties": {
+              "route":       { "type": "string", "description": "e.g. framework_call_off, open_procedure, competitive_flexible_procedure, dynamic_market, direct_award" },
+              "prevalence":  { "type": "string", "enum": ["dominant", "common", "occasional", "rare"] },
+              "context":     { "type": "string", "description": "When this route is used — e.g. 'for commodity IT under £5m'" },
+              "sourceRefs":  { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "frameworkUsagePatterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "frameworkName": { "type": "string" },
+              "provider":     { "type": "string" },
+              "relevance":    { "type": "string", "enum": ["critical", "important", "niche"] },
+              "renewalDate":  { "type": ["string", "null"], "format": "date" },
+              "notes":        { "type": "string" }
+            }
+          }
+        },
+        "dynamicMarketRelevance":     { "$ref": "#/$defs/evidencedField" },
+        "openFrameworkRelevance":     { "$ref": "#/$defs/evidencedField" },
+        "preMarketEngagementPatterns": { "$ref": "#/$defs/evidencedField" },
+        "procedureSelectionSignals":  { "$ref": "#/$defs/evidencedField", "description": "What signals indicate which procedure will be used" },
+        "contractPackagingPatterns":  { "$ref": "#/$defs/evidencedField", "description": "Lotting strategy, single vs multi-supplier, alliance models" },
+        "awardCriteriaBias":          { "$ref": "#/$defs/evidencedField", "description": "Quality vs price weighting norms in this sector" },
+        "transparencySignalQuality":  { "$ref": "#/$defs/evidencedField", "description": "How reliable are published notices as indicators of real opportunity" },
+        "ftsDataSummary": {
+          "type": "object",
+          "description": "Aggregate FTS procurement data for this sector — from the competitive intel DB",
+          "properties": {
+            "totalAwards":  { "type": "number" },
+            "totalValue":   { "type": "number" },
+            "dataWindow":   { "type": "string" },
+            "topBuyers":    { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" }, "awardCount": { "type": "number" }, "totalValue": { "type": ["number", "null"] } } } },
+            "categoryBreakdown": { "type": "array", "items": { "type": "object", "properties": { "serviceCategory": { "type": "string" }, "awardCount": { "type": "number" }, "totalValue": { "type": ["number", "null"] } } } }
+          }
+        }
+      }
+    },
+
+    "demandDrivers": {
+      "description": "Section 5 — why opportunities are arising. Each driver should be traceable to a source and assessable for persistence.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":     { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "policyDrivers":         { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } },
+        "statutoryChangeDrivers": { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } },
+        "serviceBacklogDrivers": { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } },
+        "workforceDrivers":      { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } },
+        "digitalDrivers":        { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } },
+        "efficiencyDrivers":     { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } },
+        "complianceDrivers":     { "type": "array", "items": { "$ref": "#/$defs/evidencedField" } }
+      }
+    },
+
+    "buyerArchetypes": {
+      "description": "Section 6 — the engine room. Sector-specific buyer archetypes calibrated to how real buyers in this sector actually behave. Each archetype directly shapes pursuit strategy.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["archetypeId", "archetypeName", "description"],
+        "properties": {
+          "archetypeId":   { "type": "string", "description": "Namespaced ID, e.g. health.strategic_commissioner, lg.financially_constrained_unitary" },
+          "archetypeName": { "type": "string" },
+          "description":   { "type": "string" },
+          "typicalEntities": { "type": "array", "items": { "type": "string" }, "description": "Named examples — e.g. 'NHS Surrey Heartlands ICB', 'Southwark Council'" },
+          "coreObjectives": { "type": "array", "items": { "type": "string" } },
+          "budgetBehaviour": {
+            "type": "object",
+            "properties": {
+              "pressureLevel":              { "type": "string", "enum": ["low", "medium", "high", "severe"] },
+              "discretionarySpendLikelihood": { "type": "string", "enum": ["low", "medium", "high"] },
+              "businessCaseBias":           { "type": "string", "enum": ["weak", "moderate", "strong"] }
+            }
+          },
+          "procurementBehaviour": {
+            "type": "object",
+            "properties": {
+              "favouredRoutes":              { "type": "array", "items": { "type": "string" } },
+              "frameworkPropensity":          { "type": "string", "enum": ["low", "medium", "high"] },
+              "competitiveFlexiblePropensity": { "type": "string", "enum": ["low", "medium", "high"] },
+              "preMarketEngagementPropensity": { "type": "string", "enum": ["low", "medium", "high"] }
+            }
+          },
+          "stakeholderPattern": {
+            "type": "object",
+            "properties": {
+              "executiveSponsorRoles": { "type": "array", "items": { "type": "string" } },
+              "serviceOwnerRoles":    { "type": "array", "items": { "type": "string" } },
+              "financeRoles":         { "type": "array", "items": { "type": "string" } },
+              "procurementRoles":     { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "evaluationBiases": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "What evaluators in this archetype actually value — e.g. incumbent_safety, delivery_credibility, domain_referenceability"
+          },
+          "likelyWinThemes":  { "type": "array", "items": { "type": "string" } },
+          "likelyLossModes":  { "type": "array", "items": { "type": "string" } },
+          "confidence":       { "type": "string", "enum": ["high", "medium", "low"] },
+          "sourceRefs":       { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "stakeholderModel": {
+      "description": "Section 7 — distinguishes between official and real influence at sector level. Pursuit-specific stakeholder mapping is separate.",
+      "type": "object",
+      "properties": {
+        "sectionConfidence":      { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "formalApprovers":        { "type": "array", "items": { "type": "string" } },
+        "economicBuyers":         { "type": "array", "items": { "type": "string" }, "description": "Roles that control the budget" },
+        "serviceSponsorRoles":    { "type": "array", "items": { "type": "string" } },
+        "technicalBuyerRoles":    { "type": "array", "items": { "type": "string" } },
+        "commercialAndProcurement": { "type": "array", "items": { "type": "string" } },
+        "financeGatekeepers":     { "type": "array", "items": { "type": "string" } },
+        "politicalInfluencers":   { "type": "array", "items": { "type": "string" } },
+        "externalInfluencers":    { "type": "array", "items": { "type": "string" }, "description": "Regulators, ALBs, partner organisations that influence procurement" },
+        "likelyBlockerPatterns":  { "type": "array", "items": { "type": "string" } },
+        "stakeholderAlignmentRisk": { "$ref": "#/$defs/evidencedField" }
+      }
+    },
+
+    "opportunityArchetypes": {
+      "description": "Section 8 — bridges the sector dossier to actual pursuits. Each archetype is a known opportunity pattern with predictable scope, routes, and qualification tests.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["archetypeId", "name"],
+        "properties": {
+          "archetypeId":             { "type": "string", "description": "Namespaced ID, e.g. lg.digital_front_door_transformation, health.elective_recovery_programme" },
+          "name":                    { "type": "string" },
+          "typicalProblemStatements": { "type": "array", "items": { "type": "string" } },
+          "commonScopeElements":     { "type": "array", "items": { "type": "string" } },
+          "likelyContractShape": {
+            "type": "object",
+            "properties": {
+              "valueBand":    { "type": "string" },
+              "durationBand": { "type": "string" },
+              "serviceModel": { "type": "string", "description": "e.g. project_or_partner, managed_service, staff_augmentation, outcome_based" }
+            }
+          },
+          "likelyRouteToMarket":     { "type": "array", "items": { "type": "string" } },
+          "likelyDecisionCriteria":  { "type": "array", "items": { "type": "string" } },
+          "criticalCredentials":     { "type": "array", "items": { "type": "string" }, "description": "What you must have to be credible — accreditations, case studies, clearances" },
+          "deliveryRisks":           { "type": "array", "items": { "type": "string" } },
+          "commercialRisks":         { "type": "array", "items": { "type": "string" } },
+          "qualificationTests":      { "type": "array", "items": { "type": "string" }, "description": "Questions the qualification agent should ask before committing" }
+        }
+      }
+    },
+
+    "competitiveLandscape": {
+      "description": "Section 9 — patterns of incumbent advantage, not just supplier lists. Focus on what makes incumbents sticky and where market refresh is plausible.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":       { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "summaryNarrative":        { "type": "string" },
+        "incumbentTypes": {
+          "type": "array",
+          "description": "Types of incumbent, not individual names — e.g. 'large BPO primes', 'specialist digital agencies', 'Big 4 consultancies'",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type":           { "type": "string" },
+              "typicalNames":   { "type": "array", "items": { "type": "string" } },
+              "serviceLines":   { "type": "array", "items": { "type": "string" } },
+              "entrenchmentLevel": { "type": "string", "enum": ["low", "medium", "high", "locked_in"] }
+            }
+          }
+        },
+        "platformLockInPatterns":  { "type": "array", "items": { "type": "string" }, "description": "Technology or system dependencies that create lock-in" },
+        "frameworkCompetitorSets": {
+          "type": "array",
+          "description": "Who you'll compete against on key frameworks",
+          "items": {
+            "type": "object",
+            "properties": {
+              "framework":    { "type": "string" },
+              "competitorSet": { "type": "array", "items": { "type": "string" } },
+              "intensity":    { "type": "string", "enum": ["low", "medium", "high"] }
+            }
+          }
+        },
+        "smeVsSiDynamics":         { "$ref": "#/$defs/evidencedField", "description": "Balance of power between large SIs and SMEs in this sector" },
+        "partneringNorms":         { "$ref": "#/$defs/evidencedField", "description": "How common is teaming, subcontracting, JVs in this sector" },
+        "switchingBarrierPatterns": { "$ref": "#/$defs/evidencedField", "description": "What typically prevents buyer from switching — TUPE, data, systems, clearances, continuity" },
+        "commonDifferentiators":   { "type": "array", "items": { "type": "string" }, "description": "What actually lands as differentiation in this sector" },
+        "commodityZones":          { "type": "array", "items": { "type": "string" }, "description": "Service areas where differentiation is weak and price dominates" }
+      }
+    },
+
+    "winImplications": {
+      "description": "Section 10 — the section the downstream agent consumes most heavily. The 'so what' that turns sector intelligence into pursuit actions.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":          { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "likelyWinThemes":            { "type": "array", "items": { "type": "string" }, "description": "Themes that resonate with buyers in this sector" },
+        "likelyDiscriminators":       { "type": "array", "items": { "type": "string" }, "description": "What actually creates separation between bidders" },
+        "likelyRedFlags":             { "type": "array", "items": { "type": "string" }, "description": "Signals that should make you think twice about pursuing" },
+        "proofPointsBuyersTrust":     { "type": "array", "items": { "type": "string" }, "description": "Types of evidence that carry weight — e.g. 'comparable NHS case studies', 'named clinical references'" },
+        "messageAnglesThatResonate":  { "type": "array", "items": { "type": "string" } },
+        "commercialPositionsToAvoid": { "type": "array", "items": { "type": "string" } },
+        "deliveryRisksToMitigate":    { "type": "array", "items": { "type": "string" } },
+        "idealPartneringModel":       { "$ref": "#/$defs/evidencedField" },
+        "qualificationImplications":  { "type": "array", "items": { "type": "string" }, "description": "What the qualification agent should test before committing" },
+        "goNoGoImplications":         { "type": "array", "items": { "type": "string" }, "description": "Sector-level factors that should move a go/no-go score" }
+      }
+    },
+
+    "forwardSignalModel": {
+      "description": "Section 11 — makes the dossier predictive, not just descriptive. Tracks leading indicators that signal upcoming opportunities or changing conditions.",
+      "type": "object",
+      "required": ["sectionConfidence"],
+      "properties": {
+        "sectionConfidence":     { "type": "string", "enum": ["high", "medium", "low", "insufficient"] },
+        "leadingIndicators":     { "type": "array", "items": { "$ref": "#/$defs/signalEntry" } },
+        "noticeSignals":         { "type": "array", "items": { "$ref": "#/$defs/signalEntry" }, "description": "FTS pipeline notices, PIN notices" },
+        "budgetEvents":          { "type": "array", "items": { "$ref": "#/$defs/signalEntry" }, "description": "Spending reviews, budget announcements, financial settlements" },
+        "reformMilestones":      { "type": "array", "items": { "$ref": "#/$defs/signalEntry" }, "description": "Structural reforms, mergers, reorganisations" },
+        "frameworkRefreshes":    { "type": "array", "items": { "$ref": "#/$defs/signalEntry" }, "description": "Frameworks approaching re-competition" },
+        "leadershipChanges":     { "type": "array", "items": { "$ref": "#/$defs/signalEntry" } },
+        "accelerationSignals":   { "type": "array", "items": { "$ref": "#/$defs/signalEntry" }, "description": "Events that would increase demand or urgency" },
+        "delaySignals":          { "type": "array", "items": { "$ref": "#/$defs/signalEntry" }, "description": "Events that would slow or freeze procurement" }
+      }
+    },
+
+    "evidenceRegister": {
+      "description": "Section 12 — mandatory. 4-layer truth model: fact (structural truth), signal (fast-changing indicator), inference (analytical judgement), unknown (gap).",
+      "type": "object",
+      "required": ["sources"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sourceId", "sourceName", "sourceType"],
+            "properties": {
+              "sourceId":     { "type": "string" },
+              "sourceName":   { "type": "string" },
+              "sourceType":   { "type": "string", "enum": ["tier1_official", "tier2_procurement", "tier3_secondary", "tier4_internal"] },
+              "publicationDate": { "type": ["string", "null"], "format": "date" },
+              "accessDate":   { "type": ["string", "null"], "format": "date" },
+              "reliability":  { "type": "string", "enum": ["high", "medium", "low"] },
+              "sectionsSupported": { "type": "array", "items": { "type": "string" } },
+              "url":          { "type": ["string", "null"] }
+            }
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description":       { "type": "string" },
+              "impact":            { "type": "string" },
+              "recommendedAction": { "type": "string" }
+            }
+          }
+        },
+        "unknownsModel": {
+          "type": "array",
+          "description": "What is unknown, how much the uncertainty matters, and what evidence would reduce it fastest",
+          "items": {
+            "type": "object",
+            "properties": {
+              "unknown":           { "type": "string" },
+              "impactIfWrong":     { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+              "reducingEvidence":  { "type": "string", "description": "What evidence would resolve this uncertainty" }
+            }
+          }
+        }
+      }
+    },
+
+    "scores": {
+      "description": "Derived scores for machine consumption. RAG for human display, underlying rationale for the downstream agent.",
+      "type": "object",
+      "properties": {
+        "sectorAttractiveness":     { "$ref": "#/$defs/ragScore", "description": "Is this sector worth investing pursuit resource in" },
+        "urgencyOfDemand":          { "$ref": "#/$defs/ragScore", "description": "How soon are opportunities likely to materialise" },
+        "accessibilityOfBuyers":    { "$ref": "#/$defs/ragScore", "description": "How reachable are buyers — procurement routes, framework access, engagement channels" },
+        "routeToMarketFit":         { "$ref": "#/$defs/ragScore", "description": "Do the procurement routes suit our operating model" },
+        "incumbentEntrenchment":    { "$ref": "#/$defs/ragScore", "description": "How sticky are existing suppliers" },
+        "commercialViability":      { "$ref": "#/$defs/ragScore", "description": "Can we deliver profitably at the price points this sector expects" },
+        "scopeStability":           { "$ref": "#/$defs/ragScore", "description": "How likely is the scope to change during procurement or delivery" },
+        "evidenceStrength":         { "$ref": "#/$defs/ragScore", "description": "How well-evidenced is this dossier" },
+        "policyTailwind":           { "$ref": "#/$defs/ragScore", "description": "Is government policy creating or suppressing demand" },
+        "overallPursuitRelevance":  { "$ref": "#/$defs/ragScore", "description": "Overall: should we be pursuing opportunities in this sector" }
+      }
+    },
+
+    "pursuitHandoff": {
+      "description": "Compact machine-readable object fed to the downstream qualification/strategy agent. Strips descriptive noise, keeps only what the next agent needs to score and decide.",
+      "type": "object",
+      "properties": {
+        "sector":                   { "type": "string" },
+        "subsector":                { "type": ["string", "null"] },
+        "dominantBuyerArchetype":   { "type": ["string", "null"], "description": "Most common buyer archetype in this sector" },
+        "preferredRoutesToMarket":  { "type": "array", "items": { "type": "string" } },
+        "likelyWinThemes":          { "type": "array", "items": { "type": "string" } },
+        "topWatchouts":             { "type": "array", "items": { "type": "string" } },
+        "qualificationImplications": { "type": "array", "items": { "type": "string" } },
+        "goNoGoImplications":       { "type": "array", "items": { "type": "string" } },
+        "scores": {
+          "type": "object",
+          "description": "Summary scores for the qualification agent",
+          "properties": {
+            "attractiveness":  { "$ref": "#/$defs/ragScore" },
+            "accessibility":   { "$ref": "#/$defs/ragScore" },
+            "contestability":  { "$ref": "#/$defs/ragScore" },
+            "scopeStability":  { "$ref": "#/$defs/ragScore" },
+            "budgetPressure":  { "$ref": "#/$defs/ragScore" }
+          }
+        },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+      }
+    },
+
+    "governance": {
+      "description": "Review and approval status. Same pattern as opportunity qualification profile.",
+      "type": "object",
+      "required": ["derivedBy", "reviewStatus"],
+      "properties": {
+        "derivedBy":              { "type": "string", "enum": ["ai_assessment", "analyst_override", "hybrid"] },
+        "analystOverrideReason":  { "type": ["string", "null"] },
+        "reviewStatus":           { "type": "string", "enum": ["draft", "analyst_reviewed", "approved_for_use"] },
+        "reviewedBy":             { "type": ["string", "null"] },
+        "reviewedAt":             { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+
+    "linkedAssets": {
+      "type": "object",
+      "properties": {
+        "buyerDossiers":    { "type": "array", "items": { "type": "string" }, "description": "Buyer dossiers for organisations in this sector" },
+        "supplierDossiers": { "type": "array", "items": { "type": "string" }, "description": "Supplier dossiers for companies active in this sector" },
+        "pipelineScans":    { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+
+  "$defs": {
+    "evidencedField": {
+      "type": "object",
+      "description": "Interpretive field with inline evidence. 4-layer truth: fact (structural truth), signal (fast-changing indicator), inference (analytical judgement), unknown (gap).",
+      "required": ["value", "type", "confidence"],
+      "properties": {
+        "value":      { "type": "string" },
+        "type":       { "type": "string", "enum": ["fact", "signal", "inference", "unknown"] },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+        "rationale":  { "type": "string" },
+        "sourceRefs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ragScore": {
+      "type": "object",
+      "required": ["rating", "rationale"],
+      "properties": {
+        "rating":    { "type": "string", "enum": ["red", "amber", "green", "grey"] },
+        "rationale": { "type": "string" }
+      }
+    },
+    "signalEntry": {
+      "type": "object",
+      "description": "A forward-looking signal with trigger condition and expected timing",
+      "required": ["signal", "type"],
+      "properties": {
+        "signal":           { "type": "string", "description": "What to watch" },
+        "type":             { "type": "string", "enum": ["fact", "signal", "inference"] },
+        "expectedTiming":   { "type": ["string", "null"], "description": "When this might materialise" },
+        "triggerCondition":  { "type": ["string", "null"], "description": "What would confirm or invalidate" },
+        "pursuitImpact":    { "type": "string", "enum": ["accelerator", "blocker", "modifier", "neutral"] },
+        "confidence":       { "type": "string", "enum": ["high", "medium", "low"] },
+        "sourceRefs":       { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
