@@ -243,32 +243,51 @@ If no depth is specified, use **standard**.
 
 ---
 
-### Skill 3: Sector Scan
+### Skill 3: Sector Intelligence Dossier
 
-**What it is:** A sector intelligence briefing — what's happening in a market that a credible bidder should know about. Stored in the bid library.
+**What it is:** A sector intelligence dossier for a named public-sector market. NOT a sector research briefing — an **intelligence reduction engine** that turns messy public-sector context into pursuit implications, route-to-market hypotheses, buyer-behaviour patterns, and qualification signals. Library asset, reusable across pursuits in this sector.
 
-**When to use it:** When entering a new sector, refreshing market knowledge, or preparing for a pursuit in a sector the team hasn't reviewed recently. "What's happening in Defence procurement?" or "give me a sector brief on Local Government digital."
+**Design principle:** The dossier answers "Given this sector context, how should we qualify, shape, position, and decide whether to pursue a named opportunity?" It does NOT answer "What does this mean for any specific pursuit?" — that's the opportunity qualification profile.
+
+**When to use it:** When entering a new sector, refreshing market knowledge, or preparing for pursuits in a sector the team hasn't profiled. "Build me a sector dossier for NHS England" or "what do we know about Local Government procurement behaviour?"
 
 **Depth modes:**
 
 | Mode | When to use | What it covers |
 |------|-------------|----------------|
-| **Snapshot** | Quick orientation, early qualification, "is this sector active?" | Policy headline, spending signals, and top 3-5 market trends. No narrative — structured bullet points only. |
-| **Standard** | Active pursuit in this sector, bid strategy preparation | All six sections with evidence. Full narrative. The default mode. |
-| **Deep** | New sector entry, strategic planning, or major pursuit where sector positioning is critical | Standard plus: full framework landscape with lot structures and renewal timelines, detailed pipeline analysis from planning notices, peer comparison across comparable organisations, cross-reference against existing supplier dossiers operating in this sector. |
+| **Snapshot** | Quick orientation, early filter | Sector identity, financial headline, top buyer archetypes, top opportunity archetypes, pursuit handoff. Minimal narrative. |
+| **Standard** | Active pursuits in this sector | All 12 sections populated. Full source register. 3-4 buyer archetypes and 3-5 opportunity archetypes. The default. |
+| **Deep** | New sector entry, strategic investment decision | Standard plus: 4-6 buyer archetypes with full rationale, 5-8 opportunity archetypes, comprehensive forward signal model, framework-by-framework competitive analysis. |
 
 If no depth is specified, use **standard**.
 
-**What to produce:**
+**What to produce — 12 sections:**
 
-1. **Policy & regulatory landscape** — current and upcoming legislation, regulatory changes, government papers or strategies affecting this sector. Anything creating urgency or shaping requirements
-2. **Spending & budget signals** — spending reviews, departmental budgets, framework announcements, pipeline data, public statements on investment priorities or constraints
-3. **Market trends** — technology shifts, delivery model changes (cloud-first, insourcing, shared services), workforce trends, emerging best practice
-4. **Trade press & industry commentary** — articles, analyst reports, conference themes from the last 6–12 months
-5. **Peer comparisons** — what similar organisations in this sector are doing, comparable procurements, published post-implementation reviews
-6. **Implications** — what this means for bid positioning, messaging, and solution design
+1. **Sector Identity** — scope definition, subsectors (prevents monolith treatment — Health is not one market, Local Gov is not one market), archetype IDs used in this dossier
+2. **Sector Anatomy** — formal structure, commissioning model, delivery model, oversight bodies, regulators, funding flows, cross-sector dependencies
+3. **Financial & Demand Context** — funding sources, budget cycle, financial pressure indicators, savings targets, demand pressures, capital vs revenue bias, mandatory vs discretionary spend, reform dependency
+4. **Procurement Behaviour** — first-class structured data: common routes to market, framework usage patterns, dynamic market and open framework relevance, pre-market engagement patterns, procedure selection signals, contract packaging, award criteria bias, transparency signal quality, FTS data summary
+5. **Demand Drivers** — policy, statutory, service backlog, workforce, digital, efficiency, compliance
+6. **Buyer Archetypes** — the engine room. Sector-specific archetypes (e.g. `health.strategic_commissioner`, `lg.financially_constrained_unitary`) with typical entities, core objectives, budget behaviour, procurement behaviour, stakeholder patterns, evaluation biases, likely win themes and loss modes
+7. **Stakeholder Model** — formal vs real influence at sector level
+8. **Opportunity Archetypes** — bridges to qualification. Known opportunity patterns (e.g. `lg.digital_front_door_transformation`) with problem statements, scope elements, contract shape, likely routes, decision criteria, critical credentials, delivery and commercial risks, qualification tests
+9. **Competitive Landscape** — patterns of incumbent advantage, not supplier lists. Incumbent types, platform lock-in patterns, framework competitor sets, SME vs SI dynamics, partnering norms, switching barriers, common differentiators, commodity zones
+10. **Win Implications** — the "so what". Likely win themes, discriminators, red flags, proof points buyers trust, message angles, positions to avoid, delivery risks to mitigate, ideal partnering model, qualification implications, go/no-go implications
+11. **Forward Signal Model** — predictive, not monitoring. Leading indicators, notice signals, budget events, reform milestones, framework refreshes, leadership changes, acceleration and delay signals — each with pursuit impact (accelerator/blocker/modifier/neutral)
+12. **Source Register & Unknowns** — sources with 4-tier hierarchy, intelligence gaps, unknowns model (what's missing, impact if wrong, reducing evidence)
 
-**Where to store it:** Bid library at `reference/sectors/{sector-name}.json`.
+**4-layer truth model:** Every evidenced field uses `fact` (structural truth) / `signal` (fast-changing indicator) / `inference` (analytical judgement) / `unknown` (gap). This is richer than the supplier/buyer dossier's fact/inference/unknown — separates stable truth from time-sensitive signals.
+
+**Pursuit handoff payload:** After the 12 sections, the dossier produces a compact machine-readable summary for downstream consumption: dominant buyer archetype, preferred routes to market, likely win themes, top watchouts, qualification implications, go/no-go implications, 5 summary RAG scores. This is the actual product for the next agent.
+
+**10 scored dimensions (renderer displays, AI assesses):** Sector attractiveness, urgency of demand, accessibility of buyers, route-to-market fit, incumbent entrenchment, commercial viability, scope stability, evidence strength, policy tailwind, overall pursuit relevance. All RAG — no numeric scores.
+
+**Output:** Two files per sector: `reference/sectors/{slug}-{jurisdiction}/data.json` (canonical structured data) and `reference/sectors/{slug}-{jurisdiction}/report.html` (rendered from JSON).
+
+**Refresh schedule:**
+- **Quarterly:** structure, archetypes, procurement behaviour, market map
+- **Monthly:** policy shifts, financial pressure, pipeline, frameworks, leadership
+- **On trigger:** named opportunity, framework refresh announcement, major reform event
 
 ---
 

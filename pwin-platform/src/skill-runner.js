@@ -577,6 +577,20 @@ function buildClaudeTools(skill) {
         required: ['profile'],
       },
     },
+    store_sector_dossier: {
+      name: 'store_sector_dossier',
+      description: 'Store a v1 sector intelligence dossier as structured JSON in the platform library. The dossier object must conform to sector-intelligence-dossier v1. Includes the pursuit handoff payload for downstream consumption.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          dossier: {
+            type: 'object',
+            description: 'The complete v1 sector dossier object. Must include meta, sectorIdentity, sectorAnatomy, financialAndDemandContext, procurementBehaviour, demandDrivers, buyerArchetypes, opportunityArchetypes, competitiveLandscape, winImplications, forwardSignalModel, evidenceRegister, scores, and pursuitHandoff.',
+          },
+        },
+        required: ['dossier'],
+      },
+    },
   };
 
   const tools = [
@@ -720,6 +734,19 @@ async function executeToolCall(toolName, pursuitId, input) {
       const dataPath = join(dirPath, 'data.json');
       await writeFile(dataPath, JSON.stringify(profile, null, 2), 'utf-8');
       return { stored: true, path: `reference/clients/${slug}/data.json` };
+    }
+    case 'store_sector_dossier': {
+      const dossier = input.dossier;
+      const slug = dossier.meta?.sectorName?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'unknown';
+      const jurisdiction = (dossier.meta?.jurisdiction || 'uk').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const folder = `${slug}-${jurisdiction}`;
+      const { writeFile, mkdir } = await import('node:fs/promises');
+      const { join } = await import('node:path');
+      const dirPath = join(store.DATA_ROOT, 'reference', 'sectors', folder);
+      await mkdir(dirPath, { recursive: true });
+      const dataPath = join(dirPath, 'data.json');
+      await writeFile(dataPath, JSON.stringify(dossier, null, 2), 'utf-8');
+      return { stored: true, path: `reference/sectors/${folder}/data.json` };
     }
     default:
       throw new Error(`Unknown tool: ${toolName}`);
