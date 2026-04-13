@@ -75,6 +75,13 @@ function computeFreshnessScore(data) {
   const sources = data.sourceRegister?.sources || [];
   if (sources.length === 0) return { rating: 'grey', rationale: 'No sources to assess freshness' };
   const now = new Date();
+  // Staleness thresholds by source type — official sources stay current longer
+  const staleThresholds = {
+    tier1_official: 730,    // 2 years — strategy docs, annual reports, NAO reports
+    tier2_procurement: 90,  // 3 months — procurement data moves fast
+    tier3_secondary: 365,   // 1 year — media, think tanks
+    tier4_internal: 180,    // 6 months — internal intel goes stale quickly
+  };
   let staleCount = 0;
   let datedCount = 0;
   for (const s of sources) {
@@ -82,13 +89,14 @@ function computeFreshnessScore(data) {
     if (!d) continue;
     datedCount++;
     const age = (now - new Date(d)) / (1000 * 60 * 60 * 24);
-    if (age > 365) staleCount++;
+    const threshold = staleThresholds[s.sourceType] || 365;
+    if (age > threshold) staleCount++;
   }
   if (datedCount === 0) return { rating: 'grey', rationale: 'No dated sources' };
   const stalePct = Math.round((staleCount / datedCount) * 100);
-  if (stalePct <= 10) return { rating: 'green', rationale: `${100 - stalePct}% of sources are within 12 months` };
-  if (stalePct <= 30) return { rating: 'amber', rationale: `${stalePct}% of sources are over 12 months old` };
-  return { rating: 'red', rationale: `${stalePct}% of sources are over 12 months old` };
+  if (stalePct <= 10) return { rating: 'green', rationale: `${100 - stalePct}% of sources are within their freshness window` };
+  if (stalePct <= 30) return { rating: 'amber', rationale: `${stalePct}% of sources are past their freshness window` };
+  return { rating: 'red', rationale: `${stalePct}% of sources are past their freshness window` };
 }
 
 function computeBuyerArchetype(data) {

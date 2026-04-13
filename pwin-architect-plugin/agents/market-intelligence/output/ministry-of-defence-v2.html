@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyer Intelligence Dossier — Ministry of Defence</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Inter, -apple-system, sans-serif; color: #021744; line-height: 1.65; font-size: 12px; max-width: 900px; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { size: A4; margin: 18mm; }
+  @media print { body { padding: 0; } .page-break { page-break-before: always; } .no-break { page-break-inside: avoid; } }
+
+  .cover { background: linear-gradient(135deg, #0D2B5C 0%, #1a3a6e 100%); padding: 40px 36px 32px; color: #F0EDE6; }
+  .cover-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(240,237,230,0.45); margin-bottom: 6px; }
+  .cover-title { font-family: 'Spline Sans', Inter, sans-serif; font-size: 28px; font-weight: 600; color: #F0EDE6; margin-bottom: 4px; }
+  .cover-sub { font-size: 12px; color: rgba(240,237,230,0.55); margin-bottom: 24px; }
+  .cover-scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .score-card { padding: 14px 16px; border: 1px solid rgba(240,237,230,0.15); background: rgba(240,237,230,0.04); }
+  .score-card-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(240,237,230,0.5); margin-bottom: 6px; }
+  .score-card-rating { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .score-card-rationale { font-size: 10px; color: rgba(240,237,230,0.6); line-height: 1.5; }
+  .rag-red .score-card-rating { color: #E87070; }
+  .rag-amber .score-card-rating { color: #D4A237; }
+  .rag-green .score-card-rating { color: #6BC5A0; }
+  .rag-grey .score-card-rating { color: #818CA2; }
+
+  .report-body { padding: 28px 36px; border: 1px solid #D5D9E0; border-top: none; }
+  .section { margin-bottom: 28px; }
+  .section-title { font-family: 'Spline Sans', Inter, sans-serif; font-size: 15px; font-weight: 600; color: #021744; margin-bottom: 10px; padding-bottom: 7px; border-bottom: 1px solid #D5D9E0; overflow: hidden; }
+  .section-text { font-size: 12px; color: #021744; line-height: 1.75; margin-bottom: 12px; white-space: pre-line; }
+  .caveat { font-size: 11px; color: #C68A1D; padding: 8px 12px; background: rgba(198,138,29,0.06); border-left: 3px solid #C68A1D; margin-bottom: 12px; font-style: italic; }
+
+  .ef-row { padding: 8px 0; border-bottom: 1px solid #F0ECE4; }
+  .ef-label { font-size: 11px; font-weight: 600; color: #576482; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+  .ef-value { font-size: 12px; color: #021744; line-height: 1.6; margin-bottom: 3px; }
+  .ef-meta { display: flex; gap: 6px; align-items: center; }
+  .ef-rationale { font-size: 10px; color: #818CA2; margin-top: 3px; font-style: italic; }
+
+  .data-table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0 16px; }
+  .data-table th { background: #021744; color: #F0EDE6; padding: 7px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+  .data-table td { padding: 6px 10px; border-bottom: 1px solid #E8EBF0; vertical-align: top; }
+
+  .kf-table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 10px 0 16px; }
+  .kf-table td { padding: 5px 10px; border-bottom: 1px solid #E8EBF0; }
+
+  .eq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .eq-card { padding: 12px 14px; border: 1px solid #D5D9E0; }
+  .eq-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #576482; margin-bottom: 4px; }
+  .eq-card-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; color: #021744; }
+
+  .incumbent-card { padding: 10px 14px; margin-bottom: 8px; border: 1px solid #E8EBF0; background: rgba(2,23,68,0.02); }
+  .incumbent-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .incumbent-name { font-weight: 700; font-size: 13px; }
+  .incumbent-detail { display: flex; gap: 16px; font-size: 11px; color: #576482; }
+
+  .risk-list { list-style: none; padding: 0; margin: 8px 0; }
+  .risk-list li { font-size: 11px; padding: 4px 0 4px 16px; position: relative; color: #C15050; }
+  .risk-list li::before { content: '!'; position: absolute; left: 0; font-weight: 700; }
+
+  .gaps-list { list-style: none; padding: 0; margin: 8px 0; }
+  .gaps-list li { font-size: 11px; color: #576482; padding: 3px 0 3px 16px; position: relative; }
+  .gaps-list li::before { content: '\2192'; position: absolute; left: 0; color: #5CA3B6; }
+
+  .gap-item { padding: 8px 12px; margin-bottom: 6px; border-left: 3px solid #C68A1D; background: rgba(198,138,29,0.04); }
+
+  .report-footer { margin-top: 32px; padding-top: 14px; border-top: 1px solid #D5D9E0; font-size: 10px; color: #818CA2; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-label">Buyer Intelligence Dossier</div>
+  <div class="cover-title">Ministry of Defence</div>
+  <div class="cover-sub">defence | mod | Generated 2026-04-13T14:00:00Z | v2.0 | Depth: deep</div>
+  <div class="cover-scores">
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Profile Confidence</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">86% high-reliability sources across 14 total</div>
+    </div>
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Coverage</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">10 of 10 sections populated</div>
+    </div>
+    
+    <div class="score-card rag-green">
+      <div class="score-card-label">Freshness</div>
+      <div class="score-card-rating"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#2D8A5E;vertical-align:middle;margin-right:6px;"></span> Green</div>
+      <div class="score-card-rationale">93% of sources are within their freshness window</div>
+    </div>
+  </div>
+</div>
+
+<div class="report-body">
+
+  
+  <div class="section no-break">
+    <div class="section-title">Buyer Snapshot</div>
+    <table class="kf-table">
+      <tr><td style="width:180px;font-weight:600;">Legal Name</td><td>Ministry of Defence</td></tr>
+<tr><td style="width:180px;font-weight:600;">Parent Body</td><td>His Majesty's Government</td></tr>
+<tr><td style="width:180px;font-weight:600;">Organisation Type</td><td>mod</td></tr>
+<tr><td style="width:180px;font-weight:600;">Sector</td><td>Defence</td></tr>
+<tr><td style="width:180px;font-weight:600;">Geographic Remit</td><td>National — UK and overseas operations, bases, and deployments worldwide</td></tr>
+<tr><td style="width:180px;font-weight:600;">Headcount</td><td>57,370 MOD civil servants (Oct 2025), plus approximately 188,000 regular armed forces personnel</td></tr>
+<tr><td style="width:180px;font-weight:600;">Annual Budget</td><td>£62.2 billion (2025-26), rising to £73.5 billion by 2028-29 per the 2025 Spending Review</td></tr>
+<tr><td style="width:180px;font-weight:600;">Buyer Archetype</td><td>mixed</td></tr>
+    </table>
+    <div class="section-text">The Ministry of Defence is the UK's largest government department by budget, responsible for all elements of national defence including the Armed Forces, equipment procurement, intelligence, and nuclear deterrent. It operates through a complex structure of military commands, executive agencies (DE&amp;S, Dstl, DIO, SDA), and arm's length bodies. The SDR 2025 has triggered the most significant defence transformation programme in a generation, with a new Military Strategic Headquarters, restructured commands, and a commitment to reach 2.5% of GDP on defence by 2034. Procurement reform is a central theme — the department aspires to reduce contract award timelines from years to a two-year maximum. For suppliers, this is a buyer undergoing fundamental structural change while simultaneously increasing its spending by over £10 billion over the Spending Review period.</div>
+    
+    <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Key Risks</div>
+    <ul class="risk-list"><li>Equipment Plan has a £16.9 billion affordability gap — forecast costs of £305.5 billion exceed available budget</li><li>NAO qualified the 2024-25 accounts due to £6.13 billion in assets under construction lacking adequate accounting records</li><li>SDR transformation timeline is ambitious — bulk of changes due by FY2026-27 with an emerging implementation gap risk</li></ul>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Organisation &amp; Operating Context <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></div></div>
+    
+    
+    
+    <div class="ef-row">
+      <div class="ef-label">Mandate</div>
+      <div class="ef-value">Defence of the United Kingdom and its overseas territories, management of the Armed Forces, and delivery of UK foreign and security policy objectives through military capability</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-005]</span></div>
+      <div class="ef-rationale">Statutory and constitutional mandate, well established</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Operating Model</div>
+      <div class="ef-value">Head Office sets policy and strategy. Delivery through three Services (Royal Navy, British Army, RAF) under a new Military Strategic Headquarters commanded by CDS, plus executive agencies: Defence Equipment &amp; Support (DE&amp;S) for equipment and services procurement, Defence Science and Technology Laboratory (Dstl) for S&amp;T, Defence Infrastructure Organisation (DIO) for estate, and Submarine Delivery Agency (SDA) for submarine programmes. Strategic Command handles joint and multi-domain operations.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-005, SRC-006]</span></div>
+      <div class="ef-rationale">Published organisational structure on GOV.UK and confirmed in SDR 2025</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Funding Model</div>
+      <div class="ef-value">Funded through HM Treasury Spending Review settlements. Resource DEL £47.4bn and Capital DEL £23.1bn for 2025-26. Committed to reaching 2.5% of GDP on defence by 2034. Equipment Plan is £305.5bn over 10 years.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-003, SRC-004]</span></div>
+      <div class="ef-rationale">Published in MOD departmental resources 2025 and Spending Review 2025</div>
+    </div>
+    <div class="section-text">The MOD operates through a Head Office (ministers, Permanent Secretary, CDS) supported by three single-Service commands under a unified Military Strategic Headquarters (new from SDR 2025). Procurement is principally managed by DE&amp;S (arm's length body, Bristol-based, ~11,000 staff). Dstl provides science and technology. DIO manages the defence estate. SDA manages nuclear submarine programmes. Each has its own procurement authority and processes. The Defence Office for Small Business Growth (established January 2025) provides a single front door for SME engagement.</div>
+    <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Recent Changes</div><ul class="gaps-list"><li>New Permanent Secretary (Jeremy Pocklington) appointed 2025, replacing David Williams</li><li>Military Strategic Headquarters established under SDR 2025 — CDS now commands Service Chiefs directly</li><li>Defence Office for Small Business Growth launched January 2025</li><li>Defence Industrial Strategy published September 2025</li><li>Strategic Defence Review published June 2025 with 62 recommendations, all accepted by government</li></ul>
+    
+  </div>
+  
+    <table class="data-table">
+      <tr><th>Unit</th><th>Remit</th><th>Relevance</th></tr>
+      <tr><td>Defence Equipment &amp; Support (DE&amp;S)</td><td>Procures, supports and supplies all equipment and services for the Armed Forces. Manages the Equipment Plan (~£305bn over 10 years).</td><td style="font-size:10px;">Primary procurement organisation. Most large service and technology contracts flow through DE&amp;S.</td></tr><tr><td>Defence Science and Technology Laboratory (Dstl)</td><td>Provides scientific and technical expertise for defence and security. Executive agency with ~4,000 staff at Porton Down and Portsdown West.</td><td style="font-size:10px;">Key buyer for research, innovation, AI/data, and technology services. Runs open innovation programmes.</td></tr><tr><td>Defence Infrastructure Organisation (DIO)</td><td>Manages the defence estate — construction, maintenance, facilities management, and accommodation.</td><td style="font-size:10px;">Major buyer for construction, FM, and estate services. Large long-term contracts.</td></tr><tr><td>Submarine Delivery Agency (SDA)</td><td>Responsible for delivery of the UK's submarine programmes including the nuclear deterrent.</td><td style="font-size:10px;">Highly specialised procurement, limited supplier base, extreme security requirements.</td></tr><tr><td>Strategic Command</td><td>Joint operations, multi-domain integration, cyber, intelligence, special forces, medical.</td><td style="font-size:10px;">Growing buyer for digital, cyber, AI, and intelligence services.</td></tr><tr><td>Defence Office for Small Business Growth</td><td>Single front door for SME engagement with MOD, established January 2025.</td><td style="font-size:10px;">New entry point for SMEs seeking to supply defence. Consolidates previously fragmented SME support.</td></tr>
+    </table>
+  <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Senior Leadership</div>
+    <table class="data-table">
+      <tr><th>Name</th><th>Title</th><th>Relevance</th><th>Since</th><th>Source</th></tr>
+      <tr><td>John Healey MP</td><td>Secretary of State for Defence</td><td style="font-size:10px;">Political head of department. Sets defence policy and spending priorities. Commissioned the SDR.</td><td>2024-07</td><td style="font-size:10px;">GOV.UK</td></tr><tr><td>Jeremy Pocklington</td><td>Permanent Secretary</td><td style="font-size:10px;">Most senior civil servant. Accounting officer. Drives SDR implementation and departmental reform. Newly appointed — previously Perm Sec at DESNZ.</td><td>2025</td><td style="font-size:10px;">Global Government Forum, GOV.UK</td></tr><tr><td>Admiral Sir Tony Radakin</td><td>Chief of the Defence Staff</td><td style="font-size:10px;">Most senior military officer. Under SDR reforms, now commands Service Chiefs directly and heads the new Military Strategic Headquarters.</td><td>2021-11</td><td style="font-size:10px;">GOV.UK</td></tr><tr><td>General Sir Roly Walker</td><td>Chief of the General Staff</td><td style="font-size:10px;">Head of the British Army. Key stakeholder in land equipment and services procurement.</td><td>2024</td><td style="font-size:10px;">GOV.UK</td></tr><tr><td>Andy Start</td><td>Chief Executive, DE&amp;S</td><td style="font-size:10px;">Leads the main procurement organisation. Responsible for Equipment Plan delivery and procurement reform.</td><td>2023</td><td style="font-size:10px;">DE&amp;S website</td></tr>
+    </table>
+
+  
+  <div class="section">
+    <div class="section-title">Strategic Priorities &amp; External Pressures <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></div></div>
+    
+    <div class="section-text">The MOD is in the midst of its most significant strategic reset since the Cold War. The Strategic Defence Review 2025 sets a ten-year vision centred on warfighting readiness, integration of AI and autonomy into conventional forces, and a fundamental restructuring of how defence is organised and delivered. The Defence Industrial Strategy 2025 complements this with a commitment to reform procurement, innovate at 'wartime pace', and grow the UK defence industrial base. The ambition is vast but the implementation gap is already being flagged — FY2025-26 is a transitional year with quarterly reform milestones, and the bulk of transformation is due by FY2026-27.</div>
+    
+    <div class="ef-row">
+      <div class="ef-label">Regulatory Pressures</div>
+      <div class="ef-value">Procurement Act 2023 (enacted February 2024) introduces new rules for defence procurement, including provisions for defence-specific exemptions. AUKUS treaty obligations shape submarine and technology procurement partnerships.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-009]</span></div>
+      <div class="ef-rationale">Published legislation and treaty commitments</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Political Pressures</div>
+      <div class="ef-value">Strong cross-party support for increased defence spending following Ukraine conflict and deteriorating global security environment. SDR was a Labour manifesto commitment. Political pressure to demonstrate value from the additional spending.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-004, SRC-006]</span></div>
+      <div class="ef-rationale">SDR was commissioned immediately after the 2024 general election. Cross-party support for 2.5% GDP commitment evident in parliamentary debates.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Fiscal Pressures</div>
+      <div class="ef-value">Equipment Plan affordability gap of £16.9 billion. Competing demands within a rising but still constrained budget. Pressure to deliver SDR transformation while maintaining current operations.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-008, SRC-010]</span></div>
+      <div class="ef-rationale">NAO and PAC have both highlighted the affordability gap. Equipment Plan was not published in 2024, reducing transparency.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Service Performance Pressures</div>
+      <div class="ef-value">Armed Forces recruitment and retention remains challenging. Defence estate condition is a persistent issue. Procurement timelines are widely criticised — the Defence Committee described the system as 'broke' in 2024.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-009, SRC-011]</span></div>
+      <div class="ef-rationale">Defence Committee report title 'It is broke — and it's time to fix it' (2024). Recruitment figures regularly reported in media and parliamentary questions.</div>
+    </div>
+    
+    
+    
+  </div>
+  
+    <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Published Strategy Themes</div>
+    <table class="data-table">
+      <tr><th>Theme</th><th>Description</th><th>Sources</th></tr>
+      <tr><td>Warfighting readiness</td><td>Shift from peacetime efficiency to readiness for high-intensity conflict. New Military Strategic Headquarters to drive force design and delivery as a unified organisation.</td><td style="font-size:9px;">SRC-006</td></tr><tr><td>AI, autonomy, and technology integration</td><td>Immediate priority for integrating AI and autonomous systems into conventional forces. Hybrid navy with drone-capable carriers, '10X more lethal' army, next-generation RAF.</td><td style="font-size:9px;">SRC-006</td></tr><tr><td>Procurement reform</td><td>Aspiration to reduce contract award time to a two-year maximum and complete most programmes in under five years. Earlier industry engagement, reduced overspecification.</td><td style="font-size:9px;">SRC-006, SRC-008</td></tr><tr><td>Defence Industrial Strategy</td><td>Reform procurement, innovate at wartime pace, strengthen and expand the UK defence industrial base. Published September 2025.</td><td style="font-size:9px;">SRC-007</td></tr><tr><td>Reaching 2.5% GDP on defence</td><td>Government commitment to increase defence spending to 2.5% of GDP by 2034, adding over £10 billion to the defence budget over the Spending Review period.</td><td style="font-size:9px;">SRC-004</td></tr>
+    </table>
+  
+    <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Major Programmes</div>
+    <table class="data-table">
+      <tr><th>Programme</th><th>Status</th><th>Value</th><th>Description</th></tr>
+      <tr><td>Strategic Defence Review Implementation</td><td>Transitional year — implementation underway</td><td>—</td><td style="font-size:10px;">62 recommendations across force structure, command reform, procurement, and industrial strategy. Quarterly milestones through FY2025-26, bulk of transformation by FY2026-27.</td></tr><tr><td>Equipment Plan</td><td>Active but with affordability gap</td><td>£305.5bn (10-year)</td><td style="font-size:10px;">10-year equipment investment programme. Forecast cost £305.5 billion, £16.9 billion above available budget. Covers all major capability programmes.</td></tr><tr><td>Nuclear Deterrent Renewal (Dreadnought)</td><td>In delivery</td><td>—</td><td style="font-size:10px;">Replacement of Vanguard-class submarines with Dreadnought class. Managed by SDA.</td></tr>
+    </table>
+
+  
+  <div class="section">
+    <div class="section-title">Commissioning Context Hypotheses <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span></div></div>
+    <div class="caveat">These are hypotheses derived from available evidence. They require validation by the pursuit team.</div>
+    
+    
+    <div class="ef-row">
+      <div class="ef-label">Drivers of External Buying</div>
+      <div class="ef-value">SDR transformation creates urgent demand for technology integration (AI, autonomy, cyber), procurement reform expertise, programme management capacity, and delivery acceleration. The MOD cannot build these capabilities internally at the pace required.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-006, SRC-007]</span></div>
+      <div class="ef-rationale">SDR explicitly calls for capability the MOD does not currently possess in-house, particularly in AI, autonomy, and digital. Procurement reform implies external consultancy and systems integration.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Pressures Shaping Spend</div>
+      <div class="ef-value">Budget rising but Equipment Plan affordability gap persists. Pressure to demonstrate transformation progress through quarterly milestones. Procurement Act 2023 changes buying rules. Political imperative to show value from 2.5% GDP commitment.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-004, SRC-006, SRC-008]</span></div>
+      <div class="ef-rationale">Multiple converging pressures: financial (Equipment Plan gap), political (SDR delivery), regulatory (Procurement Act), operational (warfighting readiness).</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Operational Pain Points</div>
+      <div class="ef-value">Procurement takes too long (multi-year contract awards). Requirements overspecification slows delivery. Legacy systems and platforms need replacing. Recruitment and retention affects both military and civilian workforce.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-006, SRC-009]</span></div>
+      <div class="ef-rationale">Defence Committee and SDR both identify procurement speed as a critical problem. The aspiration to reduce award time to two years implies current timelines are significantly longer.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Outcomes Sought</div>
+      <div class="ef-value">Warfighting readiness. Faster delivery of capability to the frontline. A defence industrial base that can innovate and scale at pace. Procurement processes that match the speed of technological change.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-006, SRC-007]</span></div>
+      <div class="ef-rationale">Derived from SDR 2025 strategic objectives and Defence Industrial Strategy 2025</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Consequences of Inaction</div>
+      <div class="ef-value">Falling behind peer competitors in technology adoption (particularly AI and autonomy). Equipment Plan becomes undeliverable. SDR implementation gap widens. Continued criticism from NAO, PAC, and Defence Committee.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-012]</span></div>
+      <div class="ef-rationale">The Royal Aeronautical Society has already flagged an 'emerging implementation gap' between SDR ambition and delivery capacity.</div>
+    </div>
+    
+    
+    
+  </div>
+
+  
+  <div class="section page-break">
+    <div class="section-title">Procurement Behaviour <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></div></div>
+    <div class="section-text">MOD is the UK's largest public sector buyer with 349 awards totalling £47.3 billion in the FTS dataset. Procurement is overwhelmingly through limited (single-source or negotiated) and selective (restricted) procedures — open competition accounts for only 3% of awards. The portfolio is heavily weighted towards goods and supplies (particularly fuel and equipment) with significant services spend across BPO, technology, construction, and professional services. Framework agreements are used extensively, particularly through CCS and MOD-specific frameworks. The buyer entity fragments across multiple procurement organisations (DE&amp;S, Dstl, DIO, SDA) each with their own processes and supplier relationships.</div>
+    <div class="eq-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="eq-card"><div class="eq-card-label">Total Awards</div><div class="eq-card-value">349</div></div>
+      <div class="eq-card"><div class="eq-card-label">Total Value</div><div class="eq-card-value">£47.3bn</div></div>
+      <div class="eq-card"><div class="eq-card-label">Data Window</div><div class="eq-card-value" style="font-size:14px;">2021 to 2026</div></div>
+    </div>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Preferred Procurement Routes</div>
+    <table class="data-table">
+      <tr><th>Route</th><th style="text-align:center;">Count</th><th style="text-align:center;">%</th></tr>
+      <tr><td>Limited (single-source/negotiated)</td><td style="text-align:center;">269</td><td style="text-align:center;">77%</td></tr><tr><td>Selective (restricted)</td><td style="text-align:center;">61</td><td style="text-align:center;">17%</td></tr><tr><td>Unknown</td><td style="text-align:center;">10</td><td style="text-align:center;">3%</td></tr><tr><td>Open</td><td style="text-align:center;">9</td><td style="text-align:center;">3%</td></tr>
+    </table>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Category Concentration</div>
+    <table class="data-table">
+      <tr><th>Service Category</th><th style="text-align:center;">Awards</th><th style="text-align:center;">Value</th></tr>
+      <tr><td>goods-supplies</td><td style="text-align:center;">83</td><td style="text-align:center;">£44.4bn</td></tr><tr><td>workforce-contingent-labour</td><td style="text-align:center;">2</td><td style="text-align:center;">£627.0m</td></tr><tr><td>bpo-outsourced-services</td><td style="text-align:center;">27</td><td style="text-align:center;">£557.0m</td></tr><tr><td>construction</td><td style="text-align:center;">13</td><td style="text-align:center;">£402.0m</td></tr><tr><td>technology-services</td><td style="text-align:center;">29</td><td style="text-align:center;">£375.0m</td></tr><tr><td>software-systems-integration</td><td style="text-align:center;">7</td><td style="text-align:center;">£186.0m</td></tr><tr><td>p3m</td><td style="text-align:center;">2</td><td style="text-align:center;">£158.0m</td></tr><tr><td>training-education</td><td style="text-align:center;">7</td><td style="text-align:center;">£129.0m</td></tr><tr><td>professional-services</td><td style="text-align:center;">12</td><td style="text-align:center;">£123.0m</td></tr><tr><td>it-outsourcing</td><td style="text-align:center;">5</td><td style="text-align:center;">£46.0m</td></tr><tr><td>ai-data</td><td style="text-align:center;">7</td><td style="text-align:center;">£37.0m</td></tr><tr><td>software-cloud-products</td><td style="text-align:center;">7</td><td style="text-align:center;">£23.0m</td></tr><tr><td>digital</td><td style="text-align:center;">3</td><td style="text-align:center;">£13.0m</td></tr>
+    </table>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Framework Usage</div>
+    <table class="data-table">
+      <tr><th>Framework</th><th>Provider</th><th style="text-align:center;">Awards</th><th style="text-align:center;">Value</th></tr>
+      <tr><td>Global Bulk Fuels Service (GBFS)</td><td>MOD/DOEA</td><td style="text-align:center;">18</td><td style="text-align:center;">£24.0bn</td></tr><tr><td>Defence Munitions</td><td>DE&amp;S</td><td style="text-align:center;">8</td><td style="text-align:center;">—</td></tr><tr><td>CCS Technology frameworks</td><td>CCS</td><td style="text-align:center;">12</td><td style="text-align:center;">—</td></tr>
+    </table>
+    
+    <div class="ef-row">
+      <div class="ef-label">Typical Contract Length</div>
+      <div class="ef-value">Highly variable — from 1-2 year service contracts to 10-25 year equipment and support programmes. Defence contracts are typically longer than other government departments.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-013]</span></div>
+      <div class="ef-rationale">FTS data shows contracts ranging from 6 months to 10+ years. Equipment programmes span decades.</div>
+    </div>
+    
+    <div class="ef-row">
+      <div class="ef-label">Typical Contract Value</div>
+      <div class="ef-value">Bimodal — large volume of lower-value contracts (under £5m) alongside a smaller number of very high-value equipment and service programmes (£100m+). Median value skewed by fuel framework ceiling values.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-013]</span></div>
+      <div class="ef-rationale">FTS data shows extreme value range from £50k to £1.3bn per award. Framework ceiling values inflate averages.</div>
+    </div>
+    
+    <div class="ef-row">
+      <div class="ef-label">Innovation vs Proven</div>
+      <div class="ef-value">Historically strong preference for proven solutions and established suppliers. SDR 2025 and Defence Industrial Strategy signal a deliberate shift towards faster adoption of innovation, particularly AI and autonomy. The Defence Office for Small Business Growth and Commercial X teams are mechanisms to broaden the supplier base. However, 77% limited-procedure procurement suggests relationship-driven buying remains dominant.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-006, SRC-007, SRC-013]</span></div>
+      <div class="ef-rationale">Tension between stated policy (innovate at wartime pace) and observed behaviour (77% single-source). The SDR aspiration is clear but procurement data has not yet shifted to reflect it.</div>
+    </div>
+    
+    <div class="ef-row">
+      <div class="ef-label">Price vs Quality Bias</div>
+      <div class="ef-value">Quality and capability-weighted. Defence procurement prioritises technical performance, security, and delivery assurance over lowest price. Social value (PPN 06/20) is a factor but secondary to capability requirements in most defence contexts.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-009, SRC-013]</span></div>
+      <div class="ef-rationale">Defence-specific exemptions in procurement regulations and the prevalence of limited-procedure procurement indicate quality/capability primacy over price competition.</div>
+    </div>
+    
+    <div class="ef-row">
+      <div class="ef-label">Renewal Patterns</div>
+      <div class="ef-value">Long-term incumbent relationships with periodic re-competition. Equipment support contracts often extend for decades. Service contracts more frequently re-competed but incumbents retain strong advantage through security clearance, embedded staff, and system knowledge.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-013]</span></div>
+      <div class="ef-rationale">77% limited-procedure procurement is consistent with a buyer who renews with incumbents. Defence-specific security and continuity requirements create high switching costs.</div>
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Decision Unit &amp; Stakeholder Assumptions <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(193,80,80,0.12);color:#C15050">low</span></div></div>
+    <div class="caveat">Inferred from published structures and procurement patterns. Requires pursuit-team validation.</div>
+    
+    
+    <div class="ef-row">
+      <div class="ef-label">Business Owner Roles</div>
+      <div class="ef-value">Service Chiefs and their subordinate commands for military capability requirements. Head Office directorates for policy-driven procurements. DE&amp;S programme directors for equipment programmes.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(193,80,80,0.12);color:#C15050">low</span> <span style="font-size:9px;color:#818CA2;">[SRC-005]</span></div>
+      <div class="ef-rationale">Inferred from published organisational structure. Actual budget delegation and approval authorities are not publicly disclosed in detail.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Commercial Roles</div>
+      <div class="ef-value">DE&amp;S commercial teams for equipment and service procurements. MOD Head Office commercial directorate for policy and strategy. DIO commercial for estate. Dstl procurement for S&amp;T.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-005, SRC-009]</span></div>
+      <div class="ef-rationale">Published procurement guidance identifies DE&amp;S as the primary commercial organisation. Each agency has its own commercial function.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Technical Stakeholders</div>
+      <div class="ef-value">Dstl for science and technology assessment. CDS and Service technical authorities for capability requirements. Defence Digital for IT and cyber.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(193,80,80,0.12);color:#C15050">low</span> <span style="font-size:9px;color:#818CA2;">[SRC-005]</span></div>
+      <div class="ef-rationale">Inferred from organisational responsibilities. Technical stakeholder involvement varies significantly by procurement type.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Finance &amp; Assurance Roles</div>
+      <div class="ef-value">MOD Finance Director for departmental financial oversight. Investment Approvals Committee for major programmes. Infrastructure and Projects Authority (IPA) for major project gateway reviews.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-005]</span></div>
+      <div class="ef-rationale">Standard central government financial governance. IPA involvement is published for major projects.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Evaluator Groups</div>
+      <div class="ef-value">Typically multi-disciplinary panels combining commercial, technical, financial, and end-user representatives. Security-cleared evaluators required for classified procurements. For large programmes, independent assurance from IPA.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(193,80,80,0.12);color:#C15050">low</span> <span style="font-size:9px;color:#818CA2;">[SRC-009]</span></div>
+      <div class="ef-rationale">Standard practice for major government procurement. Specific panel composition varies by procurement and is not publicly disclosed.</div>
+    </div>
+    
+    
+    <div style="font-size:11px;font-weight:600;margin:10px 0 4px;">Intelligence Gaps</div><ul class="gaps-list"><li>Specific commercial team structures and named commercial leads within DE&amp;S delivery teams</li><li>Current investment approval thresholds and delegation authorities</li><li>Named SROs for specific programmes or service categories</li><li>Evaluator panel composition and weighting for recent procurements</li><li>Internal views on supplier performance and preferred suppliers</li></ul>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Culture &amp; Delivery Preferences <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span></div></div>
+    
+    
+    
+    <div class="ef-row">
+      <div class="ef-label">Decision-Making Formality</div>
+      <div class="ef-value">Highly formal. Multi-layered governance with investment approval committees, senior review boards, and ministerial sign-off for major programmes. Defence-specific assurance requirements add governance layers beyond standard central government.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-008, SRC-010]</span></div>
+      <div class="ef-rationale">Defence procurement is among the most governed in UK public sector. Equipment Plan governance, NAO scrutiny, and parliamentary oversight create a high-formality environment.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Governance Intensity</div>
+      <div class="ef-value">Very high. NAO, PAC, Defence Committee, and IPA all provide external scrutiny. Internal governance includes investment approvals, senior responsible owners, and programme boards. Security classification adds additional governance requirements.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-008, SRC-010, SRC-011]</span></div>
+      <div class="ef-rationale">Multiple published sources confirm the intensity of defence procurement governance — it is one of the most scrutinised buyers in UK government.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Risk Tolerance</div>
+      <div class="ef-value">Low for operational and security risk. The SDR signals a desire for higher tolerance of commercial and innovation risk — 'innovate at wartime pace' — but this has not yet translated into procurement behaviour. Current data shows a buyer that strongly favours known suppliers and limited-procedure procurement.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-006, SRC-013]</span></div>
+      <div class="ef-rationale">Tension between SDR aspiration (higher risk tolerance for innovation) and observed behaviour (77% single-source procurement with established suppliers).</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Evidence Preferences</div>
+      <div class="ef-value">Strong emphasis on demonstrated capability, past performance, and security credentials. Case studies from comparable defence or high-security environments are more valued than commercial sector references. Accreditations (ISO 27001, Cyber Essentials Plus, SC/DV clearance) are frequently mandatory.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-009, SRC-013]</span></div>
+      <div class="ef-rationale">Inferred from published ITT requirements in FTS data and standard defence procurement practice.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Supplier Interaction Style</div>
+      <div class="ef-value">Formal pre-market engagement through Defence Sourcing Portal. Industry days and market sounding exercises for major programmes. Commercial X teams for innovation engagement. Generally more structured and regulated than civilian departments.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-009]</span></div>
+      <div class="ef-rationale">Published MOD procurement guidance describes formal engagement routes. Defence Sourcing Portal is the mandated platform.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Presentation Style</div>
+      <div class="ef-value">Data-driven, technically rigorous. Expects suppliers to demonstrate deep understanding of defence context and operational requirements. Formal written submissions heavily weighted. Presentation opportunities are less common than in civilian procurement.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(193,80,80,0.12);color:#C15050">low</span> <span style="font-size:9px;color:#818CA2;">[SRC-009]</span></div>
+      <div class="ef-rationale">Inferred from defence procurement norms. Not directly evidenced from published sources.</div>
+    </div>
+    
+    
+    
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Commercial &amp; Risk Posture <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span></div></div>
+    
+    
+    
+    <div class="ef-row">
+      <div class="ef-label">Affordability Sensitivity</div>
+      <div class="ef-value">High. Despite rising budgets, the Equipment Plan has a £16.9bn affordability gap. Value for money is a persistent NAO and PAC focus. The department is under pressure to demonstrate that increased spending delivers proportionate capability improvement.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-008, SRC-010]</span></div>
+      <div class="ef-rationale">NAO and PAC have repeatedly highlighted affordability as a central concern. The Equipment Plan gap is well-documented.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Risk Transfer Posture</div>
+      <div class="ef-value">Moderate. MOD uses a range of contract types from firm-fixed-price to cost-plus depending on programme maturity. For novel capability, risk-sharing models are more common. For established services, greater risk transfer to suppliers is expected.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-009]</span></div>
+      <div class="ef-rationale">Standard defence procurement practice. Varies significantly by programme type — equipment development vs service delivery.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Contractual Caution</div>
+      <div class="ef-value">High. Complex terms and conditions, extensive flow-down requirements, security clauses, and IP provisions. MOD contracts are among the most demanding in UK public sector.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-009]</span></div>
+      <div class="ef-rationale">Well-established in defence procurement practice. Security requirements and classification levels add contractual complexity beyond civilian departments.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Cyber &amp; Data Sensitivity</div>
+      <div class="ef-value">Very high. Defence is the most security-sensitive buyer in UK government. Suppliers must hold appropriate security clearances (SC/DV), comply with defence cyber security standards, and manage classified information handling. Facility vetting and secure environments required for many contracts.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-005, SRC-009]</span></div>
+      <div class="ef-rationale">Fundamental characteristic of defence procurement. Published in defence procurement guidance.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Mobilisation Sensitivity</div>
+      <div class="ef-value">High. Defence requires operational continuity and rapid mobilisation capability. TUPE, knowledge transfer, and transition planning are critical for service contracts. Equipment programmes have stringent in-service support requirements.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-005]</span></div>
+      <div class="ef-rationale">Inferred from operational context — defence services cannot have gaps in delivery.</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">Audit &amp; FOI Exposure</div>
+      <div class="ef-value">Very high. NAO conducts annual audits and value-for-money studies. PAC holds regular hearings. Defence Committee provides parliamentary scrutiny. FOI applies but with national security exemptions. Suppliers should expect their contract performance to be publicly scrutinised.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-008, SRC-010, SRC-011]</span></div>
+      <div class="ef-rationale">Published NAO reports and PAC hearing schedules confirm the intensity of audit and scrutiny.</div>
+    </div>
+    
+    
+    
+  </div>
+
+  
+  <div class="section page-break">
+    <div class="section-title">Supplier Ecosystem <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span></div></div>
+    <div class="section-text">The MOD supplier ecosystem is dominated by a small number of large defence primes (BAE Systems, Babcock, Rolls-Royce, Serco, Capita) who hold the strategic relationships and major long-term contracts. The fuel supply chain (BP, Agility, World Fuels) accounts for the largest single contract values. Below the primes, a broad SME ecosystem supplies through framework call-offs and subcontracting arrangements. The SDR and Defence Industrial Strategy signal an intention to broaden the supplier base, particularly for technology and innovation, but procurement data still shows overwhelming concentration among established suppliers with 77% of awards through single-source procedures.</div>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Incumbent Suppliers</div>
+    
+    <div class="incumbent-card">
+      <div class="incumbent-header">
+        <span class="incumbent-name">BAE Systems</span>
+        <span style="color:#C15050;font-size:10px;font-weight:700;text-transform:uppercase;">critical</span>
+        
+      </div>
+      <div class="incumbent-detail">
+        <span>Contracts: 15</span>
+        <span>Value: —</span>
+        <span>Since: Decades — core defence prime since British Aerospace merger (1999)</span>
+      </div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Service lines: technology-services, software-systems-integration, construction</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Entrenchment: Sole-source platform provider, Embedded engineering staff, Decades of institutional knowledge, Security clearances at scale, Nuclear submarine programme</div>
+      <div style="font-size:10px;margin-top:3px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> Stable — continues as primary platform and systems supplier across naval, land, and air domains</div>
+    </div>
+    <div class="incumbent-card">
+      <div class="incumbent-header">
+        <span class="incumbent-name">Agility DSG UK Ltd / BP / World Fuels Services</span>
+        <span style="color:#C15050;font-size:10px;font-weight:700;text-transform:uppercase;">critical</span>
+        
+      </div>
+      <div class="incumbent-detail">
+        <span>Contracts: 18</span>
+        <span>Value: £24.0bn</span>
+        <span>Since: Long-standing fuel supply framework</span>
+      </div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Service lines: goods-supplies</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Entrenchment: Global fuel supply infrastructure, Security-cleared logistics, Strategic commodity supply</div>
+      <div style="font-size:10px;margin-top:3px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">fact</span> Stable — Global Bulk Fuels Service framework renewed</div>
+    </div>
+    <div class="incumbent-card">
+      <div class="incumbent-header">
+        <span class="incumbent-name">Serco Limited</span>
+        <span style="color:#C68A1D;font-size:10px;font-weight:700;text-transform:uppercase;">major</span>
+        <span style="font-size:9px;color:#5CA3B6;">[dossier]</span>
+      </div>
+      <div class="incumbent-detail">
+        <span>Contracts: 10</span>
+        <span>Value: —</span>
+        <span>Since: 20+ years across multiple defence contracts</span>
+      </div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Service lines: bpo-outsourced-services, training-education, technology-services</div>
+      <div style="font-size:10px;color:#576482;margin-top:3px;">Entrenchment: Embedded operational staff, TUPE workforce, Long-term service delivery contracts, Security clearances</div>
+      <div style="font-size:10px;margin-top:3px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> Stable — active across operational support, training, and technology services</div>
+    </div>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Adjacent Suppliers</div>
+    <table class="data-table">
+      <tr><th>Supplier</th><th>Service Lines</th><th>Evidence</th></tr>
+      <tr><td>Leidos</td><td style="font-size:10px;">technology-services, software-systems-integration, ai-data</td><td style="font-size:10px;">Defence logistics and information systems contracts</td></tr><tr><td>Fujitsu</td><td style="font-size:10px;">technology-services, it-outsourcing</td><td style="font-size:10px;">Defence IT infrastructure contracts</td></tr>
+    </table>
+    
+    <div class="ef-row">
+      <div class="ef-label">Supplier Concentration</div>
+      <div class="ef-value">Very high. A small number of primes dominate strategic programmes. Fuel supply chain accounts for over 50% of total contract value in FTS data. The MOD acknowledges this concentration and the SDR/DIS signal intent to diversify, particularly for technology and innovation.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <span style="font-size:9px;color:#818CA2;">[SRC-007, SRC-013]</span></div>
+      <div class="ef-rationale">FTS data shows top 8 fuel suppliers account for £24bn. Equipment primes (BAE, Babcock, Rolls-Royce) hold the strategic relationships. 77% limited-procedure procurement reinforces incumbent advantage.</div>
+    </div>
+    
+    <div class="ef-row">
+      <div class="ef-label">Switching Evidence</div>
+      <div class="ef-value">Low switching frequency for strategic suppliers. Equipment platform suppliers are effectively sole-source. Service contracts (FM, IT support, training) see periodic re-competition but incumbent advantage is strong due to security clearance requirements, TUPE, and operational continuity needs.</div>
+      <div class="ef-meta"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">inference</span> <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <span style="font-size:9px;color:#818CA2;">[SRC-013]</span></div>
+      <div class="ef-rationale">77% limited-procedure procurement and long contract durations indicate low switching. Defence-specific barriers (clearances, classified knowledge) amplify switching costs.</div>
+    </div>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Market Refresh Areas</div>
+    
+    <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #2D8A5E;background:rgba(2,23,68,0.02);font-size:11px;">
+      <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span> <strong>AI, data, and autonomous systems</strong> — SDR explicitly calls for rapid adoption. Defence Industrial Strategy creates new procurement pathways. Commercial X teams target innovative suppliers. 7 AI/data contracts visible in FTS data.
+    </div>
+    <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #C68A1D;background:rgba(2,23,68,0.02);font-size:11px;">
+      <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <strong>Digital services and cloud</strong> — Defence Digital transformation programme. Only 3 digital contracts and 7 cloud/software contracts in FTS data — small relative to the stated ambition.
+    </div>
+    <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #C68A1D;background:rgba(2,23,68,0.02);font-size:11px;">
+      <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span> <strong>SME and start-up technology</strong> — Defence Office for Small Business Growth launched January 2025. Stated aspiration to reduce barriers to entry for SMEs.
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Risks, Sensitivities & Red Flags <div style="float:right;font-size:10px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></div></div>
+    <div class="section-text">MOD is among the most scrutinised buyers in UK government. The Equipment Plan affordability gap, NAO qualification of accounts, and PAC criticism of transparency are persistent issues. The SDR transformation is ambitious and the implementation gap is already being flagged. For suppliers, the key risks are: getting caught in long procurement cycles, exposure to parliamentary scrutiny if delivery fails, and the gap between stated reform ambition and actual procurement behaviour.</div>
+    
+      <div style="font-size:11px;font-weight:600;margin:12px 0 6px;">Procurement Controversies</div>
+      
+      <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #C15050;font-size:11px;line-height:1.6;">
+        Equipment Plan not published in 2024 and no information provided to NAO — PAC described this as an 'unacceptable loss of transparency' <span style="color:#818CA2;">(2024-2025)</span> 
+        <span style="font-size:9px;color:#818CA2;">[SRC-008]</span>
+      </div>
+      <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #C15050;font-size:11px;line-height:1.6;">
+        Defence Committee concluded the procurement system is 'broke' and called for fundamental reform <span style="color:#818CA2;">(2024)</span> 
+        <span style="font-size:9px;color:#818CA2;">[SRC-011]</span>
+      </div>
+    
+      <div style="font-size:11px;font-weight:600;margin:12px 0 6px;">Programme Failures</div>
+      
+      <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #C15050;font-size:11px;line-height:1.6;">
+        Equipment Plan forecast cost £305.5 billion, exceeding available budget by £16.9 billion <span style="color:#818CA2;">(2024-25)</span> 
+        <span style="font-size:9px;color:#818CA2;">[SRC-008]</span>
+      </div>
+    
+      <div style="font-size:11px;font-weight:600;margin:12px 0 6px;">Audit Findings</div>
+      
+      <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #818CA2;font-size:11px;line-height:1.6;">
+        NAO unable to obtain sufficient audit evidence for £6.13 billion in assets under construction managed by arm's length bodies — resulted in qualified audit opinion on 2024-25 accounts <span style="color:#818CA2;">(2025-12)</span> <span style="color:#576482;">[NAO]</span>
+        <span style="font-size:9px;color:#818CA2;">[SRC-010]</span>
+      </div>
+      <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #818CA2;font-size:11px;line-height:1.6;">
+        NAO MOD 2024-25 overview highlighted persistent challenges in financial management, Equipment Plan affordability, and workforce planning <span style="color:#818CA2;">(2025-12)</span> <span style="color:#576482;">[NAO]</span>
+        <span style="font-size:9px;color:#818CA2;">[SRC-010]</span>
+      </div>
+    
+      <div style="font-size:11px;font-weight:600;margin:12px 0 6px;">Media Scrutiny</div>
+      
+      <div style="padding:6px 12px;margin-bottom:4px;border-left:3px solid #818CA2;font-size:11px;line-height:1.6;">
+        Royal Aeronautical Society flagged an 'emerging implementation gap' between SDR ambition and delivery capacity <span style="color:#818CA2;">(2025)</span> 
+        <span style="font-size:9px;color:#818CA2;">[SRC-012]</span>
+      </div>
+    <div style="font-size:11px;font-weight:600;margin:12px 0 6px;">Public Sensitivities</div><ul class="gaps-list"><li>Nuclear deterrent spending and Dreadnought programme costs</li><li>Armed Forces recruitment and retention</li><li>Defence estate condition and military housing</li><li>Contractor performance on operational support contracts</li></ul>
+    <div style="font-size:11px;font-weight:600;margin:12px 0 6px;">Positioning Sensitivities</div><ul class="gaps-list"><li style="color:#C15050;">Avoid language that implies replacing military capability with outsourcing</li><li style="color:#C15050;">Do not position cost reduction as the primary benefit — frame as capability enhancement</li><li style="color:#C15050;">Be cautious with claims about 'innovation' unless backed by defence-relevant evidence</li><li style="color:#C15050;">Acknowledge the unique operational context — defence is not like commercial or civilian public sector</li></ul>
+  </div>
+
+  
+  <div class="section page-break">
+    <div class="section-title">Source Register & Intelligence Gaps</div>
+    <div class="eq-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="eq-card"><div class="eq-card-label">Total Sources</div><div class="eq-card-value">14</div></div>
+      <div class="eq-card"><div class="eq-card-label">High Reliability</div><div class="eq-card-value">12</div></div>
+      <div class="eq-card"><div class="eq-card-label">Intelligence Gaps</div><div class="eq-card-value">4</div></div>
+      <div class="eq-card"><div class="eq-card-label">Low Confidence Fields</div><div class="eq-card-value">4</div></div>
+    </div>
+    
+    <table class="data-table" style="font-size:10px;">
+      <tr><th>ID</th><th>Source</th><th>Type</th><th>Reliability</th><th>Date</th><th>Sections</th></tr>
+      
+      <tr>
+        <td style="font-weight:600;">SRC-001</td>
+        <td>MOD Biannual Civilian Personnel Report — October 2025 <a href="https://www.gov.uk/government/statistics/mod-biannual-civilian-personnel-report-october-2025" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-10</td>
+        <td style="font-size:9px;">buyerSnapshot, organisationContext</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-002</td>
+        <td>Quarterly Service Personnel Statistics — October 2025 <a href="https://www.gov.uk/government/statistics/quarterly-service-personnel-statistics-2025" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-10</td>
+        <td style="font-size:9px;">buyerSnapshot</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-003</td>
+        <td>MOD Departmental Resources 2025 <a href="https://www.gov.uk/government/statistics/defence-departmental-resources-2025" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025</td>
+        <td style="font-size:9px;">buyerSnapshot, organisationContext, strategicPriorities</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-004</td>
+        <td>House of Commons Library — UK Defence Spending Research Briefing CBP-8175 <a href="https://commonslibrary.parliament.uk/research-briefings/cbp-8175/" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-10</td>
+        <td style="font-size:9px;">buyerSnapshot, strategicPriorities</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-005</td>
+        <td>Ministry of Defence — GOV.UK Organisation Page <a href="https://www.gov.uk/government/organisations/ministry-of-defence" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2026-04-13</td>
+        <td style="font-size:9px;">organisationContext, cultureAndPreferences</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-006</td>
+        <td>Strategic Defence Review 2025 — Making Britain Safer <a href="https://www.gov.uk/government/publications/the-strategic-defence-review-2025-making-britain-safer-secure-at-home-strong-abroad" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-06</td>
+        <td style="font-size:9px;">organisationContext, strategicPriorities, commissioningContextHypotheses, cultureAndPreferences</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-007</td>
+        <td>Defence Industrial Strategy 2025 — Making Defence an Engine for Growth <a href="https://assets.publishing.service.gov.uk/media/68bea3fc223d92d088f01d69/Defence_Industrial_Strategy_2025_-_Making_Defence_an_Engine_for_Growth.pdf" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-09</td>
+        <td style="font-size:9px;">strategicPriorities, commissioningContextHypotheses, supplierEcosystem</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-008</td>
+        <td>PAC Report — The Future of the Equipment Plan (June 2025) <a href="https://publications.parliament.uk/pa/cm5901/cmselect/cmpubacc/716/report.html" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-06</td>
+        <td style="font-size:9px;">strategicPriorities, risksAndSensitivities, commercialAndRiskPosture</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-009</td>
+        <td>MOD Procurement Guidance — GOV.UK and Defence Sourcing Portal <a href="https://www.gov.uk/government/organisations/ministry-of-defence/about/procurement" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2026-04-13</td>
+        <td style="font-size:9px;">procurementBehaviour, cultureAndPreferences, commercialAndRiskPosture</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-010</td>
+        <td>NAO — Ministry of Defence 2024-25 Overview (December 2025) <a href="https://www.nao.org.uk/overviews/ministry-of-defence-2024-25/" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2025-12</td>
+        <td style="font-size:9px;">risksAndSensitivities, commercialAndRiskPosture, cultureAndPreferences</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-011</td>
+        <td>Defence Committee — 'It is broke — and it's time to fix it' (2024) <a href="https://publications.parliament.uk/pa/cm5803/cmselect/cmdfence/1099/report.html" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#2D8A5E;font-weight:600;font-size:9px;">T1 Official</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2024</td>
+        <td style="font-size:9px;">risksAndSensitivities, strategicPriorities</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-012</td>
+        <td>Royal Aeronautical Society — SDR Implementation Gap Analysis <a href="https://www.aerosociety.com/news/from-strategy-to-stall-the-uk-s-strategic-defence-review-and-the-emerging-implementation-gap/" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#C68A1D;font-weight:600;font-size:9px;">T3 Secondary</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span></td>
+        <td>2025-09</td>
+        <td style="font-size:9px;">commissioningContextHypotheses, risksAndSensitivities</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-013</td>
+        <td>Find a Tender Service — MOD Award Data (349 awards)</td>
+        <td><span style="color:#3A8CA0;font-weight:600;font-size:9px;">T2 Procurement</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(45,138,94,0.12);color:#2D8A5E">high</span></td>
+        <td>2026-04-13</td>
+        <td style="font-size:9px;">procurementBehaviour, supplierEcosystem</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">SRC-014</td>
+        <td>Global Government Forum — New MOD Permanent Secretary announcement <a href="https://www.globalgovernmentforum.com/new-mod-permanent-secretary-to-drive-strategic-defence-review-delivery/" style="color:#5CA3B6;font-size:9px;">link</a></td>
+        <td><span style="color:#C68A1D;font-weight:600;font-size:9px;">T3 Secondary</span></td>
+        <td><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;border-radius:2px;background:rgba(198,138,29,0.12);color:#7C5A0A">medium</span></td>
+        <td>2025-06</td>
+        <td style="font-size:9px;">organisationContext</td>
+      </tr>
+    </table>
+    
+    <div style="font-size:11px;font-weight:600;margin:14px 0 6px;">Intelligence Gaps</div>
+    
+    <div class="gap-item">
+      <div><strong>No internal account data (Tier 4) — relationship history, prior bids, named contacts are all missing</strong></div>
+      <div style="font-size:10px;color:#576482;">Impact: Cannot assess quality of existing relationship or identify engagement opportunities</div>
+      <div style="font-size:10px;color:#5CA3B6;">Action: Account team to provide prior bid history, named contacts, and any existing account plans for MOD</div>
+    </div>
+    <div class="gap-item">
+      <div><strong>DE&amp;S internal procurement pipeline and forward look not available</strong></div>
+      <div style="font-size:10px;color:#576482;">Impact: Cannot identify upcoming procurement opportunities beyond published FTS notices</div>
+      <div style="font-size:10px;color:#5CA3B6;">Action: Monitor Defence Sourcing Portal for pre-market engagement and early market notices</div>
+    </div>
+    <div class="gap-item">
+      <div><strong>Named commercial leads and SROs for specific programmes not identified</strong></div>
+      <div style="font-size:10px;color:#576482;">Impact: Stakeholder engagement strategy cannot be developed without named individuals</div>
+      <div style="font-size:10px;color:#5CA3B6;">Action: Pursuit team to identify named contacts through industry engagement and DE&amp;S outreach</div>
+    </div>
+    <div class="gap-item">
+      <div><strong>MOD Annual Report and Accounts 2024-25 not fully analysed — PDF document requires detailed review</strong></div>
+      <div style="font-size:10px;color:#576482;">Impact: Financial performance detail, workforce data, and programme updates may be missing</div>
+      <div style="font-size:10px;color:#5CA3B6;">Action: Download and review the full annual report from GOV.UK for detailed financial and performance data</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="report-footer">
+  <div>BidEquity Buyer Intelligence Dossier | Ministry of Defence | Generated 2026-04-13T14:00:00Z</div>
+  <div>Confidential — BidEquity</div>
+</div>
+
+</body>
+</html>

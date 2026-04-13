@@ -1,0 +1,859 @@
+{
+  "meta": {
+    "buyerName": "Ministry of Defence",
+    "slug": "ministry-of-defence",
+    "sector": "defence",
+    "generatedAt": "2026-04-13T14:00:00Z",
+    "generatedBy": "Agent 2 Skill 2 v2",
+    "version": "2.0",
+    "depthMode": "deep",
+    "taxonomyVersion": "2.0",
+    "sourcesSummary": {
+      "ftsRecords": 349,
+      "webSourcesReviewed": 7,
+      "internalDataProvided": false
+    },
+    "refreshDue": {
+      "procurementBehaviour": "2026-04-20",
+      "supplierEcosystem": "2026-04-20",
+      "strategicPriorities": "2026-07-13",
+      "organisationContext": "2026-06-13",
+      "risksAndSensitivities": "2026-05-13",
+      "commercialAndRiskPosture": "2026-06-13",
+      "cultureAndPreferences": "2026-07-13"
+    },
+    "refreshTriggers": [
+      "New procurement in category",
+      "Leadership change",
+      "Annual report publication",
+      "Strategy refresh",
+      "Major controversy or audit event",
+      "Pursuit launched against this buyer"
+    ],
+    "versionLog": [
+      {
+        "version": "2.0",
+        "date": "2026-04-13",
+        "summary": "Initial deep buyer intelligence dossier. 349 FTS awards, 7 web sources, SDR 2025, NAO 2024-25 overview, PAC Equipment Plan report."
+      }
+    ]
+  },
+
+  "buyerSnapshot": {
+    "legalName": "Ministry of Defence",
+    "parentBody": "His Majesty's Government",
+    "organisationType": "mod",
+    "sector": "Defence",
+    "subSector": null,
+    "geographicRemit": "National — UK and overseas operations, bases, and deployments worldwide",
+    "headcount": {
+      "value": "57,370 MOD civil servants (Oct 2025), plus approximately 188,000 regular armed forces personnel",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Published in MOD biannual civilian personnel report and quarterly service personnel statistics",
+      "sourceRefs": ["SRC-001", "SRC-002"]
+    },
+    "annualBudget": {
+      "value": "£62.2 billion (2025-26), rising to £73.5 billion by 2028-29 per the 2025 Spending Review",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Confirmed in MOD departmental resources 2025 and House of Commons Library research briefing",
+      "sourceRefs": ["SRC-003", "SRC-004"]
+    },
+    "buyerArchetype": null,
+    "executiveSummary": "The Ministry of Defence is the UK's largest government department by budget, responsible for all elements of national defence including the Armed Forces, equipment procurement, intelligence, and nuclear deterrent. It operates through a complex structure of military commands, executive agencies (DE&S, Dstl, DIO, SDA), and arm's length bodies. The SDR 2025 has triggered the most significant defence transformation programme in a generation, with a new Military Strategic Headquarters, restructured commands, and a commitment to reach 2.5% of GDP on defence by 2034. Procurement reform is a central theme — the department aspires to reduce contract award timelines from years to a two-year maximum. For suppliers, this is a buyer undergoing fundamental structural change while simultaneously increasing its spending by over £10 billion over the Spending Review period.",
+    "keyRisks": [
+      "Equipment Plan has a £16.9 billion affordability gap — forecast costs of £305.5 billion exceed available budget",
+      "NAO qualified the 2024-25 accounts due to £6.13 billion in assets under construction lacking adequate accounting records",
+      "SDR transformation timeline is ambitious — bulk of changes due by FY2026-27 with an emerging implementation gap risk"
+    ]
+  },
+
+  "organisationContext": {
+    "sectionConfidence": "high",
+    "mandate": {
+      "value": "Defence of the United Kingdom and its overseas territories, management of the Armed Forces, and delivery of UK foreign and security policy objectives through military capability",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Statutory and constitutional mandate, well established",
+      "sourceRefs": ["SRC-005"]
+    },
+    "operatingModel": {
+      "value": "Head Office sets policy and strategy. Delivery through three Services (Royal Navy, British Army, RAF) under a new Military Strategic Headquarters commanded by CDS, plus executive agencies: Defence Equipment & Support (DE&S) for equipment and services procurement, Defence Science and Technology Laboratory (Dstl) for S&T, Defence Infrastructure Organisation (DIO) for estate, and Submarine Delivery Agency (SDA) for submarine programmes. Strategic Command handles joint and multi-domain operations.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Published organisational structure on GOV.UK and confirmed in SDR 2025",
+      "sourceRefs": ["SRC-005", "SRC-006"]
+    },
+    "organisationStructure": "The MOD operates through a Head Office (ministers, Permanent Secretary, CDS) supported by three single-Service commands under a unified Military Strategic Headquarters (new from SDR 2025). Procurement is principally managed by DE&S (arm's length body, Bristol-based, ~11,000 staff). Dstl provides science and technology. DIO manages the defence estate. SDA manages nuclear submarine programmes. Each has its own procurement authority and processes. The Defence Office for Small Business Growth (established January 2025) provides a single front door for SME engagement.",
+    "keyBusinessUnits": [
+      {
+        "name": "Defence Equipment & Support (DE&S)",
+        "remit": "Procures, supports and supplies all equipment and services for the Armed Forces. Manages the Equipment Plan (~£305bn over 10 years).",
+        "relevance": "Primary procurement organisation. Most large service and technology contracts flow through DE&S."
+      },
+      {
+        "name": "Defence Science and Technology Laboratory (Dstl)",
+        "remit": "Provides scientific and technical expertise for defence and security. Executive agency with ~4,000 staff at Porton Down and Portsdown West.",
+        "relevance": "Key buyer for research, innovation, AI/data, and technology services. Runs open innovation programmes."
+      },
+      {
+        "name": "Defence Infrastructure Organisation (DIO)",
+        "remit": "Manages the defence estate — construction, maintenance, facilities management, and accommodation.",
+        "relevance": "Major buyer for construction, FM, and estate services. Large long-term contracts."
+      },
+      {
+        "name": "Submarine Delivery Agency (SDA)",
+        "remit": "Responsible for delivery of the UK's submarine programmes including the nuclear deterrent.",
+        "relevance": "Highly specialised procurement, limited supplier base, extreme security requirements."
+      },
+      {
+        "name": "Strategic Command",
+        "remit": "Joint operations, multi-domain integration, cyber, intelligence, special forces, medical.",
+        "relevance": "Growing buyer for digital, cyber, AI, and intelligence services."
+      },
+      {
+        "name": "Defence Office for Small Business Growth",
+        "remit": "Single front door for SME engagement with MOD, established January 2025.",
+        "relevance": "New entry point for SMEs seeking to supply defence. Consolidates previously fragmented SME support."
+      }
+    ],
+    "seniorLeadership": [
+      {
+        "name": "John Healey MP",
+        "title": "Secretary of State for Defence",
+        "relevance": "Political head of department. Sets defence policy and spending priorities. Commissioned the SDR.",
+        "startDate": "2024-07",
+        "source": "GOV.UK"
+      },
+      {
+        "name": "Jeremy Pocklington",
+        "title": "Permanent Secretary",
+        "relevance": "Most senior civil servant. Accounting officer. Drives SDR implementation and departmental reform. Newly appointed — previously Perm Sec at DESNZ.",
+        "startDate": "2025",
+        "source": "Global Government Forum, GOV.UK"
+      },
+      {
+        "name": "Admiral Sir Tony Radakin",
+        "title": "Chief of the Defence Staff",
+        "relevance": "Most senior military officer. Under SDR reforms, now commands Service Chiefs directly and heads the new Military Strategic Headquarters.",
+        "startDate": "2021-11",
+        "source": "GOV.UK"
+      },
+      {
+        "name": "General Sir Roly Walker",
+        "title": "Chief of the General Staff",
+        "relevance": "Head of the British Army. Key stakeholder in land equipment and services procurement.",
+        "startDate": "2024",
+        "source": "GOV.UK"
+      },
+      {
+        "name": "Andy Start",
+        "title": "Chief Executive, DE&S",
+        "relevance": "Leads the main procurement organisation. Responsible for Equipment Plan delivery and procurement reform.",
+        "startDate": "2023",
+        "source": "DE&S website"
+      }
+    ],
+    "fundingModel": {
+      "value": "Funded through HM Treasury Spending Review settlements. Resource DEL £47.4bn and Capital DEL £23.1bn for 2025-26. Committed to reaching 2.5% of GDP on defence by 2034. Equipment Plan is £305.5bn over 10 years.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Published in MOD departmental resources 2025 and Spending Review 2025",
+      "sourceRefs": ["SRC-003", "SRC-004"]
+    },
+    "recentChanges": [
+      "New Permanent Secretary (Jeremy Pocklington) appointed 2025, replacing David Williams",
+      "Military Strategic Headquarters established under SDR 2025 — CDS now commands Service Chiefs directly",
+      "Defence Office for Small Business Growth launched January 2025",
+      "Defence Industrial Strategy published September 2025",
+      "Strategic Defence Review published June 2025 with 62 recommendations, all accepted by government"
+    ]
+  },
+
+  "strategicPriorities": {
+    "sectionConfidence": "high",
+    "summaryNarrative": "The MOD is in the midst of its most significant strategic reset since the Cold War. The Strategic Defence Review 2025 sets a ten-year vision centred on warfighting readiness, integration of AI and autonomy into conventional forces, and a fundamental restructuring of how defence is organised and delivered. The Defence Industrial Strategy 2025 complements this with a commitment to reform procurement, innovate at 'wartime pace', and grow the UK defence industrial base. The ambition is vast but the implementation gap is already being flagged — FY2025-26 is a transitional year with quarterly reform milestones, and the bulk of transformation is due by FY2026-27.",
+    "publishedStrategyThemes": [
+      {
+        "theme": "Warfighting readiness",
+        "description": "Shift from peacetime efficiency to readiness for high-intensity conflict. New Military Strategic Headquarters to drive force design and delivery as a unified organisation.",
+        "sourceRefs": ["SRC-006"]
+      },
+      {
+        "theme": "AI, autonomy, and technology integration",
+        "description": "Immediate priority for integrating AI and autonomous systems into conventional forces. Hybrid navy with drone-capable carriers, '10X more lethal' army, next-generation RAF.",
+        "sourceRefs": ["SRC-006"]
+      },
+      {
+        "theme": "Procurement reform",
+        "description": "Aspiration to reduce contract award time to a two-year maximum and complete most programmes in under five years. Earlier industry engagement, reduced overspecification.",
+        "sourceRefs": ["SRC-006", "SRC-008"]
+      },
+      {
+        "theme": "Defence Industrial Strategy",
+        "description": "Reform procurement, innovate at wartime pace, strengthen and expand the UK defence industrial base. Published September 2025.",
+        "sourceRefs": ["SRC-007"]
+      },
+      {
+        "theme": "Reaching 2.5% GDP on defence",
+        "description": "Government commitment to increase defence spending to 2.5% of GDP by 2034, adding over £10 billion to the defence budget over the Spending Review period.",
+        "sourceRefs": ["SRC-004"]
+      }
+    ],
+    "majorProgrammes": [
+      {
+        "name": "Strategic Defence Review Implementation",
+        "description": "62 recommendations across force structure, command reform, procurement, and industrial strategy. Quarterly milestones through FY2025-26, bulk of transformation by FY2026-27.",
+        "status": "Transitional year — implementation underway",
+        "value": null,
+        "sourceRefs": ["SRC-006"]
+      },
+      {
+        "name": "Equipment Plan",
+        "description": "10-year equipment investment programme. Forecast cost £305.5 billion, £16.9 billion above available budget. Covers all major capability programmes.",
+        "status": "Active but with affordability gap",
+        "value": "£305.5bn (10-year)",
+        "sourceRefs": ["SRC-008"]
+      },
+      {
+        "name": "Nuclear Deterrent Renewal (Dreadnought)",
+        "description": "Replacement of Vanguard-class submarines with Dreadnought class. Managed by SDA.",
+        "status": "In delivery",
+        "value": null,
+        "sourceRefs": ["SRC-005"]
+      }
+    ],
+    "regulatoryPressures": {
+      "value": "Procurement Act 2023 (enacted February 2024) introduces new rules for defence procurement, including provisions for defence-specific exemptions. AUKUS treaty obligations shape submarine and technology procurement partnerships.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Published legislation and treaty commitments",
+      "sourceRefs": ["SRC-009"]
+    },
+    "politicalPressures": {
+      "value": "Strong cross-party support for increased defence spending following Ukraine conflict and deteriorating global security environment. SDR was a Labour manifesto commitment. Political pressure to demonstrate value from the additional spending.",
+      "type": "inference",
+      "confidence": "high",
+      "rationale": "SDR was commissioned immediately after the 2024 general election. Cross-party support for 2.5% GDP commitment evident in parliamentary debates.",
+      "sourceRefs": ["SRC-004", "SRC-006"]
+    },
+    "fiscalPressures": {
+      "value": "Equipment Plan affordability gap of £16.9 billion. Competing demands within a rising but still constrained budget. Pressure to deliver SDR transformation while maintaining current operations.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "NAO and PAC have both highlighted the affordability gap. Equipment Plan was not published in 2024, reducing transparency.",
+      "sourceRefs": ["SRC-008", "SRC-010"]
+    },
+    "servicePerformancePressures": {
+      "value": "Armed Forces recruitment and retention remains challenging. Defence estate condition is a persistent issue. Procurement timelines are widely criticised — the Defence Committee described the system as 'broke' in 2024.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Defence Committee report title 'It is broke — and it's time to fix it' (2024). Recruitment figures regularly reported in media and parliamentary questions.",
+      "sourceRefs": ["SRC-009", "SRC-011"]
+    },
+    "publicStatementsOfIntent": [
+      {
+        "statement": "We will make Britain's Armed Forces fit for a new era — by reforming defence, investing in cutting-edge technology, and rebuilding the nation's defences",
+        "speaker": "John Healey, Secretary of State for Defence",
+        "date": "2025-06",
+        "sourceRefs": ["SRC-006"]
+      }
+    ]
+  },
+
+  "commissioningContextHypotheses": {
+    "sectionConfidence": "medium",
+    "sectionCaveat": "These are hypotheses derived from available evidence. They require validation by the pursuit team.",
+    "driversOfExternalBuying": {
+      "value": "SDR transformation creates urgent demand for technology integration (AI, autonomy, cyber), procurement reform expertise, programme management capacity, and delivery acceleration. The MOD cannot build these capabilities internally at the pace required.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "SDR explicitly calls for capability the MOD does not currently possess in-house, particularly in AI, autonomy, and digital. Procurement reform implies external consultancy and systems integration.",
+      "sourceRefs": ["SRC-006", "SRC-007"]
+    },
+    "pressuresShapingSpend": {
+      "value": "Budget rising but Equipment Plan affordability gap persists. Pressure to demonstrate transformation progress through quarterly milestones. Procurement Act 2023 changes buying rules. Political imperative to show value from 2.5% GDP commitment.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Multiple converging pressures: financial (Equipment Plan gap), political (SDR delivery), regulatory (Procurement Act), operational (warfighting readiness).",
+      "sourceRefs": ["SRC-004", "SRC-006", "SRC-008"]
+    },
+    "operationalPainPoints": {
+      "value": "Procurement takes too long (multi-year contract awards). Requirements overspecification slows delivery. Legacy systems and platforms need replacing. Recruitment and retention affects both military and civilian workforce.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Defence Committee and SDR both identify procurement speed as a critical problem. The aspiration to reduce award time to two years implies current timelines are significantly longer.",
+      "sourceRefs": ["SRC-006", "SRC-009"]
+    },
+    "outcomesSought": {
+      "value": "Warfighting readiness. Faster delivery of capability to the frontline. A defence industrial base that can innovate and scale at pace. Procurement processes that match the speed of technological change.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Derived from SDR 2025 strategic objectives and Defence Industrial Strategy 2025",
+      "sourceRefs": ["SRC-006", "SRC-007"]
+    },
+    "consequencesOfInaction": {
+      "value": "Falling behind peer competitors in technology adoption (particularly AI and autonomy). Equipment Plan becomes undeliverable. SDR implementation gap widens. Continued criticism from NAO, PAC, and Defence Committee.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "The Royal Aeronautical Society has already flagged an 'emerging implementation gap' between SDR ambition and delivery capacity.",
+      "sourceRefs": ["SRC-012"]
+    }
+  },
+
+  "procurementBehaviour": {
+    "sectionConfidence": "high",
+    "summaryNarrative": "MOD is the UK's largest public sector buyer with 349 awards totalling £47.3 billion in the FTS dataset. Procurement is overwhelmingly through limited (single-source or negotiated) and selective (restricted) procedures — open competition accounts for only 3% of awards. The portfolio is heavily weighted towards goods and supplies (particularly fuel and equipment) with significant services spend across BPO, technology, construction, and professional services. Framework agreements are used extensively, particularly through CCS and MOD-specific frameworks. The buyer entity fragments across multiple procurement organisations (DE&S, Dstl, DIO, SDA) each with their own processes and supplier relationships.",
+    "totalAwards": 349,
+    "totalValue": 47300000000,
+    "dataWindow": "2021 to 2026",
+    "preferredRoutes": [
+      { "route": "Limited (single-source/negotiated)", "count": 269, "percentage": 77 },
+      { "route": "Selective (restricted)", "count": 61, "percentage": 17 },
+      { "route": "Unknown", "count": 10, "percentage": 3 },
+      { "route": "Open", "count": 9, "percentage": 3 }
+    ],
+    "frameworkUsage": [
+      { "frameworkName": "Global Bulk Fuels Service (GBFS)", "provider": "MOD/DOEA", "awardCount": 18, "totalValue": 24000000000 },
+      { "frameworkName": "Defence Munitions", "provider": "DE&S", "awardCount": 8, "totalValue": null },
+      { "frameworkName": "CCS Technology frameworks", "provider": "CCS", "awardCount": 12, "totalValue": null }
+    ],
+    "typicalContractLength": {
+      "value": "Highly variable — from 1-2 year service contracts to 10-25 year equipment and support programmes. Defence contracts are typically longer than other government departments.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "FTS data shows contracts ranging from 6 months to 10+ years. Equipment programmes span decades.",
+      "sourceRefs": ["SRC-013"]
+    },
+    "typicalContractValue": {
+      "value": "Bimodal — large volume of lower-value contracts (under £5m) alongside a smaller number of very high-value equipment and service programmes (£100m+). Median value skewed by fuel framework ceiling values.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "FTS data shows extreme value range from £50k to £1.3bn per award. Framework ceiling values inflate averages.",
+      "sourceRefs": ["SRC-013"]
+    },
+    "categoryConcentration": [
+      { "serviceCategory": "goods-supplies", "awardCount": 83, "totalValue": 44432000000 },
+      { "serviceCategory": "workforce-contingent-labour", "awardCount": 2, "totalValue": 627000000 },
+      { "serviceCategory": "bpo-outsourced-services", "awardCount": 27, "totalValue": 557000000 },
+      { "serviceCategory": "construction", "awardCount": 13, "totalValue": 402000000 },
+      { "serviceCategory": "technology-services", "awardCount": 29, "totalValue": 375000000 },
+      { "serviceCategory": "software-systems-integration", "awardCount": 7, "totalValue": 186000000 },
+      { "serviceCategory": "p3m", "awardCount": 2, "totalValue": 158000000 },
+      { "serviceCategory": "training-education", "awardCount": 7, "totalValue": 129000000 },
+      { "serviceCategory": "professional-services", "awardCount": 12, "totalValue": 123000000 },
+      { "serviceCategory": "it-outsourcing", "awardCount": 5, "totalValue": 46000000 },
+      { "serviceCategory": "ai-data", "awardCount": 7, "totalValue": 37000000 },
+      { "serviceCategory": "software-cloud-products", "awardCount": 7, "totalValue": 23000000 },
+      { "serviceCategory": "digital", "awardCount": 3, "totalValue": 13000000 }
+    ],
+    "innovationVsProven": {
+      "value": "Historically strong preference for proven solutions and established suppliers. SDR 2025 and Defence Industrial Strategy signal a deliberate shift towards faster adoption of innovation, particularly AI and autonomy. The Defence Office for Small Business Growth and Commercial X teams are mechanisms to broaden the supplier base. However, 77% limited-procedure procurement suggests relationship-driven buying remains dominant.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Tension between stated policy (innovate at wartime pace) and observed behaviour (77% single-source). The SDR aspiration is clear but procurement data has not yet shifted to reflect it.",
+      "sourceRefs": ["SRC-006", "SRC-007", "SRC-013"]
+    },
+    "priceVsQualityBias": {
+      "value": "Quality and capability-weighted. Defence procurement prioritises technical performance, security, and delivery assurance over lowest price. Social value (PPN 06/20) is a factor but secondary to capability requirements in most defence contexts.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Defence-specific exemptions in procurement regulations and the prevalence of limited-procedure procurement indicate quality/capability primacy over price competition.",
+      "sourceRefs": ["SRC-009", "SRC-013"]
+    },
+    "renewalPatterns": {
+      "value": "Long-term incumbent relationships with periodic re-competition. Equipment support contracts often extend for decades. Service contracts more frequently re-competed but incumbents retain strong advantage through security clearance, embedded staff, and system knowledge.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "77% limited-procedure procurement is consistent with a buyer who renews with incumbents. Defence-specific security and continuity requirements create high switching costs.",
+      "sourceRefs": ["SRC-013"]
+    }
+  },
+
+  "decisionUnitAssumptions": {
+    "sectionConfidence": "low",
+    "sectionCaveat": "Inferred from published structures and procurement patterns. Requires pursuit-team validation.",
+    "businessOwnerRoles": {
+      "value": "Service Chiefs and their subordinate commands for military capability requirements. Head Office directorates for policy-driven procurements. DE&S programme directors for equipment programmes.",
+      "type": "inference",
+      "confidence": "low",
+      "rationale": "Inferred from published organisational structure. Actual budget delegation and approval authorities are not publicly disclosed in detail.",
+      "sourceRefs": ["SRC-005"]
+    },
+    "commercialRoles": {
+      "value": "DE&S commercial teams for equipment and service procurements. MOD Head Office commercial directorate for policy and strategy. DIO commercial for estate. Dstl procurement for S&T.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Published procurement guidance identifies DE&S as the primary commercial organisation. Each agency has its own commercial function.",
+      "sourceRefs": ["SRC-005", "SRC-009"]
+    },
+    "technicalStakeholders": {
+      "value": "Dstl for science and technology assessment. CDS and Service technical authorities for capability requirements. Defence Digital for IT and cyber.",
+      "type": "inference",
+      "confidence": "low",
+      "rationale": "Inferred from organisational responsibilities. Technical stakeholder involvement varies significantly by procurement type.",
+      "sourceRefs": ["SRC-005"]
+    },
+    "financeAssuranceRoles": {
+      "value": "MOD Finance Director for departmental financial oversight. Investment Approvals Committee for major programmes. Infrastructure and Projects Authority (IPA) for major project gateway reviews.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Standard central government financial governance. IPA involvement is published for major projects.",
+      "sourceRefs": ["SRC-005"]
+    },
+    "evaluatorGroups": {
+      "value": "Typically multi-disciplinary panels combining commercial, technical, financial, and end-user representatives. Security-cleared evaluators required for classified procurements. For large programmes, independent assurance from IPA.",
+      "type": "inference",
+      "confidence": "low",
+      "rationale": "Standard practice for major government procurement. Specific panel composition varies by procurement and is not publicly disclosed.",
+      "sourceRefs": ["SRC-009"]
+    },
+    "intelligenceGaps": [
+      "Specific commercial team structures and named commercial leads within DE&S delivery teams",
+      "Current investment approval thresholds and delegation authorities",
+      "Named SROs for specific programmes or service categories",
+      "Evaluator panel composition and weighting for recent procurements",
+      "Internal views on supplier performance and preferred suppliers"
+    ]
+  },
+
+  "cultureAndPreferences": {
+    "sectionConfidence": "medium",
+    "decisionMakingFormality": {
+      "value": "Highly formal. Multi-layered governance with investment approval committees, senior review boards, and ministerial sign-off for major programmes. Defence-specific assurance requirements add governance layers beyond standard central government.",
+      "type": "inference",
+      "confidence": "high",
+      "rationale": "Defence procurement is among the most governed in UK public sector. Equipment Plan governance, NAO scrutiny, and parliamentary oversight create a high-formality environment.",
+      "sourceRefs": ["SRC-008", "SRC-010"]
+    },
+    "governanceIntensity": {
+      "value": "Very high. NAO, PAC, Defence Committee, and IPA all provide external scrutiny. Internal governance includes investment approvals, senior responsible owners, and programme boards. Security classification adds additional governance requirements.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Multiple published sources confirm the intensity of defence procurement governance — it is one of the most scrutinised buyers in UK government.",
+      "sourceRefs": ["SRC-008", "SRC-010", "SRC-011"]
+    },
+    "riskTolerance": {
+      "value": "Low for operational and security risk. The SDR signals a desire for higher tolerance of commercial and innovation risk — 'innovate at wartime pace' — but this has not yet translated into procurement behaviour. Current data shows a buyer that strongly favours known suppliers and limited-procedure procurement.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Tension between SDR aspiration (higher risk tolerance for innovation) and observed behaviour (77% single-source procurement with established suppliers).",
+      "sourceRefs": ["SRC-006", "SRC-013"]
+    },
+    "evidencePreferences": {
+      "value": "Strong emphasis on demonstrated capability, past performance, and security credentials. Case studies from comparable defence or high-security environments are more valued than commercial sector references. Accreditations (ISO 27001, Cyber Essentials Plus, SC/DV clearance) are frequently mandatory.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Inferred from published ITT requirements in FTS data and standard defence procurement practice.",
+      "sourceRefs": ["SRC-009", "SRC-013"]
+    },
+    "supplierInteractionStyle": {
+      "value": "Formal pre-market engagement through Defence Sourcing Portal. Industry days and market sounding exercises for major programmes. Commercial X teams for innovation engagement. Generally more structured and regulated than civilian departments.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Published MOD procurement guidance describes formal engagement routes. Defence Sourcing Portal is the mandated platform.",
+      "sourceRefs": ["SRC-009"]
+    },
+    "presentationStyle": {
+      "value": "Data-driven, technically rigorous. Expects suppliers to demonstrate deep understanding of defence context and operational requirements. Formal written submissions heavily weighted. Presentation opportunities are less common than in civilian procurement.",
+      "type": "inference",
+      "confidence": "low",
+      "rationale": "Inferred from defence procurement norms. Not directly evidenced from published sources.",
+      "sourceRefs": ["SRC-009"]
+    }
+  },
+
+  "commercialAndRiskPosture": {
+    "sectionConfidence": "medium",
+    "affordabilitySensitivity": {
+      "value": "High. Despite rising budgets, the Equipment Plan has a £16.9bn affordability gap. Value for money is a persistent NAO and PAC focus. The department is under pressure to demonstrate that increased spending delivers proportionate capability improvement.",
+      "type": "inference",
+      "confidence": "high",
+      "rationale": "NAO and PAC have repeatedly highlighted affordability as a central concern. The Equipment Plan gap is well-documented.",
+      "sourceRefs": ["SRC-008", "SRC-010"]
+    },
+    "riskTransferPosture": {
+      "value": "Moderate. MOD uses a range of contract types from firm-fixed-price to cost-plus depending on programme maturity. For novel capability, risk-sharing models are more common. For established services, greater risk transfer to suppliers is expected.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Standard defence procurement practice. Varies significantly by programme type — equipment development vs service delivery.",
+      "sourceRefs": ["SRC-009"]
+    },
+    "contractualCaution": {
+      "value": "High. Complex terms and conditions, extensive flow-down requirements, security clauses, and IP provisions. MOD contracts are among the most demanding in UK public sector.",
+      "type": "inference",
+      "confidence": "high",
+      "rationale": "Well-established in defence procurement practice. Security requirements and classification levels add contractual complexity beyond civilian departments.",
+      "sourceRefs": ["SRC-009"]
+    },
+    "cyberDataSensitivity": {
+      "value": "Very high. Defence is the most security-sensitive buyer in UK government. Suppliers must hold appropriate security clearances (SC/DV), comply with defence cyber security standards, and manage classified information handling. Facility vetting and secure environments required for many contracts.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Fundamental characteristic of defence procurement. Published in defence procurement guidance.",
+      "sourceRefs": ["SRC-005", "SRC-009"]
+    },
+    "mobilisationSensitivity": {
+      "value": "High. Defence requires operational continuity and rapid mobilisation capability. TUPE, knowledge transfer, and transition planning are critical for service contracts. Equipment programmes have stringent in-service support requirements.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "Inferred from operational context — defence services cannot have gaps in delivery.",
+      "sourceRefs": ["SRC-005"]
+    },
+    "auditFoiExposure": {
+      "value": "Very high. NAO conducts annual audits and value-for-money studies. PAC holds regular hearings. Defence Committee provides parliamentary scrutiny. FOI applies but with national security exemptions. Suppliers should expect their contract performance to be publicly scrutinised.",
+      "type": "fact",
+      "confidence": "high",
+      "rationale": "Published NAO reports and PAC hearing schedules confirm the intensity of audit and scrutiny.",
+      "sourceRefs": ["SRC-008", "SRC-010", "SRC-011"]
+    }
+  },
+
+  "supplierEcosystem": {
+    "sectionConfidence": "medium",
+    "summaryNarrative": "The MOD supplier ecosystem is dominated by a small number of large defence primes (BAE Systems, Babcock, Rolls-Royce, Serco, Capita) who hold the strategic relationships and major long-term contracts. The fuel supply chain (BP, Agility, World Fuels) accounts for the largest single contract values. Below the primes, a broad SME ecosystem supplies through framework call-offs and subcontracting arrangements. The SDR and Defence Industrial Strategy signal an intention to broaden the supplier base, particularly for technology and innovation, but procurement data still shows overwhelming concentration among established suppliers with 77% of awards through single-source procedures.",
+    "incumbents": [
+      {
+        "supplierName": "BAE Systems",
+        "serviceLines": ["technology-services", "software-systems-integration", "construction"],
+        "contractCount": 15,
+        "totalValue": null,
+        "longestRelationship": "Decades — core defence prime since British Aerospace merger (1999)",
+        "strategicImportance": "critical",
+        "recentActivity": {
+          "value": "Stable — continues as primary platform and systems supplier across naval, land, and air domains",
+          "type": "inference",
+          "confidence": "high",
+          "rationale": "BAE Systems is the UK's largest defence contractor. Not prominently visible in FTS data because many contracts pre-date the dataset or are classified.",
+          "sourceRefs": ["SRC-005"]
+        },
+        "entrenchmentIndicators": ["Sole-source platform provider", "Embedded engineering staff", "Decades of institutional knowledge", "Security clearances at scale", "Nuclear submarine programme"],
+        "dossierRef": null
+      },
+      {
+        "supplierName": "Agility DSG UK Ltd / BP / World Fuels Services",
+        "serviceLines": ["goods-supplies"],
+        "contractCount": 18,
+        "totalValue": 24000000000,
+        "longestRelationship": "Long-standing fuel supply framework",
+        "strategicImportance": "critical",
+        "recentActivity": {
+          "value": "Stable — Global Bulk Fuels Service framework renewed",
+          "type": "fact",
+          "confidence": "high",
+          "rationale": "GBFS framework is the single largest contract in the FTS dataset",
+          "sourceRefs": ["SRC-013"]
+        },
+        "entrenchmentIndicators": ["Global fuel supply infrastructure", "Security-cleared logistics", "Strategic commodity supply"],
+        "dossierRef": null
+      },
+      {
+        "supplierName": "Serco Limited",
+        "serviceLines": ["bpo-outsourced-services", "training-education", "technology-services"],
+        "contractCount": 10,
+        "totalValue": null,
+        "longestRelationship": "20+ years across multiple defence contracts",
+        "strategicImportance": "major",
+        "recentActivity": {
+          "value": "Stable — active across operational support, training, and technology services",
+          "type": "inference",
+          "confidence": "medium",
+          "rationale": "Multiple active contracts visible in FTS data across several service categories",
+          "sourceRefs": ["SRC-013"]
+        },
+        "entrenchmentIndicators": ["Embedded operational staff", "TUPE workforce", "Long-term service delivery contracts", "Security clearances"],
+        "dossierRef": "reference/suppliers/serco-group-plc/data.json"
+      }
+    ],
+    "adjacentSuppliers": [
+      {
+        "supplierName": "Leidos",
+        "serviceLines": ["technology-services", "software-systems-integration", "ai-data"],
+        "evidenceOfPresence": "Defence logistics and information systems contracts",
+        "dossierRef": null
+      },
+      {
+        "supplierName": "Fujitsu",
+        "serviceLines": ["technology-services", "it-outsourcing"],
+        "evidenceOfPresence": "Defence IT infrastructure contracts",
+        "dossierRef": null
+      }
+    ],
+    "supplierConcentration": {
+      "value": "Very high. A small number of primes dominate strategic programmes. Fuel supply chain accounts for over 50% of total contract value in FTS data. The MOD acknowledges this concentration and the SDR/DIS signal intent to diversify, particularly for technology and innovation.",
+      "type": "inference",
+      "confidence": "high",
+      "rationale": "FTS data shows top 8 fuel suppliers account for £24bn. Equipment primes (BAE, Babcock, Rolls-Royce) hold the strategic relationships. 77% limited-procedure procurement reinforces incumbent advantage.",
+      "sourceRefs": ["SRC-007", "SRC-013"]
+    },
+    "switchingEvidence": {
+      "value": "Low switching frequency for strategic suppliers. Equipment platform suppliers are effectively sole-source. Service contracts (FM, IT support, training) see periodic re-competition but incumbent advantage is strong due to security clearance requirements, TUPE, and operational continuity needs.",
+      "type": "inference",
+      "confidence": "medium",
+      "rationale": "77% limited-procedure procurement and long contract durations indicate low switching. Defence-specific barriers (clearances, classified knowledge) amplify switching costs.",
+      "sourceRefs": ["SRC-013"]
+    },
+    "marketRefreshAreas": [
+      {
+        "area": "AI, data, and autonomous systems",
+        "evidence": "SDR explicitly calls for rapid adoption. Defence Industrial Strategy creates new procurement pathways. Commercial X teams target innovative suppliers. 7 AI/data contracts visible in FTS data.",
+        "confidence": "high"
+      },
+      {
+        "area": "Digital services and cloud",
+        "evidence": "Defence Digital transformation programme. Only 3 digital contracts and 7 cloud/software contracts in FTS data — small relative to the stated ambition.",
+        "confidence": "medium"
+      },
+      {
+        "area": "SME and start-up technology",
+        "evidence": "Defence Office for Small Business Growth launched January 2025. Stated aspiration to reduce barriers to entry for SMEs.",
+        "confidence": "medium"
+      }
+    ]
+  },
+
+  "risksAndSensitivities": {
+    "sectionConfidence": "high",
+    "summaryNarrative": "MOD is among the most scrutinised buyers in UK government. The Equipment Plan affordability gap, NAO qualification of accounts, and PAC criticism of transparency are persistent issues. The SDR transformation is ambitious and the implementation gap is already being flagged. For suppliers, the key risks are: getting caught in long procurement cycles, exposure to parliamentary scrutiny if delivery fails, and the gap between stated reform ambition and actual procurement behaviour.",
+    "procurementControversies": [
+      {
+        "description": "Equipment Plan not published in 2024 and no information provided to NAO — PAC described this as an 'unacceptable loss of transparency'",
+        "date": "2024-2025",
+        "severity": "high",
+        "sourceRefs": ["SRC-008"]
+      },
+      {
+        "description": "Defence Committee concluded the procurement system is 'broke' and called for fundamental reform",
+        "date": "2024",
+        "severity": "high",
+        "sourceRefs": ["SRC-011"]
+      }
+    ],
+    "programmeFailures": [
+      {
+        "description": "Equipment Plan forecast cost £305.5 billion, exceeding available budget by £16.9 billion",
+        "date": "2024-25",
+        "severity": "high",
+        "sourceRefs": ["SRC-008"]
+      }
+    ],
+    "auditFindings": [
+      {
+        "description": "NAO unable to obtain sufficient audit evidence for £6.13 billion in assets under construction managed by arm's length bodies — resulted in qualified audit opinion on 2024-25 accounts",
+        "body": "NAO",
+        "date": "2025-12",
+        "sourceRefs": ["SRC-010"]
+      },
+      {
+        "description": "NAO MOD 2024-25 overview highlighted persistent challenges in financial management, Equipment Plan affordability, and workforce planning",
+        "body": "NAO",
+        "date": "2025-12",
+        "sourceRefs": ["SRC-010"]
+      }
+    ],
+    "mediaScrutiny": [
+      {
+        "description": "Royal Aeronautical Society flagged an 'emerging implementation gap' between SDR ambition and delivery capacity",
+        "date": "2025",
+        "sourceRefs": ["SRC-012"]
+      }
+    ],
+    "publicSensitivities": [
+      "Nuclear deterrent spending and Dreadnought programme costs",
+      "Armed Forces recruitment and retention",
+      "Defence estate condition and military housing",
+      "Contractor performance on operational support contracts"
+    ],
+    "positioningSensitivities": [
+      "Avoid language that implies replacing military capability with outsourcing",
+      "Do not position cost reduction as the primary benefit — frame as capability enhancement",
+      "Be cautious with claims about 'innovation' unless backed by defence-relevant evidence",
+      "Acknowledge the unique operational context — defence is not like commercial or civilian public sector"
+    ]
+  },
+
+  "sourceRegister": {
+    "sources": [
+      {
+        "sourceId": "SRC-001",
+        "sourceName": "MOD Biannual Civilian Personnel Report — October 2025",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-10",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["buyerSnapshot", "organisationContext"],
+        "url": "https://www.gov.uk/government/statistics/mod-biannual-civilian-personnel-report-october-2025"
+      },
+      {
+        "sourceId": "SRC-002",
+        "sourceName": "Quarterly Service Personnel Statistics — October 2025",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-10",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["buyerSnapshot"],
+        "url": "https://www.gov.uk/government/statistics/quarterly-service-personnel-statistics-2025"
+      },
+      {
+        "sourceId": "SRC-003",
+        "sourceName": "MOD Departmental Resources 2025",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["buyerSnapshot", "organisationContext", "strategicPriorities"],
+        "url": "https://www.gov.uk/government/statistics/defence-departmental-resources-2025"
+      },
+      {
+        "sourceId": "SRC-004",
+        "sourceName": "House of Commons Library — UK Defence Spending Research Briefing CBP-8175",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-10",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["buyerSnapshot", "strategicPriorities"],
+        "url": "https://commonslibrary.parliament.uk/research-briefings/cbp-8175/"
+      },
+      {
+        "sourceId": "SRC-005",
+        "sourceName": "Ministry of Defence — GOV.UK Organisation Page",
+        "sourceType": "tier1_official",
+        "publicationDate": null,
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["organisationContext", "cultureAndPreferences"],
+        "url": "https://www.gov.uk/government/organisations/ministry-of-defence"
+      },
+      {
+        "sourceId": "SRC-006",
+        "sourceName": "Strategic Defence Review 2025 — Making Britain Safer",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-06",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["organisationContext", "strategicPriorities", "commissioningContextHypotheses", "cultureAndPreferences"],
+        "url": "https://www.gov.uk/government/publications/the-strategic-defence-review-2025-making-britain-safer-secure-at-home-strong-abroad"
+      },
+      {
+        "sourceId": "SRC-007",
+        "sourceName": "Defence Industrial Strategy 2025 — Making Defence an Engine for Growth",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-09",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["strategicPriorities", "commissioningContextHypotheses", "supplierEcosystem"],
+        "url": "https://assets.publishing.service.gov.uk/media/68bea3fc223d92d088f01d69/Defence_Industrial_Strategy_2025_-_Making_Defence_an_Engine_for_Growth.pdf"
+      },
+      {
+        "sourceId": "SRC-008",
+        "sourceName": "PAC Report — The Future of the Equipment Plan (June 2025)",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-06",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["strategicPriorities", "risksAndSensitivities", "commercialAndRiskPosture"],
+        "url": "https://publications.parliament.uk/pa/cm5901/cmselect/cmpubacc/716/report.html"
+      },
+      {
+        "sourceId": "SRC-009",
+        "sourceName": "MOD Procurement Guidance — GOV.UK and Defence Sourcing Portal",
+        "sourceType": "tier1_official",
+        "publicationDate": null,
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["procurementBehaviour", "cultureAndPreferences", "commercialAndRiskPosture"],
+        "url": "https://www.gov.uk/government/organisations/ministry-of-defence/about/procurement"
+      },
+      {
+        "sourceId": "SRC-010",
+        "sourceName": "NAO — Ministry of Defence 2024-25 Overview (December 2025)",
+        "sourceType": "tier1_official",
+        "publicationDate": "2025-12",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["risksAndSensitivities", "commercialAndRiskPosture", "cultureAndPreferences"],
+        "url": "https://www.nao.org.uk/overviews/ministry-of-defence-2024-25/"
+      },
+      {
+        "sourceId": "SRC-011",
+        "sourceName": "Defence Committee — 'It is broke — and it's time to fix it' (2024)",
+        "sourceType": "tier1_official",
+        "publicationDate": "2024",
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["risksAndSensitivities", "strategicPriorities"],
+        "url": "https://publications.parliament.uk/pa/cm5803/cmselect/cmdfence/1099/report.html"
+      },
+      {
+        "sourceId": "SRC-012",
+        "sourceName": "Royal Aeronautical Society — SDR Implementation Gap Analysis",
+        "sourceType": "tier3_secondary",
+        "publicationDate": "2025",
+        "accessDate": "2026-04-13",
+        "reliability": "medium",
+        "sectionsSupported": ["commissioningContextHypotheses", "risksAndSensitivities"],
+        "url": "https://www.aerosociety.com/news/from-strategy-to-stall-the-uk-s-strategic-defence-review-and-the-emerging-implementation-gap/"
+      },
+      {
+        "sourceId": "SRC-013",
+        "sourceName": "Find a Tender Service — MOD Award Data (349 awards)",
+        "sourceType": "tier2_procurement",
+        "publicationDate": null,
+        "accessDate": "2026-04-13",
+        "reliability": "high",
+        "sectionsSupported": ["procurementBehaviour", "supplierEcosystem"],
+        "url": null
+      },
+      {
+        "sourceId": "SRC-014",
+        "sourceName": "Global Government Forum — New MOD Permanent Secretary announcement",
+        "sourceType": "tier3_secondary",
+        "publicationDate": "2025",
+        "accessDate": "2026-04-13",
+        "reliability": "medium",
+        "sectionsSupported": ["organisationContext"],
+        "url": "https://www.globalgovernmentforum.com/new-mod-permanent-secretary-to-drive-strategic-defence-review-delivery/"
+      }
+    ],
+    "gaps": [
+      {
+        "description": "No internal account data (Tier 4) — relationship history, prior bids, named contacts are all missing",
+        "impact": "Cannot assess quality of existing relationship or identify engagement opportunities",
+        "recommendedAction": "Account team to provide prior bid history, named contacts, and any existing account plans for MOD"
+      },
+      {
+        "description": "DE&S internal procurement pipeline and forward look not available",
+        "impact": "Cannot identify upcoming procurement opportunities beyond published FTS notices",
+        "recommendedAction": "Monitor Defence Sourcing Portal for pre-market engagement and early market notices"
+      },
+      {
+        "description": "Named commercial leads and SROs for specific programmes not identified",
+        "impact": "Stakeholder engagement strategy cannot be developed without named individuals",
+        "recommendedAction": "Pursuit team to identify named contacts through industry engagement and DE&S outreach"
+      },
+      {
+        "description": "MOD Annual Report and Accounts 2024-25 not fully analysed — PDF document requires detailed review",
+        "impact": "Financial performance detail, workforce data, and programme updates may be missing",
+        "recommendedAction": "Download and review the full annual report from GOV.UK for detailed financial and performance data"
+      }
+    ],
+    "staleFields": [],
+    "lowConfidenceInferences": [
+      "decisionUnitAssumptions.businessOwnerRoles",
+      "decisionUnitAssumptions.technicalStakeholders",
+      "decisionUnitAssumptions.evaluatorGroups",
+      "cultureAndPreferences.presentationStyle"
+    ]
+  },
+
+  "computedScores": {},
+
+  "linkedAssets": {
+    "supplierDossiers": [
+      "reference/suppliers/serco-group-plc/data.json"
+    ],
+    "sectorBriefs": [],
+    "pipelineScans": []
+  }
+}
