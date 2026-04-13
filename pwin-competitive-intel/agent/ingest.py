@@ -54,7 +54,43 @@ def get_db(path: Path) -> sqlite3.Connection:
     return conn
 
 
+def _migrate_schema(conn: sqlite3.Connection):
+    """Add columns that were appended to schema.sql after the DB was first created.
+
+    CREATE TABLE IF NOT EXISTS silently skips tables that already exist,
+    so new columns must be added via ALTER TABLE.  Each migration is
+    guarded by a PRAGMA table_info check so it is safe to re-run.
+    """
+    # Collect existing columns per table once
+    def _columns(table):
+        return {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+
+    # ── notices: framework fields (added 2026-04-12, Decision C06) ──
+    notices_cols = _columns("notices")
+    framework_additions = [
+        ("is_framework",          "INTEGER DEFAULT 0"),
+        ("framework_method",      "TEXT"),
+        ("framework_type",        "TEXT"),
+        ("parent_framework_ocid", "TEXT"),
+        ("parent_framework_title","TEXT"),
+    ]
+    for col, typedef in framework_additions:
+        if col not in notices_cols:
+            conn.execute(f"ALTER TABLE notices ADD COLUMN {col} {typedef}")
+            log.info("Migrated notices: added column %s", col)
+
+    conn.commit()
+
+
 def init_schema(conn: sqlite3.Connection):
+    # Run migrations first so existing tables gain any new columns
+    # before the CREATE TABLE IF NOT EXISTS statements (which are no-ops
+    # for tables that already exist).
+    try:
+        _migrate_schema(conn)
+    except Exception:
+        pass  # table doesn't exist yet — CREATE TABLE will handle it
+
     schema = SCHEMA_PATH.read_text()
     conn.executescript(schema)
     conn.commit()

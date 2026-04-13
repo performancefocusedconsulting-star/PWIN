@@ -10,7 +10,7 @@
  *   node scripts/run-skill-local.js <skill-id> [options]
  *
  * Options:
- *   --supplier <name>       Supplier name (for supplier-dossier)
+ *   --supplier <name>       Supplier name (for supplier-intelligence)
  *   --buyer <name>          Buyer name (for buyer-intelligence)
  *   --depth <mode>          snapshot | standard | deep (default: standard)
  *   --sectors <list>        Comma-separated sector list
@@ -20,8 +20,9 @@
  *   --prompt-only           Only output the user prompt (system prompt goes to a separate file)
  *
  * Examples:
- *   node scripts/run-skill-local.js supplier-dossier --supplier "Serco Group plc" --depth deep --fts-supplier "SERCO"
+ *   node scripts/run-skill-local.js supplier-intelligence --supplier "Serco Group plc" --depth deep --fts-supplier "SERCO"
  *   node scripts/run-skill-local.js buyer-intelligence --buyer "Ministry of Defence" --depth standard --fts-buyer "Ministry of Defence"
+ *   node scripts/run-skill-local.js sector-intelligence --sector "Local Government" --jurisdiction "England" --depth standard
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -39,8 +40,9 @@ if (args.length === 0 || args.includes('--help')) {
   console.log(`Usage: node scripts/run-skill-local.js <skill-id> [options]
 
 Skills:
-  supplier-dossier      Supplier Intelligence Dossier v2
-  buyer-intelligence    Buyer Intelligence Dossier v2
+  supplier-intelligence  Supplier Intelligence Dossier v2
+  buyer-intelligence     Buyer Intelligence Dossier v2
+  sector-intelligence    Sector Intelligence Dossier v1
 
 Options:
   --supplier <name>     Supplier name
@@ -213,7 +215,7 @@ for (const [key, value] of Object.entries(replacements)) {
 
 // ─── Output ─────────────────────────────────────────────────────────────────
 
-const storageNote = skillId === 'supplier-dossier'
+const storageNote = skillId === 'supplier-intelligence'
   ? `\n\nWhen you have produced the JSON, save it to: ~/.pwin/reference/suppliers/${(supplierName || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-')}/data.json\nThen run the renderer: node pwin-architect-plugin/agents/market-intelligence/render-dossier.js ~/.pwin/reference/suppliers/${(supplierName || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-')}/data.json`
   : `\n\nWhen you have produced the JSON, save it to: ~/.pwin/reference/clients/${(buyerName || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-')}/data.json\nThen run the renderer: node pwin-architect-plugin/agents/market-intelligence/render-client-profile.js ~/.pwin/reference/clients/${(buyerName || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-')}/data.json`;
 
