@@ -1,0 +1,107 @@
+{
+  "_comment": "Buyer archetype taxonomy. Two levels: organisational (stable property of the buying institution) and opportunity (property of the specific procurement event). Both assessed by AI with evidence.",
+  "version": "1.0",
+  "created": "2026-04-13",
+
+  "organisational": {
+    "_comment": "Assessed in the buyer intelligence dossier (Agent 2 Skill 2). Describes how the institution generally behaves as a buyer. Stable across procurements.",
+    "archetypes": [
+      {
+        "id": "strategic_central_commissioner",
+        "name": "Strategic Central Commissioner",
+        "description": "Mature commercial centre, strong governance, expects sophisticated outcome-led propositions.",
+        "bidImplication": "Play the process. Invest in understanding governance layers. Demonstrate strategic alignment, not just delivery capability."
+      },
+      {
+        "id": "framework_first_operator",
+        "name": "Framework-First Operator",
+        "description": "Buys through accessible routes where speed and compliant fit matter more than visionary repositioning.",
+        "bidImplication": "Framework position is the entry barrier. Win on fit, compliance, and mobilisation readiness."
+      },
+      {
+        "id": "devolved_capacity_constrained",
+        "name": "Devolved Capacity-Constrained Buyer",
+        "description": "Limited commercial bandwidth; clarity, low-friction compliance, and implementation confidence matter.",
+        "bidImplication": "Make it easy for them. Clear, simple propositions. Don't assume procurement sophistication."
+      },
+      {
+        "id": "programme_led_transformer",
+        "name": "Programme-Led Transformer",
+        "description": "Driven by a specific transformation agenda; more open to flexible procedure, dialogue, and solution shaping.",
+        "bidImplication": "Lead with innovation and fresh thinking. Expect engagement and iteration. Demonstrate transformation capability."
+      },
+      {
+        "id": "incumbent_locked_risk_averse",
+        "name": "Incumbent-Locked Risk-Averse Buyer",
+        "description": "Market formally open, but practically difficult to unseat due to operational, data, security, or TUPE lock-in.",
+        "bidImplication": "If challenger: price the transition cost, address TUPE/data/continuity head-on. If incumbent: protect position, demonstrate continuous improvement."
+      },
+      {
+        "id": "politically_sensitive_high_scrutiny",
+        "name": "Politically Sensitive High-Scrutiny Buyer",
+        "description": "Procurement tone shaped by controversy, citizen impact, ministerial attention, or audit exposure.",
+        "bidImplication": "Assurance-heavy response. Demonstrate audit readiness, risk management, and sensitivity to public perception."
+      },
+      {
+        "id": "compliance_procurement_machine",
+        "name": "Compliance Procurement Machine",
+        "description": "Highly process-led, evaluation-led, and defensible; less interested in narrative flourish, more in audit-proof quality.",
+        "bidImplication": "Answer the question asked. Score against the stated criteria. Don't over-invest in differentiation narrative."
+      }
+    ]
+  },
+
+  "opportunity": {
+    "_comment": "Assessed per pursuit during qualification or capture planning. Describes the specific procurement event, not the institution. Uses buyer dossier as context but assesses the opportunity independently.",
+    "archetypes": [
+      {
+        "id": "framework_locked_speed_buy",
+        "name": "Framework-Locked Speed Buy",
+        "description": "Route is framework-driven, timelines are tight, buyer primarily wants low-friction compliant mobilisation.",
+        "bidImplication": "Speed and compliance are everything. Demonstrate you can mobilise within the framework terms. Don't over-engineer the solution."
+      },
+      {
+        "id": "open_competition_recompete",
+        "name": "Open Competition Recompete",
+        "description": "Opportunity is formally contestable and the route is genuinely open.",
+        "bidImplication": "Full competitive response required. Differentiation matters. Understand the incumbent but don't assume they win."
+      },
+      {
+        "id": "flexible_procedure_solution_shaping",
+        "name": "Flexible Procedure Solution Shaping",
+        "description": "Buyer likely to use dialogue, iteration, negotiation, or multi-stage shaping. Competitive flexible procedure allows bespoke multi-stage design if set out in the notice and tender documents.",
+        "bidImplication": "Invest in solution design capability. Prepare for dialogue rounds. Be ready to iterate. Relationships and responsiveness matter more than the written submission alone."
+      },
+      {
+        "id": "incumbent_protected_continuity_buy",
+        "name": "Incumbent-Protected Continuity Buy",
+        "description": "Market is nominally open but the economics of displacement are poor.",
+        "bidImplication": "If challenger: only pursue if you have a genuine transition advantage or the incumbent has visibly failed. If incumbent: protect, demonstrate value, propose continuous improvement."
+      },
+      {
+        "id": "compliance_heavy_defensible_procurement",
+        "name": "Compliance-Heavy Defensible Procurement",
+        "description": "Buyer's dominant behaviour is auditability and procedural defensibility.",
+        "bidImplication": "Answer every question precisely. Cross-reference requirements systematically. Compliance matrix is king. Narrative flair adds nothing."
+      },
+      {
+        "id": "price_pressured_commodity_buy",
+        "name": "Price-Pressured Commodity Buy",
+        "description": "Differentiation is weak and commercial competitiveness dominates.",
+        "bidImplication": "Win on price. Minimise cost of delivery. Don't invest in elaborate solution differentiation — the buyer is buying a commodity."
+      },
+      {
+        "id": "transformation_led_outcome_buy",
+        "name": "Transformation-Led Outcome Buy",
+        "description": "Buyer is genuinely seeking delivery outcomes, operating model change, or capability uplift.",
+        "bidImplication": "Lead with outcomes and transformation narrative. Demonstrate you understand their future state, not just their current requirements. Solution design is the differentiator."
+      },
+      {
+        "id": "ambiguous_or_mixed",
+        "name": "Ambiguous or Mixed",
+        "description": "Evidence is incomplete or conflicting. The procurement does not clearly fit a single archetype.",
+        "bidImplication": "Hedged approach. Cover multiple bases. Seek clarification through pre-market engagement or clarification questions. Revisit classification as more information emerges."
+      }
+    ]
+  }
+}

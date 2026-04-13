@@ -526,9 +526,9 @@
         "rationale":  { "type": "string", "description": "One sentence explaining the rating" }
       }
     },
-    "buyerArchetypeEnum": {
+    "organisationalArchetypeEnum": {
       "type": "string",
-      "description": "Buyer archetype — describes procurement behaviour, not organisation type. Applied at two levels: organisational (buyer dossier) and opportunity (pursuit record). Same enum, different assessment.",
+      "description": "Organisational archetype — describes how the institution generally behaves as a buyer. Assessed in the buyer dossier. Stable across procurements.",
       "enum": [
         "strategic_central_commissioner",
         "framework_first_operator",
@@ -537,6 +537,20 @@
         "incumbent_locked_risk_averse",
         "politically_sensitive_high_scrutiny",
         "compliance_procurement_machine"
+      ]
+    },
+    "opportunityArchetypeEnum": {
+      "type": "string",
+      "description": "Opportunity archetype — describes the specific procurement event. Assessed per pursuit during qualification or capture planning. Defined here for reference; the field lives in the pursuit data model, not in the buyer dossier.",
+      "enum": [
+        "framework_locked_speed_buy",
+        "open_competition_recompete",
+        "flexible_procedure_solution_shaping",
+        "incumbent_protected_continuity_buy",
+        "compliance_heavy_defensible_procurement",
+        "price_pressured_commodity_buy",
+        "transformation_led_outcome_buy",
+        "ambiguous_or_mixed"
       ]
     }
   }
