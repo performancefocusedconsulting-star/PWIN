@@ -201,33 +201,45 @@ Each score shows a RAG colour and a one-sentence rationale. Factor-level detail 
 
 ---
 
-### Skill 2: Client Profile
+### Skill 2: Buyer Intelligence Dossier
 
-**What it is:** A buyer organisation profile — who the client is, what they care about, how they buy, and what the bid team needs to know before writing a word. Stored in the bid library.
+**What it is:** A structured, source-backed buyer intelligence dossier on a named public-sector buying organisation. Not tied to a specific pursuit — stored in the bid library as a reusable reference asset. Answers: "What do we know about this buyer, how reliable is that knowledge, and what is missing?" Does NOT answer: "What does this mean for the pursuit?" — that is Agent 3's domain.
 
-**When to use it:** When onboarding a new client or when a pursuit names a buyer the team hasn't profiled. "Tell me about the MOD as a buyer" or "build a client profile for NHS England."
+**When to use it:** When onboarding a new client, when a pursuit names a buyer the team hasn't profiled, or when an existing profile needs refreshing. "Build me a buyer dossier for the Ministry of Defence" or "what do we know about NHS England as a buyer?"
 
 **Depth modes:**
 
 | Mode | When to use | What it covers |
 |------|-------------|----------------|
-| **Snapshot** | Quick buyer check, early qualification, "have we seen this buyer before?" | Organisation overview, procurement behaviour headline (total awards, top suppliers, preferred routes from procurement database), and key risks. No narrative — structured data only. |
-| **Standard** | Active pursuit, bid strategy preparation | All seven sections with evidence. Full narrative. The default mode. |
-| **Deep** | Strategic account, major pursuit, or pre-engagement preparation | Standard plus: full award-by-award procurement history, framework usage analysis, detailed organisational mapping, policy driver deep-dive, cross-reference against existing supplier dossiers for the buyer's key suppliers. |
+| **Snapshot** | Quick buyer check, early qualification | Buyer snapshot, procurement behaviour summary, top 5 suppliers. No narratives, no hypotheses. Fast. |
+| **Standard** | Active pursuit, bid strategy preparation | All 11 sections populated. Full source register. The default. |
+| **Deep** | Strategic account, major pursuit, pre-engagement | Standard plus: full supplier ecosystem with entrenchment analysis, comprehensive strategy theme mapping, leadership background, audit and scrutiny deep-dive, commissioning context with detailed rationale chains. |
 
 If no depth is specified, use **standard**.
 
-**What to produce:**
+**What to produce — 11 sections:**
 
-1. **Organisation overview** — legal entity, parent body, sector, headcount, annual budget/revenue, geographic footprint, organisational structure relevant to procurement
-2. **Strategic priorities** — published strategy, transformation programmes, political or regulatory pressures, stated outcomes, and how procurements align with their wider agenda
-3. **Procurement behaviour** — historical award patterns (from the procurement database), preferred routes, typical contract lengths and values, attitude to innovation vs. proven solutions, published procurement strategy documents
-4. **Relationship history** — any prior engagements between the bidder and this client. Flag gaps requiring input from the pursuit team
-5. **Culture & communication style** — decision-making culture, formality, risk sensitivity, known preferences for how suppliers present
-6. **Key risks & sensitivities** — political sensitivities, past procurement failures or controversies, FOI exposure, audit scrutiny, reputational concerns
-7. **Key people & stakeholder landscape** — senior leadership relevant to procurement decisions: SROs, commercial directors, category leads, chief digital/technology officers. Organisational reporting lines where published. Key directorates and their remits. Recent leadership changes. This is factual research — who is there and what they are responsible for. Power mapping, influence analysis, messaging strategy, and engagement planning are Agent 3's domain.
+1. **Buyer Snapshot** — legal entity, parent body, organisation type, sector, geographic remit, headcount, annual budget, buyer archetype (computed), executive summary, key risks
+2. **Organisation & Operating Context** — mandate, operating model, organisational structure, key business units, senior leadership, funding model, recent changes
+3. **Strategic Priorities & External Pressures** — published strategy themes, major programmes, regulatory/political/fiscal/service performance pressures, public statements of intent
+4. **Commissioning Context Hypotheses** — drivers of external buying, pressures shaping spend, operational pain points, outcomes sought, consequences of inaction. **Explicitly labelled as hypotheses requiring pursuit-team validation.**
+5. **Procurement Behaviour Summary** — total awards and value from FTS data, preferred procurement routes, framework usage, typical contract length and value, category concentration (using 13-category service taxonomy), innovation vs proven preference, price vs quality bias, renewal patterns
+6. **Decision Unit & Stakeholder Assumptions** — inferred business owner roles, commercial roles, technical stakeholders, finance/assurance roles, evaluator groups. **Explicitly labelled as assumptions requiring pursuit-team validation.**
+7. **Culture & Delivery Preferences** — decision-making formality, governance intensity, risk tolerance, evidence preferences, supplier interaction style, presentation style. Observable or well-supported inference only.
+8. **Commercial & Risk Posture** — affordability sensitivity, risk transfer posture, contractual caution, cyber/data sensitivity, mobilisation sensitivity, audit/FOI exposure
+9. **Supplier Ecosystem & Incumbency** — incumbent suppliers with service lines, contract counts, total values, relationship length, strategic importance, entrenchment indicators, links to supplier dossiers. Adjacent suppliers. Supplier concentration. Switching evidence. Market refresh areas.
+10. **Risks, Sensitivities & Red Flags** — procurement controversies, programme failures, audit findings, media scrutiny, public sensitivities, positioning sensitivities (language to avoid)
+11. **Source Register & Intelligence Gaps** — all sources with IDs, types (4-tier hierarchy), reliability, sections supported. Intelligence gaps with impact and recommended actions. Stale fields. Low-confidence inferences.
 
-**Where to store it:** Bid library at `reference/clients/{name}.json`.
+**Per-field evidence pattern:** Every interpretive field carries inline evidence: `value`, `type` (fact/inference/unknown), `confidence` (high/medium/low), `rationale`, and `sourceRefs` (array of source register IDs). Plain identifiers use simple values.
+
+**Computed scores (renderer-derived):** Profile Confidence, Coverage Score, Freshness Score — all RAG (red/amber/green/grey), computed from source register data.
+
+**Buyer archetype (renderer-derived):** `centralised_strategic` / `devolved_operational` / `transformation_driven` / `compliance_driven` / `mixed` — computed from procurement behaviour, culture, and risk posture data.
+
+**Output:** Two files per buyer: `reference/clients/{slug}/data.json` (canonical structured data) and `reference/clients/{slug}/report.html` (rendered from JSON).
+
+**Refresh triggers:** New procurement in category, leadership change, annual report publication, strategy refresh, major controversy or audit event, pursuit launched against the buyer.
 
 ---
 

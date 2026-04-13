@@ -563,6 +563,20 @@ function buildClaudeTools(skill) {
         required: ['dossier'],
       },
     },
+    store_client_profile: {
+      name: 'store_client_profile',
+      description: 'Store a v2 buyer intelligence dossier as structured JSON in the platform library. The profile object must conform to client-profile-schema v2. The renderer will produce the HTML report from this data.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          profile: {
+            type: 'object',
+            description: 'The complete v2 buyer profile object conforming to client-profile-schema.json. Must include meta (with buyerName, slug), buyerSnapshot, organisationContext, procurementBehaviour, supplierEcosystem, and sourceRegister.',
+          },
+        },
+        required: ['profile'],
+      },
+    },
   };
 
   const tools = [
@@ -695,6 +709,17 @@ async function executeToolCall(toolName, pursuitId, input) {
       const dataPath = join(dirPath, 'data.json');
       await writeFile(dataPath, JSON.stringify(dossier, null, 2), 'utf-8');
       return { stored: true, path: `reference/suppliers/${slug}/data.json` };
+    }
+    case 'store_client_profile': {
+      const profile = input.profile;
+      const slug = profile.meta?.slug || profile.meta?.buyerName?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'unknown';
+      const { writeFile, mkdir } = await import('node:fs/promises');
+      const { join } = await import('node:path');
+      const dirPath = join(store.DATA_ROOT, 'reference', 'clients', slug);
+      await mkdir(dirPath, { recursive: true });
+      const dataPath = join(dirPath, 'data.json');
+      await writeFile(dataPath, JSON.stringify(profile, null, 2), 'utf-8');
+      return { stored: true, path: `reference/clients/${slug}/data.json` };
     }
     default:
       throw new Error(`Unknown tool: ${toolName}`);
