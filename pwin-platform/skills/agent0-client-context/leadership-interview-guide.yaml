@@ -1,6 +1,6 @@
 id: leadership-interview-v1
 name: Leadership Interview Guide — Client Operating Context
-version: 0.1.0
+version: 0.2.0
 variant: leadership
 description: >
   Structured interview guide for the Managing Partner / CEO / growth lead of a paying
@@ -11,13 +11,17 @@ consumes: []
 produces:
   schemaId: client-operating-context-v1
   sections:
+    - identity.businessModel
+    - identity.businessModelCategory
+    - identity.size
     - strategicObjectives
     - pursuitPreferences
     - riskGuardrails.redLines
     - differentiation.trueDifferentiators
     - differentiation.tableStakes
-    - identity.businessModel
-    - identity.size
+    - cultureDecisionStyle.appetiteForChallenge
+    - cultureDecisionStyle.tonePreferences
+    - cultureDecisionStyle.boldVsSafePositioning
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Persona
@@ -44,6 +48,11 @@ persona:
     - If the interviewee resists a question, move on. Flag the gap, don't force it.
     - Silence is data. Don't fill it.
     - Absolutes ("always", "never", "only") are worth testing once.
+    - Watch for frame contradictions. If a later answer conflicts with the
+      identity or business-model frame already captured (e.g. "we're a
+      boutique consultancy" then "we want to win £50m managed-service deals"),
+      surface it on-screen and let the consultant decide whether to resolve
+      live or log both as strategicTensions. Never quietly reconcile them.
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Sections
@@ -74,15 +83,43 @@ sections:
     purpose: Confirm identity and business model before moving to strategy.
     questions:
       - id: L1.1
-        text: "In one or two sentences, how does the firm make money today?"
+        text: >
+          Before we go further, which of these best describes the firm today —
+          management consulting, systems integration, managed services,
+          technology reseller, product or platform, or a deliberate blend of
+          more than one? Pick the one that fits best, even if it's imperfect.
+        mapsTo: identity.businessModelCategory
+        claimType: fact
+        confidence: high
+        captureHint: >
+          CRITICAL — categorical anchor for every downstream claim. Do not
+          accept a free-text paragraph; force a categorical pick from the
+          enum (management_consulting, systems_integration, managed_services,
+          reseller, product_platform, blended). If the client resists the
+          categories, ask which one they are MOST often mistaken for — that
+          is usually the adjacent category that matters.
+        followups:
+          - if: answer_is("blended")
+            text: "Which of those is dominant by revenue, and which is the emerging shift?"
+            mapsTo: identity.businessModelCategory
+            captureHint: "Capture both the dominant and the emerging — the delta IS the strategic tension."
+          - if: answer_is_vague OR client_refuses_category
+            text: "If a buyer asked a competitor what kind of firm you are, what single label would they use?"
+            captureHint: "Flip to external perception — often unlocks the categorical answer."
+
+      - id: L1.1b
+        text: "Now in one or two sentences, describe in your own words how the firm makes money today."
         mapsTo: identity.businessModel
         claimType: fact
         confidence: high
+        captureHint: >
+          Free-text narrative for the record. If it contradicts the category
+          picked in L1.1, flag the contradiction — the category wins as the
+          structured claim; the narrative becomes a claim about self-perception.
         followups:
-          - if: answer_is_vague
-            text: "Which service line brings in the largest share of revenue right now?"
-          - if: answer_mentions("mix" OR "blend" OR "range")
-            text: "Rough split — what percentage comes from the biggest line?"
+          - if: narrative_contradicts_category
+            text: "That sounds broader than the category you picked — is the category where you are today, or where you want to be?"
+            captureHint: "Resolves the most common defect: aspirational narrative vs. categorical reality."
 
       - id: L1.2
         text: "Roughly how big is the firm — headcount and annual revenue?"
@@ -101,6 +138,36 @@ sections:
         mapsTo: identity.deliveryGeographies
         claimType: fact
         confidence: high
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: identity-checkpoint
+    durationMinutes: 3
+    purpose: >
+      Read back the captured identity frame and lock it before moving into
+      aspirational territory. Prevents the most common failure mode: Strategic
+      Objectives answers contradicting the business model because the client
+      has mentally switched to "what I want us to be" mode.
+    questions:
+      - id: L1.CP
+        text: >
+          Quick checkpoint before we move on. Based on what you've said, I've
+          captured: [business-model category], [size], [geographies]. Is that
+          the firm as it is today — not where you want it to be, but where it
+          is? If any of that is off, now's the moment to correct it, because
+          everything that follows will be interpreted against this frame.
+        mapsTo: null
+        claimType: null
+        captureHint: >
+          No new claim generated — this question confirms or corrects the
+          existing identity claims from L1.1–L1.3. If the client corrects
+          anything, the avatar re-opens those claims for edit before continuing.
+          This is the FRAME. Every answer that follows will be read against it.
+        followups:
+          - if: client_corrects_identity
+            action: "Re-open the affected L1.x claim for edit; do not proceed to L2 until confirmed."
+          - if: client_hesitates_or_deflects
+            text: "What doesn't quite fit? I'd rather catch it now than build on a shaky picture."
+            captureHint: "A hesitation here is usually the first signal of a frame contradiction."
 
   # ───────────────────────────────────────────────────────────────────────────
   - id: strategic-objectives
@@ -226,11 +293,26 @@ sections:
         claimType: interpretation
         confidence: medium
         captureHint: >
-          Very difficult question. Expect deflection. If client refuses, flag as
-          assumption to probe in Bid Ops interview — they'll tell you the truth.
+          Very difficult question. Expect deflection OR compression to a generic
+          label ("delivery excellence", "innovation", "partnership"). Neither is
+          a usable claim. A generic answer MUST be probed — otherwise the claim
+          enters the schema too abstract to act on.
         followups:
           - if: answer_is_refused
             captureHint: "Save as claimType: unknown, flagged for Bid Ops follow-up."
+          - if: answer_is_short_or_generic
+            text: >
+              Where does that show up — in bid language, in marketing, or in how
+              the firm talks about delivery? Give me the specific place a buyer
+              might be mis-led.
+            mapsTo: differentiation.doNotOverclaim
+            captureHint: >
+              Force the client to locate the overclaim concretely. Accept any
+              one of: bid_language / marketing / delivery_reality / sales_pitch /
+              case_studies. Without this, the claim is not actionable.
+          - if: followup_still_generic
+            text: "Give me an example — a specific bid, pitch, or moment where you felt the firm was being sold as more than it is."
+            captureHint: "Last-resort concreteness probe. If still generic, downgrade to claimType: hypothesis."
 
       - id: L4.4
         text: "If you think about the last few real wins, what's the pattern — what made those bids succeed?"
@@ -275,6 +357,44 @@ sections:
         mapsTo: riskGuardrails.partnerDependencyTolerance
         claimType: fact
         confidence: medium
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: culture-decision-style
+    durationMinutes: 10
+    purpose: >
+      Capture leadership's self-view of how the firm makes decisions, tolerates
+      challenge, and prefers to be advised. Calibrates how hard downstream
+      skills push in recommendations and what tone lands internally.
+    questions:
+      - id: L5x.1
+        text: "When the AI pushes back on a pursuit decision — say it recommends walking away from a deal leadership wants to chase — how hard do you want it to push?"
+        mapsTo: cultureDecisionStyle.appetiteForChallenge
+        claimType: interpretation
+        confidence: medium
+        captureHint: >
+          Map to enum: direct_and_forceful / reasoned_but_firm / suggestive_only / avoid_conflict.
+          Leadership will often over-claim appetite for challenge. If later answers contradict
+          (e.g. red lines are vague, no-go triggers are soft), flag as strategicTension.
+
+      - id: L5x.2
+        text: "When you write to buyers, does the firm lean bold and distinctive, or safe and credible? Pick the one that's closer to the truth, not the aspiration."
+        mapsTo: cultureDecisionStyle.boldVsSafePositioning
+        claimType: interpretation
+        confidence: medium
+        captureHint: "Map to enum: bold / balanced / safe. Archive agent will test against actual proposal language."
+
+      - id: L5x.3
+        text: "How fast does the firm typically make big pursuit decisions — same day, same week, or does it take a formal governance round?"
+        mapsTo: cultureDecisionStyle.decisionSpeed
+        claimType: fact
+        confidence: high
+
+      - id: L5x.4
+        text: "Any tone or language the AI should avoid? Jargon, corporate phrasing, specific terms that don't sit right?"
+        mapsTo: cultureDecisionStyle.tonePreferences
+        claimType: fact
+        confidence: high
+        captureHint: "Captures downstream-skill guardrails for drafting. Short list, concrete terms."
 
   # ───────────────────────────────────────────────────────────────────────────
   - id: wrap-up

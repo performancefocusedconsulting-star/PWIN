@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "client-operating-context-v1",
+  "$id": "client-operating-context-v1.1",
   "title": "Client Operating Context",
-  "description": "Master operating-truth document for a paying customer of the PWIN platform. Not a biography. The structured context the AI reasons FROM when producing qualification, win strategy, positioning, and pursuit recommendations for this specific client. Lean V1: 8 of 14 sections from the full design. Claim-typing, governance, and decay are day-one requirements — not optional polish.",
+  "description": "Master operating-truth document for a paying customer of the PWIN platform. Not a biography. The structured context the AI reasons FROM when producing qualification, win strategy, positioning, and pursuit recommendations for this specific client. V1.1 adds the three pursuit-reality domains (bid operating model, delivery mobilisation, culture/decision style) that V1 deferred. Claim-typing, governance, and decay are day-one requirements — not optional polish.",
   "type": "object",
   "required": [
     "clientContextId",
@@ -18,6 +18,9 @@
     "pursuitPreferences",
     "historicPerformance",
     "riskGuardrails",
+    "bidOperatingModel",
+    "deliveryMobilisation",
+    "cultureDecisionStyle",
     "sources"
   ],
   "properties": {
@@ -52,7 +55,7 @@
     "identity": {
       "type": "object",
       "description": "Who the client is commercially and operationally",
-      "required": ["legalEntityName", "businessModel", "sectorsServed", "serviceLines"],
+      "required": ["legalEntityName", "businessModelCategory", "businessModel", "sectorsServed", "serviceLines"],
       "properties": {
         "legalEntityName": { "type": "string" },
         "tradingNames": { "type": "array", "items": { "type": "string" } },
@@ -60,6 +63,25 @@
         "ownershipModel": { "$ref": "#/$defs/claim" },
         "hqLocation": { "type": "string" },
         "deliveryGeographies": { "type": "array", "items": { "type": "string" } },
+        "businessModelCategory": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "dominant": {
+                  "type": "string",
+                  "enum": ["management_consulting", "systems_integration", "managed_services", "reseller", "product_platform", "blended"]
+                },
+                "emerging": {
+                  "type": "string",
+                  "enum": ["management_consulting", "systems_integration", "managed_services", "reseller", "product_platform", "none"]
+                }
+              },
+              "required": ["dominant"]
+            }
+          ],
+          "description": "Categorical anchor — every downstream claim is interpreted against this frame. Free-text narrative lives in businessModel."
+        },
         "businessModel": { "$ref": "#/$defs/claim" },
         "size": {
           "type": "object",
@@ -272,6 +294,10 @@
               "outcomeMetric": { "type": "string" },
               "usableExternally": { "type": "boolean" },
               "approvalStatus": { "type": "string", "enum": ["approved", "pending", "restricted", "do_not_use"] },
+              "recency": { "type": "string", "enum": ["current", "recent", "dated", "historic"], "description": "current: <12mo. recent: 12-24mo. dated: 24-48mo. historic: >48mo." },
+              "buyerTrustLevel": { "type": "string", "enum": ["high", "medium", "low", "untested"], "description": "How much weight does this proof carry with the target buyer segment" },
+              "namedVsAnonymised": { "type": "string", "enum": ["named", "anonymised", "restricted_named"] },
+              "deliveryDate": { "type": "string", "format": "date" },
               "claimType": { "$ref": "#/$defs/claimType" },
               "confidence": { "$ref": "#/$defs/confidence" },
               "sources": { "$ref": "#/$defs/sourceRefs" }
@@ -308,7 +334,12 @@
               {
                 "properties": {
                   "route": { "type": "string", "enum": ["framework_calloff", "open_tender", "direct_award", "competitive_dialogue", "negotiated", "prior_information_notice", "dps_calloff", "other"] },
-                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" }
+                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" },
+                  "formalAccess": { "type": "boolean", "description": "Holds the framework / has eligibility" },
+                  "practicalAccess": { "type": "string", "enum": ["strong", "weak", "none"], "description": "Can the client actually exploit the route — relationships, named positions, call-off history" },
+                  "historicUsageCount": { "type": "integer", "description": "Number of bids via this route in the last 24 months" },
+                  "winRatePct": { "type": "number", "minimum": 0, "maximum": 100 },
+                  "accessNotes": { "type": "string" }
                 },
                 "required": ["route"]
               }
@@ -414,6 +445,245 @@
               "approver": { "type": "string" }
             }
           }
+        }
+      }
+    },
+
+    "bidOperatingModel": {
+      "type": "object",
+      "description": "How the client actually pursues work — where the real bottlenecks sit, not the process map. Distinguishes firms that capture early from firms that react at ITT.",
+      "properties": {
+        "captureMaturity": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["absent", "reactive", "emerging", "disciplined", "optimised"] },
+                "rationale": { "type": "string" }
+              },
+              "required": ["level"]
+            }
+          ]
+        },
+        "governanceStages": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "gate": { "type": "string", "description": "e.g. qualification, solution lock, price lock, sign-off" },
+                  "approver": { "type": "string" },
+                  "typicalDurationDays": { "type": "number" },
+                  "isBottleneck": { "type": "boolean" }
+                },
+                "required": ["gate"]
+              }
+            ]
+          }
+        },
+        "approvalBottlenecks": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "area": { "type": "string", "enum": ["pricing", "legal", "solution", "commercial_terms", "executive_signoff", "partner_onboarding", "other"] },
+                  "description": { "type": "string" },
+                  "severity": { "type": "string", "enum": ["high", "medium", "low"] }
+                },
+                "required": ["area", "severity"]
+              }
+            ]
+          }
+        },
+        "executiveEngagementModel": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "pattern": { "type": "string", "enum": ["hands_on", "ceremonial", "late_stage_only", "absent", "deal_dependent"] }
+              },
+              "required": ["pattern"]
+            }
+          ]
+        },
+        "commonFailureModes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Recurring ways the client's own bid process undermines good bids — late partner engagement, unresolved solution at price-lock, legal deviations raised post-submission, etc."
+        },
+        "partnerOnboardingModel": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "speed": { "type": "string", "enum": ["fast", "moderate", "slow", "blocker"] },
+                "description": { "type": "string" }
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "deliveryMobilisation": {
+      "type": "object",
+      "description": "Can the client actually land what it proposes. Feeds go/no-go directly — a strong proposal plus weak mobilisation is still a loss risk.",
+      "properties": {
+        "deliveryModel": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "shape": { "type": "string", "enum": ["onshore", "offshore", "hybrid", "partner_led", "associate_led", "mixed"] },
+                "description": { "type": "string" }
+              }
+            }
+          ]
+        },
+        "benchDepth": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["deep", "moderate", "thin", "none"] },
+                "byCapability": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["capability", "depth"],
+                    "properties": {
+                      "capability": { "type": "string" },
+                      "depth": { "type": "string", "enum": ["deep", "moderate", "thin", "partner_only"] }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "mobilisationSpeed": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "typicalWeeksToStartAtScale": { "type": "number" },
+                "confidenceAtScale": { "type": "string", "enum": ["high", "medium", "low"] }
+              }
+            }
+          ]
+        },
+        "transitionCapability": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["strong", "adequate", "weak", "untested"] },
+                "description": { "type": "string" }
+              }
+            }
+          ]
+        },
+        "associateModel": {
+          "type": "object",
+          "properties": {
+            "used": { "type": "boolean" },
+            "percentOfDeliveryApprox": { "type": "number", "minimum": 0, "maximum": 100 },
+            "riskNotes": { "type": "string" }
+          }
+        },
+        "subcontractorDependence": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["high", "moderate", "low", "none"] },
+                "namedCriticalPartners": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          ]
+        },
+        "overcommitmentHistory": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Past instances where promises exceeded delivery capacity — high-value for AI to avoid recommending the same shapes"
+        }
+      }
+    },
+
+    "cultureDecisionStyle": {
+      "type": "object",
+      "description": "The human layer — calibrates how hard AI pushes back, what tone to use, and what strategy ambition the client will actually accept.",
+      "properties": {
+        "appetiteForChallenge": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["direct_and_forceful", "reasoned_but_firm", "suggestive_only", "avoid_conflict"] }
+              },
+              "required": ["level"]
+            }
+          ]
+        },
+        "boldVsSafePositioning": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["bold", "balanced", "safe"] }
+              },
+              "required": ["level"]
+            }
+          ]
+        },
+        "decisionSpeed": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "pattern": { "type": "string", "enum": ["same_day", "same_week", "formal_governance_cycle", "variable"] }
+              },
+              "required": ["pattern"]
+            }
+          ]
+        },
+        "tonePreferences": {
+          "type": "object",
+          "properties": {
+            "preferredRegister": { "type": "string", "enum": ["plain_english", "professional", "formal", "consultative"] },
+            "avoidTerms": { "type": "array", "items": { "type": "string" } },
+            "preferTerms": { "type": "array", "items": { "type": "string" } },
+            "notes": { "type": "string" }
+          }
+        },
+        "internalPolitics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Sales vs delivery tensions, leadership fault lines, BU-level incentive conflicts — the AI should know what not to reopen"
+        },
+        "qualityExpectations": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["high", "moderate", "pragmatic", "variable"] },
+                "description": { "type": "string" }
+              }
+            }
+          ]
+        },
+        "ambiguityTolerance": {
+          "allOf": [
+            { "$ref": "#/$defs/claim" },
+            {
+              "properties": {
+                "level": { "type": "string", "enum": ["high", "medium", "low"] }
+              }
+            }
+          ]
         }
       }
     },

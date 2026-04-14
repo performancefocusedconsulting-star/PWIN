@@ -1,8 +1,12 @@
 # Client Operating Context — Interview Skill Design
 
-**Status:** design v1, 2026-04-14
+**Status:** design v1.1, 2026-04-14
 **Consumes:** nothing (top of the chain)
-**Produces:** populated `client-operating-context.json` per the lean-8 schema
+**Produces:** populated `client-operating-context.json` per the v1.1 schema (11 sections)
+
+## What changed in v1.1
+
+Three advisory-note gaps closed: **bid operating model**, **delivery & mobilisation reality**, and **culture / decision style** are now first-class schema sections. Interview scope expands correspondingly — Bid Ops extends to cover delivery and legal/commercial-terms; Leadership gains a culture section. Leadership guide defects logged before pilot (L1.1 categorical identity, identity checkpoint, frame-contradiction detection) are fixed in guide v0.2.
 
 ---
 
@@ -28,24 +32,33 @@ Each variant maps to a client role and populates a specific subset of the schema
 - **Duration:** 90 minutes
 - **Mode:** AI-led (avatar runs the script, consultant on standby)
 - **Schema coverage:**
+  - `identity.businessModelCategory` (categorical anchor — forced pick from enum)
+  - `identity.businessModel`, `identity.size`, `identity.deliveryGeographies` confirmation
   - `strategicObjectives` (growth priorities, priority sectors, target contract bands, strategic tensions)
   - `pursuitPreferences` (preferred buyers, routes, deal archetypes, avoid archetypes, no-go triggers)
-  - `riskGuardrails.redLines`
-  - `differentiation.trueDifferentiators` (leadership's view — archive agent will cross-check later)
-  - `identity.businessModel`, `identity.size` confirmation
+  - `riskGuardrails.redLines`, `riskGuardrails.capabilityStretchTolerance`, `riskGuardrails.partnerDependencyTolerance`
+  - `differentiation.trueDifferentiators`, `differentiation.tableStakes`, `differentiation.doNotOverclaim` (leadership's view — archive agent will cross-check later)
+  - `cultureDecisionStyle` (appetite for challenge, bold vs safe, decision speed, tone preferences)
 
-### Variant 2 — Bid Operations Interview
+### Variant 2 — Bid Operations + Delivery Interview
 
-- **Interviewee:** Bid Director / Pursuit Lead / Head of Sales Ops
-- **Duration:** 90 minutes
+- **Interviewee:** Bid Director / Pursuit Lead / Head of Sales Ops, **plus** Delivery Director (joint session or back-to-back)
+- **Duration:** 120 minutes (extended from 90 to cover delivery + legal)
 - **Mode:** Consultant-led (human runs the conversation, AI listens and drafts claims)
 - **Schema coverage:**
   - `historicPerformance` (win/loss patterns, common loss reasons, bad-win patterns, should-have-no-bid patterns)
-  - `differentiation.doNotOverclaim`, `differentiation.proofPoints` (known approved claims)
+  - `differentiation.proofPoints` (evidenced walk-through of 2–3 recent wins, tagged by recency / buyer trust / named vs anonymised / external usability)
   - `capabilityMap.capacityConstraints`
   - `pursuitPreferences.noGoTriggers` (operational triggers, distinct from leadership's strategic no-gos)
+  - `pursuitPreferences.preferredRoutesToMarket` (formal vs practical access, historic usage, win rate by route — the route-reality layer)
+  - **`bidOperatingModel`** (capture maturity, governance stages, approval bottlenecks, executive engagement model, common failure modes, partner onboarding)
+  - **`deliveryMobilisation`** (delivery model, bench depth by capability, mobilisation speed at scale, transition capability, associate model, subcontractor dependence, overcommitment history)
+  - `cultureDecisionStyle.internalPolitics` (sales vs delivery tensions — this variant sees them directly)
+  - Legal / commercial-terms probe: `riskGuardrails.redLines` (contractual), `commercialProfile.riskTolerance` friction patterns
 
-Reason this variant is consultant-led: the real material here is political and unflattering — "we keep winning work we shouldn't," "this capability is weaker than we tell clients." An AI avatar asking that directly will get sanitised answers. A consultant with rapport will not.
+Reason this variant is consultant-led: the real material here is political and unflattering — "we keep winning work we shouldn't," "this capability is weaker than we tell clients," "legal always blocks deviations late." An AI avatar asking that directly will get sanitised answers. A consultant with rapport will not.
+
+**Evidenced proof-point walk-through.** The consultant asks the interviewee to pick 2–3 recent wins and narrate each: what was sold, who delivered, whether it can be used externally, how recent, how trusted by the target buyer. This populates `differentiation.proofPoints` with evidenced content — the single biggest defence against the dossier becoming the glossy artefact the advisory warns against.
 
 ### Variant 3 — Commercial Interview
 
@@ -175,6 +188,14 @@ The guide is versioned content, editable by the consultant between engagements. 
 - Client signoff doc: PDF rendering of the schema for client approval and `approvedForAiUse: true` flip
 
 ---
+
+## Design defects fixed in guide v0.2
+
+Three defects were logged against the v0.1 Leadership guide after the partial dry-run. All three are resolved in guide v0.2:
+
+1. **L1.1 must force categorical identity up front.** Fixed — L1.1 now forces a pick from `identity.businessModelCategory` enum (management_consulting / systems_integration / managed_services / reseller / product_platform / blended). A follow-up free-text narrative is captured separately as `identity.businessModel`. If narrative contradicts category, the avatar flags it before proceeding.
+2. **Identity checkpoint needed before Strategic Objectives.** Fixed — new section `identity-checkpoint` reads back the captured identity frame (category, size, geographies) and forces client confirmation before Strategic Objectives begins. Prevents aspirational answers from contaminating the identity claims.
+3. **Avatar needs frame-contradiction detection.** Fixed — added as a persona principle ("Watch for frame contradictions … never quietly reconcile them") and reinforced by the existing consultant-intervention trigger for within-session contradictions. Contradictions against the locked identity frame surface on-screen.
 
 ## What's in scope for V1
 
