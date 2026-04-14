@@ -4,8 +4,9 @@ __pycache__/
 *.pyc
 # Client test data — never commit to repo
 pwin-bid-execution/test-data/
-# Obsidian — commit vault config, ignore personal workspace state
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/plugins/
-.obsidian/themes/
+# Obsidian vault config — personal, not committed
+.obsidian/
+HOME.md
+
+# Competitive intel analysis exports — local reports, not source
+pwin-competitive-intel/analysis/
