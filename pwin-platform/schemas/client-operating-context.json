@@ -1,0 +1,503 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "client-operating-context-v1",
+  "title": "Client Operating Context",
+  "description": "Master operating-truth document for a paying customer of the PWIN platform. Not a biography. The structured context the AI reasons FROM when producing qualification, win strategy, positioning, and pursuit recommendations for this specific client. Lean V1: 8 of 14 sections from the full design. Claim-typing, governance, and decay are day-one requirements — not optional polish.",
+  "type": "object",
+  "required": [
+    "clientContextId",
+    "clientName",
+    "profileType",
+    "version",
+    "governance",
+    "identity",
+    "strategicObjectives",
+    "commercialProfile",
+    "capabilityMap",
+    "differentiation",
+    "pursuitPreferences",
+    "historicPerformance",
+    "riskGuardrails",
+    "sources"
+  ],
+  "properties": {
+    "clientContextId": { "type": "string", "description": "Stable internal ID, e.g. client-bip-uk-001" },
+    "clientName": { "type": "string" },
+    "profileType": {
+      "type": "string",
+      "const": "paying_customer_master_context",
+      "description": "Distinguishes this from buyer/supplier/sector profiles"
+    },
+    "version": { "type": "string", "description": "Semantic version of this document" },
+    "status": { "type": "string", "enum": ["draft", "active", "under_review", "archived"] },
+
+    "governance": {
+      "type": "object",
+      "required": ["owner", "updatedAt", "nextReviewDueAt", "overallConfidence", "approvedForAiUse"],
+      "properties": {
+        "owner": { "type": "string", "description": "Engagement lead responsible for keeping this current" },
+        "contributors": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "lastReviewedAt": { "type": "string", "format": "date-time" },
+        "nextReviewDueAt": { "type": "string", "format": "date-time", "description": "Hard decay date — after this, AI should flag context as stale" },
+        "overallConfidence": { "$ref": "#/$defs/confidence" },
+        "completenessScore": { "type": "number", "minimum": 0, "maximum": 1 },
+        "freshnessScore": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidentiality": { "type": "string", "enum": ["internal", "client_confidential", "restricted"] },
+        "approvedForAiUse": { "type": "boolean", "description": "If false, downstream skills must not consume this document" }
+      }
+    },
+
+    "identity": {
+      "type": "object",
+      "description": "Who the client is commercially and operationally",
+      "required": ["legalEntityName", "businessModel", "sectorsServed", "serviceLines"],
+      "properties": {
+        "legalEntityName": { "type": "string" },
+        "tradingNames": { "type": "array", "items": { "type": "string" } },
+        "parentGroup": { "type": "string" },
+        "ownershipModel": { "$ref": "#/$defs/claim" },
+        "hqLocation": { "type": "string" },
+        "deliveryGeographies": { "type": "array", "items": { "type": "string" } },
+        "businessModel": { "$ref": "#/$defs/claim" },
+        "size": {
+          "type": "object",
+          "properties": {
+            "fteEstimate": { "type": "integer" },
+            "revenueEstimateGbp": { "type": "number" },
+            "claimType": { "$ref": "#/$defs/claimType" },
+            "confidence": { "$ref": "#/$defs/confidence" },
+            "sources": { "$ref": "#/$defs/sourceRefs" }
+          }
+        },
+        "sectorsServed": { "type": "array", "items": { "type": "string" } },
+        "serviceLines": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "strategicObjectives": {
+      "type": "object",
+      "description": "What the client is trying to achieve — the yardstick for pursuit fit",
+      "properties": {
+        "growthPriorities": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+        "prioritySectors": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "sector": { "type": "string" },
+                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" }
+                },
+                "required": ["sector", "priorityLevel"]
+              }
+            ]
+          }
+        },
+        "targetContractValueBands": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "minGbp": { "type": "number" },
+                  "maxGbp": { "type": "number" }
+                }
+              }
+            ]
+          }
+        },
+        "strategicTensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Genuine contradictions the AI must respect, not flatten"
+        }
+      }
+    },
+
+    "commercialProfile": {
+      "type": "object",
+      "description": "Realistic commercial envelope — stops the AI recommending deals the client shouldn't touch",
+      "properties": {
+        "preferredRoles": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "role": { "type": "string", "enum": ["prime_contractor", "subcontractor", "consortium_lead", "consortium_member", "sme_specialist"] },
+                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" }
+                },
+                "required": ["role"]
+              }
+            ]
+          }
+        },
+        "pricingPreferences": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "model": { "type": "string", "enum": ["time_and_materials", "fixed_price", "outcome_based", "capped_tm", "framework_rate_card", "other"] },
+                  "preferenceLevel": { "$ref": "#/$defs/priorityLevel" }
+                },
+                "required": ["model"]
+              }
+            ]
+          }
+        },
+        "marginExpectations": {
+          "type": "object",
+          "properties": {
+            "targetGrossMarginPct": { "type": "number" },
+            "marginFloorPct": { "type": "number" },
+            "claimType": { "$ref": "#/$defs/claimType" },
+            "confidence": { "$ref": "#/$defs/confidence" },
+            "sources": { "$ref": "#/$defs/sourceRefs" }
+          }
+        },
+        "riskTolerance": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "riskArea": { "type": "string" },
+                  "tolerance": { "type": "string", "enum": ["high", "medium", "low", "none"] }
+                },
+                "required": ["riskArea", "tolerance"]
+              }
+            ]
+          }
+        },
+        "bidCostTolerance": {
+          "type": "object",
+          "properties": {
+            "minGbp": { "type": "number" },
+            "maxGbp": { "type": "number" },
+            "claimType": { "$ref": "#/$defs/claimType" },
+            "confidence": { "$ref": "#/$defs/confidence" },
+            "sources": { "$ref": "#/$defs/sourceRefs" }
+          }
+        }
+      }
+    },
+
+    "capabilityMap": {
+      "type": "object",
+      "description": "What the client can actually sell and deliver — defines strike zone",
+      "properties": {
+        "coreCapabilities": { "type": "array", "items": { "$ref": "#/$defs/capabilityEntry" } },
+        "adjacentCapabilities": { "type": "array", "items": { "$ref": "#/$defs/capabilityEntry" } },
+        "emergingCapabilities": { "type": "array", "items": { "$ref": "#/$defs/capabilityEntry" } },
+        "avoidZones": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "name": { "type": "string" },
+                  "reason": { "type": "string" }
+                },
+                "required": ["name", "reason"]
+              }
+            ]
+          }
+        },
+        "methodsIpAccelerators": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "name": { "type": "string" },
+                  "type": { "type": "string", "enum": ["methodology", "ip_asset", "accelerator", "platform", "tool"] },
+                  "strengthLevel": { "$ref": "#/$defs/strengthLevel" }
+                },
+                "required": ["name"]
+              }
+            ]
+          }
+        },
+        "accreditations": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "name": { "type": "string" },
+                  "status": { "type": "string", "enum": ["held", "in_progress", "expired", "not_held"] },
+                  "expiresAt": { "type": "string", "format": "date" }
+                },
+                "required": ["name", "status"]
+              }
+            ]
+          }
+        },
+        "capacityConstraints": { "type": "array", "items": { "$ref": "#/$defs/claim" } }
+      }
+    },
+
+    "differentiation": {
+      "type": "object",
+      "description": "What the AI is allowed to position as distinctive — and what not to overclaim",
+      "properties": {
+        "trueDifferentiators": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+        "tableStakes": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+        "doNotOverclaim": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Often more valuable than the strengths — encodes the AI's guardrails"
+        },
+        "proofPoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["proofId", "title", "usableExternally", "claimType", "confidence"],
+            "properties": {
+              "proofId": { "type": "string" },
+              "title": { "type": "string" },
+              "sector": { "type": "string" },
+              "capabilityTags": { "type": "array", "items": { "type": "string" } },
+              "outcomeMetric": { "type": "string" },
+              "usableExternally": { "type": "boolean" },
+              "approvalStatus": { "type": "string", "enum": ["approved", "pending", "restricted", "do_not_use"] },
+              "claimType": { "$ref": "#/$defs/claimType" },
+              "confidence": { "$ref": "#/$defs/confidence" },
+              "sources": { "$ref": "#/$defs/sourceRefs" }
+            }
+          }
+        }
+      }
+    },
+
+    "pursuitPreferences": {
+      "type": "object",
+      "description": "What good work looks like for this client — the AI's qualification anchor",
+      "properties": {
+        "preferredBuyers": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "buyerType": { "type": "string" },
+                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" }
+                },
+                "required": ["buyerType"]
+              }
+            ]
+          }
+        },
+        "preferredRoutesToMarket": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "route": { "type": "string", "enum": ["framework_calloff", "open_tender", "direct_award", "competitive_dialogue", "negotiated", "prior_information_notice", "dps_calloff", "other"] },
+                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" }
+                },
+                "required": ["route"]
+              }
+            ]
+          }
+        },
+        "preferredDealArchetypes": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "archetype": { "type": "string" },
+                  "priorityLevel": { "$ref": "#/$defs/priorityLevel" }
+                },
+                "required": ["archetype"]
+              }
+            ]
+          }
+        },
+        "avoidArchetypes": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "archetype": { "type": "string" },
+                  "reason": { "type": "string" }
+                },
+                "required": ["archetype", "reason"]
+              }
+            ]
+          }
+        },
+        "noGoTriggers": {
+          "type": "array",
+          "description": "Hard disqualifiers — if present in a pursuit, the AI must recommend no-bid",
+          "items": {
+            "type": "object",
+            "required": ["trigger", "severity"],
+            "properties": {
+              "trigger": { "type": "string" },
+              "severity": { "type": "string", "enum": ["high", "medium", "low"] },
+              "rationale": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "historicPerformance": {
+      "type": "object",
+      "description": "How this client has actually performed — where client-specific prediction becomes credible",
+      "properties": {
+        "winLossPatterns": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+        "commonLossReasons": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/claim" },
+              {
+                "properties": {
+                  "reason": { "type": "string" },
+                  "frequency": { "type": "string", "enum": ["high", "medium", "low"] }
+                },
+                "required": ["reason"]
+              }
+            ]
+          }
+        },
+        "commonWinThemes": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+        "badWinPatterns": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Wins that eroded margin, damaged reputation, or consumed capacity disproportionately"
+        },
+        "shouldHaveNoBidPatterns": { "type": "array", "items": { "$ref": "#/$defs/claim" } }
+      }
+    },
+
+    "riskGuardrails": {
+      "type": "object",
+      "description": "What the client will not tolerate — prevents reckless AI recommendations",
+      "properties": {
+        "marginFloorPct": { "type": "number" },
+        "capabilityStretchTolerance": { "type": "string", "enum": ["high", "medium", "low", "none"] },
+        "partnerDependencyTolerance": { "type": "string", "enum": ["high", "medium", "low", "none"] },
+        "redLines": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "description": "Absolute prohibitions — commercial, reputational, regulatory, or capability-based"
+        },
+        "approvalThresholds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["scenario", "approver"],
+            "properties": {
+              "scenario": { "type": "string" },
+              "thresholdGbp": { "type": "number" },
+              "approver": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "sources": {
+      "type": "array",
+      "description": "Every claim should reference one or more sources here by sourceId",
+      "items": {
+        "type": "object",
+        "required": ["sourceId", "sourceType", "date"],
+        "properties": {
+          "sourceId": { "type": "string" },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "client_interview",
+              "crm",
+              "financial_report",
+              "proposal_archive",
+              "delivery_review",
+              "leadership_workshop",
+              "market_analysis",
+              "internal_document",
+              "manual_entry"
+            ]
+          },
+          "title": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "sourceQuality": { "type": "string", "enum": ["high", "medium", "low"] },
+          "owner": { "type": "string" },
+          "confidentiality": { "type": "string", "enum": ["internal", "client_confidential", "restricted"] }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "claimType": {
+      "type": "string",
+      "enum": ["fact", "interpretation", "assumption", "hypothesis", "unknown"],
+      "description": "fact: verifiable and verified. interpretation: reasoned from evidence. assumption: working premise, unverified. hypothesis: to be tested. unknown: explicitly gapped."
+    },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "priorityLevel": { "type": "string", "enum": ["high", "medium", "low"] },
+    "strengthLevel": { "type": "string", "enum": ["high", "medium", "low"] },
+    "sourceRefs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of sourceId values from the top-level sources array"
+    },
+    "claim": {
+      "type": "object",
+      "description": "A typed statement with provenance. Every meaningful content field uses this shape.",
+      "required": ["claimType", "confidence"],
+      "properties": {
+        "statement": { "type": "string" },
+        "value": {},
+        "claimType": { "$ref": "#/$defs/claimType" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "materiality": { "type": "string", "enum": ["high", "medium", "low"] },
+        "lastVerifiedAt": { "type": "string", "format": "date" },
+        "decayAfterDays": { "type": "integer", "description": "After this many days since lastVerifiedAt, treat as stale" },
+        "sources": { "$ref": "#/$defs/sourceRefs" },
+        "owner": { "type": "string" },
+        "usagePermission": { "type": "string", "enum": ["external_ok", "internal_only", "needs_client_approval"] }
+      }
+    },
+    "capabilityEntry": {
+      "allOf": [
+        { "$ref": "#/$defs/claim" },
+        {
+          "type": "object",
+          "required": ["name", "strengthLevel"],
+          "properties": {
+            "name": { "type": "string" },
+            "strengthLevel": { "$ref": "#/$defs/strengthLevel" },
+            "evidenceProofIds": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Cross-reference to differentiation.proofPoints[].proofId"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

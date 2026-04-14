@@ -1,0 +1,402 @@
+id: leadership-interview-v1
+name: Leadership Interview Guide — Client Operating Context
+version: 0.1.0
+variant: leadership
+description: >
+  Structured interview guide for the Managing Partner / CEO / growth lead of a paying
+  client. Populates strategic objectives, pursuit preferences, red lines, and leadership's
+  view of differentiation in the Client Operating Context schema. AI-led with consultant
+  on standby. Target duration 90 minutes, hard stop at 100.
+consumes: []
+produces:
+  schemaId: client-operating-context-v1
+  sections:
+    - strategicObjectives
+    - pursuitPreferences
+    - riskGuardrails.redLines
+    - differentiation.trueDifferentiators
+    - differentiation.tableStakes
+    - identity.businessModel
+    - identity.size
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Persona
+# ─────────────────────────────────────────────────────────────────────────────
+
+persona:
+  name: Morgan
+  role: Structured interviewer
+  voice: professional, curious, unhurried, precise
+  opening: >
+    Before we start, a quick orientation. I'll ask you a series of questions about
+    the firm's direction, the work you want to win, and the work you'd rather avoid.
+    As you answer, structured claims will appear on the right of the screen. You
+    confirm or correct each one — that becomes the record we build everything else
+    on. If anything's unclear, or if you want to skip a question, just say so.
+    There are no right answers. Ready to start?
+
+  principles:
+    - Ask one question at a time. Never stack.
+    - Short questions. Long answers.
+    - Never leap to interpretation in the question. Let the client say it first.
+    - Reflect back in the interviewee's language, not consulting jargon.
+    - If an answer is vague, probe once for specifics. Don't interrogate.
+    - If the interviewee resists a question, move on. Flag the gap, don't force it.
+    - Silence is data. Don't fill it.
+    - Absolutes ("always", "never", "only") are worth testing once.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Sections
+# ─────────────────────────────────────────────────────────────────────────────
+
+sections:
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: orientation
+    durationMinutes: 5
+    purpose: Establish rapport, confirm role, set interview mechanics.
+    questions:
+      - id: L0.1
+        text: "To set the scene — what's your role in the firm, and how long have you been in it?"
+        mapsTo: null
+        captureHint: "Context only. No claim generated unless the role affects ownership of later claims."
+
+      - id: L0.2
+        text: "Who else in the firm would answer this interview very differently from you, and on what topics?"
+        mapsTo: null
+        captureHint: >
+          Context only. Flag names as potential interviewees for Bid Ops or Commercial variants,
+          or as stakeholders to brief before the leadership workshop.
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: business-model
+    durationMinutes: 10
+    purpose: Confirm identity and business model before moving to strategy.
+    questions:
+      - id: L1.1
+        text: "In one or two sentences, how does the firm make money today?"
+        mapsTo: identity.businessModel
+        claimType: fact
+        confidence: high
+        followups:
+          - if: answer_is_vague
+            text: "Which service line brings in the largest share of revenue right now?"
+          - if: answer_mentions("mix" OR "blend" OR "range")
+            text: "Rough split — what percentage comes from the biggest line?"
+
+      - id: L1.2
+        text: "Roughly how big is the firm — headcount and annual revenue?"
+        mapsTo: identity.size
+        claimType: fact
+        confidence: high
+        followups:
+          - if: answer_is_exact
+            claimConfidence: high
+          - if: answer_is_approximate
+            claimConfidence: medium
+            note: "Verify against filed accounts in desk baseline"
+
+      - id: L1.3
+        text: "Where does the firm deliver — which geographies, and where do you not operate?"
+        mapsTo: identity.deliveryGeographies
+        claimType: fact
+        confidence: high
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: strategic-objectives
+    durationMinutes: 20
+    purpose: What does successful growth look like, and what's the firm deliberately moving away from.
+    questions:
+      - id: L2.1
+        text: "Looking at the next 12 to 24 months, what does successful growth look like for the firm?"
+        mapsTo: strategicObjectives.growthPriorities
+        claimType: interpretation
+        confidence: medium
+        captureHint: >
+          Default claimType: interpretation unless the client gives a concrete metric
+          ("grow to £80m", "win 3 central gov accounts"). If concrete, upgrade to fact.
+        followups:
+          - if: answer_mentions("sector" OR "market")
+            text: "Which sectors specifically — and which ones are you stepping back from?"
+            mapsTo: strategicObjectives.prioritySectors
+          - if: answer_mentions("size" OR "scale" OR "bigger" OR "larger")
+            text: "What contract value range should pursuits fall into? What's too small, and what's too big for the firm to absorb?"
+            mapsTo: strategicObjectives.targetContractValueBands
+          - if: answer_is_vague
+            text: "Can you give me an example of a deal from the last 12 months that would be 'successful growth' for you? And one that wouldn't?"
+            captureHint: "Use the examples to back-populate growthPriorities with specifics."
+
+      - id: L2.2
+        text: "What's the firm deliberately moving away from? Anything you used to do that you don't want to do anymore?"
+        mapsTo: strategicObjectives.growthPriorities
+        claimType: fact
+        confidence: high
+        captureHint: >
+          Creates a negative-space claim — often populates pursuitPreferences.avoidArchetypes
+          as well. If client names a specific deal type, mirror-claim into avoidArchetypes.
+
+      - id: L2.3
+        text: "What's the tension between where the firm is today and where you want it to be?"
+        mapsTo: strategicObjectives.strategicTensions
+        claimType: interpretation
+        confidence: medium
+        captureHint: >
+          Critical question. Clients almost never articulate tensions unprompted.
+          Accept "I don't know" — flag as assumption for workshop.
+        followups:
+          - if: answer_mentions("capacity" OR "people" OR "hiring")
+            text: "Is that a hiring problem, a retention problem, or a utilisation problem?"
+          - if: answer_mentions("leadership" OR "alignment")
+            text: "Where does the disagreement sit most sharply?"
+            captureHint: "Sensitive — don't push if client deflects."
+
+      - id: L2.4
+        text: "If you had to pick two or three opportunity types that represent the firm at its best, what are they?"
+        mapsTo: pursuitPreferences.preferredDealArchetypes
+        claimType: fact
+        confidence: high
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: strike-zone
+    durationMinutes: 15
+    purpose: Define the firm's strike zone — buyers, routes, archetypes, no-gos.
+    questions:
+      - id: L3.1
+        text: "Who are the ideal buyers? Which organisations do you most want more work from?"
+        mapsTo: pursuitPreferences.preferredBuyers
+        claimType: fact
+        confidence: high
+        followups:
+          - if: answer_is_generic ("public sector", "large clients")
+            text: "Can you name three or four specific buyers that would be at the top of the list?"
+            captureHint: "Upgrade to fact only when named buyers are given."
+
+      - id: L3.2
+        text: "How do you prefer to reach buyers — frameworks, open tenders, direct relationships, partner-led?"
+        mapsTo: pursuitPreferences.preferredRoutesToMarket
+        claimType: fact
+        confidence: high
+
+      - id: L3.3
+        text: "What kinds of opportunities should the firm not bid for, even if the numbers look good on paper?"
+        mapsTo: pursuitPreferences.avoidArchetypes
+        claimType: fact
+        confidence: high
+        captureHint: >
+          One of the highest-value claims in the interview. Probe for reason, not just type.
+          Map each named avoid archetype with a 'reason' field.
+        followups:
+          - if: answer_mentions_specific_archetype
+            text: "Why — what's gone wrong when the firm has chased that kind of work before?"
+            mapsTo: pursuitPreferences.avoidArchetypes.reason
+
+      - id: L3.4
+        text: "Are there any hard triggers that should stop a bid from going ahead, no matter what?"
+        mapsTo: pursuitPreferences.noGoTriggers
+        claimType: fact
+        confidence: high
+        captureHint: >
+          Looking for categorical rules ("no sub-prime roles", "no fixed-price transformation
+          over £10m", "no defence without SC-cleared partner"). Each trigger becomes a
+          noGoTriggers entry with a severity.
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: differentiation
+    durationMinutes: 15
+    purpose: Leadership's view of what makes the firm distinctive. Archive agent will cross-check later.
+    questions:
+      - id: L4.1
+        text: "When a prospective client is choosing between you and a competitor, what's the one thing that tips it in your favour?"
+        mapsTo: differentiation.trueDifferentiators
+        claimType: interpretation
+        confidence: medium
+        captureHint: >
+          Default to interpretation — leadership views are aspirational by nature. Archive
+          agent will test these against actual proposal language and win/loss data.
+
+      - id: L4.2
+        text: "And what's table stakes — what every firm in your space has to offer just to be in the room?"
+        mapsTo: differentiation.tableStakes
+        claimType: fact
+        confidence: high
+
+      - id: L4.3
+        text: "Where would you say the firm is sometimes seen as stronger than it actually is?"
+        mapsTo: differentiation.doNotOverclaim
+        claimType: interpretation
+        confidence: medium
+        captureHint: >
+          Very difficult question. Expect deflection. If client refuses, flag as
+          assumption to probe in Bid Ops interview — they'll tell you the truth.
+        followups:
+          - if: answer_is_refused
+            captureHint: "Save as claimType: unknown, flagged for Bid Ops follow-up."
+
+      - id: L4.4
+        text: "If you think about the last few real wins, what's the pattern — what made those bids succeed?"
+        mapsTo: differentiation.trueDifferentiators
+        claimType: interpretation
+        confidence: medium
+        followups:
+          - if: client_names_proof_point
+            text: "Can that be used externally, or is it client-confidential?"
+            mapsTo: differentiation.proofPoints.usableExternally
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: red-lines
+    durationMinutes: 15
+    purpose: Absolute prohibitions — commercial, reputational, regulatory, capability.
+    questions:
+      - id: L5.1
+        text: "Are there sectors or clients the firm won't work with, for any reason?"
+        mapsTo: riskGuardrails.redLines
+        claimType: fact
+        confidence: high
+        captureHint: >
+          Reputational red lines — defence, gambling, tobacco, specific controversial
+          clients, etc. Each gets its own redLine entry.
+
+      - id: L5.2
+        text: "Are there contract structures the firm won't accept, no matter how big the opportunity?"
+        mapsTo: riskGuardrails.redLines
+        claimType: fact
+        confidence: high
+        captureHint: "Commercial red lines — e.g. unlimited liability, fixed-price without scope lock, no cap on LDs."
+
+      - id: L5.3
+        text: "If a bid required the firm to stretch beyond current capability — bring in a new skill, new accreditation, new geography — how much stretch is acceptable?"
+        mapsTo: riskGuardrails.capabilityStretchTolerance
+        claimType: fact
+        confidence: medium
+        captureHint: "Map to enum: high / medium / low / none."
+
+      - id: L5.4
+        text: "How reliant can a pursuit be on a partner before it becomes too risky?"
+        mapsTo: riskGuardrails.partnerDependencyTolerance
+        claimType: fact
+        confidence: medium
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: wrap-up
+    durationMinutes: 10
+    purpose: Reflection, gaps, what the client wants the AI to never do.
+    questions:
+      - id: L6.1
+        text: "Is there anything I haven't asked about that the AI needs to know to give you useful advice on pursuits?"
+        mapsTo: null
+        captureHint: "Open field. Route answer into whichever schema section best fits."
+
+      - id: L6.2
+        text: "If the AI is going to be used across the firm, what's the one thing it must never do?"
+        mapsTo: riskGuardrails.redLines
+        claimType: fact
+        confidence: high
+        captureHint: >
+          Meta-rule for AI usage. Important — this becomes a hard guardrail in every
+          downstream skill. Flag these with materiality: high.
+
+      - id: L6.3
+        text: "What would 'success' look like for the work we're doing together?"
+        mapsTo: null
+        captureHint: >
+          Feeds engagementContext.successMeasures in V2 of the schema. For V1, save to
+          transcript but don't try to structure — engagement overlay is out of scope.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Global claim-typing rules (apply to every question)
+# ─────────────────────────────────────────────────────────────────────────────
+
+claimTypingRules:
+  - rule: "Default to the weakest claim type the answer supports."
+    rationale: "Better to under-type a claim and have the consultant upgrade it than to over-type and mislead downstream skills."
+    order: fact > interpretation > assumption > hypothesis > unknown
+
+  - rule: "Upgrade to 'fact' only when the client gives a concrete, verifiable, or categorical answer."
+    examples:
+      - "'We target contracts between £2m and £15m' → fact"
+      - "'We want to grow into mid-market' → interpretation (no specifics)"
+      - "'I think we're probably strongest in digital strategy' → interpretation"
+
+  - rule: "If the client hedges ('I think', 'probably', 'my sense is'), the claim is interpretation at best."
+
+  - rule: "If the client says 'I don't know' or deflects, save as claimType: unknown with a followUpIn field pointing to the variant most likely to answer."
+
+  - rule: "Claims with materiality: high need double confirmation before upgrading to fact — ask the question a second way."
+    examples:
+      - "No-go triggers"
+      - "Red lines"
+      - "Margin floors (in Commercial interview)"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Consultant intervention triggers
+# ─────────────────────────────────────────────────────────────────────────────
+
+consultantInterventionTriggers:
+  - trigger: "AI misreads a claim type two times in a row"
+    action: "Consultant takes over claim typing for the next 3 questions"
+
+  - trigger: "Client visibly disengages (answers in one word, looks at watch, says 'let's move on')"
+    action: "Skip remaining follow-ups, move to next section"
+
+  - trigger: "Client surfaces a tension the guide doesn't cover"
+    action: "Consultant asks 2-3 unstructured questions; AI transcribes but does not auto-claim; consultant drafts claim manually post-session"
+
+  - trigger: "Client contradicts an earlier answer in the same session"
+    action: "AI flags the contradiction on screen; consultant decides whether to resolve live or log both claims as strategicTensions"
+
+  - trigger: "Client refuses to answer a question in differentiation or red-lines"
+    action: "Skip to next question; flag section in post-session summary for Bid Ops follow-up"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Session output
+# ─────────────────────────────────────────────────────────────────────────────
+
+output:
+  schemaPartial:
+    description: "Subset of client-operating-context.json covering the sections produced by this variant."
+
+  transcript:
+    format: markdown
+    includes:
+      - timestamp
+      - speaker (AI / client / consultant)
+      - section id
+      - question id
+      - claim generated (if any)
+      - claim approval status
+
+  sessionSummary:
+    sections:
+      - claimsApproved
+      - claimsEdited
+      - claimsRejected
+      - claimsFlaggedAsAssumption
+      - sectionsSkipped
+      - tensionsForWorkshop
+      - gapsForBidOpsInterview
+      - gapsForCommercialInterview
+
+  handoffToBidOps:
+    description: "Structured notes the Bid Ops consultant-led interview should probe against."
+    includes:
+      - leadershipClaimsToVerify (claims flagged as interpretation that need archive/operational verification)
+      - unknownsToResolve (questions client couldn't or wouldn't answer)
+      - suspectedOverclaims (differentiation claims the consultant wants Bid Ops to test)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Design notes
+# ─────────────────────────────────────────────────────────────────────────────
+
+designNotes:
+  - >
+    This guide is the first draft. The only way to know if it's right is to run it
+    against a real (or simulated) managing partner and see where it falls flat.
+  - >
+    Target: 90 minutes, 6 sections, ~24 primary questions + follow-ups. If early
+    dry-runs show the guide regularly exceeds 100 minutes, cut differentiation
+    depth first — archive agent will cover that ground later.
+  - >
+    The hardest questions are L2.3 (strategic tensions), L4.3 (overclaiming), and
+    L5.1-L5.2 (red lines). These are the ones a human interviewer would get better
+    answers on. If the avatar consistently underperforms here, flip these questions
+    to consultant-led and let the AI capture claims in the background.
