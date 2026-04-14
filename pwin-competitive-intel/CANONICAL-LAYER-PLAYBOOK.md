@@ -439,6 +439,47 @@ Splink gives ~1-2pp more than token matching for this dataset but costs 3× the 
 | **Splink fuzzy (deferred to supplier dedup)** | 0 | est. +1-2pp on top | ~75-77% |
 | **New source data for long tail (on demand)** | varies | the remaining ~23% | ~varies |
 
+## 15. Supplier entity resolution — Splink v1 build (2026-04-14)
+
+The supplier dedup workstream ran as a single Splink pass with a deterministic post-pass. Producer: [agent/splink_supplier_dedup.py](agent/splink_supplier_dedup.py). Inputs read from `suppliers`; outputs written to `canonical_suppliers` + `supplier_to_canonical` in `db/bid_intel.db`.
+
+**Headline result:** 161,119 raw supplier rows → **82,637 canonical entities** (48.7% compression, ~13 minutes end-to-end). Sits in the middle of the playbook's 60–80k prediction from §7/§8.
+
+### Pipeline
+
+1. Extract + normalise suppliers from SQLite into a DuckDB working DataFrame
+   - `name_clean`: lower, trim, `&→and`, strip quotes, `Ltd→limited`, `Co→company`, trailing punctuation stripped, whitespace collapsed
+   - `postcode_clean`: upper + strip spaces + UK regex filter (drops foreign/garbage postcodes)
+   - `ch_clean`: upper + strip + UK CH regex (8 chars, 2 letters + 6 digits OR 8 digits)
+   - `locality_clean`, `street_clean` (first 40 chars)
+2. Splink 4 with DuckDB backend, four blocking rules: `ch_clean`, `postcode_clean + name_prefix_4`, `name_prefix_6 + locality_clean`, `name_clean` exact
+3. Comparisons: JaroWinkler name, ExactMatch postcode/CH/locality, LevenshteinAtThresholds on street
+4. u-values via random sampling (10M pairs), m-values via EM on the CH-block and postcode-prefix block
+5. Cluster at match probability 0.95
+6. **Deterministic post-pass**: merge any two canonical clusters sharing an identical `canonical_name`
+
+### Why the post-pass matters
+
+Splink alone produced 102,481 clusters. The post-pass merged 19,844 duplicate-name clusters down to the final 82,637. Most were variants of the same entity at different offices (e.g. Serco Limited across 5+ clusters because pairs with identical names but different postcodes scored 0.85–0.94, just below the 0.95 cluster threshold).
+
+**Rule:** after Splink, always run an identical-name collapse as a separate deterministic step. Splink is tuned to be conservative on name-only matches because it legitimately can't tell if two records with the same name at different addresses are the same company — but for UK supplier data at this scale, same-normalised-name = same entity is a safe heuristic.
+
+### Known residual issues
+
+- **Subsidiary grouping is a judgement call.** Atkins Limited (125 members, 3 CH) includes `AtkinsRéalis` (the rebrand) and `Faithful+Gould` (subsidiary consulting arm). For bid-intelligence purposes they share a parent group, but queries about "Atkins Engineering" vs "the consulting arm" need finer splits. **Defer** until a specific use case demands it.
+- **Same normalised name, different legal entities** — rare edge case. Two genuinely unrelated companies with identical normalised names would be collapsed by the post-pass. For UK public-sector suppliers this is unlikely to cause real harm but is worth auditing when it matters.
+- **Post-pass SQL is slow** (~12 min on 102k clusters) due to correlated subqueries in the `UPDATE supplier_to_canonical ... WHERE canonical_id NOT IN (survivors)` step. Not a correctness issue but could be optimised with indexes for future re-runs.
+
+### Splink dependency and environment
+
+Splink + DuckDB + pandas are installed in `.venv/` at the project root. Pin file: [requirements-splink.txt](requirements-splink.txt). The rest of `pwin-competitive-intel` (ingest, enrichment, dashboard, query layer) remains pure Python stdlib — these deps are scoped to the canonical layer only. The nightly GitHub Actions cron is unchanged.
+
+### Follow-ups
+
+- Run against the £1m+ award universe specifically (supplier count there is ~3–5k, a more tractable target for manual validation)
+- Join `canonical_suppliers` into Skill 1 v2 dossier queries — the original blocker per Phase 3 of Skill 1
+- Splink-against-Companies-House register (C07 third job) — deferred until this v1 is validated against live dossier work
+
 ## Change log
 
 | Version | Date | Summary |
@@ -446,3 +487,4 @@ Splink gives ~1-2pp more than token matching for this dataset but costs 3× the 
 | 1.0 | 2026-04-11 | Initial playbook from Phase 0 Discovery + Phase 1 GOV.UK and central buying agencies builds. 12 sections, ~3,000 words. |
 | 1.1 | 2026-04-12 | Added §13: NHS ODS lessons learned — England-only gap, naming conventions, deferred hierarchy. |
 | 1.2 | 2026-04-12 | Added §14: Next steps for the residual 29.7%. Token matching vs Splink analysis. Five-source coverage at 70.3%. |
+| 1.3 | 2026-04-14 | Added §15: Supplier entity resolution Splink v1 build. 161k → 82,637 canonical (48.7% compression). |

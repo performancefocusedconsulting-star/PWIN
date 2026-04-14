@@ -1,0 +1,8 @@
+# Splink supplier entity-resolution workstream dependencies.
+# See agent/splink_supplier_dedup.py.
+# The rest of pwin-competitive-intel (ingest, enrichment, dashboard, query layer)
+# remains pure Python stdlib by design — these deps are scoped to the canonical layer only.
+
+splink==4.0.16
+duckdb==1.5.2
+pandas==3.0.2

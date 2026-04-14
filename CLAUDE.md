@@ -392,7 +392,7 @@ Internal-only intelligence database of UK public sector procurement, built on th
 
 ### Technical Constraints
 
-- Python 3.9+ stdlib only — zero external dependencies for ingest and enrichment
+- Python 3.9+ stdlib only for ingest, enrichment, dashboard, and query layer — zero external deps. The canonical layer (Splink supplier dedup) is scoped into `.venv/` with its own `requirements-splink.txt`; nightly cron unaffected.
 - SQLite for local persistence — currently ~570 MB at 175k notices, scales comfortably
 - Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day) — **deploy descoped from immediate priority** since public Qualify is shipping intel-stripped; D1 becomes relevant again when paid Qualify or another internal product needs production access. The current 570 MB DB has not been validated against `wrangler d1 execute` load limits — verify before any deploy attempt.
 - FTS API rate limits: 1s between pages, 429 retries with exponential backoff, 60s read timeout with retries
@@ -411,8 +411,8 @@ Cross-cutting **internal** knowledge layer feeding the other pursuit products:
 
 ### Known Limitations
 
-- **Buyer entity resolution.** Large buyers fragment across many distinct rows. Ministry of Defence currently has ~1,272 buyer IDs (PPON variants, legacy GB-FTS IDs, case variants, subsidiaries like DE&S / DSTL / DIO). Aggregated queries for big buyers must use name-based LIKE joins across all variants. A canonical-buyer mapping layer is the #1 planned data-quality improvement.
-- **Companies House coverage.** ~27% of suppliers have a CH number on file. The rest are publisher name-only entries (no structured ID), GB-PPON-only, non-UK, or public sector bodies. Recovering name-only suppliers needs fuzzy matching against the Companies House register — planned but not yet built.
+- **Canonical entity layer.** Buyer canonical layer at 70.3% award-weighted coverage of the £1m+ universe (1,928 entities from GOV.UK + central buying agencies + NHS ODS + ONS LA codes + devolved, built 2026-04-11/12). Supplier canonical layer built 2026-04-14: 161,119 raw suppliers → **82,637 canonical** via Splink + deterministic name-merge post-pass. Downstream consumers should join through `canonical_suppliers` + `supplier_to_canonical` (or `canonical_buyers` + the buyer glossary) rather than aggregating raw IDs. See `CANONICAL-LAYER-DESIGN.md`, `DISCOVERY-REPORT.md`, and `CANONICAL-LAYER-PLAYBOOK.md` for decisions and lessons.
+- **Companies House coverage.** ~27% of suppliers have a CH number on file. The rest are publisher name-only entries (no structured ID), GB-PPON-only, non-UK, or public sector bodies. Recovering name-only suppliers via Splink-against-CH-register is the next canonical-layer task, deferred until this v1 is validated against live dossier work.
 - **Framework values.** OCDS records framework *maximum* values, not realised spend. Total-value summaries reflect ceilings, not draw-down.
 
 ### Running

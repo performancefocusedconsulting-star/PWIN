@@ -3,3 +3,4 @@ db/*.db-*
 logs/*.log
 data/
 __pycache__/
+.venv/
