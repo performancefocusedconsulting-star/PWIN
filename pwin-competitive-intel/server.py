@@ -125,13 +125,13 @@ def api_buyer(params):
             top_suppliers = [
                 {"name": r["name"], "awards": r["wins"], "value": r["total_value"]}
                 for r in conn.execute("""
-                    SELECT s.name, COUNT(DISTINCT a.id) AS wins, SUM(a.value_amount_gross) AS total_value
-                    FROM award_suppliers asup
-                    JOIN suppliers s ON asup.supplier_id = s.id
-                    JOIN awards a ON asup.award_id = a.id
-                    JOIN notices n ON a.ocid = n.ocid
-                    WHERE n.buyer_id = ?
-                    GROUP BY s.id ORDER BY wins DESC, total_value DESC LIMIT 15
+                    SELECT canonical_name AS name,
+                           COUNT(DISTINCT award_id) AS wins,
+                           SUM(value_amount_gross) AS total_value
+                    FROM v_canonical_supplier_wins
+                    WHERE buyer_id = ? AND value_quality IS NULL
+                    GROUP BY canonical_id
+                    ORDER BY wins DESC, total_value DESC LIMIT 15
                 """, (buyer["id"],)).fetchall()
             ]
 
@@ -177,109 +177,125 @@ def api_supplier(params):
     conn = get_db()
     if not conn: return {"error": "Database not found"}
     try:
-        # Aggregate across all supplier_ids that share the same normalised name.
-        # This collapses "SERCO LIMITED", "Serco Ltd", "Serco Limited" etc. into one result.
-        supplier_groups = conn.execute("""
-            SELECT LOWER(TRIM(name)) AS norm_name,
-                   GROUP_CONCAT(DISTINCT id) AS all_ids,
-                   MAX(name) AS display_name,
-                   MAX(companies_house_no) AS ch_no,
-                   MAX(scale) AS scale,
-                   MAX(is_vcse) AS is_vcse,
-                   MAX(ch_company_name) AS ch_company_name, MAX(ch_status) AS ch_status,
-                   MAX(ch_type) AS ch_type, MAX(ch_incorporated) AS ch_incorporated,
-                   MAX(ch_sic_codes) AS ch_sic_codes, MAX(ch_address) AS ch_address,
-                   MAX(ch_turnover) AS ch_turnover, MAX(ch_net_assets) AS ch_net_assets,
-                   MAX(ch_employees) AS ch_employees, MAX(ch_accounts_date) AS ch_accounts_date,
-                   MAX(ch_directors) AS ch_directors, MAX(ch_parent) AS ch_parent,
-                   MAX(ch_enriched_at) AS ch_enriched_at
-            FROM suppliers
-            WHERE LOWER(name) LIKE LOWER(?)
-            GROUP BY LOWER(TRIM(name))
-            ORDER BY display_name LIMIT 10
-        """, (f"%{name}%",)).fetchall()
+        # Search canonical entities — matches canonical_name OR any raw
+        # member name. Splink clustering has already collapsed variants
+        # across normalised-name AND cross-name patterns (brand vs legal
+        # entity, rebrands, subsidiaries).
+        canonicals = conn.execute("""
+            SELECT DISTINCT canonical_id, canonical_name,
+                            canonical_ch_numbers, canonical_distinct_ch_count,
+                            canonical_member_count
+            FROM v_canonical_supplier_wins
+            WHERE LOWER(canonical_name) LIKE LOWER(?)
+               OR LOWER(raw_supplier_name) LIKE LOWER(?)
+            ORDER BY canonical_member_count DESC NULLS LAST, canonical_name
+            LIMIT 10
+        """, (f"%{name}%", f"%{name}%")).fetchall()
 
-        if not supplier_groups: return {"suppliers": [], "message": f"No suppliers matching '{name}'"}
+        if not canonicals: return {"suppliers": [], "message": f"No suppliers matching '{name}'"}
 
         results = []
-        for grp in supplier_groups:
-            ids = grp["all_ids"].split(",")
-            placeholders = ",".join("?" for _ in ids)
+        for grp in canonicals:
+            cid = grp["canonical_id"]
 
-            stats = conn.execute(f"""
-                SELECT COUNT(DISTINCT a.id) AS total_wins, SUM(a.value_amount_gross) AS total_value,
-                       AVG(a.value_amount_gross) AS avg_value, MAX(a.value_amount_gross) AS max_value,
-                       MIN(a.award_date) AS first_win, MAX(a.award_date) AS last_win
-                FROM award_suppliers asup JOIN awards a ON asup.award_id = a.id
-                WHERE asup.supplier_id IN ({placeholders})
-            """, ids).fetchone()
+            stats = conn.execute("""
+                SELECT COUNT(DISTINCT award_id) AS total_wins,
+                       SUM(value_amount_gross) AS total_value,
+                       AVG(value_amount_gross) AS avg_value,
+                       MAX(value_amount_gross) AS max_value,
+                       MIN(award_date) AS first_win,
+                       MAX(award_date) AS last_win
+                FROM v_canonical_supplier_wins
+                WHERE canonical_id = ? AND value_quality IS NULL
+            """, (cid,)).fetchone()
 
             buyer_rels = [
                 {"name": r["name"], "awards": r["awards"], "value": r["total_value"]}
-                for r in conn.execute(f"""
-                    SELECT COALESCE(cb.canonical_name, b.name) AS name,
-                           COUNT(DISTINCT a.id) AS awards,
-                           SUM(a.value_amount_gross) AS total_value
-                    FROM award_suppliers asup
-                    JOIN awards a ON asup.award_id = a.id
-                    JOIN notices n ON a.ocid = n.ocid
-                    JOIN buyers b ON n.buyer_id = b.id
+                for r in conn.execute("""
+                    SELECT COALESCE(cb.canonical_name, v.buyer_name) AS name,
+                           COUNT(DISTINCT v.award_id) AS awards,
+                           SUM(v.value_amount_gross) AS total_value
+                    FROM v_canonical_supplier_wins v
+                    JOIN buyers b ON v.buyer_id = b.id
                     LEFT JOIN canonical_buyers cb ON b.canonical_id = cb.canonical_id
-                    WHERE asup.supplier_id IN ({placeholders})
-                    GROUP BY COALESCE(cb.canonical_id, b.id) ORDER BY awards DESC LIMIT 15
-                """, ids).fetchall()
+                    WHERE v.canonical_id = ? AND v.value_quality IS NULL
+                    GROUP BY COALESCE(cb.canonical_id, b.id)
+                    ORDER BY awards DESC LIMIT 15
+                """, (cid,)).fetchall()
             ]
 
-            # Show ALL awards (not just active contracts with future end dates)
+            # GROUP BY award_id collapses the N-rows-per-award that appear
+            # when a canonical rolls up multiple raw suppliers on one award.
             awards_list = [
                 {"title": r["title"], "buyer": r["buyer"], "value": r["value_amount_gross"],
                  "service": r["service_category"],
                  "end_date": r["contract_end_date"], "award_date": r["award_date"],
                  "method": r["procurement_method_detail"]}
-                for r in conn.execute(f"""
-                    SELECT n.title, COALESCE(cb.canonical_name, b.name) AS buyer,
-                           a.value_amount_gross, n.service_category,
-                           a.contract_end_date, a.award_date, n.procurement_method_detail
-                    FROM award_suppliers asup
-                    JOIN awards a ON asup.award_id = a.id
-                    JOIN notices n ON a.ocid = n.ocid
-                    JOIN buyers b ON n.buyer_id = b.id
+                for r in conn.execute("""
+                    SELECT v.title,
+                           COALESCE(cb.canonical_name, v.buyer_name) AS buyer,
+                           v.value_amount_gross,
+                           n.service_category,
+                           v.contract_end_date, v.award_date,
+                           n.procurement_method_detail
+                    FROM v_canonical_supplier_wins v
+                    JOIN notices n ON v.ocid = n.ocid
+                    JOIN buyers b ON v.buyer_id = b.id
                     LEFT JOIN canonical_buyers cb ON b.canonical_id = cb.canonical_id
-                    WHERE asup.supplier_id IN ({placeholders}) AND a.status IN ('active', 'pending')
-                    ORDER BY a.value_amount_gross DESC NULLS LAST LIMIT 50
-                """, ids).fetchall()
+                    WHERE v.canonical_id = ? AND v.award_status IN ('active', 'pending')
+                    GROUP BY v.award_id
+                    ORDER BY v.value_amount_gross DESC NULLS LAST LIMIT 50
+                """, (cid,)).fetchall()
             ]
 
-            # Companies House enrichment (if available)
+            # Companies House enrichment — pick the most-recently-enriched
+            # raw member as the representative. A canonical may have multiple
+            # CH numbers (group consolidation); we show one, not all.
+            ch_row = conn.execute("""
+                SELECT s.companies_house_no, s.scale, s.is_vcse,
+                       s.ch_company_name, s.ch_status, s.ch_type, s.ch_incorporated,
+                       s.ch_sic_codes, s.ch_address, s.ch_turnover, s.ch_net_assets,
+                       s.ch_employees, s.ch_accounts_date, s.ch_directors, s.ch_parent,
+                       s.ch_enriched_at, s.name AS display_name
+                FROM suppliers s
+                LEFT JOIN supplier_to_canonical s2c ON s.id = s2c.supplier_id
+                WHERE COALESCE(s2c.canonical_id, 'RAW-' || s.id) = ?
+                ORDER BY (s.ch_enriched_at IS NOT NULL) DESC,
+                         s.ch_enriched_at DESC
+                LIMIT 1
+            """, (cid,)).fetchone()
+
             ch = None
-            if grp["ch_enriched_at"]:
+            if ch_row and ch_row["ch_enriched_at"]:
                 directors = []
-                try: directors = json.loads(grp["ch_directors"] or "[]")
+                try: directors = json.loads(ch_row["ch_directors"] or "[]")
                 except: pass
                 sic = []
-                try: sic = json.loads(grp["ch_sic_codes"] or "[]")
+                try: sic = json.loads(ch_row["ch_sic_codes"] or "[]")
                 except: pass
                 ch = {
-                    "company_name": grp["ch_company_name"],
-                    "status": grp["ch_status"],
-                    "type": grp["ch_type"],
-                    "incorporated": grp["ch_incorporated"],
+                    "company_name": ch_row["ch_company_name"],
+                    "status": ch_row["ch_status"],
+                    "type": ch_row["ch_type"],
+                    "incorporated": ch_row["ch_incorporated"],
                     "sic_codes": sic,
-                    "address": grp["ch_address"],
-                    "turnover": grp["ch_turnover"],
-                    "net_assets": grp["ch_net_assets"],
-                    "employees": grp["ch_employees"],
-                    "accounts_date": grp["ch_accounts_date"],
+                    "address": ch_row["ch_address"],
+                    "turnover": ch_row["ch_turnover"],
+                    "net_assets": ch_row["ch_net_assets"],
+                    "employees": ch_row["ch_employees"],
+                    "accounts_date": ch_row["ch_accounts_date"],
                     "directors": directors,
-                    "parent": grp["ch_parent"],
+                    "parent": ch_row["ch_parent"],
                 }
 
             results.append({
-                "name": grp["display_name"],
-                "variant_count": len(ids),
-                "scale": grp["scale"],
-                "is_vcse": bool(grp["is_vcse"]),
-                "companies_house_no": grp["ch_no"],
+                "name": grp["canonical_name"],
+                "canonical_id": cid,
+                "canonical_ch_numbers": grp["canonical_ch_numbers"],
+                "variant_count": grp["canonical_member_count"] or 1,
+                "scale": ch_row["scale"] if ch_row else None,
+                "is_vcse": bool(ch_row["is_vcse"]) if ch_row else False,
+                "companies_house_no": ch_row["companies_house_no"] if ch_row else None,
                 "wins": stats["total_wins"],
                 "total_value": stats["total_value"],
                 "avg_value": stats["avg_value"],
