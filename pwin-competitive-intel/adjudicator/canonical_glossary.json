@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "purpose": "Hand-curated notes on canonical suppliers for Morgan Ledger. Overrides Splink's statistical judgement when the entries below say so.",
+    "scope": "Top volume canonicals by member_count. Add entries when a real adjudication reveals structural knowledge worth keeping.",
+    "version": "0.1",
+    "created": "2026-04-14",
+    "editing_rule": "Only record what you have verified (Companies House, corporate history, own knowledge). Speculation stays out."
+  },
+  "canonical_suppliers": [
+    {
+      "canonical_name": "atkins limited",
+      "notes": "Atkins (part of AECOM 2017; now part of SNC-Lavalin/AtkinsRéalis). Multiple legacy CH numbers from consolidated Atkins entities are expected within one canonical. Do NOT merge with AECOM — they remained distinct trading brands for most of the FTS window.",
+      "do_not_merge_with": ["aecom limited"]
+    },
+    {
+      "canonical_name": "mitie property services (uk) limited",
+      "notes": "Mitie Group plc rolls up dozens of acquired subsidiaries (Mitie Cleaning, Mitie Security, Mitie Engineering, Interserve FM post-2020, etc.). High CH-number count is expected. Morgan: flag but don't auto-split unless a distinct Mitie-brand trading entity is clearly separate (e.g. MiHomecare was divested and later rebranded).",
+      "expected_high_ch_count": true
+    },
+    {
+      "canonical_name": "kier construction limited",
+      "notes": "Kier Group plc with multiple construction-trading CH numbers. Kier Highways and Kier Living are distinct businesses — verify before rolling those in.",
+      "expected_high_ch_count": true
+    },
+    {
+      "canonical_name": "capita business services limited",
+      "notes": "Capita plc has 100+ group companies. Splink correctly rolls up commodity back-office trading entities. Keep Capita Life & Pensions, Capita Health (divested), and Capita Scottish Property separate if they appear as distinct canonicals — they traded under different brands.",
+      "expected_high_ch_count": true
+    },
+    {
+      "canonical_name": "softcat plc",
+      "notes": "Single-entity IT reseller. One CH (02174990). Any proposed merge with a differently-named company should be rejected unless CH number matches."
+    },
+    {
+      "canonical_name": "mott macdonald limited",
+      "notes": "Consulting engineering firm. Mott MacDonald Bentley is a distinct JV with Bentley Holdings — keep separate."
+    },
+    {
+      "canonical_name": "civica uk limited",
+      "notes": "Local-government software vendor. Rebrand history (Anite Public Sector → Civica) accounts for legacy CH numbers."
+    },
+    {
+      "canonical_name": "wsp uk limited",
+      "notes": "WSP Group (Canadian parent, UK trading). Formerly known as WSP Parsons Brinckerhoff. Do not auto-merge with 'Parsons Brinckerhoff' entries unless CH or address confirms."
+    },
+    {
+      "canonical_name": "turner and townsend project management limited",
+      "notes": "T&T acquired multiple subsidiaries (Turner & Townsend Contract Services, Turner & Townsend Cost Management). Several CH numbers expected. Do not merge with 'Turner Townsend' construction contractor (different company)."
+    },
+    {
+      "canonical_name": "engie regeneration limited",
+      "notes": "ENGIE UK group — has been through structure changes (ENGIE/Keepmoat/Equans split). Flag proposed merges with Equans UK Ltd for review — they are separate post-2021."
+    },
+    {
+      "canonical_name": "reed specialist recruitment limited",
+      "notes": "Reed Recruitment group. Reed in Partnership (welfare-to-work) is a distinct trading entity — keep separate."
+    },
+    {
+      "canonical_name": "wates construction limited",
+      "notes": "Wates Group family-owned. Wates Living Space, Wates Smartspace, Needspace are sister trading entities — may be separate canonicals and should stay separate unless CH matches."
+    },
+    {
+      "canonical_name": "zurich municipal",
+      "notes": "Public-sector arm of Zurich Insurance. 'Zurich Municipal' is a brand, not an entity. The underlying CH is typically Zurich Insurance plc (00057203). Multiple CH numbers likely reflect insurance group structure."
+    },
+    {
+      "canonical_name": "ove arup and partners limited",
+      "notes": "Arup Group. UK trading entity is Ove Arup & Partners Ltd. Arup International Development is a registered charity — keep separate."
+    },
+    {
+      "canonical_name": "aecom limited",
+      "notes": "AECOM global infrastructure consulting. Distinct from Atkins even post-2017 mergers — they operated as separate brands. Do NOT merge.",
+      "do_not_merge_with": ["atkins limited"]
+    },
+    {
+      "canonical_name": "pricewaterhousecoopers llp",
+      "notes": "PwC UK. PwC Services Ltd and PricewaterhouseCoopers International are separate entities — keep distinct unless CH matches."
+    },
+    {
+      "canonical_name": "jacobs uk limited",
+      "notes": "Jacobs Engineering Group. Jacobs Technology, Jacobs Clean Energy — separate trading entities, verify before merging."
+    },
+    {
+      "canonical_name": "insight direct (uk) limited",
+      "notes": "IT reseller. Single CH (02579852). Do not merge with 'Insight Investment' (financial services) or 'Insight Enterprises' (US parent)."
+    }
+  ]
+}
