@@ -70,10 +70,10 @@ def db_summary():
     ).fetchone()
     print(f"\n  Last ingest cursor: {cursor['value'] if cursor and cursor['value'] else 'none'}")
 
-    # Value stats
+    # Value stats (exclude flagged outliers — see schema comment on awards.value_quality)
     val = conn.execute("""
         SELECT SUM(value_amount_gross), AVG(value_amount_gross), MAX(value_amount_gross)
-        FROM awards WHERE value_amount_gross IS NOT NULL
+        FROM awards WHERE value_amount_gross IS NOT NULL AND value_quality IS NULL
     """).fetchone()
     if val[0]:
         print(f"\n  Total award value indexed : {fmt_gbp(val[0])}")
@@ -127,6 +127,7 @@ def buyer_profile(name_query: str, limit: int = 50):
             FROM awards a
             JOIN notices n ON a.ocid = n.ocid
             WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
+              AND a.value_quality IS NULL
         """, (buyer["id"],)).fetchone()
 
         if stats["total_awards"]:
@@ -158,7 +159,7 @@ def buyer_profile(name_query: str, limit: int = 50):
             JOIN suppliers s ON asup.supplier_id = s.id
             JOIN awards a ON asup.award_id = a.id
             JOIN notices n ON a.ocid = n.ocid
-            WHERE n.buyer_id = ?
+            WHERE n.buyer_id = ? AND a.value_quality IS NULL
             GROUP BY s.id ORDER BY wins DESC, total_value DESC LIMIT 15
         """, (buyer["id"],)).fetchall()
 
@@ -233,7 +234,7 @@ def supplier_profile(name_query: str, limit: int = 50):
                 MAX(a.award_date)           AS last_win
             FROM award_suppliers asup
             JOIN awards a ON asup.award_id = a.id
-            WHERE asup.supplier_id = ?
+            WHERE asup.supplier_id = ? AND a.value_quality IS NULL
         """, (sup["id"],)).fetchone()
 
         if stats["total_wins"]:
@@ -254,7 +255,7 @@ def supplier_profile(name_query: str, limit: int = 50):
             JOIN awards a ON asup.award_id = a.id
             JOIN notices n ON a.ocid = n.ocid
             JOIN buyers b ON n.buyer_id = b.id
-            WHERE asup.supplier_id = ?
+            WHERE asup.supplier_id = ? AND a.value_quality IS NULL
             GROUP BY b.id ORDER BY awards DESC, total_value DESC LIMIT 15
         """, (sup["id"],)).fetchall()
 
@@ -474,7 +475,7 @@ def cpv_search(code_query: str):
     rows = conn.execute("""
         SELECT c.code, c.description, n.title, b.name AS buyer,
                n.procurement_method, n.tender_status,
-               (SELECT SUM(a.value_amount_gross) FROM awards a WHERE a.ocid = n.ocid) AS total_value
+               (SELECT SUM(a.value_amount_gross) FROM awards a WHERE a.ocid = n.ocid AND a.value_quality IS NULL) AS total_value
         FROM cpv_codes c
         JOIN notices n ON c.ocid = n.ocid
         JOIN buyers b ON n.buyer_id = b.id

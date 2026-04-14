@@ -603,13 +603,21 @@ def upsert_awards(conn: sqlite3.Connection, release: dict, supplier_ids: dict):
         # Award criteria from lot
         criteria = criteria_by_lot.get(lot_ref) if lot_ref else None
 
+        # Plausibility flag — any single award >= £10bn is a data error or a
+        # framework ceiling misrecorded as an award. See canonical playbook §16.
+        amount_gross = val.get("amountGross") or val.get("amount")
+        value_quality = "suspect_outlier" if (
+            amount_gross is not None and amount_gross >= 10e9
+        ) else None
+
         conn.execute("""
             INSERT INTO awards (
                 id, ocid, lot_id, title, status, award_date,
                 value_amount, value_amount_gross, currency,
                 contract_start_date, contract_end_date, contract_max_extend,
-                date_signed, contract_status, award_criteria, last_updated
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
+                date_signed, contract_status, award_criteria,
+                value_quality, last_updated
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
             ON CONFLICT(id) DO UPDATE SET
                 status=COALESCE(excluded.status, status),
                 value_amount=COALESCE(excluded.value_amount, value_amount),
@@ -619,18 +627,20 @@ def upsert_awards(conn: sqlite3.Connection, release: dict, supplier_ids: dict):
                 contract_max_extend=COALESCE(excluded.contract_max_extend, contract_max_extend),
                 date_signed=COALESCE(excluded.date_signed, date_signed),
                 contract_status=COALESCE(excluded.contract_status, contract_status),
+                value_quality=excluded.value_quality,
                 last_updated=datetime('now')
         """, (
             award_id, ocid, lot_id,
             award.get("title"), award.get("status"),
             _dt(award.get("date")),
-            val.get("amount"), val.get("amountGross") or val.get("amount"),
+            val.get("amount"), amount_gross,
             val.get("currency", "GBP"),
             _dt(cp.get("startDate")), _dt(cp.get("endDate")),
             _dt(cp.get("maxExtentDate")),
             _dt(linked_contract.get("dateSigned")),
             linked_contract.get("status"),
             criteria,
+            value_quality,
         ))
 
         # Link suppliers to this award

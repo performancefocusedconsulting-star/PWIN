@@ -480,6 +480,36 @@ Splink + DuckDB + pandas are installed in `.venv/` at the project root. Pin file
 - Join `canonical_suppliers` into Skill 1 v2 dossier queries — the original blocker per Phase 3 of Skill 1
 - Splink-against-Companies-House register (C07 third job) — deferred until this v1 is validated against live dossier work
 
+## 16. Value-outlier detection — `awards.value_quality` (2026-04-14)
+
+Section 6 anticipated a £500m plausibility threshold for suspect values. Re-validating against the actual data distribution on 2026-04-14 showed that the £500m line would flag ~2,900 awards, most of which are **legitimate framework ceilings**, not data errors (e.g. MoD Global Bulk Fuels £1.35bn, CCS E-Vouchers £1.5bn, National Highways Charter 4 £1bn, YPO Apprenticeships £8bn). £500m is too aggressive.
+
+### Threshold chosen: £10bn
+
+Inspection of all 54 active awards above £10bn showed:
+- 2 egregious data errors: Salisbury NHS at £1,000,000m (£1tn) for an apprenticeships framework (×2 duplicate rows), and North East Councils £100bn for "Travel Management Services"
+- ~50 framework ceilings that are legitimate but extreme (YPO Apprenticeships £10bn, MoD MSS framework £3.2bn, Sellafield reseller £12bn etc.)
+
+The £10bn line catches the data errors cleanly. Values below £10bn include real mega-frameworks that should not be blanket-flagged. Total flagged across all statuses: **78 rows**.
+
+**Rule:** any single award with `value_amount_gross >= £10bn` is flagged `value_quality = 'suspect_outlier'`. Aggregations (total spend, top buyers, top suppliers, avg/max value) exclude flagged rows by default via `AND value_quality IS NULL`.
+
+### What this does NOT fix
+
+This flag only catches unambiguous data errors. It does **not** solve the broader framework-ceiling-vs-realised-spend conflation issue — values in the £100m–£10bn band are mostly framework ceilings, not realised award values, and will still over-state aggregated spend. Separating ceilings from realised values is a larger methodological problem that needs a dedicated design pass (e.g. use `notices.is_framework=1` + `framework_method` to distinguish framework establishment notices from call-off awards).
+
+### Implementation
+
+- Schema: added `awards.value_quality TEXT` column + `idx_awards_value_quality` index
+- Ingest: [agent/ingest.py](agent/ingest.py) `upsert_awards` computes the flag on insert; UPSERT refreshes it on each update
+- Backfill: one-shot SQL `UPDATE awards SET value_quality = 'suspect_outlier' WHERE value_amount_gross >= 10e9` applied 2026-04-14
+- Queries: [queries/queries.py](queries/queries.py) aggregation sites updated (`summary`, buyer profile, supplier profile, supplier→buyer relationships, CPV search total_value)
+
+### Re-evaluation triggers
+
+- If FTS publisher behaviour changes (e.g. more errors start appearing below £10bn), lower the threshold
+- If genuine >£10bn single awards start appearing (HS2 mega-lots, nuclear decommissioning), raise the threshold or move to a heuristic flag (e.g. flag only when value > N × buyer's 95th percentile)
+
 ## Change log
 
 | Version | Date | Summary |
@@ -488,3 +518,4 @@ Splink + DuckDB + pandas are installed in `.venv/` at the project root. Pin file
 | 1.1 | 2026-04-12 | Added §13: NHS ODS lessons learned — England-only gap, naming conventions, deferred hierarchy. |
 | 1.2 | 2026-04-12 | Added §14: Next steps for the residual 29.7%. Token matching vs Splink analysis. Five-source coverage at 70.3%. |
 | 1.3 | 2026-04-14 | Added §15: Supplier entity resolution Splink v1 build. 161k → 82,637 canonical (48.7% compression). |
+| 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |

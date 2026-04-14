@@ -174,6 +174,13 @@ CREATE TABLE IF NOT EXISTS awards (
     -- Award criteria (JSON)
     award_criteria          TEXT,
 
+    -- Value-quality flag. NULL = plausible. 'suspect_outlier' = value_amount_gross
+    -- at or above a plausibility threshold (currently £10bn) — almost always a
+    -- data error (unit confusion, framework-ceiling-as-award) and should be
+    -- excluded from spend aggregations by default. See CANONICAL-LAYER-PLAYBOOK
+    -- §16 for the threshold rationale.
+    value_quality           TEXT,
+
     ingested_at             TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated            TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -183,6 +190,7 @@ CREATE INDEX IF NOT EXISTS idx_awards_lot ON awards(lot_id);
 CREATE INDEX IF NOT EXISTS idx_awards_end_date ON awards(contract_end_date);
 CREATE INDEX IF NOT EXISTS idx_awards_status ON awards(status);
 CREATE INDEX IF NOT EXISTS idx_awards_value ON awards(value_amount_gross);
+CREATE INDEX IF NOT EXISTS idx_awards_value_quality ON awards(value_quality);
 
 -- ============================================================
 -- AWARD_SUPPLIERS (many-to-many: awards can have multiple suppliers)
