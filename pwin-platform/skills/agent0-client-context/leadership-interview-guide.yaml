@@ -8,6 +8,56 @@ description: >
   view of differentiation in the Client Operating Context schema. AI-led with consultant
   on standby. Target duration 90 minutes, hard stop at 100.
 consumes: []
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Downstream consumers — cross-product boundary
+# ─────────────────────────────────────────────────────────────────────────────
+# The Client Operating Context is a platform-level shared entity. Other PWIN
+# products READ it; they do not regenerate, fork, or maintain parallel copies
+# of its fields. Findings from downstream products may propose updates, but
+# writes flow back through a controlled path — not by forking the entity.
+#
+# Mirrored in bidequity-verdict/docs/BidEquity-Verdict-PRD-v2.md §7.6.
+
+downstreamConsumers:
+  - product: Verdict
+    dependency: optional-enrichment
+    uses:
+      - identity.businessModelCategory
+      - identity.size
+      - pursuitPreferences.avoidArchetypes
+      - pursuitPreferences.noGoTriggers
+      - riskGuardrails.redLines
+      - riskGuardrails.marginFloor
+      - deliveryMobilisation
+      - bidOperatingModel
+      - cultureDecisionStyle
+    rule: >
+      Verdict operates at the single-lost-opportunity level; this context
+      operates at portfolio/company level. They are NOT peers. Verdict MUST
+      run to completion without this context — when absent, Verdict scores
+      against absolute methodology benchmarks and calls this out as a
+      calibration limit. When present and approved for AI use, Verdict reads
+      it as ENRICHMENT to (a) calibrate Domain 5.3 (team mobilisation) and
+      5.7 (commercial/pricing) against this firm's typical shape, (b) cross-
+      check pursuits against declared red lines and avoid-archetypes (highest-
+      value finding when triggered), (c) sharpen Pass 2 probe questions, and
+      (d) power the Pattern Analysis Engine across multiple Verdicts.
+      Verdict MUST NOT re-interview leadership or write parallel capability /
+      delivery / commercial-posture fields. Recurring Verdict findings flow
+      back via a controlled write path (TBD), not a fork.
+      Commercial reality: most clients buy Verdict (£2k gateway) before
+      onboarding Agent 0 (Core/Command). Verdict-first is the default flow.
+  - product: Win Strategy
+    uses: [strategicObjectives, pursuitPreferences, differentiation, riskGuardrails]
+    rule: Read-only baseline for capture-phase strategy.
+  - product: Bid Execution
+    uses: [cultureDecisionStyle.tonePreferences, riskGuardrails.redLines, differentiation]
+    rule: Read-only guardrails for drafting and governance.
+  - product: Qualify (paid tier)
+    uses: [pursuitPreferences, riskGuardrails.noGoTriggers, strategicObjectives.targetContractValueBands]
+    rule: Read-only — informs AI assurance layer. Public/free tier MUST NOT consume.
+
 produces:
   schemaId: client-operating-context-v1
   sections:

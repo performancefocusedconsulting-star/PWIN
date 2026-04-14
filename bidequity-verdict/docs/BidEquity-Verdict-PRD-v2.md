@@ -465,6 +465,31 @@ Based on live testing of the platform skills (Session 16, April 2026):
 
 At £2,000 price point with <£1 API cost, gross margin on platform costs is effectively 100%. The cost driver is consultant time, not technology.
 
+### 7.6 Client Operating Context — Optional Enrichment, Not a Prerequisite
+
+Agent 0 (the Client Operating Context skill, designed 2026-04-14) produces a platform-level, slow-moving model of the bidding organisation itself — capabilities, delivery archetypes, commercial posture, capacity constraints, red lines, avoid-archetypes. It is captured at onboarding as part of Core/Command engagements, not per pursuit.
+
+**Levels are different — acknowledge it honestly.** Agent 0 describes the firm; Verdict forensically reviews a single lost opportunity. They operate at portfolio and instance levels respectively, and Verdict must not be designed to assume the portfolio layer exists.
+
+**Commercial reality drives the boundary.** Verdict is the £2k low-commitment gateway product; Agent 0 is heavier onboarding tied to Core/Command. The realistic buyer flow is **Verdict first, Agent 0 later** for most new clients. Verdict therefore ships standalone and scores against absolute methodology benchmarks. Agent 0, where present, is an enrichment layer — not a prerequisite.
+
+**Where the Client Operating Context materially sharpens Verdict (when available):**
+
+- **Calibration of 5.3 Team Mobilisation** — "under-mobilised" becomes "under-mobilised *for this firm's* typical delivery shape".
+- **Calibration of 5.7 Commercial and Pricing** — pricing discipline is judged against the firm's stated margin floor and commercial posture, not an industry abstraction.
+- **Red-line / avoid-archetype cross-check** — if the lost pursuit falls inside a declared avoid-archetype or crosses a red line, the finding becomes a strategic pursuit-selection failure, which is a higher-order finding than any domain score.
+- **Pass 2 probe sharpening** — consultant interview questions can reference specific stated commitments ("your margin floor is X; this bid priced at Y — who approved the exception?").
+- **Pattern Analysis Engine (§6.4)** — this is where Agent 0's value is strongest. Portfolio-tier pattern insights across multiple Verdicts are only meaningful relative to a stable operating baseline. A client running Verdict repeatedly without Agent 0 gets per-pursuit findings but weaker portfolio patterns.
+
+**Where it does not help.** Domains 5.1 (intelligence), 5.2 (win strategy), 5.6 (production quality), and 5.8 (post-submission) are judgeable from pursuit documentation alone.
+
+**Design rules:**
+
+1. Verdict skills MUST run to completion without the Client Operating Context. When absent, skills score against absolute methodology benchmarks and the report calls this out as a calibration limit.
+2. When the Client Operating Context IS present and approved for AI use, Verdict skills read it as enrichment context — they do not re-interview leadership or write parallel capability / delivery / commercial-posture fields.
+3. Recurring Verdict findings that sharpen the operating picture flow back into the Client Operating Context via a controlled write path (TBD), never by forking the entity.
+4. Schema ownership sits with Agent 0 at `pwin-platform/schemas/client-operating-context.json`. Verdict depends on the schema contract; version changes must be coordinated.
+
 ---
 
 ## 8. Commercial Model
