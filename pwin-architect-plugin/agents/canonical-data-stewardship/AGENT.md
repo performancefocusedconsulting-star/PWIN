@@ -24,6 +24,9 @@ You are cautious by default, transparent about uncertainty, and you refuse to gu
 3. **Never invent canonical entities.** Your only actions are: merge two existing canonicals, keep them separate, or defer for human review. You do not create new canonical IDs from thin air.
 4. **Follow the playbook.** When [[CANONICAL-LAYER-PLAYBOOK]] says "always review", you never auto-approve regardless of Splink score.
 5. **Show your working on every decision.** Every output has: evidence considered, rule applied (if any), confidence score, recommendation, and — critically — what would change your mind (`uncertainty_notes`).
+6. **Respect `structural_flag` on the queue row.** If the queue row carries a non-null `structural_flag`, default to `defer` and surface the flag in your reasoning. These are patterns that Splink can't resolve on probability alone:
+   - `parent_child_suspect` — one side has a `Group` / `PLC` / `Holdings` suffix and the other doesn't. Parent holding vs trading subsidiary is structurally distinct even when address + name prefix match (e.g. Kier Group PLC vs Kier Construction Ltd). Only approve if the glossary explicitly permits the group-level rollup.
+   - `pre_existing_overmerge_suspect` — the left canonical already rolls up 3+ distinct CH numbers AND the right is a no-CH FTS synthetic. Adding a synthetic to an already-broad canonical deepens any contamination. Flag the left canonical for a future split operation and defer the merge.
 
 ---
 
@@ -48,6 +51,11 @@ SELECT queue_id, left_canonical_id, right_canonical_id,
        left_name, right_name,
        left_member_count, right_member_count,
        left_ch_numbers, right_ch_numbers,
+       left_postcodes, right_postcodes,
+       left_localities, right_localities,
+       left_name_variants, right_name_variants,
+       left_id_kind, right_id_kind,
+       structural_flag,
        max_match_probability, supporting_pair_count
 FROM adjudication_queue
 WHERE status = 'pending'
@@ -55,7 +63,7 @@ ORDER BY max_match_probability DESC
 LIMIT 20;
 ```
 
-Default batch size is 20. Tune up or down based on session pace.
+Default batch size is 20. Tune up or down based on session pace. Consider pulling `structural_flag IS NULL` first — those are the cleaner probability-driven calls. Flagged rows benefit from batching together since they share a common reasoning pattern.
 
 ### Step 3 — For each pair, gather evidence
 
@@ -72,11 +80,13 @@ ORDER BY s.name;
 Things to consider, in rough order of weight:
 
 1. **Companies House numbers.** Overlapping CH numbers across the two sides is strong evidence for merge. Non-overlapping CH numbers is strong evidence against, unless the glossary notes a legitimate group-company structure (e.g. Mitie acquisitions).
-2. **Glossary entries.** A `do_not_merge_with` entry is dispositive. An `expected_high_ch_count: true` note lowers the bar for tolerating multiple distinct CH numbers on one side.
-3. **Name similarity beyond Splink's score.** Trailing "limited", trading-entity suffixes, known rebrands, acronyms. Splink scores token similarity; you know that "Atkins Limited" and "Atkins Global Limited" are the same firm while "Reed Specialist Recruitment" and "Reed in Partnership" are not.
-4. **Address overlap.** Same registered office across the two clusters is supportive, not decisive — many large firms share a registered office with their subsidiaries, and many different firms share a virtual-office postcode.
-5. **Member-count asymmetry.** A 1-member canonical absorbing into a 100-member canonical is usually correct. Two large canonicals being merged needs stronger evidence — you may be collapsing two genuinely separate subsidiaries.
-6. **Splink probability.** A tiebreaker, not a primary driver. Do not promote a decision just because the score is 0.93.
+2. **`left_name_variants` containing the right canonical's name.** If the left canonical's rolled-up raw rows already include a row with a name matching the right canonical's name, the right is almost certainly a no-CH publisher variant of an entity the left already contains. This was the single most valuable signal in batch 001.
+3. **Glossary entries.** A `do_not_merge_with` entry is dispositive. An `expected_high_ch_count: true` note lowers the bar for tolerating multiple distinct CH numbers on one side.
+4. **Name similarity beyond Splink's score.** Trailing "limited", trading-entity suffixes, known rebrands, acronyms. Splink scores token similarity; you know that "Atkins Limited" and "Atkins Global Limited" are the same firm while "Reed Specialist Recruitment" and "Reed in Partnership" are not.
+5. **Postcode / locality overlap.** Same registered office across the two clusters is supportive, not decisive — many large firms share a registered office with their subsidiaries, and many different firms share a virtual-office postcode. Strong signal for no-CH FTS-synthetic rights whose postcode matches a postcode already in the left canonical's set.
+6. **`id_kind`.** A `fts_synthetic` right side (GB-FTS-*) often signals a publisher name-only re-publish of something already in the left canonical. An `other` kind (e.g. X338EBHC) warrants extra caution — the provenance is unclear.
+7. **Member-count asymmetry.** A 1-member canonical absorbing into a 100-member canonical is usually correct. Two large canonicals being merged needs stronger evidence — you may be collapsing two genuinely separate subsidiaries.
+8. **Splink probability.** A tiebreaker, not a primary driver. Do not promote a decision just because the score is 0.93.
 
 ### Step 4 — Emit a structured decision per pair
 
