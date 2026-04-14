@@ -39,7 +39,10 @@ jobs:
         if: env.COMPANIES_HOUSE_API_KEY != ''
         env:
           COMPANIES_HOUSE_API_KEY: ${{ secrets.COMPANIES_HOUSE_API_KEY }}
-        run: python agent/enrich-ch.py --limit 200
+        # --limit 1000 at ~3.5s/supplier ≈ 58 min. CH rate limit: 600 calls / 5 min,
+        # 3 calls/supplier ⇒ max 200 suppliers / 5 min. At 1000/night, ~44 nights
+        # to catch up the ~43,838 suppliers with CH numbers.
+        run: python agent/enrich-ch.py --limit 1000
 
       - name: Export data for D1
         run: python agent/sync-d1.py
