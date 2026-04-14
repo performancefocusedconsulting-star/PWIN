@@ -368,3 +368,45 @@ WHERE a.status IN ('active', 'pending')
 GROUP BY b.id, n.main_category
 HAVING awards_count >= 1
 ORDER BY awards_count DESC;
+
+-- Canonical supplier wins — one row per (canonical_supplier × award).
+-- Left-joins the canonical map so suppliers that have not been clustered
+-- yet (or were never seen by Splink) still appear under a synthetic
+-- RAW-<id> canonical_id rather than vanishing from downstream aggregations.
+-- This is the primary read path for any consumer that needs supplier-level
+-- rollup (queries.py supplier_profile, MCP get_supplier_profile, etc.).
+CREATE VIEW IF NOT EXISTS v_canonical_supplier_wins AS
+SELECT
+    COALESCE(s2c.canonical_id, 'RAW-' || s.id)       AS canonical_id,
+    COALESCE(cs.canonical_name, s.name)              AS canonical_name,
+    cs.ch_numbers                                    AS canonical_ch_numbers,
+    cs.distinct_ch_count                             AS canonical_distinct_ch_count,
+    cs.member_count                                  AS canonical_member_count,
+    s.id                                             AS raw_supplier_id,
+    s.name                                           AS raw_supplier_name,
+    s.companies_house_no                             AS raw_ch_no,
+    s.scale,
+    s.is_vcse,
+    b.id                                             AS buyer_id,
+    b.name                                           AS buyer_name,
+    b.org_type                                       AS buyer_type,
+    a.id                                             AS award_id,
+    n.ocid,
+    n.title,
+    n.main_category,
+    n.procurement_method,
+    n.total_bids,
+    a.value_amount_gross,
+    a.value_quality,
+    a.contract_start_date,
+    a.contract_end_date,
+    a.contract_max_extend,
+    a.award_date,
+    a.status                                         AS award_status
+FROM award_suppliers asup
+JOIN suppliers s            ON asup.supplier_id = s.id
+LEFT JOIN supplier_to_canonical s2c ON s.id = s2c.supplier_id
+LEFT JOIN canonical_suppliers cs    ON s2c.canonical_id = cs.canonical_id
+JOIN awards a               ON asup.award_id = a.id
+JOIN notices n              ON a.ocid = n.ocid
+JOIN buyers b               ON n.buyer_id = b.id;

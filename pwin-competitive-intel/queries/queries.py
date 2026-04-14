@@ -151,16 +151,15 @@ def buyer_profile(name_query: str, limit: int = 50):
             for m in methods:
                 print(f"    {m['procurement_method'] or 'unknown':<15} {m['cnt']}")
 
-        # Top suppliers
+        # Top suppliers — rolled up by canonical entity
         top_suppliers = conn.execute("""
-            SELECT s.name, COUNT(DISTINCT a.id) AS wins,
-                   SUM(a.value_amount_gross) AS total_value
-            FROM award_suppliers asup
-            JOIN suppliers s ON asup.supplier_id = s.id
-            JOIN awards a ON asup.award_id = a.id
-            JOIN notices n ON a.ocid = n.ocid
-            WHERE n.buyer_id = ? AND a.value_quality IS NULL
-            GROUP BY s.id ORDER BY wins DESC, total_value DESC LIMIT 15
+            SELECT canonical_name AS name,
+                   COUNT(DISTINCT award_id) AS wins,
+                   SUM(value_amount_gross)  AS total_value
+            FROM v_canonical_supplier_wins
+            WHERE buyer_id = ? AND value_quality IS NULL
+            GROUP BY canonical_id
+            ORDER BY wins DESC, total_value DESC LIMIT 15
         """, (buyer["id"],)).fetchall()
 
         if top_suppliers:
@@ -206,36 +205,51 @@ def buyer_profile(name_query: str, limit: int = 50):
 # ──────────────────────────────────────────────────────────────────────────
 
 def supplier_profile(name_query: str, limit: int = 50):
+    """Supplier profile, aggregated by canonical entity.
+
+    Matches canonical_name OR any raw member name, then rolls all awards
+    belonging to the canonical entity into one profile. So a search for
+    'Serco' returns one canonical Serco with every variant's awards
+    combined, not a separate row per name variant.
+    """
     conn = get_db()
 
-    suppliers = conn.execute("""
-        SELECT id, name, scale, is_vcse, companies_house_no FROM suppliers
-        WHERE LOWER(name) LIKE LOWER(?)
-        ORDER BY name LIMIT 10
-    """, (f"%{name_query}%",)).fetchall()
+    canonicals = conn.execute("""
+        SELECT DISTINCT canonical_id, canonical_name, canonical_ch_numbers,
+                        canonical_distinct_ch_count, canonical_member_count
+        FROM v_canonical_supplier_wins
+        WHERE LOWER(canonical_name) LIKE LOWER(?)
+           OR LOWER(raw_supplier_name) LIKE LOWER(?)
+        ORDER BY canonical_member_count DESC NULLS LAST, canonical_name
+        LIMIT 10
+    """, (f"%{name_query}%", f"%{name_query}%")).fetchall()
 
-    if not suppliers:
+    if not canonicals:
         print(f"No suppliers found matching '{name_query}'")
         return
 
-    for sup in suppliers:
+    for sup in canonicals:
         print(f"\n{'='*70}")
-        print(f"SUPPLIER: {sup['name']}")
-        print(f"Scale: {sup['scale'] or '—'}  VCSE: {'Yes' if sup['is_vcse'] else 'No'}  "
-              f"COH: {sup['companies_house_no'] or '—'}")
+        print(f"CANONICAL SUPPLIER: {sup['canonical_name']}")
+        ch_list = sup['canonical_ch_numbers'] or '—'
+        member = sup['canonical_member_count']
+        if member and member > 1:
+            print(f"Rolls up {member} raw supplier rows  "
+                  f"|  CH numbers: {ch_list}")
+        else:
+            print(f"CH numbers: {ch_list}")
 
         stats = conn.execute("""
             SELECT
-                COUNT(DISTINCT a.id)        AS total_wins,
-                SUM(a.value_amount_gross)   AS total_value,
-                AVG(a.value_amount_gross)   AS avg_value,
-                MAX(a.value_amount_gross)   AS max_value,
-                MIN(a.award_date)           AS first_win,
-                MAX(a.award_date)           AS last_win
-            FROM award_suppliers asup
-            JOIN awards a ON asup.award_id = a.id
-            WHERE asup.supplier_id = ? AND a.value_quality IS NULL
-        """, (sup["id"],)).fetchone()
+                COUNT(DISTINCT award_id)      AS total_wins,
+                SUM(value_amount_gross)       AS total_value,
+                AVG(value_amount_gross)       AS avg_value,
+                MAX(value_amount_gross)       AS max_value,
+                MIN(award_date)               AS first_win,
+                MAX(award_date)               AS last_win
+            FROM v_canonical_supplier_wins
+            WHERE canonical_id = ? AND value_quality IS NULL
+        """, (sup["canonical_id"],)).fetchone()
 
         if stats["total_wins"]:
             print(f"\nSummary")
@@ -246,46 +260,46 @@ def supplier_profile(name_query: str, limit: int = 50):
             print(f"  First win        : {(stats['first_win'] or '—')[:10]}")
             print(f"  Last win         : {(stats['last_win'] or '—')[:10]}")
 
-        # Buyer relationships
+        # Buyer relationships — canonical buyer side would be nice too but
+        # for v1 we keep buyer as raw b.name; canonical_buyers join is a
+        # follow-up once the buyer canonical layer is in the playbook.
         buyers = conn.execute("""
-            SELECT b.name, COUNT(DISTINCT a.id) AS awards,
-                   SUM(a.value_amount_gross) AS total_value,
-                   MAX(a.contract_end_date) AS latest_expiry
-            FROM award_suppliers asup
-            JOIN awards a ON asup.award_id = a.id
-            JOIN notices n ON a.ocid = n.ocid
-            JOIN buyers b ON n.buyer_id = b.id
-            WHERE asup.supplier_id = ? AND a.value_quality IS NULL
-            GROUP BY b.id ORDER BY awards DESC, total_value DESC LIMIT 15
-        """, (sup["id"],)).fetchall()
+            SELECT buyer_name, COUNT(DISTINCT award_id) AS awards,
+                   SUM(value_amount_gross) AS total_value,
+                   MAX(contract_end_date) AS latest_expiry
+            FROM v_canonical_supplier_wins
+            WHERE canonical_id = ? AND value_quality IS NULL
+            GROUP BY buyer_id
+            ORDER BY awards DESC, total_value DESC LIMIT 15
+        """, (sup["canonical_id"],)).fetchall()
 
         if buyers:
             print(f"\nBuyer relationships")
             print_table(
-                [(r["name"], r["awards"], fmt_gbp(r["total_value"]),
+                [(r["buyer_name"], r["awards"], fmt_gbp(r["total_value"]),
                   (r["latest_expiry"] or "—")[:10])
                  for r in buyers],
                 ["Buyer", "Awards", "Total value", "Latest expiry"],
                 [40, 7, 14, 14],
             )
 
-        # Active contracts (incumbencies)
+        # Active contracts (incumbencies) — dedupe: when a canonical rolls
+        # up multiple raw rows all tied to the same award, the view returns
+        # N rows for one award. GROUP BY award_id collapses them.
         active = conn.execute("""
-            SELECT n.title, b.name AS buyer, a.value_amount_gross,
-                   a.contract_end_date, a.contract_max_extend
-            FROM award_suppliers asup
-            JOIN awards a ON asup.award_id = a.id
-            JOIN notices n ON a.ocid = n.ocid
-            JOIN buyers b ON n.buyer_id = b.id
-            WHERE asup.supplier_id = ?
-              AND a.contract_end_date > datetime('now')
-            ORDER BY a.contract_end_date ASC LIMIT 20
-        """, (sup["id"],)).fetchall()
+            SELECT title, buyer_name, value_amount_gross,
+                   contract_end_date, contract_max_extend
+            FROM v_canonical_supplier_wins
+            WHERE canonical_id = ?
+              AND contract_end_date > datetime('now')
+            GROUP BY award_id
+            ORDER BY contract_end_date ASC LIMIT 20
+        """, (sup["canonical_id"],)).fetchall()
 
         if active:
             print(f"\nActive contracts (incumbent positions)")
             print_table(
-                [(r["title"], r["buyer"], fmt_gbp(r["value_amount_gross"]),
+                [(r["title"], r["buyer_name"], fmt_gbp(r["value_amount_gross"]),
                   (r["contract_end_date"] or "—")[:10],
                   (r["contract_max_extend"] or "—")[:10])
                  for r in active],

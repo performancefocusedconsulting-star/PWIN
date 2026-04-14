@@ -79,15 +79,16 @@ function buyerProfile(nameQuery, limit = 20) {
           GROUP BY n.procurement_method ORDER BY cnt DESC
         `).all(buyer.id);
 
+        // Rolled up by canonical supplier so Serco + Serco Ltd + Serco Group
+        // collapse into one row rather than appearing as fragmented variants.
         const topSuppliers = db.prepare(`
-          SELECT s.name, COUNT(DISTINCT a.id) AS wins,
-                 SUM(a.value_amount_gross) AS total_value
-          FROM award_suppliers asup
-          JOIN suppliers s ON asup.supplier_id = s.id
-          JOIN awards a ON asup.award_id = a.id
-          JOIN notices n ON a.ocid = n.ocid
-          WHERE n.buyer_id = ?
-          GROUP BY s.id ORDER BY wins DESC, total_value DESC LIMIT 15
+          SELECT canonical_name AS name,
+                 COUNT(DISTINCT award_id) AS wins,
+                 SUM(value_amount_gross)  AS total_value
+          FROM v_canonical_supplier_wins
+          WHERE buyer_id = ? AND value_quality IS NULL
+          GROUP BY canonical_id
+          ORDER BY wins DESC, total_value DESC LIMIT 15
         `).all(buyer.id);
 
         const recentAwards = db.prepare(`
@@ -137,56 +138,62 @@ function supplierProfile(nameQuery, limit = 20) {
   const db = getDb();
   if (!db) return { error: 'Database not found' };
   try {
-    const suppliers = db.prepare(`
-      SELECT id, name, scale, is_vcse, companies_house_no FROM suppliers
-      WHERE LOWER(name) LIKE LOWER(?)
-      ORDER BY name LIMIT 10
-    `).all(`%${nameQuery}%`);
+    // Search canonical entities by canonical_name OR any raw member name.
+    // Returns one row per canonical supplier — all raw variants rolled up.
+    const canonicals = db.prepare(`
+      SELECT DISTINCT canonical_id, canonical_name, canonical_ch_numbers,
+                      canonical_distinct_ch_count, canonical_member_count
+      FROM v_canonical_supplier_wins
+      WHERE LOWER(canonical_name) LIKE LOWER(?)
+         OR LOWER(raw_supplier_name) LIKE LOWER(?)
+      ORDER BY canonical_member_count DESC NULLS LAST, canonical_name
+      LIMIT 10
+    `).all(`%${nameQuery}%`, `%${nameQuery}%`);
 
-    if (!suppliers.length) return { suppliers: [], message: `No suppliers matching '${nameQuery}'` };
+    if (!canonicals.length) return { suppliers: [], message: `No suppliers matching '${nameQuery}'` };
 
     return {
-      suppliers: suppliers.map(sup => {
+      suppliers: canonicals.map(sup => {
         const stats = db.prepare(`
           SELECT
-            COUNT(DISTINCT a.id) AS total_wins,
-            SUM(a.value_amount_gross) AS total_value,
-            AVG(a.value_amount_gross) AS avg_value,
-            MAX(a.value_amount_gross) AS max_value,
-            MIN(a.award_date) AS first_win,
-            MAX(a.award_date) AS last_win
-          FROM award_suppliers asup
-          JOIN awards a ON asup.award_id = a.id
-          WHERE asup.supplier_id = ?
-        `).get(sup.id);
+            COUNT(DISTINCT award_id)     AS total_wins,
+            SUM(value_amount_gross)      AS total_value,
+            AVG(value_amount_gross)      AS avg_value,
+            MAX(value_amount_gross)      AS max_value,
+            MIN(award_date)              AS first_win,
+            MAX(award_date)              AS last_win
+          FROM v_canonical_supplier_wins
+          WHERE canonical_id = ? AND value_quality IS NULL
+        `).get(sup.canonical_id);
 
         const buyerRelationships = db.prepare(`
-          SELECT b.name, COUNT(DISTINCT a.id) AS awards,
-                 SUM(a.value_amount_gross) AS total_value,
-                 MAX(a.contract_end_date) AS latest_expiry
-          FROM award_suppliers asup
-          JOIN awards a ON asup.award_id = a.id
-          JOIN notices n ON a.ocid = n.ocid
-          JOIN buyers b ON n.buyer_id = b.id
-          WHERE asup.supplier_id = ?
-          GROUP BY b.id ORDER BY awards DESC LIMIT 15
-        `).all(sup.id);
+          SELECT buyer_name AS name, COUNT(DISTINCT award_id) AS awards,
+                 SUM(value_amount_gross) AS total_value,
+                 MAX(contract_end_date)  AS latest_expiry
+          FROM v_canonical_supplier_wins
+          WHERE canonical_id = ? AND value_quality IS NULL
+          GROUP BY buyer_id
+          ORDER BY awards DESC LIMIT 15
+        `).all(sup.canonical_id);
 
+        // GROUP BY award_id collapses the N-rows-per-award that result
+        // when a canonical rolls up multiple raw suppliers on one award.
         const activeContracts = db.prepare(`
-          SELECT n.title, b.name AS buyer, a.value_amount_gross,
-                 a.contract_end_date, a.contract_max_extend
-          FROM award_suppliers asup
-          JOIN awards a ON asup.award_id = a.id
-          JOIN notices n ON a.ocid = n.ocid
-          JOIN buyers b ON n.buyer_id = b.id
-          WHERE asup.supplier_id = ?
-            AND a.contract_end_date > datetime('now')
-          ORDER BY a.contract_end_date ASC LIMIT 20
-        `).all(sup.id);
+          SELECT title, buyer_name AS buyer, value_amount_gross,
+                 contract_end_date, contract_max_extend
+          FROM v_canonical_supplier_wins
+          WHERE canonical_id = ?
+            AND contract_end_date > datetime('now')
+          GROUP BY award_id
+          ORDER BY contract_end_date ASC LIMIT 20
+        `).all(sup.canonical_id);
 
         return {
-          ...sup,
-          isVcse: !!sup.is_vcse,
+          canonicalId: sup.canonical_id,
+          name: sup.canonical_name,
+          chNumbers: sup.canonical_ch_numbers,
+          distinctChCount: sup.canonical_distinct_ch_count,
+          memberCount: sup.canonical_member_count,
           stats: {
             totalWins: stats.total_wins,
             totalValue: stats.total_value,
