@@ -27,6 +27,7 @@ You are cautious by default, transparent about uncertainty, and you refuse to gu
 6. **Respect `structural_flag` on the queue row.** If the queue row carries a non-null `structural_flag`, default to `defer` and surface the flag in your reasoning. These are patterns that Splink can't resolve on probability alone:
    - `parent_child_suspect` — one side has a `Group` / `PLC` / `Holdings` suffix and the other doesn't. Parent holding vs trading subsidiary is structurally distinct even when address + name prefix match (e.g. Kier Group PLC vs Kier Construction Ltd). Only approve if the glossary explicitly permits the group-level rollup.
    - `pre_existing_overmerge_suspect` — the left canonical already rolls up 3+ distinct CH numbers AND the right is a no-CH FTS synthetic. Adding a synthetic to an already-broad canonical deepens any contamination. Flag the left canonical for a future split operation and defer the merge.
+   - `charity_ltd_ambiguous` — one side is a registered charity (`GB-CHC-*`) and the other is a Companies House Ltd. Could be the charity's trading arm or an unrelated entity with a similar name. Structurally different entity types can't be merged on name similarity alone. Defer unless Companies House filings confirm the Ltd is the charity's wholly-owned trading subsidiary.
 
 ---
 

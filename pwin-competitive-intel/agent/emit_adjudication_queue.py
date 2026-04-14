@@ -29,7 +29,7 @@ Output table: adjudication_queue
   right_name_variants    TEXT (JSON)
   left_id_kind           TEXT          — 'ch' | 'fts_synthetic' | 'other'
   right_id_kind          TEXT
-  structural_flag        TEXT          — 'parent_child_suspect' | 'pre_existing_overmerge_suspect' | NULL
+  structural_flag        TEXT          — 'parent_child_suspect' | 'pre_existing_overmerge_suspect' | 'charity_ltd_ambiguous' | NULL
   max_match_probability  REAL          — best Splink score across supporting raw pairs
   supporting_pair_count  INTEGER       — how many raw pairs back this canonical-pair
   status                 TEXT          — 'pending' | 'approved' | 'rejected' | 'deferred'
@@ -58,6 +58,7 @@ from splink_supplier_dedup import extract_suppliers, train_and_predict
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = REPO_ROOT / "db" / "bid_intel.db"
+LEDGER_PATH = REPO_ROOT / "adjudicator" / "adjudicator_decisions.jsonl"
 
 
 SCHEMA = """
@@ -121,10 +122,13 @@ _PARENT_TOKENS = (" group", " plc", " holdings", " holding group")
 
 def _structural_flag(left_name: str | None, right_name: str | None,
                      left_ch_count: int, right_ch_count: int,
-                     right_id_kind: str) -> str | None:
+                     right_id_kind: str,
+                     left_canonical_id: str | None = None,
+                     right_canonical_id: str | None = None) -> str | None:
     """Tag pairs that need special handling beyond Splink's score.
 
-    Two patterns we saw in batch 001 that Morgan should always defer on:
+    Three patterns from the first two batches that Morgan should always
+    defer on:
 
     - parent_child_suspect: one side carries a 'Group/PLC/Holdings' suffix and
       the other is its trading-subsidiary form. Structurally distinct legal
@@ -136,6 +140,12 @@ def _structural_flag(left_name: str | None, right_name: str | None,
       the synthetic to an already-broad canonical deepens any existing
       contamination. Flagged so the user can decide whether to split the
       left canonical first.
+
+    - charity_ltd_ambiguous: one side is a registered charity (GB-CHC-*)
+      and the other is a Companies House Ltd (GB-COH-* with a real CH
+      number). Could be the charity's trading arm or an unrelated entity
+      with a similar name. Needs human judgement — structurally different
+      entity types can't be merged on name similarity alone.
     """
     ln = (left_name or "").lower()
     rn = (right_name or "").lower()
@@ -144,6 +154,12 @@ def _structural_flag(left_name: str | None, right_name: str | None,
     right_has_parent_token = any(t in rn for t in _PARENT_TOKENS)
     if left_has_parent_token ^ right_has_parent_token:
         return "parent_child_suspect"
+
+    left_is_chc = (left_canonical_id or "").startswith("GB-CHC-")
+    right_is_chc = (right_canonical_id or "").startswith("GB-CHC-")
+    if left_is_chc ^ right_is_chc:
+        # One side is a registered charity; the other is CH/FTS/other
+        return "charity_ltd_ambiguous"
 
     if left_ch_count >= 3 and right_id_kind == "fts_synthetic":
         return "pre_existing_overmerge_suspect"
@@ -174,8 +190,41 @@ def _pair_id(left: str, right: str) -> str:
     return hashlib.sha1(f"{a}|{b}".encode()).hexdigest()[:16]
 
 
+def _ledger_adjudicated_ids() -> set[str]:
+    """Return queue_ids for pairs that have already been adjudicated.
+
+    Reads adjudicator_decisions.jsonl — the long-lived record of Morgan's
+    decisions — and returns the set of queue_ids with a final status. We use
+    this to stop re-queuing pairs Morgan has already decided on, even across
+    full queue rebuilds (which clear the status='rejected' rows).
+
+    'approved' pairs can't recur because one side of the canonical has been
+    absorbed; 'rejected' and 'deferred' pairs can and do recur with the same
+    queue_id because the hash(left, right) is stable. Defer is deliberately
+    NOT skipped — the user may want to revisit those with more evidence.
+    """
+    if not LEDGER_PATH.exists():
+        return set()
+    skip = set()
+    with LEDGER_PATH.open() as f:
+        for line in f:
+            if not line.strip():
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if rec.get("status") == "rejected":
+                skip.add(rec["queue_id"])
+    return skip
+
+
 def build_queue(predict_threshold: float, cluster_threshold: float,
                 sample: int | None) -> list[dict]:
+    skip_ids = _ledger_adjudicated_ids()
+    if skip_ids:
+        print(f"[queue] Will skip {len(skip_ids):,} queue_ids previously "
+              f"rejected in adjudicator_decisions.jsonl")
     print(f"[queue] Loading suppliers from {DB_PATH}"
           f"{' (sample=' + str(sample) + ')' if sample else ''}…")
     df = extract_suppliers(sample)
@@ -254,10 +303,15 @@ def build_queue(predict_threshold: float, cluster_threshold: float,
             }
 
     records = []
+    skipped_ledger = 0
     for _, r in agg.iterrows():
         left, right = r["_pair"]
         lc, rc = canonicals.get(left), canonicals.get(right)
         if not lc or not rc:
+            continue
+        qid = _pair_id(left, right)
+        if qid in skip_ids:
+            skipped_ledger += 1
             continue
         le, re_ = evidence[left], evidence[right]
         left_id_kind = _classify_id_kind(left)
@@ -267,9 +321,10 @@ def build_queue(predict_threshold: float, cluster_threshold: float,
         structural = _structural_flag(
             lc["canonical_name"], rc["canonical_name"],
             left_ch_count, right_ch_count, right_id_kind,
+            left_canonical_id=left, right_canonical_id=right,
         )
         records.append({
-            "queue_id": _pair_id(left, right),
+            "queue_id": qid,
             "decision_type": "supplier_merge",
             "left_canonical_id": left,
             "right_canonical_id": right,
@@ -292,6 +347,8 @@ def build_queue(predict_threshold: float, cluster_threshold: float,
             "supporting_pair_count": int(r["supporting_pair_count"]),
         })
     records.sort(key=lambda x: x["max_match_probability"], reverse=True)
+    if skipped_ledger:
+        print(f"[queue] Skipped {skipped_ledger:,} pairs previously rejected in ledger")
     return records
 
 
