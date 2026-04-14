@@ -106,6 +106,25 @@ Service classification uses the same hybrid pattern as entity resolution:
 
 Other tools considered and rejected: `dedupe` (smaller scale, less suited to government data), `recordlinkage` (older, simpler, less scalable), `rapidfuzz` plus custom rules (reinvents Splink), OpenRefine (interactive only, no pipeline story), LLM-based fuzzy matching (prohibitively expensive and unauditable at this scale).
 
+### Decision C09 — Raw layer is write-through, canonical layer is bulk-safe
+
+Weekly OCP bulk imports and nightly FTS incremental ingests write directly to the **raw** tables (`buyers`, `suppliers`, `notices`, `lots`, `awards`, `award_suppliers`, `cpv_codes`). No manual cleaning is ever performed on those tables, because `upsert_buyer` and `upsert_supplier` unconditionally overwrite the `name` column on every refresh — any hand-edits made at the raw layer would be silently lost next Monday.
+
+All cleaning, deduplication, canonicalisation and service-tagging lives in **separate canonical tables** (`canonical_buyers`, `canonical_suppliers`, `canonical_notices`, plus mapping tables that join raw IDs to canonical IDs). These tables are the output of the Phase 1 pipeline and the Phase 2 adjudicator skill. The weekly bulk never touches them.
+
+**Promotion flow on each weekly run:**
+
+1. OCP bulk and/or FTS incremental writes to the raw tables (overwrites allowed, no hand-edits protected).
+2. Canonical pipeline runs Splink + framework lookup + LLM adjudication over the diff since last run.
+3. New raw IDs that match existing canonical entities are linked via the mapping tables (no duplicate canonical records).
+4. New raw IDs that do not match any existing canonical entity are staged for adjudicator review.
+5. Human-approved decisions promote staged rows into canonical tables. Ambiguous rows stay in staging until adjudicated.
+6. Canonical tables are the default surface for all downstream consumers (Skill 1 v2 dossier, internal query interface, future Qualify paid tier).
+
+**Why this matters:** it makes the weekly bulk refresh **safe to re-run at any time**. Re-importing the OCP file cannot destroy cleaned data, because the cleaned data lives in different tables. It also means corrections flow one-way: you never edit raw rows to fix them — you record the correction in the canonical/mapping layer so it survives every subsequent refresh.
+
+**How to apply:** any future request to "clean up a supplier name" or "merge these two buyers" is implemented as a canonical-layer edit, not a raw-layer UPDATE. Tooling that invites raw-table edits (dashboards, admin forms) must be explicitly prohibited or routed through the canonical layer.
+
 ### Decision C08 — Pipeline-first architecture, LLM-second
 
 The canonical layer is a **deterministic Python pipeline** (Splink + framework lookup + cleaning rules) that runs after every weekly FTS update. **An LLM-backed Claude skill sits above the pipeline as an adjudicator and operator with three jobs:**
@@ -187,3 +206,4 @@ Quantify the problem before committing to the build.
 | Version | Date | Summary |
 |---|---|---|
 | 1.0 | 2026-04-11 | Initial decision register. Eight decisions agreed in working session. Phase 0 Discovery pending. |
+| 1.1 | 2026-04-14 | Added Decision C09 — raw layer is write-through, canonical layer is bulk-safe. Locks in the "frozen baseline + clean on arrival" pattern so weekly OCP refreshes cannot clobber cleaned data. |
