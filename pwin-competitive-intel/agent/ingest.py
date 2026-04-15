@@ -79,6 +79,15 @@ def _migrate_schema(conn: sqlite3.Connection):
             conn.execute(f"ALTER TABLE notices ADD COLUMN {col} {typedef}")
             log.info("Migrated notices: added column %s", col)
 
+    # ── awards: value_quality flag (added 2026-04, canonical-layer playbook §16) ──
+    try:
+        awards_cols = _columns("awards")
+    except sqlite3.OperationalError:
+        awards_cols = set()
+    if awards_cols and "value_quality" not in awards_cols:
+        conn.execute("ALTER TABLE awards ADD COLUMN value_quality TEXT")
+        log.info("Migrated awards: added column value_quality")
+
     conn.commit()
 
 
