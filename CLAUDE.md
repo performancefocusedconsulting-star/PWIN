@@ -188,17 +188,26 @@ Modifier deactivation is handled by re-running `applyContentModifiers()` wheneve
 ANTHROPIC_API_KEY=sk-... node pwin-qualify/content/eval-harness.js
 
 # 4. Build — inlines JSON into both HTML apps between sentinel markers
-node pwin-qualify/content/build-content.js
+node pwin-qualify/content/build-content.js --version 0.2   # v0.2+
+node pwin-qualify/content/build-content.js                  # targets v0.1 (legacy)
 
 # 5. Verify both apps in sync without modifying them
-node pwin-qualify/content/build-content.js --check
+node pwin-qualify/content/build-content.js --version 0.2 --check
 
 # 6. Commit JSON + both HTML files together
 ```
 
 **The build script is idempotent** — running it twice prints "unchanged" the second time. The HTML files MUST be committed alongside the JSON because they are derived but not auto-built (no CI step).
 
+**`build_v02.py`** (`pwin-qualify/content/build_v02.py`) — generation script that rebuilds `qualify-content-v0.2.json` from `Winnability_Artifact_Judgment_Scorecard_v6.xlsx` and the v0.1 JSON. Run this when the Excel source changes or structural content needs regenerating. Do not hand-edit the JSON for bulk structural changes — edit the script and re-run.
+
 **Eval harness** (`pwin-qualify/content/eval-harness.js`) reads fixtures from `pwin-qualify/content/eval-fixtures/`, builds the same prompt the app builds, calls Claude, and diffs against expected verdicts. Add a fixture for every meaningful tune so it doesn't regress. Seed fixtures from the workbook few-shots are flagged `isConstructed: true` and should be replaced with real BIP cases when available. Cost is roughly $0.01–$0.02 per fixture with Sonnet 4.6.
+
+**Eval fixtures are versioned:** v0.1 fixtures in `eval-fixtures/` root are invalidated by the v0.2 question changes. v0.2 fixtures live in `eval-fixtures/v0.2/`.
+
+**v0.2 calibration rules are objects:** `persona.workflowTriggers.calibrationRules` in `qualify-content-v0.2.json` are `{id, rule}` objects, not plain strings as in v0.1. Any code iterating them must handle both: `typeof r === 'object' ? r.rule : r`.
+
+**Python Windows encoding gotcha:** `print()` with Unicode characters (e.g. `→`) crashes with `UnicodeEncodeError` on Windows cp1252. Fix: add `import sys; sys.stdout.reconfigure(encoding='utf-8')` at the top of any script, or replace Unicode arrows with `->` in print statements.
 
 ### Current Architecture
 
