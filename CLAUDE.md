@@ -55,7 +55,7 @@ This is still the right default for **prototypes** and for **consultant standalo
 |---|---|---|---|
 | pwin-bid-execution | Single HTML, localStorage | Internal bid manager tool, single user, sensitive bid data should not leave the user's machine | Multi-user collaboration is required |
 | pwin-qualify (consulting standalone) | Single HTML, content inlined at build time | Ships to consultants on laptops, must work offline | The consultant deployment shifts to hosted SaaS with login |
-| pwin-qualify (website MVP) | Single HTML on Cloudflare Pages, AI via Worker proxy | **Currently exposes the rubrics, persona, and trigger rules in public browser source — flagged for migration 2026-04-09** | **Now.** Phase 1 server-side migration scoped: move content into the Worker so the browser becomes a thin display layer |
+| pwin-qualify (website MVP) | Single HTML on Cloudflare Pages, AI via Worker proxy | **Currently exposes the rubrics, persona, and trigger rules in public browser source — server-side migration in scope for v0.2 (Pursuit Viability) ship, agreed 2026-04-15** | Shipping with v0.2: rubrics, persona, calibration matrix, RAG logic, and challenger overlay output schema move into the Worker so the browser becomes a thin display layer. Rationale: v0.2 creates the IP that's worth protecting; deferral logic ("no real moat to protect yet") no longer holds. Consulting standalone stays client-side (must work offline). |
 | pwin-strategy | Not yet built | — | At design time, not after |
 | pwin-portfolio | Single HTML prototype | Internal leadership view, not public | If exposed externally |
 | bidequity-verdict | Runs on the pwin-platform MCP server | Two-pass forensic review needs server-side execution and platform knowledge access | — |

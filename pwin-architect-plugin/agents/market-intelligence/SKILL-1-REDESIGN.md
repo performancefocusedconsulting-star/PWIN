@@ -6,9 +6,12 @@ version: 1.0
 created: 2026-04-11
 source_review: Serco_Dossier_Review_and_Recommendations.md (user-provided, 2026-04-11)
 validation_artefacts:
-  - pwin-architect-plugin/agents/market-intelligence/output/serco-group-standard.html
-  - pwin-architect-plugin/agents/market-intelligence/output/serco-group-standard.json
-  - pwin-architect-plugin/agents/market-intelligence/output/serco-group-deep.html (quality probe, disposable)
+  - ~/.pwin/reference/suppliers/serco-group-plc/data.json
+  - ~/.pwin/reference/suppliers/serco-group-plc/report.html
+  - ~/.pwin/reference/suppliers/capita-plc/data.json (cross-validation 2026-04-14)
+  - ~/.pwin/reference/suppliers/capita-plc/report.html
+  - ~/.pwin/reference/suppliers/mitie-group-plc/data.json (cross-validation 2026-04-14)
+  - ~/.pwin/reference/suppliers/mitie-group-plc/report.html
 ---
 
 # Skill 1 (Supplier Intelligence Dossier) — v2 Redesign Decision Register
@@ -117,6 +120,17 @@ To be resolved in the design sessions:
 3. **How to treat private/PE-backed suppliers where Companies House is the only financial source** — separate schema variant or same schema with more fields as nullable?
 4. **Renderer language** — JS (Node) or Python? Depends on where else the PWIN platform does rendering. Check `pwin-platform/src/` before choosing.
 5. **Visual claim-type differentiation** — which four visual treatments for fact / estimate / hypothesis / signal? Needs a small design pass.
+
+## Post-v2 cross-validation issues (2026-04-14, to fix in next iteration)
+
+Issues surfaced by the Capita + Mitie cross-validation runs. Queued for a single review pass once the user has reviewed all three dossiers side-by-side.
+
+1. **Renderer bug** — `render-dossier.js:378` calls `.join()` on `significantEvents`; Capita + Mitie emitted strings and crashed first pass. Enforce array in schema or coerce in renderer.
+2. **Serco baseline under-evidenced** — 10 claims vs 34-35 for Capita/Mitie. Re-run or back-fill so it can serve as the canonical reference case.
+3. **`serviceLineConcentration` threshold miscalibrated** — flags all three top-tier outsourcers as red. Retune against the three real outputs.
+4. **Frameworks section thin on Capita** (2 entries vs 4-5). Prompt firmer on coverage, or partly derive from FTS data instead of model recall.
+5. **Buyer resolution in FTS mirror is weak** (>95% "(unknown)" for Capita, ~90% for Mitie) — constrains bid outcome pattern analysis. Canonical-layer issue, not a skill issue, but a quality constraint until the buyer canonical layer is joined through to the FTS export.
+6. **Cross-supplier comparative framing leaks in.** The Mitie dossier benchmarks Mitie against *Capita* ("far more distributed than Capita's portfolio") — dossiers are single-subject assets, not peer comparisons. Schema's `bidOutcomeSignals.rivals` is legitimate (names the counterparty in a specific award the subject won/lost); comparative yardstick prose is not. **Fix:** add an explicit prompt rule — *"Do not compare the subject to other suppliers by name. Describe the subject's portfolio in absolute terms (counts, £, sectors). Rivals may only be named when they are the counterparty in a specific award the subject won or lost."*
 
 ## Change log
 
