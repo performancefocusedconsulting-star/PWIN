@@ -318,7 +318,7 @@ def main() -> int:
           f"canonical entities in {time.time()-t2:.1f}s")
     compression = 1 - n_canonical / max(len(clusters_df), 1)
     print(f"[splink] Compression: {compression*100:.1f}%  "
-          f"({len(clusters_df):,} → {n_canonical:,})")
+          f"({len(clusters_df):,} -> {n_canonical:,})")
 
     if args.no_write or args.sample:
         print("[splink] --no-write or --sample set: skipping DB writes.")

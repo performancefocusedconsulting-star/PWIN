@@ -344,6 +344,9 @@ def api_expiring(params):
 
 def api_pipeline(params):
     buyer = params.get("buyer", [""])[0]
+    org_type = params.get("orgType", [""])[0]
+    min_value = float(params.get("minValue", ["0"])[0])
+    days = params.get("days", [""])[0]
     conn = get_db()
     if not conn: return {"error": "Database not found"}
     try:
@@ -354,9 +357,12 @@ def api_pipeline(params):
         """
         p = []
         if buyer: sql += " AND LOWER(b.name) LIKE LOWER(?)"; p.append(f"%{buyer}%")
+        if org_type: sql += " AND LOWER(b.org_type) LIKE LOWER(?)"; p.append(f"%{org_type}%")
+        if min_value > 0: sql += " AND p.estimated_value >= ?"; p.append(min_value)
+        if days: sql += " AND p.future_notice_date <= datetime('now', '+{} days')".format(int(days))
         sql += " ORDER BY CASE WHEN p.future_notice_date IS NOT NULL THEN p.future_notice_date ELSE p.engagement_deadline END ASC LIMIT 200"
         rows = [
-            {"buyer": r["buyer_name"], "title": r["title"],
+            {"buyer": r["buyer_name"], "org_type": r["org_type"], "title": r["title"],
              "estimated_value": r["estimated_value"],
              "engagement_deadline": r["engagement_deadline"],
              "future_notice_date": r["future_notice_date"],
@@ -414,6 +420,23 @@ def api_service_categories():
             {"id": r["service_category"], "awards": r["awards"], "total_value": r["total_value"]}
             for r in rows
         ]}
+    finally:
+        conn.close()
+
+
+def api_expiry_categories():
+    """Return distinct main_category values present in the expiry pipeline."""
+    conn = get_db()
+    if not conn: return {"error": "Database not found"}
+    try:
+        rows = conn.execute("""
+            SELECT main_category, COUNT(*) AS awards
+            FROM v_expiring_contracts
+            WHERE main_category IS NOT NULL
+            GROUP BY main_category
+            ORDER BY awards DESC
+        """).fetchall()
+        return {"categories": [{"id": r["main_category"], "awards": r["awards"]} for r in rows]}
     finally:
         conn.close()
 
@@ -503,6 +526,7 @@ ROUTES = {
     "/api/pipeline": api_pipeline,
     "/api/pwin": api_pwin,
     "/api/categories": lambda p: api_service_categories(),
+    "/api/expiry-categories": lambda p: api_expiry_categories(),
     "/api/search": api_search,
 }
 

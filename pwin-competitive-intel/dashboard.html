@@ -568,19 +568,23 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="filter-group">
         <label>Expiry Window</label>
         <div style="display:flex;align-items:center;gap:8px;">
-          <input type="range" id="expiryDays" min="30" max="730" value="365" oninput="updateExpiryLabel()" />
+          <input type="range" id="expiryDays" min="30" max="1095" value="365" oninput="updateExpiryLabel()" />
           <span id="expiryDaysLabel" style="font-family:var(--font-mono);font-size:12px;color:var(--gold);min-width:50px;">365 days</span>
         </div>
       </div>
       <div class="filter-group">
         <label>Min Value (GBP)</label>
-        <input type="number" id="expiryMinValue" value="0" min="0" step="10000" style="width:120px;" />
+        <input type="number" id="expiryMinValue" value="0" min="0" step="250000" style="width:140px;" />
       </div>
       <div class="filter-group">
         <label>Category</label>
         <select id="expiryCategory" style="min-width:160px;">
           <option value="">All Categories</option>
         </select>
+      </div>
+      <div class="filter-group">
+        <label>Buyer</label>
+        <input type="text" id="expiryBuyer" placeholder="Buyer name..." style="min-width:160px;" />
       </div>
       <div style="margin-left:auto;align-self:flex-end;">
         <button class="btn" onclick="loadExpiry()">Apply Filters</button>
@@ -603,9 +607,40 @@ input[type="range"]::-webkit-slider-thumb {
 
   <!-- FORWARD PIPELINE VIEW -->
   <section class="view" id="view-pipeline">
-    <div class="search-bar">
-      <input type="text" id="pipelineBuyer" placeholder="Filter by buyer name (optional)..." />
-      <button onclick="loadPipeline()">Search</button>
+    <div class="filters">
+      <div class="filter-group">
+        <label>Buyer</label>
+        <input type="text" id="pipelineBuyer" placeholder="Buyer name..." style="min-width:160px;" />
+      </div>
+      <div class="filter-group">
+        <label>Org Type</label>
+        <select id="pipelineOrgType" style="min-width:160px;">
+          <option value="">All Types</option>
+          <option value="central_government">Central Government</option>
+          <option value="nhs">NHS</option>
+          <option value="local_authority">Local Authority</option>
+          <option value="devolved">Devolved</option>
+          <option value="education">Education</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Min Value (GBP)</label>
+        <input type="number" id="pipelineMinValue" value="0" min="0" step="250000" style="width:140px;" />
+      </div>
+      <div class="filter-group">
+        <label>Tender Due Within</label>
+        <select id="pipelineDays" style="min-width:140px;">
+          <option value="">Any time</option>
+          <option value="90">90 days</option>
+          <option value="180">180 days</option>
+          <option value="365">1 year</option>
+          <option value="730">2 years</option>
+        </select>
+      </div>
+      <div style="margin-left:auto;align-self:flex-end;">
+        <button class="btn" onclick="loadPipeline()">Apply Filters</button>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">Forward Pipeline &mdash; Planning &amp; Market Engagement Notices</div>
@@ -768,7 +803,7 @@ document.getElementById('tabs').addEventListener('click', (e) => {
     loadServiceCategories(); view.dataset.loaded = '1';
   }
   if (e.target.dataset.view === 'expiry' && !view.dataset.loaded) {
-    loadExpiry(); view.dataset.loaded = '1';
+    loadExpiryCategories(); loadExpiry(); view.dataset.loaded = '1';
   }
   if (e.target.dataset.view === 'pipeline' && !view.dataset.loaded) {
     loadPipeline(); view.dataset.loaded = '1';
@@ -855,6 +890,19 @@ async function loadServiceCategories() {
   try {
     const data = await apiFetch('categories');
     const sel = document.getElementById('searchService');
+    (data.categories || []).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${SERVICE_LABELS[c.id] || c.id} (${fmtNumber(c.awards)})`;
+      sel.appendChild(opt);
+    });
+  } catch (e) { /* silent — dropdown just stays at "All" */ }
+}
+
+async function loadExpiryCategories() {
+  try {
+    const data = await apiFetch('expiry-categories');
+    const sel = document.getElementById('expiryCategory');
     (data.categories || []).forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.id;
@@ -1173,10 +1221,11 @@ async function loadExpiry() {
   const days = document.getElementById('expiryDays').value;
   const minValue = document.getElementById('expiryMinValue').value;
   const category = document.getElementById('expiryCategory').value;
+  const buyer = document.getElementById('expiryBuyer').value.trim();
   document.getElementById('expiryTitle').textContent = `within ${days} days`;
 
   try {
-    const data = await apiFetch('expiring', { days, minValue, category });
+    const data = await apiFetch('expiring', { days, minValue, category, buyer });
     const rows = (data.contracts || []).map((c, i) => {
       const d = daysUntil(c.end_date);
       const detailId = 'exp-detail-' + i;
@@ -1214,14 +1263,18 @@ function toggleDetail(id) {
 
 async function loadPipeline() {
   const buyer = document.getElementById('pipelineBuyer').value.trim();
+  const orgType = document.getElementById('pipelineOrgType').value;
+  const minValue = document.getElementById('pipelineMinValue').value;
+  const days = document.getElementById('pipelineDays').value;
   try {
-    const data = await apiFetch('pipeline', { buyer });
+    const data = await apiFetch('pipeline', { buyer, orgType, minValue, days });
     const rows = (data.notices || []).map((n, i) => {
       const detailId = 'pipe-detail-' + i;
       const desc = n.description || '';
       const hasDetail = desc.length > 0 || n.notice_url;
       const linkHtml = n.notice_url ? `<div class="detail-label">Notice Link</div><a href="${n.notice_url}" target="_blank">${n.notice_url}</a>` : '';
       const descHtml = desc ? `<div class="detail-label">Description</div><div>${desc.replace(/\n/g, '<br>')}</div>` : '';
+      const orgHtml = n.org_type ? `<div class="detail-label">Org Type</div><div>${n.org_type}</div>` : '';
 
       return `<tr class="${hasDetail ? 'expandable' : ''}" ${hasDetail ? `onclick="toggleDetail('${detailId}')"` : ''}>
         <td>${n.buyer || '—'}</td>
@@ -1229,7 +1282,7 @@ async function loadPipeline() {
         <td class="num">${fmtCurrency(n.estimated_value)}</td>
         <td class="mono">${fmtDate(n.engagement_deadline)}</td>
         <td class="mono">${fmtDate(n.future_notice_date)}</td>
-      </tr>${hasDetail ? `<tr class="detail-row" id="${detailId}" style="display:none"><td colspan="5"><div class="detail-inner">${descHtml}${linkHtml}</div></td></tr>` : ''}`;
+      </tr>${hasDetail ? `<tr class="detail-row" id="${detailId}" style="display:none"><td colspan="5"><div class="detail-inner">${orgHtml}${descHtml}${linkHtml}</div></td></tr>` : ''}`;
     }).join('');
     document.getElementById('pipelineTable').innerHTML = rows ||
       '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px">No forward pipeline notices found</td></tr>';

@@ -291,7 +291,6 @@ LEFT JOIN award_suppliers asup ON a.id = asup.award_id
 LEFT JOIN suppliers s ON asup.supplier_id = s.id
 WHERE a.contract_end_date IS NOT NULL
   AND a.contract_end_date > datetime('now')
-  AND a.contract_end_date < datetime('now', '+365 days')
   AND a.status IN ('active', 'pending')
 GROUP BY a.id
 ORDER BY a.contract_end_date ASC;
