@@ -1868,6 +1868,7 @@
           "text": "We have clear evidence of why the buyer would retain us beyond simple continuity bias.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Tests whether retention rests on positive value, not inertia alone.",
+          "whyItMatters": "The most common rebid blind spot is the gap between how the delivery team reads the relationship and how senior client stakeholders actually rate the contract. Operational feedback flows continuously, but strategic dissatisfaction surfaces in governance meetings the incumbent does not attend — a client scoring the contract acceptable operationally may simultaneously be telling their Board it is underperforming strategically. Beyond the perception gap, the quality of an internal champion matters as much as their existence: a contact who is personally comfortable with the relationship and avoids difficult conversations is not a champion but a friendly presence. The real test is whether that individual has taken visible political risk to defend the incumbent in internal discussions where the incumbent was not in the room. Retention built on genuine advocacy from a tested champion is durable; retention built on relationship comfort is a single resignation away from collapse.",
           "requiredArtifacts": [
             "A07 Incumbent Defensibility Assessment",
             "A02 Buyer Decision Thesis",
@@ -1915,6 +1916,7 @@
           "text": "We understand the buyer's reasons to consider switching away from us.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Forces honesty about renewal risk and dissatisfaction.",
+          "whyItMatters": "A challenger who has done proper competitive intelligence will know more about the incumbent's performance weaknesses than the incumbent's own pursuit team — because they will have obtained that intelligence from client contacts who feel safe being honest with someone outside the relationship. At the same time, the client's value narrative evolves over a contract term while the incumbent's proposition often calcifies around what was important at mobilisation. A client whose priorities have shifted will find a challenger's framing more relevant than the incumbent's, even if the incumbent is delivering more. The incumbent must therefore apply the same discipline to understanding its own vulnerabilities — both performance and value-perception — that a well-prepared challenger applies to its competitor analysis. If you cannot name the specific push factors that might drive the client to change, you are not ready to neutralise them.",
           "requiredArtifacts": [
             "A07 Incumbent Defensibility Assessment",
             "A05 Buyer Anxiety & Constraint Map",
@@ -1962,6 +1964,7 @@
           "text": "Any material delivery, service, KPI, audit, or relationship issues are understood and either resolved or credibly mitigated.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Assesses whether legacy issues are being neutralised.",
+          "whyItMatters": "A challenger who has done proper competitive intelligence will know more about the incumbent's performance weaknesses than the incumbent's own pursuit team — because they will have obtained that intelligence from client contacts who feel safe being honest with someone outside the relationship. Delivery teams receive operational feedback continuously but rarely hear senior-level strategic dissatisfaction directly. The incumbent must therefore apply the same discipline to its own performance record that a challenger applies to a competitor: name the three things a challenger will attack you on, document the narrative that addresses each, and test that narrative with at least one trusted client contact before the ITT window opens. Unacknowledged issues do not disappear from an evaluation panel's view; they reappear as ITT clarification questions at the worst possible moment.",
           "requiredArtifacts": [
             "A07 Incumbent Defensibility Assessment",
             "A17 Risk / Red-Line Summary",
@@ -2010,6 +2013,7 @@
           "text": "We have a credible renewal-plus-improvement story, not just a continuity story.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Tests whether the incumbent offer includes future value.",
+          "whyItMatters": "Over a long contract the incumbent's value narrative calcifies around what was important at mobilisation, while the client's priorities evolve. A challenger presenting in the client's current language will feel more relevant than the incumbent even if the incumbent is delivering more. The most credible counter to this is a renewal-plus-improvement proposition that has already happened — a hire made, a system procured, a partnership formed — not one promised in the submission. An incumbent whose rebid proposition looks identical to the current service has implicitly told the client that the next contract will be the same as the last one, and a challenger can credibly promise transformation precisely because they have no legacy to defend. Visible, pre-committed investment in the future signals that the incumbent is competing, not defending.",
           "requiredArtifacts": [
             "A08 Path-to-Win Statement",
             "A09 Win Themes",
@@ -2057,6 +2061,7 @@
           "text": "We understand where challengers are likely to attack us and have a response.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Tests readiness to defend against challenger narratives.",
+          "whyItMatters": "A well-funded challenger will have spent 12 to 18 months building relationships with the incumbent's client contacts, identifying performance gaps, and constructing a narrative around why change is needed. The incumbent should know exactly which contacts they have engaged, what narrative they are building, and have a direct counter-strategy in place. Most incumbents discover the challenger's narrative in the ITT clarification questions — which is six months too late. Named challenger intelligence including specific client engagement details, the contacts targeted, and the commitments offered is the minimum standard; a counter-strategy based only on the assumption that relationships and performance speak for themselves is not a strategy.",
           "requiredArtifacts": [
             "A06 Competitor Field Map",
             "A07 Incumbent Defensibility Assessment",
@@ -2104,6 +2109,7 @@
           "text": "The buyer recognizes the transition, operational, knowledge, or service risk of switching away from us.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Tests whether switching risk is visible to the buyer.",
+          "whyItMatters": "Transition risk is the incumbent's most powerful competitive weapon and the most frequently wasted. Generic statements about disruption risk and knowledge transfer are ignored by experienced evaluators. Specific, quantified, credible transition risk analysis — built in the client's own risk framework, validated with their risk function, and evidenced by comparable transitions in the market — is very difficult for a challenger to rebut. The test is not whether the incumbent can articulate the risk internally; it is whether the client's risk and finance functions have engaged with it and acknowledged its materiality. A client who understands specifically what they would be taking on by changing provider needs a compelling reason to change; a client who has never been shown that analysis is only constrained by their own inertia.",
           "requiredArtifacts": [
             "A07 Incumbent Defensibility Assessment",
             "A18 Delivery Credibility Summary",
@@ -2151,6 +2157,7 @@
           "text": "We are not overexposed on price benchmarking, complacency, or relationship fatigue.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Checks renewal drag factors.",
+          "whyItMatters": "Incumbent relationships are maintained through delivery. Pursuit relationships require a different kind of investment — conversations about the future, about the client's priorities for the next contract term, about what a new contract should look like. A team with excellent operational relationships may have zero pursuit relationships if they have never had that conversation explicitly with senior decision-makers. Personnel change constantly in public sector clients, and an incumbent operating from a political map built at contract mobilisation is navigating a landscape that no longer exists. New SROs bring new priorities; restructuring creates new power centres. A challenger building their political map today has a more accurate picture of current client dynamics than an incumbent who has not actively maintained theirs — and this is one of the most frequently exploited incumbent vulnerabilities.",
           "requiredArtifacts": [
             "A16 Commercial Stance Note",
             "A07 Incumbent Defensibility Assessment",
@@ -2198,6 +2205,7 @@
           "text": "We have a defensible position on value-for-money, commercial reset, and future improvement.",
           "especiallyCriticalFor": "Use opportunity archetype, stage, role, and deal size to judge how heavily to weight this in context.",
           "whyAsked": "Tests incumbent defence on value and roadmap.",
+          "whyItMatters": "A client retenders for reasons, and those reasons are rarely just contract expiry. A financial pressure may require visible competition to justify the incumbent's cost; a political pressure may reflect a new senior appointment who wants their own preferred supplier relationship; a governance requirement may be a compliance exercise the client expects the incumbent to win. Understanding which motivation is driving the retendering shapes the entire commercial strategy. The single most valuable activity the incumbent can perform pre-ITT is using its superior access to embed requirements that a challenger cannot easily meet — and an incumbent who does not do this leaves its most significant advantage unused. On top of this, knowing whether the client has a preferred outcome — and if that outcome is not the incumbent, having a credible time-bound strategy to change it before ITT publication — is the most important piece of intelligence in any rebid.",
           "requiredArtifacts": [
             "A16 Commercial Stance Note",
             "A17 Risk / Red-Line Summary",
@@ -3001,20 +3009,20 @@
       ],
       "calibrationRules": [
         {
-          "rule": "TCV above £50m + Strongly Agree on any Stakeholder category → require named Director-level commitment that has survived at least one organisational change",
-          "note": "RECAST-NEEDED: update question refs to v0.2 IDs"
+          "id": "CR-1",
+          "rule": "TCV above £50m + Strongly Agree on any spa question → require named Director-level commitment that has survived at least one organisational change. At this deal size, a relationship that has not been tested through personnel change is not a relationship — it is a tenure-dependent assumption."
         },
         {
-          "rule": "Pre-market stage + Strongly Agree on Procurement Intelligence → flag stage mismatch: formal criteria rarely confirmed pre-market",
-          "note": "RECAST-NEEDED: update question refs to v0.2 IDs"
+          "id": "CR-2",
+          "rule": "Role is Incumbent + Strongly Disagree on any cpid question → flag incumbent complacency risk explicitly. An incumbent who cannot articulate competitive position, differentiators, or challenger threat at the cpid level is not competing — they are assuming renewal, and that assumption is the most common route to a rebid loss."
         },
         {
-          "rule": "Challenger position + Strongly Agree on Decision Authority / Internal Champion → require evidence of active incumbent displacement, not equivalent access",
-          "note": "RECAST-NEEDED: update question refs to v0.2 IDs"
+          "id": "CR-3",
+          "rule": "Stage is identify + Strongly Agree on any ppsf question → flag stage mismatch: formal evaluation criteria and procurement route are rarely confirmed at Identify stage. Strongly Agree on ppsf this early reflects assumption rather than confirmed intelligence and should be challenged before it propagates into the pursuit strategy."
         },
         {
-          "rule": "Incumbent position + Strongly Disagree on Competitive Positioning → flag incumbent complacency risk explicitly",
-          "note": "RECAST-NEEDED: update question refs to v0.2 IDs"
+          "id": "CR-4",
+          "rule": "Stage is pursue or submit + Strongly Disagree on any critical question (Q01, Q06, Q09, Q13, Q16, Q17, Q19, Q21, Q22) → this is a structural gap; do not let a strong overall score mask it in the narrative. Name the specific question, explain the gap, and require it to be addressed before the verdict can be Viable or better."
         }
       ],
       "inflationTriggers": [

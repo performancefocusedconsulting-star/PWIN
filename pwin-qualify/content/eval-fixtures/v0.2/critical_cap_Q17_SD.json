@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "critical_cap_Q17_SD",
+  "description": "Q17 Mandatorys / suitability met. Submit stage, framework_panel archetype. Evidence shows suitability has NOT been confirmed — the team believes it meets the criteria but has not completed the formal check, the route-to-market is assumed not verified, and the suitability review artifact is absent. Claimed Agree. Expected: Challenged, Strongly Disagree. Q17 is a critical question — SD at Submit stage would cap the entire assessment at Walk Away. Tests that Alex identifies unconfirmed eligibility at the latest possible stage as a maximum-severity finding, not a minor gap.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "Crown Commercial Service",
+    "opp": "Management Consulting Services IV (MCS4) Framework Panel",
+    "sector": "Central Government",
+    "oppType": "framework_panel",
+    "tcv": "£800m framework (individual call-off TBD)",
+    "stage": "submit",
+    "role": "challenger",
+    "notes": "Submission due in 11 days. The team joined this framework pursuit late after commercial leadership escalated. Lot 1 (Business and Operational Transformation) is the target lot."
+  },
+
+  "questionId": "Q17",
+  "claimedScore": "Agree",
+  "evidence": "We believe we meet the criteria for Lot 1 based on the framework notice we reviewed last month. The route to market through MCS4 should be straightforward as we have been on previous CCS frameworks. We haven't completed the formal suitability review yet as this was picked up late, but we are fairly confident there are no blockers and the team is now looking at the specific mandatory requirements this week. We think this is typical for this type of framework and assume no issues will arise.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true,
+    "suggestedScore": "Strongly Disagree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: Q17 at Submit stage requires completed verification of mandatory requirements and route-to-market access. 'We believe we meet the criteria', 'should be straightforward', 'we assume', and 'typical for this type' are all listed Q17 inflation signals. The formal suitability review is incomplete 11 days from submission. Alex should score this Strongly Disagree — a critical-question SD at Submit caps the tier at Walk Away regardless of performance elsewhere."
+}

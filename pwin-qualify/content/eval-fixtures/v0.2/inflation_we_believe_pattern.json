@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "inflation_we_believe_pattern",
+  "description": "Q03 Outcomes and trade-offs. Capture stage. Evidence is saturated with epistemic hedges — 'we believe', 'we think', 'we feel' — with no named sources, no ranked outcomes, no documented trade-offs, and no specific buyer attribution for any claim. The team is projecting what they assume the buyer wants rather than documenting what has been confirmed. Expected: Challenged, inflation detected. Tests that Alex identifies the 'we believe / we think / we feel' hedging pattern as a systematic inflation signal even when spread across multiple sentences rather than a single phrase.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "Greater Manchester Combined Authority",
+    "opp": "Workforce Development and Employability Advisory",
+    "sector": "Local Government",
+    "oppType": "consulting_advisory",
+    "tcv": "£4m over 2 years",
+    "stage": "capture",
+    "role": "challenger",
+    "notes": "No formal ITT yet. Team attended a public webinar on the authority's priorities but has not had direct stakeholder engagement."
+  },
+
+  "questionId": "Q03",
+  "claimedScore": "Agree",
+  "evidence": "We believe the authority's top priority is improving employment outcomes for young people, which we think aligns closely with our core offer. We feel that skills development and employability coaching will be the central success measures for this programme. We think the trade-off they are likely to make is between pace and breadth of coverage, and we believe they will favour pace given the political pressure around youth unemployment numbers. We feel confident that our understanding of these priorities reflects what they really care about, and based on our understanding of how GMCAs typically operate, we believe this resonates with their leadership's agenda.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true,
+    "suggestedScore": "Disagree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: Q03 requires named outcomes, documented trade-offs, and buyer attribution. This evidence contains 'we believe', 'we think', 'we feel', 'we feel confident', 'based on our understanding', 'we believe this reflects' — multiple listed inflation signals. No outcome is attributed to a named buyer contact or dated engagement. All claims are projected assumptions presented as team knowledge. Alex should challenge the entire evidence base and downgrade."
+}

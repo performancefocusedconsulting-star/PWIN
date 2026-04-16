@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "stage_boundary_Q07_thin_evidence_pursue",
+  "description": "Q07 Access or reliable insight. Pursue stage. Same thin evidence that would be tolerable at Capture (a few meetings, 'good rapport', second-hand views on priorities) is presented at Pursue stage where the ITT is live and evidence gaps are current risks not future actions. The inflation signals 'we have a good relationship', 'good rapport', and 'they are supportive' are all present. At Pursue, this combination should be Challenged — the team cannot claim meaningful access to decision-maker priorities with only generic relationship language and no documented insight. Expected: Challenged, score downgraded to Disagree. NOTE: the same evidence at Capture would warrant Queried rather than Challenged, because gaps at Capture are recoverable. This fixture tests the stage-dependent harshness increase at Pursue.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "London Borough of Southwark",
+    "opp": "Housing Repairs and Maintenance Services Recompete",
+    "sector": "Local Government",
+    "oppType": "facilities_operational",
+    "tcv": "£22m over 5 years",
+    "stage": "pursue",
+    "role": "challenger",
+    "notes": "ITT published two weeks ago. 6-week submission window. Incumbent has held the contract for 7 years."
+  },
+
+  "questionId": "Q07",
+  "claimedScore": "Agree",
+  "evidence": "We have a good relationship with the council through past work on a small responsive repairs pilot programme completed in 2023. The housing team have been supportive and we have had good rapport with the asset management lead who we believe is involved in this procurement. We know them well from that previous engagement and we are fairly confident they prefer us to some of the larger contractors. We have not yet had direct access to the procurement lead or the strategic housing director but we believe they will help us get the right conversations in due course.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true,
+    "suggestedScore": "Disagree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: At Pursue stage, 'we have a good relationship', 'they are supportive', 'good rapport', 'we believe they will help', and 'we know them well' are listed Q07 inflation signals. More critically, the team has not accessed the procurement lead or the strategic housing director — the actual decision-makers — and the ITT is live. At Pursue this is not a gap to be filled: it is a current risk to the submission."
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "core_Q13_no_evidenced_advantage",
+  "description": "Q13 Evidenced advantage over likely winner. Pursue stage, digital_transformation_si. The team claims advantage over the likely winner but does not name the advantage, does not name the competitor, and substitutes capability assertion for comparative evidence. 'Our experience sets us apart' and 'clients like our approach' are both explicit Q13 inflation signals. Expected: Challenged, Disagree or Strongly Disagree. Q13 is a critical question — SD would cap the tier. Tests that Alex challenges hollow comparative claims at Pursue stage where the tolerance for evidence gaps is low.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "HMRC",
+    "opp": "Enterprise Data Platform Transformation",
+    "sector": "Central Government",
+    "oppType": "digital_transformation_si",
+    "tcv": "£42m over 4 years",
+    "stage": "pursue",
+    "role": "challenger",
+    "notes": "ITT issued three weeks ago. 8-week submission window. Competitor field believed to include two large SIs with recent HMRC relationships."
+  },
+
+  "questionId": "Q13",
+  "claimedScore": "Agree",
+  "evidence": "We believe we are differentiated from the likely competition based on our broad data transformation experience and our track record in government. Our experience sets us apart in this type of programme and clients like our approach to complex delivery. We are confident that our team and methodology will compare favourably once the evaluators review our submission, and we intend to develop a compelling narrative that demonstrates this advantage clearly in the response.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true,
+    "suggestedScore": "Disagree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: Q13 requires a named competitor, a named buyer-relevant advantage, and proof. 'We believe we are differentiated', 'our experience sets us apart', 'clients like our approach', and 'we intend to develop' are all listed Q13 inflation signals. At Pursue stage this is a major weakness — the ITT is live and no comparative win logic exists."
+}

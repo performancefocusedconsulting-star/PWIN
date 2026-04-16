@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "core_Q01_inflation_vague_sentiment",
+  "description": "Q01 Reason for change now. Capture stage, BPO managed service. Evidence is pure sentiment: the team 'feels' the buyer wants change, the timing 'seems right', and they reference general department mood rather than named triggers. No specific policy driver, no named stakeholder signal, no documented consequence of inaction. Claimed Strongly Agree. Expected: Challenged, inflation detected, downgraded to Agree or Disagree. Tests that Alex catches the classic vague-optimism inflation pattern on the most important BNDL question.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "DVLA",
+    "opp": "Vehicle Registration Services Recompete",
+    "sector": "Central Government",
+    "oppType": "bpo_managed_service",
+    "tcv": "£60m over 5 years",
+    "stage": "capture",
+    "role": "challenger",
+    "notes": "Early capture. No market engagement event yet. Account team has had routine supplier meetings."
+  },
+
+  "questionId": "Q01",
+  "claimedScore": "Strongly Agree",
+  "evidence": "We feel confident that DVLA is ready for a real change on this contract. The conversations we have had with the team suggest they are open to new thinking and the timing feels right given the broader transformation agenda across the agency. They seem keen on change and we believe this resonates with their leadership. Generally the feedback has been positive from the people we have spoken to, and we think the moment is there to be taken if we position ourselves well.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true,
+    "suggestedScore": "Disagree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: 'we feel', 'seems keen on change', 'timing feels right', 'generally positive feedback' are textbook inflation signals on Q01. No named trigger, no documented signal, no specific stakeholder or dated exchange. Alex should challenge and downgrade."
+}

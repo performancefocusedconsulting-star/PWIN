@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "core_Q09_credibility_assumed",
+  "description": "Q09 Credible and relevant bidder. Capture stage. Team asserts buyer credibility on the basis of general sector experience and brand, without naming which stakeholders have signalled this view, what specific adjacent work was done, or what evidence of buyer-side perception exists. The inflation signals 'we feel well positioned' and 'feedback has been positive' are present. Expected: Queried, score downgraded. Tests that Alex catches assumed credibility — treating general reputation as proof of buyer-perceived relevance — at Capture stage where the gap is still recoverable but must be named.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "Environment Agency",
+    "opp": "Digital Field Operations Transformation",
+    "sector": "Central Government",
+    "oppType": "digital_transformation_si",
+    "tcv": "£18m over 3 years",
+    "stage": "capture",
+    "role": "challenger",
+    "notes": "Pre-ITT. No direct pre-market engagement attended yet. Team has worked in this sector before on adjacent programmes."
+  },
+
+  "questionId": "Q09",
+  "claimedScore": "Strongly Agree",
+  "evidence": "We have worked in this sector before and have strong government credentials which give us high credibility for this type of work. We feel well positioned given our brand and the volume of work we have delivered in central government digital programmes over the last few years. Feedback has been positive from the market contacts we have spoken to and we are confident the Environment Agency would see us as a serious bidder for this requirement.",
+  "expected": {
+    "verdict": "Queried",
+    "inflationDetected": true,
+    "suggestedScore": "Agree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: Q09 requires evidence that THIS buyer sees THIS team as credible for THIS requirement — not general sector brand. 'We have worked in this sector before' with no specifics, 'we feel well positioned', and 'feedback has been positive' without named sources are listed Q09 inflation signals. Queried rather than Challenged because there is a credible basis for relevance — it simply has not been translated into buyer-specific evidence."
+}

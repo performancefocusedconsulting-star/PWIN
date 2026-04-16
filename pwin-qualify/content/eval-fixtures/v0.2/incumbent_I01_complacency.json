@@ -1,0 +1,29 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "incumbent_I01_complacency",
+  "description": "I01 Buyer would retain us beyond continuity bias. Pursue stage, bpo_managed_service, role=incumbent. The team assumes retention because 'the client is happy with us' and relationship satisfaction is high. No named stakeholder has taken active steps to champion renewal, no positive change metric is documented, and the evidence rests entirely on operational comfort and absence of complaints. This is the classic incumbent complacency inflation pattern I01 is designed to catch. Expected: Challenged, inflation detected — happiness without evidence of active preference for renewal is not a positive retention case.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "NHS Business Services Authority",
+    "opp": "Pension Administration Managed Service Rebid",
+    "sector": "NHS",
+    "oppType": "bpo_managed_service",
+    "tcv": "£55m over 6 years",
+    "stage": "pursue",
+    "role": "incumbent",
+    "notes": "ITT received. 10-week submission window. Incumbent has held the contract for 5 years. No major service failures. Challengers known to be active in the market."
+  },
+
+  "questionId": "I01",
+  "claimedScore": "Strongly Agree",
+  "evidence": "We are confident the client will retain us because the relationship is strong and they are happy with the service we deliver. The client has not raised any significant concerns in our quarterly reviews and the account manager reports that the NHSBSA team are comfortable with how things are running. We have been delivering this contract for five years and they know us well, which gives us a significant advantage over any challenger. Overall we feel this is a strong renewal position and the client satisfaction scores confirm they value what we do.",
+  "expected": {
+    "verdict": "Challenged",
+    "inflationDetected": true,
+    "suggestedScore": "Disagree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: I01 explicitly tests whether retention rests on positive value, not inertia. 'The client is happy with us', 'no concerns raised', 'they know us well', and 'client satisfaction scores' without named stakeholder advocacy or documented positive change value are the core incumbent complacency signals. At Pursue stage with challengers active, this is a material weakness, not a strong position."
+}

@@ -503,6 +503,45 @@ body {
 .risk-action { background: var(--teal-lt);  border-color: var(--teal);  color: var(--ink); }
 .risk-label  { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
 
+/* ── v0.2 VIABILITY TIER BADGE ──────────────────────────────── */
+.viability-tier-wrap {
+  margin-bottom: 22px; padding: 18px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+.viability-tier-badge {
+  display: inline-block; font-family: var(--font-mono);
+  font-size: 13px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 6px 18px;
+  border-radius: 20px; color: white; margin-bottom: 14px;
+}
+.tier-strong        { background: #15803D; }
+.tier-onTrack       { background: #1D4ED8; }
+.tier-conditional   { background: #B45309; }
+.tier-majorConcerns { background: #C2410C; }
+.tier-walkAway      { background: #B91C1C; }
+
+.viability-determinants-list { list-style: none; padding: 0; margin: 0; }
+.viability-determinants-list li {
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--ink); line-height: 1.55;
+}
+.viability-determinants-list li:last-child { border-bottom: none; }
+
+.viability-against-box {
+  background: var(--amber-lt); border: 1px solid var(--amber);
+  border-left: 4px solid var(--amber-mid);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  font-size: 12px; color: var(--ink); line-height: 1.65;
+  margin-top: 12px;
+}
+.viability-conditions-box {
+  background: #FEF2F2; border: 1px solid #FECACA;
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  font-size: 12px; color: var(--ink); line-height: 1.65; margin-top: 12px;
+}
+
 /* ── SHARED ─────────────────────────────────────────────────── */
 .spinner {
   width: 20px; height: 20px; border-radius: 50%;
@@ -729,7 +768,7 @@ body {
       <span class="nav-icon">☰</span> Assessment
     </button>
     <button class="nav-btn locked" onclick="requireContext(event,'dashboard')" id="nav-dashboard">
-      <span class="nav-icon">◉</span> PWIN Dashboard
+      <span class="nav-icon">◉</span> Dashboard
     </button>
     <button class="nav-btn locked" onclick="requireContext(event,'review')" id="nav-review">
       <span class="nav-icon">◈</span> AI Assurance Review
@@ -749,10 +788,14 @@ body {
     </div>
     <div class="ctx-pill" id="ctx-pill" style="display:none;"></div>
     <div class="completion-pill" id="completion-pill">0 / 24</div>
+    <!-- v0.2: PWIN % suppressed from header; score computed internally but not shown -->
+    <!-- HIDDEN IN v0.2 — uncomment to restore numeric score in header
     <div class="pwin-display">
       <div class="pwin-label">PWIN Score</div>
       <div class="pwin-value" id="header-pwin">0%</div>
     </div>
+    -->
+    <div id="header-pwin" style="display:none;"></div>
   </div>
 </header>
 
@@ -833,30 +876,30 @@ body {
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Pursuit Stage <span class="ctx-required">*</span></label>
+        <!-- v0.2: 4-stage model replacing v0.1 6-phase bands -->
         <select class="ctx-select" id="ctx-stage" onchange="onCtxChange()">
           <option value="">— Select stage —</option>
-          <option>Pre-market engagement</option>
-          <option>Market engagement underway</option>
-          <option>ITT not yet published</option>
-          <option>ITT / RFP published</option>
-          <option>Shortlisted / BAFO</option>
-          <option>Preferred Bidder</option>
+          <option value="identify">Identify — Pre-market or earliest engagement</option>
+          <option value="capture">Capture — Active capture, pre-ITT</option>
+          <option value="pursue">Pursue — ITT/RFP live</option>
+          <option value="submit">Submit — Submitted / shortlist / BAFO</option>
         </select>
       </div>
+      <!-- v0.2: context.role replaces context.incumbent; triggers challenger overlay as well as incumbent overlay -->
       <div class="ctx-field ctx-grid-full">
-        <label class="ctx-label">Incumbent Position <span class="ctx-required">*</span></label>
-        <div class="ctx-radio-group" id="ctx-incumbent-group">
-          <label class="ctx-radio-label" id="inc-label-challenger">
-            <input type="radio" name="incumbent" value="We are the challenger — no incumbent relationship" onchange="onCtxRadio('incumbent','challenger')"> We are the challenger
+        <label class="ctx-label">Competitive Role <span class="ctx-required">*</span></label>
+        <div class="ctx-radio-group" id="ctx-role-group">
+          <label class="ctx-radio-label" id="role-label-open_field">
+            <input type="radio" name="role" value="open_field" onchange="onCtxRadio('role','open_field')"> No clear incumbent / open field
           </label>
-          <label class="ctx-radio-label" id="inc-label-incumbent">
-            <input type="radio" name="incumbent" value="We are the incumbent defending this contract" onchange="onCtxRadio('incumbent','incumbent')"> We are the incumbent
+          <label class="ctx-radio-label" id="role-label-challenger">
+            <input type="radio" name="role" value="challenger" onchange="onCtxRadio('role','challenger')"> We are challenging an incumbent
           </label>
-          <label class="ctx-radio-label" id="inc-label-none">
-            <input type="radio" name="incumbent" value="No clear incumbent — new or emerging requirement" onchange="onCtxRadio('incumbent','none')"> No clear incumbent
+          <label class="ctx-radio-label" id="role-label-incumbent">
+            <input type="radio" name="role" value="incumbent" onchange="onCtxRadio('role','incumbent')"> We are the incumbent defending this contract
           </label>
         </div>
-        <span class="ctx-hint">Incumbent vs challenger status fundamentally changes the risk profile on stakeholder and competitive questions.</span>
+        <span class="ctx-hint">Your competitive role activates the incumbent rebid overlay or challenger position overlay, each adding role-specific questions and AI outputs.</span>
       </div>
     </div>
 
@@ -904,7 +947,8 @@ body {
 <!-- ② DASHBOARD -->
 <div class="view" id="view-dashboard">
   <div class="dash-grid">
-    <!-- PWIN Gauge -->
+    <!-- v0.2: PWIN gauge hidden — numeric score suppressed; tier badge is the headline output -->
+    <!-- HIDDEN IN v0.2 — PWIN Score gauge (uncomment to restore)
     <div>
       <div class="dash-card" style="margin-bottom:16px;">
         <div class="dash-card-title">Overall PWIN Score</div>
@@ -929,6 +973,15 @@ body {
           </div>
         </div>
       </div>
+    END HIDDEN PWIN GAUGE -->
+    <!-- Hidden DOM stubs needed by updateDashboard() — kept invisible so JS doesn't error -->
+    <div style="display:none;">
+      <span id="gauge-fill"></span>
+      <span id="gauge-pct"></span>
+      <span id="gauge-phase"></span>
+      <span id="phase-fill"></span>
+    </div>
+    <div>
       <div class="dash-card">
         <div class="dash-card-title">Completion Status</div>
         <div class="stats-row">
@@ -2395,6 +2448,7 @@ function activateModifier(modId, mod) {
       id: ac.id,
       name: ac.name,
       weight: ac.weightOnActivation,
+      modifierId: modId, // marks this as a modifier-added category for applyWeightProfile
       ...(CAT_BRAND[ac.id] || { color: "#576482", bg: "transparent" }),
     });
   }
@@ -2432,21 +2486,40 @@ function activateModifier(modId, mod) {
   }
 
   // 4. Register the modifier's output schema (read by full-report generator)
+  // v0.1 format: mod.addsOutput = { id, name, schema, ... } — register directly by id
+  // v0.2 format: mod.addsOutput = { "outputId": { id, name, schema } } — register each child
   if (mod.addsOutput) {
-    CONTENT_OUTPUTS[mod.addsOutput.id] = mod.addsOutput;
+    if (mod.addsOutput.id) {
+      // v0.1 format: top-level id present
+      CONTENT_OUTPUTS[mod.addsOutput.id] = mod.addsOutput;
+    } else {
+      // v0.2 format: one or more named output objects
+      Object.values(mod.addsOutput).forEach(output => {
+        if (output && output.id) CONTENT_OUTPUTS[output.id] = output;
+      });
+    }
   }
 }
 
 function applyWeightProfile(oppType) {
   const profile = OPP_TYPE_PROFILE[oppType] || 'default';
   const weights = WEIGHT_PROFILES[profile];
-  // Only rebalance the standard 6 — modifier categories keep their assigned weight
-  const standardIds = new Set(['cp','pi','ss','oi','vp','pp']);
-  const standardCats = CATS.filter(c => standardIds.has(c.id));
-  const modifierCats = CATS.filter(c => !standardIds.has(c.id));
+  if (!weights) return; // no profile match — leave weights unchanged
+  // Modifier categories are those added by activateModifier (not in base content).
+  // Base category ids come from the content file; modifier categories have a modifierId field.
+  const modifierCats = CATS.filter(c => c.modifierId);
+  const standardCats = CATS.filter(c => !c.modifierId);
   const modifierWeight = modifierCats.reduce((s, c) => s + c.weight, 0);
   const remaining = 1 - modifierWeight;
-  standardCats.forEach(c => { c.weight = (weights[c.id] || 0) * remaining; });
+  // v0.1 IDs: cp, pi, ss, oi, vp, pp — v0.2 IDs: bndl, spa, cpid, ppsf, cdpr
+  // weights object uses the content file's category IDs
+  const totalProfileWeight = standardCats.reduce((s, c) => s + (weights[c.id] || 0), 0);
+  if (totalProfileWeight > 0) {
+    standardCats.forEach(c => {
+      // Scale the profile weight so it fills the non-modifier share
+      c.weight = ((weights[c.id] || 0) / totalProfileWeight) * remaining;
+    });
+  }
 }
 
 // Initial hydration — modifiers re-apply when context populates
@@ -2462,7 +2535,8 @@ const state = {
   radarChart: null,
   context: {
     org: '', opp: '', sector: '', tcv: '', oppType: '',
-    route: '', stage: '', incumbent: '', bnb: '', competitors: '', importance: ''
+    route: '', stage: '', role: '', bnb: '', competitors: '', importance: '',
+    incumbent: '', // v0.2: legacy field kept for session load back-compat; role is canonical
   },
   contextComplete: false,
 };
@@ -2470,7 +2544,8 @@ const state = {
 // ══════════════════════════════════════════════════════════════
 // PURSUIT CONTEXT
 // ══════════════════════════════════════════════════════════════
-const CTX_REQUIRED = ['org','opp','sector','tcv','oppType','route','stage','incumbent'];
+// v0.2: 'role' replaces 'incumbent' in the required field list
+const CTX_REQUIRED = ['org','opp','sector','tcv','oppType','route','stage','role'];
 
 function onCtxChange() {
   state.context.org         = document.getElementById('ctx-org').value.trim();
@@ -2570,7 +2645,7 @@ function getContextBlock() {
     `Total Contract Value: ${c.tcv}`,
     `Procurement Route: ${c.route}`,
     `Pursuit Stage: ${c.stage}`,
-    `Incumbent Position: ${c.incumbent}`,
+    `Competitive Role: ${c.role}`,
   ];
   if (c.competitors) lines.push(`Known Competitors: ${c.competitors}`);
   if (c.importance)  lines.push(`Strategic Importance: ${c.importance}`);
@@ -3030,8 +3105,8 @@ function newPursuit() {
     if (el) el.value = '';
   });
   // Clear radio buttons
-  document.querySelectorAll('input[name="incumbent"]').forEach(r => r.checked = false);
-  document.querySelectorAll('#ctx-incumbent-group .ctx-radio-label').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('input[name="role"]').forEach(r => r.checked = false);
+  document.querySelectorAll('#ctx-role-group .ctx-radio-label').forEach(el => el.classList.remove('checked'));
 
   // Remove completion banner if present
   const oldBanner = document.querySelector('.ctx-complete-banner');
@@ -3408,6 +3483,180 @@ function renderRebidRiskAssessment(rra) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// v0.2: VIABILITY ASSESSMENT RENDER (headline output — top of full report)
+// ══════════════════════════════════════════════════════════════
+function renderViabilityAssessment(va) {
+  if (!va || typeof va !== 'object') return '';
+
+  // Map tier id → display label and CSS class
+  const tierMeta = {
+    strong:        { label: 'Strong',         cls: 'tier-strong' },
+    onTrack:       { label: 'On Track',       cls: 'tier-onTrack' },
+    conditional:   { label: 'Conditional',    cls: 'tier-conditional' },
+    majorConcerns: { label: 'Major Concerns', cls: 'tier-majorConcerns' },
+    walkAway:      { label: 'Walk Away',      cls: 'tier-walkAway' },
+  };
+  const tier = (va.tier || '').replace(/\s+/g, '');
+  // Normalise camelCase or display strings from AI
+  const tierKey = Object.keys(tierMeta).find(k => k.toLowerCase() === tier.toLowerCase())
+    || Object.keys(tierMeta).find(k => tierMeta[k].label.toLowerCase() === (va.tier || '').toLowerCase())
+    || null;
+  const meta = tierMeta[tierKey] || { label: va.tier || 'Unknown', cls: 'tier-conditional' };
+
+  const narrativeHtml = Array.isArray(va.narrative)
+    ? va.narrative.map(p => `<p class="report-text" style="margin-bottom:10px;">${p}</p>`).join('')
+    : (va.narrative ? `<p class="report-text">${va.narrative}</p>` : '');
+
+  const determinants = Array.isArray(va.topThreeDeterminants) ? va.topThreeDeterminants : [];
+  const determinantsHtml = determinants.length
+    ? `<div class="report-section">
+        <div class="report-section-title" style="font-size:13px;">Top Three Determinants</div>
+        <ul class="viability-determinants-list">
+          ${determinants.map(d => {
+            if (typeof d === 'object') {
+              const name = d.factor || d.name || d.determinant || Object.keys(d)[0] || '';
+              const desc = d.explanation || d.description || d.rationale || (typeof d[Object.keys(d)[0]] === 'string' ? d[Object.keys(d)[0]] : '');
+              return `<li><strong>${name}</strong>${desc ? ' — ' + desc : ''}</li>`;
+            }
+            return `<li>${d}</li>`;
+          }).join('')}
+        </ul>
+       </div>`
+    : '';
+
+  const conditions = Array.isArray(va.conditions)
+    ? va.conditions
+    : (va.conditions ? [va.conditions] : []);
+  const conditionsHtml = conditions.length
+    ? `<div class="viability-conditions-box">
+        <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;color:var(--red);">Conditions to Lift Tier</div>
+        <ul style="margin:0;padding-left:16px;">${conditions.map(c => `<li style="margin-bottom:4px;">${typeof c === 'object' ? JSON.stringify(c) : c}</li>`).join('')}</ul>
+       </div>`
+    : '';
+
+  const actions = Array.isArray(va.actions) ? va.actions : [];
+  const actionsHtml = actions.length
+    ? `<div class="report-section">
+        <div class="report-section-title" style="font-size:13px;">Priority Actions</div>
+        ${actions.map((a, i) => `<div class="report-risk-item risk-action"><div class="risk-label">Action ${i + 1}</div>${typeof a === 'object' ? JSON.stringify(a) : a}</div>`).join('')}
+       </div>`
+    : '';
+
+  const capAudit = Array.isArray(va.criticalQuestionCapsApplied) && va.criticalQuestionCapsApplied.length
+    ? `<div style="font-size:11px;color:var(--slate);margin-top:8px;">
+        <strong>Critical question caps applied:</strong> ${va.criticalQuestionCapsApplied.map(c =>
+          typeof c === 'object' ? `${c.questionId} (${c.capApplied})` : c
+        ).join(', ')}
+       </div>`
+    : '';
+
+  return `
+    <div class="report-section viability-tier-wrap" style="border-left:4px solid ${
+      tierKey === 'strong' ? '#15803D' :
+      tierKey === 'onTrack' ? '#1D4ED8' :
+      tierKey === 'conditional' ? '#B45309' :
+      tierKey === 'majorConcerns' ? '#C2410C' : '#B91C1C'
+    };">
+      <div class="report-section-title" style="font-size:13px;border-bottom:none;margin-bottom:10px;">
+        Pursuit Viability — ${va.stage ? va.stage.charAt(0).toUpperCase() + va.stage.slice(1) + ' stage' : 'Assessment'}
+      </div>
+      <span class="viability-tier-badge ${meta.cls}">${meta.label}</span>
+      ${narrativeHtml}
+      ${va.strongestArgumentAgainst ? `
+        <div class="viability-against-box">
+          <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;color:var(--amber);">Strongest Argument Against This Tier</div>
+          ${va.strongestArgumentAgainst}
+        </div>` : ''}
+      ${conditionsHtml}
+      ${determinantsHtml}
+      ${actionsHtml}
+      ${capAudit}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// v0.2: CHALLENGER POSITION ASSESSMENT RENDER
+// Modelled on renderRebidRiskAssessment — same structure, challenger fields.
+// Active when context.role === "challenger" and the full report includes it.
+// ══════════════════════════════════════════════════════════════
+function renderChallengerPositionAssessment(cpa) {
+  if (!cpa || typeof cpa !== 'object') return '';
+  const ragColor = (s) => {
+    const t = String(s || '').toLowerCase();
+    if (t.startsWith('red'))   return '#B91C1C';
+    if (t.startsWith('amber')) return '#B45309';
+    if (t.startsWith('green')) return '#15803D';
+    return '#576482';
+  };
+
+  // switchingCaseRiskProfile is a 4-quadrant RAG object
+  const riskProfile = cpa.switchingCaseRiskProfile || {};
+  const riskProfileHtml = Object.keys(riskProfile).length
+    ? Object.entries(riskProfile).map(([k, v]) => `
+        <div class="report-risk-item" style="border-left:4px solid ${ragColor(v)};">
+          <div class="risk-label">${k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())}</div>
+          ${v}
+        </div>`).join('')
+    : '';
+
+  const strength = cpa.displacementCaseStrength;
+  const strengthNum = typeof strength === 'string' ? parseInt(strength) : strength;
+  const strengthColor = strengthNum >= 4 ? '#15803D' : strengthNum >= 3 ? '#B45309' : '#B91C1C';
+
+  const blindSpots = Array.isArray(cpa.blindSpots) ? cpa.blindSpots : [];
+  const displacementActions = Array.isArray(cpa.specificDisplacementActions) ? cpa.specificDisplacementActions : [];
+
+  return `
+    <div class="report-section" style="margin-top:32px;border-top:2px solid #1D4ED8;padding-top:20px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">
+        <div class="report-section-title" style="color:#1D4ED8;">Challenger Position Assessment</div>
+        ${strength != null ? `<div style="font-size:13px;font-weight:700;color:${strengthColor};">Displacement Case Strength: ${strength}/5</div>` : ''}
+      </div>
+      <p class="report-text" style="font-size:12px;color:var(--slate);font-style:italic;margin-bottom:14px;">A forensic challenger view: not "can we win?" but "is there a real displacement case, and are we ready to execute it?"</p>
+      ${riskProfileHtml ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Switching Case Risk Profile</div>
+          ${riskProfileHtml}
+        </div>` : ''}
+      ${cpa.buyerSwitchingMotivationAssessment ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Buyer Switching Motivation</div>
+          <p class="report-text">${cpa.buyerSwitchingMotivationAssessment}</p>
+        </div>` : ''}
+      ${cpa.incumbentCounterReadiness ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Incumbent Counter-Narrative Readiness</div>
+          <p class="report-text">${cpa.incumbentCounterReadiness}</p>
+        </div>` : ''}
+      ${blindSpots.length ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Challenger Blind Spots</div>
+          ${blindSpots.map(b => `<div class="report-risk-item risk-medium"><div class="risk-label">Gap</div>${b}</div>`).join('')}
+        </div>` : ''}
+      ${cpa.switchingRiskNeutralisationGaps ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Switching Risk Neutralisation Gaps</div>
+          <p class="report-text">${typeof cpa.switchingRiskNeutralisationGaps === 'string' ? cpa.switchingRiskNeutralisationGaps : JSON.stringify(cpa.switchingRiskNeutralisationGaps)}</p>
+        </div>` : ''}
+      ${cpa.proofAdjacencyAssessment ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Proof Adjacency Assessment</div>
+          <p class="report-text">${cpa.proofAdjacencyAssessment}</p>
+        </div>` : ''}
+      ${cpa.challengerStrategyRecommendation ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Challenger Strategy Recommendation</div>
+          <p class="report-text"><strong>${typeof cpa.challengerStrategyRecommendation === 'string' ? cpa.challengerStrategyRecommendation.split('.')[0] : ''}.</strong> ${typeof cpa.challengerStrategyRecommendation === 'string' ? cpa.challengerStrategyRecommendation.split('.').slice(1).join('.').trim() : ''}</p>
+        </div>` : ''}
+      ${displacementActions.length ? `
+        <div class="report-section">
+          <div class="report-section-title" style="font-size:13px;">Specific Displacement Actions</div>
+          ${displacementActions.map((a, i) => `<div class="report-risk-item risk-action"><div class="risk-label">Action ${i + 1}</div>${a}</div>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
 // FULL REPORT
 // ══════════════════════════════════════════════════════════════
 async function runFullReport() {
@@ -3447,9 +3696,20 @@ Score: ${pos} | Evidence: ${ev.substring(0,200)}${ev.length>200?'…':''}
 ${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not individually reviewed'}`;
   }).filter(Boolean).join('\n\n');
 
+  // v0.2: viabilityAssessment is the new headline output. PWIN % is suppressed.
   const baseFullReportSchema = {
+    viabilityAssessment: {
+      tier: "one of: strong | onTrack | conditional | majorConcerns | walkAway",
+      narrative: "3-5 paragraphs from Alex explaining why this tier was assigned at this stage, written in Alex's direct coaching voice. Must reference stage context explicitly.",
+      topThreeDeterminants: [{"factor": "name", "explanation": "1-2 sentences why decisive"}],
+      strongestArgumentAgainst: "The single most credible argument that the tier is wrong in the team's favour",
+      conditions: "If conditional or majorConcerns: specific named time-bound conditions to lift the tier. If walkAway: what would have to change. If onTrack or strong: omit this field.",
+      actions: ["specific named-role time-bound action prioritised by impact"],
+      stage: "the stage used for calibration: identify | capture | pursue | submit",
+      criticalQuestionCapsApplied: []
+    },
     executiveSummary:    "3-4 sentences on overall pursuit health and primary risks, referencing the opportunity and organisation by name",
-    pwinAssessment:      "2-3 sentences on whether the PWIN score is credible or inflated given evidence quality and contract value",
+    pwinAssessment:      "2-3 sentences on whether the pursuit viability assessment is credible or inflated given evidence quality and contract value",
     strengthAreas:       ["specific strength with evidence", "strength 2", "strength 3"],
     criticalRisks:       [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}],
     immediateActions:    ["specific action with suggested owner", "action 2", "action 3", "action 4", "action 5"],
@@ -3457,11 +3717,13 @@ ${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not i
     gateRationale:       "2-3 sentences explaining the gate recommendation in the context of this specific opportunity"
   };
 
-  // If a modifier has registered an additional output schema (e.g. Rebid Risk
-  // Assessment when the incumbent modifier is active), merge its fields into
-  // the request so we get one combined AI response.
+  // Merge additional output schemas from active modifiers.
+  // Incumbent modifier → rebidRiskAssessment block.
+  // Challenger modifier → challengerPositionAssessment block.
   const rebidOutput = CONTENT_OUTPUTS.rebidRiskAssessment;
+  const challengerOutput = CONTENT_OUTPUTS.challengerPositionAssessment;
   const mergedSchema = Object.assign({}, baseFullReportSchema);
+
   if (rebidOutput && ACTIVE_MODIFIERS.has('incumbent')) {
     mergedSchema.rebidRiskAssessment = {};
     rebidOutput.schema.forEach(f => {
@@ -3471,11 +3733,28 @@ ${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not i
     });
   }
 
-  const fullReportSchema = 'Respond ONLY with valid JSON matching this exact shape (no markdown, no preamble):\n' +
-    JSON.stringify(mergedSchema, null, 2) +
-    ((rebidOutput && ACTIVE_MODIFIERS.has('incumbent'))
-      ? '\n\nThe rebidRiskAssessment block answers a different question than the standard report: not "what is our win probability?" but "what are our vulnerabilities and what do our competitors know that we don\'t?" Use the augmented incumbent calibration rules and inflation triggers when assessing the rebid evidence. Each decayRiskProfile area should be Red/Amber/Green with a one-sentence rationale. The incumbentStrategyRecommendation must be one of: Defend and Shape, Active Recovery, Emergency Intervention, Qualify Out.'
-      : '');
+  if (challengerOutput && ACTIVE_MODIFIERS.has('challenger')) {
+    mergedSchema.challengerPositionAssessment = {};
+    // The v0.2 challenger output schema is in addsOutput.challengerPositionAssessment
+    // We access it from CONTENT_OUTPUTS if wired, or from the raw modifier's addsOutput
+    const cpaSchema = challengerOutput.schema || [];
+    cpaSchema.forEach(f => {
+      mergedSchema.challengerPositionAssessment[f.fieldName] = f.description;
+    });
+  }
+
+  let schemaInstructions = 'Respond ONLY with valid JSON matching this exact shape (no markdown, no preamble):\n' +
+    JSON.stringify(mergedSchema, null, 2);
+
+  if (rebidOutput && ACTIVE_MODIFIERS.has('incumbent')) {
+    schemaInstructions += '\n\nThe rebidRiskAssessment block answers a different question than the standard report: not "what is our win probability?" but "what are our vulnerabilities and what do our competitors know that we don\'t?" Use the augmented incumbent calibration rules and inflation triggers when assessing the rebid evidence. Each decayRiskProfile area should be Red/Amber/Green with a one-sentence rationale. The incumbentStrategyRecommendation must be one of: Defend and Shape, Active Recovery, Emergency Intervention, Qualify Out.';
+  }
+
+  if (challengerOutput && ACTIVE_MODIFIERS.has('challenger')) {
+    schemaInstructions += '\n\nThe challengerPositionAssessment block assesses the strength of the displacement case and the challenger\'s readiness to execute it. switchingCaseRiskProfile is a 4-quadrant object with keys: switchingMotivationStrength, switchingRiskNeutralisation, proofAdjacency, contestability — each rated Red/Amber/Green with a one-sentence rationale. challengerStrategyRecommendation must be one of: Press the Advantage, Build the Case, Address Readiness Gaps, Reassess Viability.';
+  }
+
+  const fullReportSchema = schemaInstructions;
 
   const systemPrompt = buildPersonaPrompt(fullReportSchema).replace('{{COMPETITIVE_INTEL_PLACEHOLDER}}', intelBlock);
 
@@ -3531,23 +3810,29 @@ ${questionSummary}`;
       <div class="report-header">
         <div>
           <div class="report-title">${c.opp || 'Pursuit Assurance Report'}</div>
-          <div class="report-sub">${c.org}${c.sector ? ' · ' + c.sector : ''}${c.tcv ? ' · ' + c.tcv : ''} · ${phase} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+          <!-- TODO v0.2: replace ${phase} with stage label from context.stage once viabilityAssessment.tier drives the subtitle -->
+          <div class="report-sub">${c.org}${c.sector ? ' · ' + c.sector : ''}${c.tcv ? ' · ' + c.tcv : ''} · ${c.stage || phase} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
           <div style="margin-top:12px;display:inline-block;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:700;background:${gateColor};color:white;letter-spacing:0.04em;">
             GATE: ${r.gateRecommendation.toUpperCase()}
           </div>
         </div>
+        <!-- v0.2: PWIN % hidden from report header — viabilityAssessment tier is the headline -->
+        <!-- HIDDEN IN v0.2 (uncomment to restore numeric score):
         <div>
           <div class="report-pwin-label">PWIN Score</div>
           <div class="report-pwin">${Math.round(pwin*100)}%</div>
         </div>
+        -->
       </div>
       <div class="report-body">
+        ${r.viabilityAssessment ? renderViabilityAssessment(r.viabilityAssessment) : ''}
         <div class="report-section">
           <div class="report-section-title">Executive Summary</div>
           <p class="report-text">${r.executiveSummary}</p>
         </div>
         <div class="report-section">
-          <div class="report-section-title">PWIN Score Assessment</div>
+          <!-- v0.2: renamed from "PWIN Score Assessment" -->
+          <div class="report-section-title">Pursuit Viability Assessment</div>
           <p class="report-text">${r.pwinAssessment}</p>
         </div>
         <div class="report-section">
@@ -3571,6 +3856,7 @@ ${questionSummary}`;
           <p class="report-text">${r.gateRationale}</p>
         </div>
         ${r.rebidRiskAssessment ? renderRebidRiskAssessment(r.rebidRiskAssessment) : ''}
+        ${r.challengerPositionAssessment ? renderChallengerPositionAssessment(r.challengerPositionAssessment) : ''}
       </div>
     </div>`;
   } catch(err) {
@@ -3679,16 +3965,21 @@ function restoreSession(data) {
     if (el && state.context[key]) el.value = state.context[key];
   });
 
-  // Restore radio buttons
-  const incVal = state.context.incumbent || '';
-  const incMap = { challenger:'challenger', incumbent:'incumbent', none:'none' };
-  const incKey = Object.keys(incMap).find(k => incVal.includes(k));
-  if (incKey) {
-    const radio = document.querySelector(`input[name="incumbent"][value="${incVal}"]`);
-    if (radio) {
-      radio.checked = true;
-      document.querySelectorAll('#ctx-incumbent-group .ctx-radio-label').forEach(el => {
-        el.classList.toggle('checked', el.querySelector('input').value === incVal);
+  // v0.2: Restore competitive role radio buttons.
+  // Back-compat: if an old session used context.incumbent, derive context.role from it.
+  if (!state.context.role && state.context.incumbent) {
+    const legacyInc = state.context.incumbent.toLowerCase();
+    if (legacyInc.includes('incumbent')) state.context.role = 'incumbent';
+    else if (legacyInc.includes('challenger')) state.context.role = 'challenger';
+    else state.context.role = 'open_field';
+  }
+  const roleVal = state.context.role || '';
+  if (roleVal) {
+    const roleRadio = document.querySelector(`input[name="role"][value="${roleVal}"]`);
+    if (roleRadio) {
+      roleRadio.checked = true;
+      document.querySelectorAll('#ctx-role-group .ctx-radio-label').forEach(el => {
+        el.classList.toggle('checked', el.querySelector('input').value === roleVal);
       });
     }
   }
@@ -3932,7 +4223,7 @@ if (_origSetScore) {
         <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
         <div style="font-weight:600;color:var(--navy);font-size:14px;">Score independently</div>
       </div>
-      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>Assessment</strong> tab. For each of the 24 questions, select your honest position — Strongly Agree, Agree, Disagree, or Strongly Disagree. Leave blank only if the question genuinely cannot be assessed yet. Blank counts as zero and will pull your PWIN score down, which is intentional.</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>Assessment</strong> tab. For each of the questions, select your honest position — Strongly Agree, Agree, Disagree, or Strongly Disagree. Leave blank only if the question genuinely cannot be assessed yet. Blank counts as zero and will affect your Pursuit Viability tier, which is intentional.</div>
     </div>
 
     <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
@@ -3946,9 +4237,9 @@ if (_origSetScore) {
     <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
-        <div style="font-weight:600;color:var(--navy);font-size:14px;">Review the PWIN Dashboard</div>
+        <div style="font-weight:600;color:var(--navy);font-size:14px;">Review the Dashboard</div>
       </div>
-      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>PWIN Dashboard</strong> tab to see your overall score, pursuit phase, radar profile, and category breakdown. This gives the team a shared picture of where the pursuit is strong and where attention is needed before the AI review session.</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.65;">Go to the <strong>Dashboard</strong> tab to see your category performance radar profile and category breakdown. This gives the team a shared picture of where the pursuit is strong and where attention is needed before the AI review session.</div>
     </div>
 
     <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);">
@@ -4098,7 +4389,7 @@ if (_origSetScore) {
       <div style="font-size:20px;color:var(--navy);flex-shrink:0;margin-top:2px;">◎</div>
       <div>
         <div style="font-weight:600;color:var(--navy);font-size:13px;margin-bottom:5px;">Use it regularly</div>
-        <div style="font-size:12px;color:var(--slate);line-height:1.65;">PWIN Architect is most valuable as a recurring coaching session — ideally monthly during capture. Track how your PWIN score moves over time as the pursuit develops.</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.65;">PWIN Architect is most valuable as a recurring coaching session — ideally monthly during capture. Track how your Pursuit Viability tier moves over time as the pursuit develops.</div>
       </div>
     </div>
     <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);display:flex;gap:12px;">

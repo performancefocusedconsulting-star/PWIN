@@ -1,0 +1,28 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "incumbent_I01_strong_retention_case",
+  "description": "I01 Buyer would retain us beyond continuity bias. Capture stage, bpo_managed_service, role=incumbent. Evidence documents proactive positive reasons for retention: improved SLA performance over the contract term, a documented cost reduction that the sponsor has linked to departmental targets, and a named senior stakeholder who has taken visible steps to defend the incumbent in internal governance. The evidence explicitly addresses the continuity-vs-positive-value distinction that I01 tests. Expected: Validated, Strongly Agree. Tests that Alex recognises a genuine positive retention case and does not over-challenge well-evidenced incumbent strength.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "Department for Work and Pensions",
+    "opp": "Benefits Processing Managed Service Renewal",
+    "sector": "Central Government",
+    "oppType": "bpo_managed_service",
+    "tcv": "£130m over 7 years",
+    "stage": "capture",
+    "role": "incumbent",
+    "notes": "Current contract entered year 6 of 7. Formal recompete process expected to launch ITT in Q3 2026. Incumbent has held the contract since 2019."
+  },
+
+  "questionId": "I01",
+  "claimedScore": "Strongly Agree",
+  "evidence": "The Incumbent Defensibility Assessment documents three positive reasons for retention beyond continuity. First, SLA performance in the core processing tower has improved from 91% at mobilisation to 97.4% in the most recent quarter, above the contractual threshold and above the benchmarked market comparator used in the last contract review. Second, a unit cost reduction of 12% over the contract term has been accepted by the department's commercial team as meeting the Year 5 VfM target set at contract start. Third, the deputy director responsible for operations took the contract off the departmental risk register in September 2025 following the Year 5 assurance review, a decision she confirmed in a governance update to the programme board in October. The team has documented that these are buyer-validated positive reasons to retain us — not simply absence of dissatisfaction or switching cost — and has linked the implications to the renewal-plus-improvement narrative being built in the Buyer Decision Thesis.",
+  "expected": {
+    "verdict": "Validated",
+    "suggestedScore": "Strongly Agree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: I01 tests positive retention value, not inertia. Named performance metrics, a completed VfM milestone, and a named stakeholder taking visible action in the incumbent's favour satisfy the Strongly Agree hurdle. Alex should validate and not seek to downgrade."
+}

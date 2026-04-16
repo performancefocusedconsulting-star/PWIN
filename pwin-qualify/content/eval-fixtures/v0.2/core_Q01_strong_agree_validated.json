@@ -1,0 +1,28 @@
+{
+  "$schema": "qualify-eval-fixture-v1",
+  "id": "core_Q01_strong_agree_validated",
+  "description": "Q01 Reason for change now. Capture stage, BPO managed service. Evidence names a concrete policy driver (Home Office Efficiency Review 2025 mandate), documents two consecutive quarters of missed SLA, and records direct buyer engagement where the sponsor linked contract outcome to a spending review target. All three change triggers are named and triangulated. Expected: Validated, Strongly Agree. Tests that Alex does not over-challenge well-evidenced, named, multi-source evidence of buyer change momentum.",
+  "source": "hand-crafted",
+  "isConstructed": true,
+  "contentVersion": "0.2.0",
+
+  "context": {
+    "org": "Home Office",
+    "opp": "Shared Services Transformation — Processing Operations Recompete",
+    "sector": "Central Government",
+    "oppType": "bpo_managed_service",
+    "tcv": "£95m over 7 years",
+    "stage": "capture",
+    "role": "challenger",
+    "notes": "Incumbent has held the contract for 9 years. Formal market engagement launched Q1 2026. ITT expected Q4 2026."
+  },
+
+  "questionId": "Q01",
+  "claimedScore": "Strongly Agree",
+  "evidence": "The Buyer Decision Thesis records three named change triggers, all evidenced from direct buyer engagement. First, the department's processing costs are 18% above the Efficiency Review 2025 target set by the Cabinet Office, a figure the sponsor confirmed in the February market engagement briefing. Second, the incumbent's SLA performance has missed the 95% accuracy threshold in Q2 and Q3 2025, a fact recorded in governance meeting notes obtained through our account contact. Third, the director-general cited the successor contract mobilisation as a dependency for the department's next spending review submission, giving a hard political deadline. These three triggers are documented in the Opportunity Brief, cross-referenced in the Buyer Decision Thesis, and reflected in the Buyer Anxiety & Constraint Map, which records the implication that the buyer wants demonstrable service improvement, not a like-for-like renewal.",
+  "expected": {
+    "verdict": "Validated",
+    "suggestedScore": "Strongly Agree"
+  },
+  "idealResponseFromWorkbook": "Hand-crafted: Alex should validate named, multi-source, triangulated evidence with a clearly documented implication. No grounds for inflation challenge."
+}
