@@ -273,7 +273,7 @@ def write_canonical(
     """)
     conn.commit()
     after = conn.execute("SELECT COUNT(*) FROM canonical_suppliers").fetchone()[0]
-    print(f"[splink] Post-pass name-merge: {before:,} → {after:,} "
+    print(f"[splink] Post-pass name-merge: {before:,} -> {after:,} "
           f"({before - after:,} duplicate-name clusters merged)")
     return after, len(clusters_df)
 
