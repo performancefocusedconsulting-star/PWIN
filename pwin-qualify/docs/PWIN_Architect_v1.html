@@ -2774,12 +2774,32 @@ function buildPersonaPrompt(outputSchema) {
   prompt += 'AUTOMATIC VERDICT TRIGGERS:\n';
   [...t.autoChallenge, ...t.autoQuery].forEach(r => prompt += `— ${r}\n`);
   prompt += '\nCALIBRATION RULES:\n';
-  t.calibrationRules.forEach(r => prompt += `— ${r}\n`);
+  t.calibrationRules.forEach(r => prompt += `— ${typeof r === 'object' ? (r.rule || r.id) : r}\n`);
   prompt += '\nINFLATION TRIGGERS:\n';
   t.inflationTriggers.forEach(r => prompt += `— ${r}\n`);
   prompt += '\n';
 
-  // 8. Sector enrichment (placeholder — will expand when enrichment content confirmed)
+  // 8a. v0.2: RAG tier model and stage calibration instructions
+  const stageCtx = (ctx.stage || 'capture').toLowerCase();
+  prompt += `VIABILITY TIER MODEL:
+You assess pursuit viability using a 5-band named tier — not a probability score. The tier is stage-calibrated: the same evidence base produces a lower tier at a later stage because the bar rises as time runs out.
+
+Tiers:
+— Strong: Position is earned and evidenced for this stage. Continue and consolidate.
+— On Track: Appropriate for the stage. Some gaps but nothing structural.
+— Conditional: Lower edge of acceptable. Specific conditions must be met before further investment is justified.
+— Major Concerns: Below what the stage requires. Material reshaping needed.
+— Walk Away: Structurally weak. Continued investment not justified.
+
+Current stage: ${stageCtx}. Apply stage-appropriate calibration when assigning the tier.
+
+Critical question rule: If any critical question (flagged [CRITICAL] in the question list) scores Strongly Disagree, the tier cannot exceed Major Concerns — even if the overall category scores are strong. Multiple critical Strongly Disagrees → Walk Away.
+
+IMPORTANT: Never surface the internal score as a number or percentage in your output. The tier and narrative are the only outputs. The category scores in the user message are for your calibration only.
+
+`;
+
+  // 9. Sector enrichment
   if (ctx.sector) {
     prompt += `SECTOR CONTEXT: This is a ${ctx.sector} sector opportunity. Apply your knowledge of this sector's procurement culture, stakeholder norms, and competitive dynamics when calibrating your assessment.\n\n`;
   }
@@ -3708,13 +3728,10 @@ ${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not i
       stage: "the stage used for calibration: identify | capture | pursue | submit",
       criticalQuestionCapsApplied: []
     },
-    executiveSummary:    "3-4 sentences on overall pursuit health and primary risks, referencing the opportunity and organisation by name",
-    pwinAssessment:      "2-3 sentences on whether the pursuit viability assessment is credible or inflated given evidence quality and contract value",
-    strengthAreas:       ["specific strength with evidence", "strength 2", "strength 3"],
-    criticalRisks:       [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}],
-    immediateActions:    ["specific action with suggested owner", "action 2", "action 3", "action 4", "action 5"],
-    gateRecommendation:  "Proceed | Proceed with Conditions | Review Required | Stop",
-    gateRationale:       "2-3 sentences explaining the gate recommendation in the context of this specific opportunity"
+    executiveSummary:      "3-4 sentences on overall pursuit health and primary risks, referencing the opportunity and organisation by name",
+    evidenceCredibilityNote: "2-3 sentences on whether the evidence base is credible and proportionate given the contract value, stage, and archetype — flag any systematic gaps or inflation patterns observed across multiple questions",
+    strengthAreas:         ["specific strength with evidence", "strength 2", "strength 3"],
+    criticalRisks:         [{"category":"name","risk":"specific description referencing opportunity context","severity":"High|Medium"}]
   };
 
   // Merge additional output schemas from active modifiers.
@@ -3758,17 +3775,27 @@ ${rev ? `AI Verdict: ${rev.verdict} | Suggested: ${rev.suggestedScore}` : 'Not i
 
   const systemPrompt = buildPersonaPrompt(fullReportSchema).replace('{{COMPETITIVE_INTEL_PLACEHOLDER}}', intelBlock);
 
+  // v0.2: stage context for RAG calibration — Alex uses this to set tier expectations
+  const stageId = (c.stage || 'capture').toLowerCase();
+  const stageLabels = { identify: 'Identify', capture: 'Capture', pursue: 'Pursue', submit: 'Submit' };
+  const stageLabel = stageLabels[stageId] || stageId;
+
   const userPrompt = `PURSUIT CONTEXT:
 ${contextBlock}
 
 ASSESSMENT RESULTS:
-Pursuit Phase: ${phase}
-Overall PWIN: ${Math.round(pwin*100)}% (Target: 75%)
+Stage: ${stageLabel} (${stageId})
+Stage calibration note: At the ${stageLabel} stage, the tier threshold is ${
+    stageId === 'identify' ? 'lenient — thin evidence is expected; Strong requires genuine structural advantage' :
+    stageId === 'capture'  ? 'moderate — trajectory and direction matter; structural gaps should already be closing' :
+    stageId === 'pursue'   ? 'demanding — what is not built now will be absent from the submission' :
+    'very high — submission quality and competitive defensibility are what matter now'
+  }.
 Questions Answered: ${answered}/${QUESTIONS.length}
 AI Reviews Completed: ${getReviewed()}
 Challenges Flagged: ${getChallenged()}
 
-Category Scores:
+Category Scores (internal — do not surface as numbers in your output):
 ${scoreSummary}
 
 Scored Questions with Evidence:
@@ -3800,21 +3827,12 @@ ${questionSummary}`;
     const text = data.content.map(b => b.text || "").join("").replace(/```json|```/g, "").trim();
     const r    = JSON.parse(text);
 
-    const gateColor = {
-      "Proceed":"var(--green)","Proceed with Conditions":"var(--amber)",
-      "Review Required":"#D97706","Stop":"var(--red)"
-    }[r.gateRecommendation] || "var(--slate)";
-
     area.innerHTML = `
     <div class="report-card" style="margin-bottom:24px;">
       <div class="report-header">
         <div>
           <div class="report-title">${c.opp || 'Pursuit Assurance Report'}</div>
-          <!-- TODO v0.2: replace ${phase} with stage label from context.stage once viabilityAssessment.tier drives the subtitle -->
-          <div class="report-sub">${c.org}${c.sector ? ' · ' + c.sector : ''}${c.tcv ? ' · ' + c.tcv : ''} · ${c.stage || phase} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
-          <div style="margin-top:12px;display:inline-block;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:700;background:${gateColor};color:white;letter-spacing:0.04em;">
-            GATE: ${r.gateRecommendation.toUpperCase()}
-          </div>
+          <div class="report-sub">${c.org}${c.sector ? ' · ' + c.sector : ''}${c.tcv ? ' · ' + c.tcv : ''} · ${stageLabel} stage · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
         </div>
         <!-- v0.2: PWIN % hidden from report header — viabilityAssessment tier is the headline -->
         <!-- HIDDEN IN v0.2 (uncomment to restore numeric score):
@@ -3830,30 +3848,19 @@ ${questionSummary}`;
           <div class="report-section-title">Executive Summary</div>
           <p class="report-text">${r.executiveSummary}</p>
         </div>
-        <div class="report-section">
-          <!-- v0.2: renamed from "PWIN Score Assessment" -->
-          <div class="report-section-title">Pursuit Viability Assessment</div>
-          <p class="report-text">${r.pwinAssessment}</p>
-        </div>
+        ${r.evidenceCredibilityNote ? `<div class="report-section">
+          <div class="report-section-title">Evidence Credibility</div>
+          <p class="report-text">${r.evidenceCredibilityNote}</p>
+        </div>` : ''}
         <div class="report-section">
           <div class="report-section-title">Pursuit Strengths</div>
-          ${r.strengthAreas.map(s=>`<div class="report-risk-item risk-action"><div class="risk-label">✓ Strength</div>${s}</div>`).join('')}
+          ${(r.strengthAreas||[]).map(s=>`<div class="report-risk-item risk-action"><div class="risk-label">✓ Strength</div>${s}</div>`).join('')}
         </div>
         <div class="report-section">
           <div class="report-section-title">Critical Risks</div>
-          ${r.criticalRisks.map(risk=>`<div class="report-risk-item ${risk.severity==='High'?'risk-high':'risk-medium'}">
+          ${(r.criticalRisks||[]).map(risk=>`<div class="report-risk-item ${risk.severity==='High'?'risk-high':'risk-medium'}">
             <div class="risk-label">${risk.severity} Risk — ${risk.category}</div>${risk.risk}
           </div>`).join('')}
-        </div>
-        <div class="report-section">
-          <div class="report-section-title">Immediate Actions Required</div>
-          ${r.immediateActions.map((a,i)=>`<div class="report-risk-item risk-action">
-            <div class="risk-label">Action ${i+1}</div>${a}
-          </div>`).join('')}
-        </div>
-        <div class="report-section">
-          <div class="report-section-title">Gate Recommendation</div>
-          <p class="report-text">${r.gateRationale}</p>
         </div>
         ${r.rebidRiskAssessment ? renderRebidRiskAssessment(r.rebidRiskAssessment) : ''}
         ${r.challengerPositionAssessment ? renderChallengerPositionAssessment(r.challengerPositionAssessment) : ''}
