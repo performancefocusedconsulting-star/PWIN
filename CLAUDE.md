@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Wiki Knowledge Base
+
+Path: `C:/Users/User/Documents/Obsidian Vault`
+
+When you need context not already in this project (prior decisions, research, session history):
+1. Read `C:/Users/User/Documents/Obsidian Vault/wiki/hot.md` first (~500 words of recent context)
+2. If not enough, read `wiki/index.md`
+3. If you need domain specifics, read `wiki/<domain>/_index.md`
+4. Only then read individual wiki pages
+
+Use `/save` to file any valuable insight, decision, or answer into the wiki at the end of a session.
+Do NOT read the wiki for general coding questions or things already in this project's CLAUDE.md.
+
 ## Project
 
 PWIN is a monorepo containing multiple products, each in its own subfolder. It is in early development.
