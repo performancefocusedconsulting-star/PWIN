@@ -10,3 +10,12 @@ HOME.md
 
 # Competitive intel analysis exports — local reports, not source
 pwin-competitive-intel/analysis/
+
+# Local Claude Code settings — per-user, not committed
+.claude/
+
+# Playwright MCP scratch logs and page snapshots
+.playwright-mcp/
+
+# Ad-hoc UI screenshots captured at the repo root
+/qualify-*.png
