@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="1024" height="1024"
+     role="img" aria-label="BidEquity icon" shape-rendering="geometricPrecision">
+  <rect width="80" height="80" fill="#021744"/>
+  <g transform="translate(8, 8)"><path d="M8 14 L14 8 H50 L56 14 V50 L50 56 H14 L8 50 Z" fill="none" stroke="#F4EFE4" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+    <rect x="17"    y="14"        width="3"  height="36" fill="#F4EFE4"/>
+    <rect x="17"    y="14"        width="12" height="3"  fill="#F4EFE4"/>
+    <rect x="17"    y="30"     width="10" height="3"  fill="#F4EFE4"/>
+    <rect x="17"    y="47"     width="12" height="3"  fill="#F4EFE4"/>
+    <rect x="26"  y="17"      width="3"  height="13" fill="#F4EFE4"/>
+    <rect x="26"  y="33"     width="3"  height="14" fill="#F4EFE4"/>
+  
+    <rect x="31"    y="14"        width="3"  height="36" fill="#7ADDE2"/>
+    <rect x="31"    y="14"        width="14" height="3"  fill="#7ADDE2"/>
+    <rect x="31"    y="30"     width="11" height="3"  fill="#7ADDE2"/>
+    <rect x="31"    y="47"     width="14" height="3"  fill="#7ADDE2"/>
+  </g>
+</svg>
