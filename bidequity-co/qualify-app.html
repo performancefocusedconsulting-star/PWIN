@@ -173,6 +173,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.02em;
   color: var(--be-text-on-dark);
 }
+.site-nav__brand-img { display: block; height: 40px; width: auto; }
 .site-nav__brand .brand-bid    { margin-right: 0.22em; color: var(--be-text-on-dark); }
 .site-nav__brand .brand-equity { color: var(--be-text-on-dark); }
 .site-nav__brand .brand-subtitle {
@@ -1026,6 +1027,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.02em;
   color: var(--be-text-on-dark);
 }
+.site-footer__brand-img { display: block; height: 40px; width: auto; }
 .site-footer__brand .brand-bid    { margin-right: 0.22em; color: var(--be-text-on-dark); }
 .site-footer__brand .brand-equity { color: var(--be-text-on-dark); }
 .site-footer__brand .brand-subtitle {
@@ -1081,9 +1083,8 @@ h1, h2, h3, h4, h5, h6 {
 <!-- ═══ WEBSITE NAVIGATION ═══ -->
 <nav class="site-nav">
   <div class="site-nav__inner">
-    <a href="index.html" class="site-nav__brand">
-      <span class="brand-name"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span></span>
-      <span class="brand-subtitle">Pursuit Intelligence</span>
+    <a href="index.html" class="site-nav__brand" aria-label="BidEquity — Pursuit Intelligence">
+      <img src="docs/bidequity-n1-stacked-bright-trans-dark.svg" alt="BidEquity — Pursuit Intelligence" class="site-nav__brand-img">
     </a>
     <button class="site-nav__toggle" aria-label="Menu" onclick="document.getElementById('site-nav-links').classList.toggle('open')">&#9776;</button>
     <div class="site-nav__links" id="site-nav-links">
@@ -6868,9 +6869,8 @@ updateDashboard();
 <footer class="site-footer">
   <div class="site-footer__inner">
     <div>
-      <p class="site-footer__brand">
-        <span class="brand-name"><span class="brand-bid">Bid</span><span class="brand-equity">Equity</span></span>
-        <span class="brand-subtitle">Pursuit Intelligence</span>
+      <p class="site-footer__brand" aria-label="BidEquity — Pursuit Intelligence">
+        <img src="docs/bidequity-n1-stacked-bright-trans-dark.svg" alt="BidEquity — Pursuit Intelligence" class="site-footer__brand-img">
       </p>
     </div>
     <div class="site-footer__links">

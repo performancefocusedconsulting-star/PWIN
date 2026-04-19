@@ -82,6 +82,8 @@ p { max-width: 640px; }
   line-height: 1.15;
   text-decoration: none;
 }
+.nav__brand-img { display: block; height: 40px; width: auto; }
+.footer__brand-img { display: block; height: 40px; width: auto; }
 .nav__brand .brand-bid    { color: var(--be-text-on-dark); margin-right: 0.22em; }
 .nav__brand .brand-equity { color: var(--be-text-on-dark); }
 .nav__brand .brand-subtitle {
