@@ -808,6 +808,31 @@ body {
       <div style="font-size:13px;color:var(--slate);line-height:1.6;">Complete this before beginning the assessment. These details calibrate the AI scoring thresholds, challenge questions, and assurance report to your specific opportunity.</div>
     </div>
 
+    <!-- Your Organisation -->
+    <div class="ctx-section-title">Your Organisation</div>
+    <div class="ctx-grid" style="margin-bottom:28px;">
+      <div class="ctx-field">
+        <label class="ctx-label">Your Company Name <span class="ctx-required">*</span></label>
+        <input class="ctx-input" id="ctx-bidder" type="text" placeholder="e.g. Serco, Capita, Deloitte" oninput="onCtxChange()">
+        <span class="ctx-hint">The company pursuing this opportunity. Helps the AI identify you for competitive analysis.</span>
+      </div>
+      <div class="ctx-field">
+        <label class="ctx-label">Your Primary Business Type <span class="ctx-optional">(optional)</span></label>
+        <select class="ctx-select" id="ctx-bidder-sector" onchange="onCtxChange()">
+          <option value="">— Select —</option>
+          <option>BPO / Outsourcing</option>
+          <option>Managed Services</option>
+          <option>Systems Integration</option>
+          <option>Technology / Digital</option>
+          <option>Consulting / Advisory</option>
+          <option>Professional Services</option>
+          <option>Facilities / Support Services</option>
+          <option>Other</option>
+        </select>
+        <span class="ctx-hint">What kind of supplier you are — e.g. Serco is a BPO operator, Capgemini is a systems integrator, Deloitte is a consultancy. Helps the AI frame competitive challenges appropriately.</span>
+      </div>
+    </div>
+
     <!-- Opportunity -->
     <div class="ctx-section-title">Opportunity</div>
     <div class="ctx-grid" style="margin-bottom:28px;">
@@ -837,8 +862,8 @@ body {
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Total Contract Value (TCV) <span class="ctx-required">*</span></label>
-        <input class="ctx-input" id="ctx-tcv" type="text" placeholder="e.g. £45m, £2.3m, £400m" oninput="onCtxChange()">
-        <span class="ctx-hint">Used to calibrate evidence bar and risk thresholds.</span>
+        <input class="ctx-input" id="ctx-tcv" type="text" placeholder="e.g. 10, 45, 100 (in millions)" oninput="formatTCV(this); onCtxChange()">
+        <span class="ctx-hint">Enter the value in millions — e.g. type 45 for £45m. Used to calibrate evidence bar and risk thresholds.</span>
       </div>
     </div>
 
@@ -863,16 +888,20 @@ body {
         <label class="ctx-label">Procurement Route <span class="ctx-required">*</span></label>
         <select class="ctx-select" id="ctx-route" onchange="onCtxChange()">
           <option value="">— Select route —</option>
-          <option>Open Procedure</option>
-          <option>Restricted Procedure</option>
-          <option>Competitive Dialogue</option>
-          <option>Competitive Procedure with Negotiation</option>
-          <option>Framework Call-off</option>
-          <option>Dynamic Purchasing System</option>
-          <option>Direct Award</option>
-          <option>Other / Unknown</option>
+          <optgroup label="Procurement Act 2023">
+            <option value="open">Open Procedure</option>
+            <option value="competitive_flexible">Competitive Flexible Procedure</option>
+            <option value="direct_award">Direct Award</option>
+            <option value="framework_calloff">Framework Call-off</option>
+            <option value="dynamic_market">Dynamic Market</option>
+          </optgroup>
+          <optgroup label="Legacy (PCR 2015 — in-flight bids only)">
+            <option value="legacy_restricted">Restricted (legacy)</option>
+            <option value="legacy_competitive_dialogue">Competitive Dialogue (legacy)</option>
+            <option value="legacy_negotiated">Negotiated (legacy)</option>
+          </optgroup>
         </select>
-        <span class="ctx-hint">Shapes what Procurement Intelligence questions mean in this context.</span>
+        <span class="ctx-hint">Procurement Act 2023 procedures. Legacy PCR 2015 routes are available only for bids that started before 24 February 2025.</span>
       </div>
       <div class="ctx-field">
         <label class="ctx-label">Pursuit Stage <span class="ctx-required">*</span></label>
@@ -4337,13 +4366,20 @@ if (typeof QUALIFY_CONTENT === 'undefined') {
 // Brand colors stay app-local (they differ across consulting/website variants).
 // Names, weights, and order come from the content file.
 const CAT_BRAND = {
+  // v0.1 IDs (kept for backward compat)
   cp: { color: "#2D5499", bg: "var(--cat-cp)" },
   pi: { color: "#1A7A4A", bg: "var(--cat-pi)" },
   ss: { color: "#C76A0A", bg: "var(--cat-ss)" },
   oi: { color: "#6B21A8", bg: "var(--cat-oi)" },
   vp: { color: "#92400E", bg: "var(--cat-vp)" },
   pp: { color: "#0E7490", bg: "var(--cat-pp)" },
-  ip: { color: "#7C2D12", bg: "var(--cat-ip)" }, // Incumbent Position (rebid modifier)
+  ip: { color: "#7C2D12", bg: "var(--cat-ip)" },
+  // v0.2 IDs
+  bndl: { color: "#2D5499", bg: "var(--cat-cp)" },
+  spa:  { color: "#1A7A4A", bg: "var(--cat-pi)" },
+  cpid: { color: "#C76A0A", bg: "var(--cat-ss)" },
+  ppsf: { color: "#6B21A8", bg: "var(--cat-oi)" },
+  cdpr: { color: "#0E7490", bg: "var(--cat-pp)" },
 };
 
 // Live runtime arrays — mutated by applyContentModifiers when context changes.
@@ -4353,9 +4389,9 @@ let ALEX_PERSONA;
 let CONTENT_OUTPUTS = {};
 
 const SCORE_PTS = QUALIFY_CONTENT.scoring.scorePts;
-const MAX_CAT   = QUALIFY_CONTENT.scoring.maxCat;
+const MAX_CAT   = QUALIFY_CONTENT.scoring.maxCat || 4; // v0.2 dropped maxCat; 4 = max score on 4-point scale
 const WEIGHT_PROFILES = QUALIFY_CONTENT.weightProfiles;
-const OPP_TYPE_PROFILE = QUALIFY_CONTENT.oppTypeProfile;
+const OPP_TYPE_PROFILE = QUALIFY_CONTENT.archetypeProfile || QUALIFY_CONTENT.oppTypeProfile;
 
 function rebuildBaseContent() {
   CATS.length = 0;
@@ -4371,7 +4407,7 @@ function rebuildBaseContent() {
     });
   });
 
-  QUALIFY_CONTENT.questionPacks.standard.questions.forEach(q => {
+  (QUALIFY_CONTENT.questionPacks.core || QUALIFY_CONTENT.questionPacks.standard).questions.forEach(q => {
     QUESTIONS.push({
       id:      q.id,
       cat:     q.cat,
@@ -4550,19 +4586,18 @@ function applyWeightProfile(oppType) {
   const profile = OPP_TYPE_PROFILE[oppType] || 'default';
   const weights = WEIGHT_PROFILES[profile];
   if (!weights) return; // no profile match — leave weights unchanged
+  const wmap = weights.weights || weights; // v0.2 nests per-cat weights under .weights
   // Modifier categories are those added by activateModifier (not in base content).
   // Base category ids come from the content file; modifier categories have a modifierId field.
   const modifierCats = CATS.filter(c => c.modifierId);
   const standardCats = CATS.filter(c => !c.modifierId);
   const modifierWeight = modifierCats.reduce((s, c) => s + c.weight, 0);
   const remaining = 1 - modifierWeight;
-  // v0.1 IDs: cp, pi, ss, oi, vp, pp — v0.2 IDs: bndl, spa, cpid, ppsf, cdpr
-  // weights object uses the content file's category IDs
-  const totalProfileWeight = standardCats.reduce((s, c) => s + (weights[c.id] || 0), 0);
+  const totalProfileWeight = standardCats.reduce((s, c) => s + (wmap[c.id] || 0), 0);
   if (totalProfileWeight > 0) {
     standardCats.forEach(c => {
       // Scale the profile weight so it fills the non-modifier share
-      c.weight = ((weights[c.id] || 0) / totalProfileWeight) * remaining;
+      c.weight = ((wmap[c.id] || 0) / totalProfileWeight) * remaining;
     });
   }
 }
@@ -4579,6 +4614,7 @@ const state = {
   selectedReviewIdx: null,
   radarChart: null,
   context: {
+    bidder: '', bidderSector: '',
     org: '', opp: '', sector: '', tcv: '', oppType: '',
     route: '', stage: '', role: '', bnb: '', competitors: '', importance: '',
     incumbent: '', // v0.2: legacy field kept for session load back-compat; role is canonical
@@ -4590,9 +4626,23 @@ const state = {
 // PURSUIT CONTEXT
 // ══════════════════════════════════════════════════════════════
 // v0.2: 'role' replaces 'incumbent' in the required field list
-const CTX_REQUIRED = ['org','opp','sector','tcv','oppType','route','stage','role'];
+const CTX_REQUIRED = ['bidder','org','opp','sector','tcv','oppType','route','stage','role'];
+
+function formatTCV(el) {
+  var raw = el.value.replace(/[^0-9.]/g, '');
+  if (!raw) { el.value = ''; return; }
+  var num = parseFloat(raw);
+  if (isNaN(num)) return;
+  if (num >= 1000) {
+    el.value = '\u00a3' + (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + 'm';
+  } else {
+    el.value = '\u00a3' + raw + 'm';
+  }
+}
 
 function onCtxChange() {
+  state.context.bidder      = document.getElementById('ctx-bidder').value.trim();
+  state.context.bidderSector= document.getElementById('ctx-bidder-sector').value;
   state.context.org         = document.getElementById('ctx-org').value.trim();
   state.context.opp         = document.getElementById('ctx-opp').value.trim();
   state.context.sector      = document.getElementById('ctx-sector').value;
@@ -5061,6 +5111,48 @@ function buildAssessment() {
     </div>`;
   }).join('');
 
+  // Render modifier questions (v0.2: incumbent/challenger Qs have no cat; grouped by modifierId)
+  const modifierQs = QUESTIONS.filter(q => !q.cat && q.modifierId);
+  const modifierIds = [...new Set(modifierQs.map(q => q.modifierId))];
+  modifierIds.forEach(modId => {
+    const mod = (QUALIFY_CONTENT.modifiers || {})[modId] || {};
+    const modName = mod.name || (modId.charAt(0).toUpperCase() + modId.slice(1)) + ' Overlay';
+    const modColor = modId === 'incumbent' ? '#7C2D12' : '#0E7490';
+    const modQs = modifierQs.filter(q => q.modifierId === modId);
+    const modSection = document.createElement('div');
+    modSection.className = 'cat-section';
+    const qCards = modQs.map(q => {
+      const idx = QUESTIONS.indexOf(q);
+      const rubricRows = Object.entries(q.rubric || {}).map(([label, text]) => {
+        const cls = label === 'Strongly Agree' ? 'sa' : label === 'Agree' ? 'ag' : label === 'Disagree' ? 'dis' : 'sd';
+        return `<div class="rubric-row"><div class="rubric-label ${cls}">${label}</div><div class="rubric-text">${text}</div></div>`;
+      }).join('');
+      return `<div class="q-card" id="qcard-${idx}">
+        <div class="q-topic">${q.topic || q.id}</div>
+        <div class="q-text">${q.text}</div>
+        <div class="q-controls">
+          <select class="pos-select" id="pos-${idx}" onchange="setPosition(${idx}, this.value)">
+            <option value="">— Not assessed —</option>
+            <option value="Strongly Agree">Strongly Agree</option>
+            <option value="Agree">Agree</option>
+            <option value="Disagree">Disagree</option>
+            <option value="Strongly Disagree">Strongly Disagree</option>
+          </select>
+        </div>
+        <textarea class="evidence-area" id="ev-${idx}" placeholder="Enter evidence — name individuals, documents, dates, commitments…" oninput="saveEvidence(${idx}, this.value)"></textarea>
+        <button class="rubric-toggle" onclick="toggleRubric(${idx})" id="rubric-btn-${idx}">▶ scoring rubric</button>
+        <div class="rubric-panel" id="rubric-panel-${idx}">${rubricRows}</div>
+      </div>`;
+    }).join('');
+    modSection.innerHTML = `
+      <div class="cat-header-row">
+        <div class="cat-swatch" style="background:${modColor}"></div>
+        <div class="cat-name">${modName}</div>
+      </div>
+      <div class="q-grid">${qCards}</div>`;
+    body.appendChild(modSection);
+  });
+
   updateProfileBanner();
 }
 
@@ -5122,16 +5214,17 @@ function updateProfileBanner() {
 
   // Profile label
   const profile = OPP_TYPE_PROFILE[oppType] || 'default';
-  const profileLabels = { services:'Services Profile', technology:'Technology Profile', advisory:'Advisory Profile', default:'Default Profile' };
-  badge.textContent = (profileLabels[profile] || 'Custom').toUpperCase() + ' · ' + oppType;
+  badge.textContent = oppType.toUpperCase();
 
   // Default weights for comparison
-  const defaults = WEIGHT_PROFILES.default;
+  const defaults = WEIGHT_PROFILES.default || Object.values(WEIGHT_PROFILES)[0];
   const active   = WEIGHT_PROFILES[profile] || defaults;
+  const dmap = defaults.weights || defaults;
+  const amap = active.weights || active;
 
   weightsEl.innerHTML = CATS.map(cat => {
-    const w   = active[cat.id];
-    const def = defaults[cat.id];
+    const w   = amap[cat.id];
+    const def = dmap[cat.id];
     const elevated = w > def;
     return `<span class="pw-chip${elevated ? ' elevated' : ''}" title="${cat.name}">
       ${cat.name.split(' ')[0]} ${(w*100).toFixed(0)}%${elevated ? ' ↑' : ''}
@@ -6388,9 +6481,9 @@ if (_origSetScore) {
       <thead>
         <tr style="background:var(--navy);color:white;">
           <th style="padding:11px 16px;text-align:left;font-weight:600;">Category</th>
-          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Services: BPO / ITO / Managed Service / Digital Outcomes">Services</th>
-          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Technology: Infrastructure / Software / SaaS">Technology</th>
-          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Advisory: Consulting">Advisory</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="BPO / Managed Service / Operational Outsourcing">Managed Service</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Digital Transformation / SI / Delivery">Digital / SI</th>
+          <th style="padding:11px 16px;text-align:center;font-weight:600;" title="Professional Consulting / Advisory">Advisory</th>
           <th style="padding:11px 16px;text-align:left;font-weight:600;">What drives this</th>
         </tr>
       </thead>
@@ -6401,21 +6494,23 @@ if (_origSetScore) {
   <script>
   (function() {
     const RATIONALE = {
-      cp: 'Primary differentiator — directly within the team\'s control',
-      pi: 'Varies significantly by type: critical for technology bids, less decisive for advisory',
-      ss: 'Relationship-driven in services and advisory; less decisive in specification-driven technology bids',
-      oi: 'Most powerful in advisory pursuits; minimal impact in specification-led technology awards',
-      vp: 'Co-development evidence matters across all types but carries highest weight in advisory',
-      pp: 'A lagging indicator — reflects the outcomes of the higher-weight categories',
+      bndl: 'Highest weight category — understanding buyer intent separates informed bids from reactive ones',
+      spa:  'Relationship access and political positioning matter across all opportunity types',
+      cpid: 'Elevated for managed services; understanding incumbent position is decisive in any recompete',
+      ppsf: 'Most decisive in digital / SI bids where solution differentiation is explicitly evaluated',
+      cdpr: 'Highest weight in operational services where delivery risk and commercial fit are scrutinised',
     };
+    const P_BPO = (WEIGHT_PROFILES.bpo_managed_service   && (WEIGHT_PROFILES.bpo_managed_service.weights   || WEIGHT_PROFILES.bpo_managed_service))   || {};
+    const P_DIG = (WEIGHT_PROFILES.digital_transformation_si && (WEIGHT_PROFILES.digital_transformation_si.weights || WEIGHT_PROFILES.digital_transformation_si)) || {};
+    const P_ADV = (WEIGHT_PROFILES.consulting_advisory   && (WEIGHT_PROFILES.consulting_advisory.weights   || WEIGHT_PROFILES.consulting_advisory))   || {};
     const tbody = document.getElementById('help-weights-body');
     if (!tbody) return;
     tbody.innerHTML = CATS.map((cat, i) => {
       const bg  = i%2===0 ? '' : 'background:var(--surface);';
-      const sv  = (WEIGHT_PROFILES.services[cat.id]   * 100).toFixed(0);
-      const tv  = (WEIGHT_PROFILES.technology[cat.id] * 100).toFixed(0);
-      const av  = (WEIGHT_PROFILES.advisory[cat.id]   * 100).toFixed(0);
-      const max = Math.max(WEIGHT_PROFILES.services[cat.id], WEIGHT_PROFILES.technology[cat.id], WEIGHT_PROFILES.advisory[cat.id]);
+      const sv  = ((P_BPO[cat.id] || 0) * 100).toFixed(0);
+      const tv  = ((P_DIG[cat.id] || 0) * 100).toFixed(0);
+      const av  = ((P_ADV[cat.id] || 0) * 100).toFixed(0);
+      const max = Math.max(P_BPO[cat.id] || 0, P_DIG[cat.id] || 0, P_ADV[cat.id] || 0);
       const chip = (val, pctNum) => {
         const isMax = pctNum/100 === max;
         const style = isMax
