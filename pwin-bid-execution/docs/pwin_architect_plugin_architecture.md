@@ -1,7 +1,7 @@
 # PWIN Architect — Bid Execution Product
 ## AI Plugin Architecture Brief for Claude Code
 
-**Version:** 1.5 | April 2026
+**Version:** 1.7 | April 2026
 **Status:** Authoritative design input for all Claude Code build sessions
 **Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, 20 AI intelligence use cases, capability-based agent architecture, cross-product interfaces, SaaS trajectory
 **Aligned with:** Architecture v6 (Session 13, 2026-04-02), [[pwin-bid-execution/docs/methodology_gold_standard|Gold Standard Template]] (Session 11, 2026-04-01), AI Use Cases Reference v1.0, [[pwin-bid-execution/docs/ai_suitability_assessment|AI Suitability Assessment]] (295 L3 tasks, practitioner-validated)
@@ -215,7 +215,7 @@ Rationale:
 
 **What an "agent" actually is:** An agent is a saved configuration — system prompt, tool access list, knowledge scope, and output format — applied to the same underlying Claude model. There is no separate software, no separate deployment, no separate infrastructure per agent. The specialisation is in the configuration, not the infrastructure.
 
-**The six capability-based agents:**
+**The eight capability-based agents (Agent 0 + Agents 1–7):**
 
 #### Agent 1: Document Intelligence Agent
 **Capability:** Ingests uploaded documents (ITT packs, contracts, policies), extracts structured data, builds compliance matrices, maps requirements.
@@ -310,37 +310,82 @@ Rationale:
 **Human review gate:** Heavy — solution design is where human expertise is most critical. AI accelerates, humans decide.
 **Design note (from practitioner review):** Lowest AI reduction (35%) but highest task count. AI potential is higher than the average suggests — practitioner notes on SAL-06.3.3 describe AI building visual operating models and work breakdown structures with scope allocation across consortium partners.
 
+#### Agent 7: Legal & Compliance Agent
+**Capability:** Takes contract and legal documents extracted by Agent 1 and performs contractual risk analysis, compliance assessment, and legal advisory drafting. Produces structured risk findings written into the existing RiskAssumption register for the commercial lead to apply risk premium sensitivity analysis for executive decision. This is a distinct reasoning agent — Agent 1 ingests and compiles the documents; Agent 7 analyses them.
+**Tasks served:** ~19 (LEG workstream) | 6 High-rated activities | Avg reduction 50–60% on contract analysis tasks
+**Implementation:** Phase 5 (alongside Agent 2 — both depend on Agent 1 document extraction; both feed Agent 4 commercial modelling)
+**Key skills:**
+- Contract risk analysis (LEG-01.1.1-2)
+- TUPE compliance assessment (LEG-04)
+- Data protection & DPIA drafting (LEG-05)
+- Insurance requirements review (LEG-03)
+- Subcontractor flow-down analysis (LEG-06)
+- Risk allocation mapping (LEG-02)
+**Inputs:** Extracted contract documents (from Agent 1) + staffing plan and technology design (from Agent 6) + corporate legal playbook.
+**Outputs:** Structured legal risk findings written to the existing `RiskAssumption` entity (registerType: delivery). Narrative legal assessment document for legal lead sign-off.
+**Tools:** MCP read tools (Agent 1 contract outputs, Agent 6 staffing and technology outputs), existing `add_risk_flag` write tool. No new MCP tools required.
+**Human review gate:** Legal sign-off required — AI produces the assessment; the legal lead validates risk judgements and acceptability. Commercial lead (Agent 4) then maps delivery risk register entries to risk premium sensitivity analysis. Executive decides on risk premium at governance gate.
+**Write-back model (agreed 2026-04-21):** Legal risk findings write to the existing `RiskAssumption` entity (registerType: delivery). No new legal-specific entity required. Commercial lead applies sensitivity analysis from risk register entries when building the risk premium. Pending decision: whether a `legalRiskCategory` field on RiskAssumption is needed for commercial filtering — logged as `wiki/actions/pwin-plugin-legal-writeout-model.md`.
+
+#### Agent 0: Client Operating Context Agent
+**Capability:** Onboarding agent for paying clients. Runs AI-led structured interviews (with consultant facilitation) with the client firm's Managing Partner / CEO, Bid Operations & Delivery Directors, and Commercial lead to produce a signed-off Client Operating Context document. Captures strategic objectives, pursuit preferences, red lines, differentiation, culture/decision style, bid operating model, delivery/mobilisation reality, and commercial profile. This is the **top of the dependency chain** — every other agent reads this context; nothing feeds into it.
+**Tasks served:** Billable onboarding engagement (£15–25k range). Not mapped to the 295 L3 task inventory because onboarding precedes pursuit work.
+**Implementation:** Already designed and implemented as YAML skills. Phase 0 — precedes all other agents.
+**Key skills:**
+- **Leadership Interview** (AI-led avatar, 90 min) — MP/CEO/growth lead. Populates strategic objectives, pursuit preferences, red lines, differentiation, culture
+- **Bid Operations + Delivery Interview** (consultant-led, 120 min) — Bid Director + Delivery Director. Populates historic performance, proof points, bid operating model, delivery mobilisation, internal politics, commercial-terms red lines
+- **Commercial Interview** (consultant-led) — CFO / commercial lead. Populates margin floor, commercial profile, risk tolerance
+- **Desk baseline** (AI alone, ~1 hour) — external research before any interview
+- **Archive mining** (later skill) — cross-checks leadership claims against actual proposal language
+**Produces:** `client-operating-context.json` (v1.1 schema, 11 sections). Consumed read-only by Verdict, Win Strategy, Bid Execution, paid-tier Qualify. Downstream products MUST NOT regenerate, fork, or maintain parallel copies of these fields.
+**Files:** `pwin-platform/skills/agent0-client-context/`, `pwin-platform/schemas/client-operating-context.json`, `pwin-platform/schemas/client-operating-context-interview-design.md`
+**Commercial flow:** Most clients buy Verdict (£2k gateway) before onboarding Agent 0 (Core / Command). Verdict-first is the default commercial path — Verdict runs without Agent 0 context and calls out the calibration limit.
+
+#### Architectural gaps still open (flagged 2026-04-21)
+
+Two concerns surfaced alongside the Agent 7 addition remain unresolved. Both are captured in the wiki actions folder for future design work.
+
+- **Pursuit Orchestration layer.** The platform has eight specialist agents but no coordination layer that surfaces "what should happen next" across a live pursuit based on which upstream agents have completed work. V1 scope would be on-demand ("bid manager asks"); V2 scope would be event-driven. Not yet designed. This is a separate concern from Agent 0 (onboarding) — it sits across the pursuit lifecycle, not the client relationship. See `wiki/actions/pwin-plugin-orchestration-agent.md`.
+- **Agent 3 scope and Alex Mercer alignment.** Agent 3's 14 implemented skills span two distinct phases: capture-phase win strategy (capture plan, competitive strategy, PWIN scoring, win theme mapping/audit) and bid-execution management (compliance coverage, gate readiness, marks allocation, standup priorities, effort reforecast, review trajectory, timeline analysis). This is also where the Qualify product's Alex Mercer persona operates. Decision needed: keep as one agent with phase-scoped skill packs, or split into Agent 3 (Win Strategy Analyst — Alex Mercer) and a new Agent 8 (Bid Management Analyst). See `wiki/actions/pwin-plugin-agent3-scope.md`.
+
 **Agent dependency chain:**
 
 ```
 ┌──────────────────────┐
+│ Agent 0: Client       │ ──── Onboarding — populates Client
+│ Operating Context     │      Operating Context (read-only
+│ (onboarding engagement)│     downstream). Top of the chain.
+└──────────┬───────────┘
+           │ (context consumed by every agent below)
+           ▼
+┌──────────────────────┐
 │ Agent 1: Document     │ ──── Extracts from uploaded ITT docs
-│ Intelligence          │      Foundation for everything else
+│ Intelligence          │      Foundation for pursuit-phase agents
 └──────────┬───────────┘
            │
-     ┌─────┴──────┐
-     ▼            ▼
-┌──────────┐ ┌──────────┐
-│ Agent 2   │ │ Agent 3   │
-│ Market    │ │ Strategy  │ ──── Both depend on extracted requirements
-│ Intel     │ │ & Scoring │      and evaluation framework
-└─────┬────┘ └─────┬────┘
-      │            │
-      └──────┬─────┘
-             ▼
-      ┌──────────────┐
-      │ Agent 4       │
-      │ Commercial &  │ ──── Needs solution + strategy + intel
-      │ Financial     │
-      └──────┬───────┘
-             │
-      ┌──────┴───────┐
-      ▼              ▼
-┌──────────┐  ┌───────────┐
-│ Agent 5   │  │ Agent 6    │
-│ Content   │  │ Solution   │ ──── Production and design
-│ Drafting  │  │ & Delivery │      draw on all upstream
-└───────────┘  └────────────┘
+  ┌────────┼──────────┐
+  ▼        ▼          ▼
+┌─────────┐ ┌─────────┐ ┌──────────┐
+│ Agent 2  │ │ Agent 3  │ │ Agent 7   │
+│ Market   │ │ Strategy │ │ Legal &   │ ──── All depend on Agent 1
+│ Intel    │ │ & Scoring│ │ Compliance│      extracted documents
+└────┬─────┘ └────┬────┘ └────┬──────┘
+     │            │            │
+     └────────────┼────────────┘
+                  ▼
+         ┌──────────────┐
+         │ Agent 4       │
+         │ Commercial &  │ ──── Needs strategy + intel + legal risk
+         │ Financial     │
+         └──────┬───────┘
+                │
+         ┌──────┴───────┐
+         ▼              ▼
+   ┌──────────┐  ┌───────────┐
+   │ Agent 5   │  │ Agent 6    │
+   │ Content   │  │ Solution   │ ──── Production and design
+   │ Drafting  │  │ & Delivery │      draw on all upstream
+   └───────────┘  └────────────┘
 ```
 
 **What differs between agents (same Claude model for all):**
@@ -353,7 +398,7 @@ Rationale:
 | **Output format** | Structured data (Agent 1), narrative report (Agent 2), draft document (Agent 5), financial model (Agent 4) |
 | **Human review gate** | Light verification (Agent 1), strategic validation (Agent 3), content refinement (Agent 5), commercial sign-off (Agent 4) |
 
-**Supersedes:** The v1.4 persona-based agents (bid-manager-agent, pursuit-director-agent, proposal-author-agent, commercial-agent, stakeholder-agent) are retired. The capabilities they provided are distributed across the six capability-based agents. Persona-specific routing (e.g., pursuit director wants a pipeline summary) is handled by skill selection and output formatting, not by separate agent configurations.
+**Supersedes:** The v1.4 persona-based agents (bid-manager-agent, pursuit-director-agent, proposal-author-agent, commercial-agent, stakeholder-agent) are retired. The capabilities they provided are distributed across the eight capability-based agents. Persona-specific routing (e.g., pursuit director wants a pipeline summary) is handled by skill selection and output formatting, not by separate agent configurations.
 
 **Relationship to the three plugin roles:**
 - **Role 1 (In-Application Intelligence):** Primarily Agent 3 (scoring analysis) + the 20 intelligence use cases (Section 7a). Agents read bid data via MCP, write AIInsight records back.
@@ -371,6 +416,8 @@ pwin-architect-plugin/
 ├── .mcp.json                          — all connectors declared here
 │
 ├── agents/                            — capability-based agent configurations
+│   ├── client-context/
+│   │   └── AGENT.md                  — Agent 0: onboarding, leadership/bid-ops/commercial interviews, operating context
 │   ├── document-intelligence/
 │   │   └── AGENT.md                  — ITT extraction, compliance mapping, contract analysis
 │   ├── market-intelligence/
@@ -381,10 +428,23 @@ pwin-architect-plugin/
 │   │   └── AGENT.md                  — cost modelling, pricing, scenario analysis
 │   ├── content-drafting/
 │   │   └── AGENT.md                  — response drafting, evidence compilation, governance packs
-│   └── solution-delivery/
-│       └── AGENT.md                  — operating model, staffing, transition, technology
+│   ├── solution-delivery/
+│   │   └── AGENT.md                  — operating model, staffing, transition, technology
+│   └── legal-compliance/
+│       └── AGENT.md                  — contract risk, TUPE, DPIA, insurance, subcontractor flow-down
 │
 ├── skills/                            — reusable prompt + tool + template configurations per agent
+│   ├── client-context/                — Agent 0 skills (onboarding)
+│   │   ├── leadership-interview/      — AI-led, 90 min, MP/CEO/growth lead
+│   │   │   └── SKILL.md
+│   │   ├── bidops-delivery-interview/ — consultant-led, 120 min, Bid Director + Delivery Director
+│   │   │   └── SKILL.md
+│   │   ├── commercial-interview/      — consultant-led, CFO / commercial lead
+│   │   │   └── SKILL.md
+│   │   ├── desk-baseline/             — AI-alone external research, runs before any interview
+│   │   │   └── SKILL.md
+│   │   └── archive-mining/            — cross-checks leadership claims against proposal history
+│   │       └── SKILL.md
 │   ├── document-intelligence/         — Agent 1 skills
 │   │   ├── itt-extraction/            — PRIMARY SKILL — build first
 │   │   │   └── SKILL.md
@@ -458,16 +518,29 @@ pwin-architect-plugin/
 │   │   │   └── SKILL.md
 │   │   └── presentation-intelligence/ — UC15 insight skill
 │   │       └── SKILL.md
-│   └── solution-delivery/             — Agent 6 skills
-│       ├── operating-model/
+│   ├── solution-delivery/             — Agent 6 skills
+│   │   ├── operating-model/
+│   │   │   └── SKILL.md
+│   │   ├── staffing-model/
+│   │   │   └── SKILL.md
+│   │   ├── transition-planning/
+│   │   │   └── SKILL.md
+│   │   ├── technology-architecture/
+│   │   │   └── SKILL.md
+│   │   └── reviewer-calibration/      — UC8 insight skill
+│   │       └── SKILL.md
+│   └── legal-compliance/             — Agent 7 skills
+│       ├── contract-risk-analysis/
 │       │   └── SKILL.md
-│       ├── staffing-model/
+│       ├── tupe-compliance/
 │       │   └── SKILL.md
-│       ├── transition-planning/
+│       ├── data-protection-dpia/
 │       │   └── SKILL.md
-│       ├── technology-architecture/
+│       ├── insurance-review/
 │       │   └── SKILL.md
-│       └── reviewer-calibration/      — UC8 insight skill
+│       ├── subcontractor-flow-down/
+│       │   └── SKILL.md
+│       └── risk-allocation-mapping/
 │           └── SKILL.md
 │
 ├── templates/                         — output proforma documents per skill
@@ -1284,11 +1357,13 @@ Self-contained HTML applications with local data storage. Intentional — proves
 
 The plugin architecture is a forward-looking design document. Build priority follows a clear dependency chain: data targets → MCP server → first agent + skills → remaining agents + skills.
 
+**Agent 0 (Client Operating Context):** Already designed as YAML skills (`pwin-platform/skills/agent0-client-context/`). Runs on a per-client onboarding engagement, not per-pursuit — therefore decoupled from the bid-execution build phasing below. The phasing that follows covers the pursuit-phase agents (1–7).
+
 **Phase 1a (current — Sprint 1a):** ITT ingestion data layer — ResponseSection, EvaluationFramework, ITTDocument entities. ResponseItem migration. CSV import. Auto-migration of existing data.
 
 **Phase 1 (in progress):** Complete core Bid Execution modules — Submissions (10-stage lifecycle, quality dimensions, win themes, client scoring, ResponseSection/ResponseItem joined view), Reviews (dual scorecard), Governance (development reviews absorbed), Workspace, Activity Tracker, Readiness Dashboard.
 
-**Phase 2 — MCP Server (critical path):** Shared infrastructure for all six agents. Data access layer with filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight entity schemas and append-only write capability. This is the foundation everything else depends on.
+**Phase 2 — MCP Server (critical path):** Shared infrastructure for all pursuit-phase agents (1–7). Data access layer with filtered queries, field-level permission model (owner: bid_manager | ai), AIInsight entity schemas and append-only write capability. This is the foundation everything else depends on.
 
 **Phase 3 — Agent 1 (Document Intelligence) + Agent 3 first insight skills:** Two parallel tracks:
 - Agent 1 productivity skills: ITT extraction, compliance mapping, contract analysis (itt-intelligence, itt-ingestion V1 scope). Transforms the first 2 weeks of every bid.
@@ -1298,9 +1373,10 @@ The plugin architecture is a forward-looking design document. Build priority fol
 - Agent 3 additional insight skills: UC3 (Standup Prioritisation) + UC9 (Gate Readiness) + UC6 (Marks Allocation). Daily operational, governance, and scoring value.
 - Agent 5 productivity skills: Response drafting, storyboard generation, evidence compilation. Highest-visibility skills — writers refine AI drafts instead of writing from scratch.
 
-**Phase 5 — Agent 2 (Market Intelligence) + Agent 4 (Commercial):**
+**Phase 5 — Agent 2 (Market Intelligence) + Agent 4 (Commercial) + Agent 7 (Legal & Compliance):**
 - Agent 2 productivity skills: Client profiling, competitor analysis, incumbent assessment, sector scanning. Includes recurring/scheduled operation outside individual bids.
-- Agent 4 productivity skills: Cost modelling, pricing scenarios, risk premium validation. Plus insight skills UC10 (Risk/Pricing) + UC11 (Bid Cost Forecasting).
+- Agent 7 productivity skills: Contract risk analysis, TUPE compliance assessment, DPIA drafting, insurance requirements review, subcontractor flow-down analysis, risk allocation mapping. All legal risk outputs write to the existing RiskAssumption entity (delivery register) — no new MCP tools required.
+- Agent 4 productivity skills: Cost modelling, pricing scenarios, risk premium validation. Plus insight skills UC10 (Risk/Pricing) + UC11 (Bid Cost Forecasting). Agent 4 consumes Agent 7 legal risk findings from the delivery risk register when building risk premium sensitivity analysis for executive decision.
 
 **Phase 6 — Agent 6 (Solution & Delivery) + remaining insight skills:**
 - Agent 6 productivity skills: Operating model, staffing, transition, technology architecture.
@@ -1407,5 +1483,5 @@ The plugin architecture is a forward-looking design document. Build priority fol
 
 ---
 
-*PWIN Architect — AI Plugin Architecture Brief | v1.5 | April 2026 | BIP Management Consulting | Confidential*
-*Aligned with Architecture v6, Session 14 (2026-04-02). Incorporates 20 AI intelligence use cases, practitioner-validated AI suitability assessment (295 L3 tasks), and capability-based agent architecture (6 agents, ~25 skills).*
+*PWIN Architect — AI Plugin Architecture Brief | v1.7 | April 2026 | BIP Management Consulting | Confidential*
+*Aligned with Architecture v6, Session 14 (2026-04-02). Updated 2026-04-21 (v1.6): Agent 7 (Legal & Compliance) added. Updated 2026-04-21 (v1.7): Agent 0 corrected to Client Operating Context Agent (onboarding) — already designed and implemented as YAML skills; the previously-proposed "pursuit orchestration" role is a separate open concern, not Agent 0. Agent 3 scope question flagged: the 14 implemented Agent 3 skills span capture-phase strategy and bid-execution management, and the Qualify Alex Mercer persona overlaps the capture-phase half — decision pending on whether to split. Capability-based agent architecture now 8 agents (0 + 1–7), with 2 open design questions: pursuit orchestration layer, Agent 3 split.*
