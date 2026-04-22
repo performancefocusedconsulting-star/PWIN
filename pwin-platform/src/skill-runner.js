@@ -398,17 +398,20 @@ async function callClaude(systemPrompt, messages, tools, model) {
 // Tool definitions for Claude (write-back tools)
 // ---------------------------------------------------------------------------
 
-function buildClaudeTools(skill) {
+function buildClaudeTools(skill, depthMode) {
   const writeTools = skill.write_tools || [];
   const researchTools = skill.research_tools || [];
   if (writeTools.length === 0 && researchTools.length === 0) return [];
+
+  // Scale web search budget to depth mode to stay within rate limits
+  const searchBudget = depthMode === 'snapshot' ? 4 : depthMode === 'standard' ? 8 : 15;
 
   // Research tools — server-side tools handled by the Anthropic API
   const researchToolDefs = {
     web_search: {
       type: 'web_search_20250305',
       name: 'web_search',
-      max_uses: 15,
+      max_uses: searchBudget,
     },
   };
 
@@ -836,8 +839,8 @@ async function executeSkill(skillId, input) {
   // Assemble prompt
   const { systemPrompt, userMessage } = assemblePrompt(skill, context, input);
 
-  // Build Claude tools from skill config
-  const tools = buildClaudeTools(skill);
+  // Build Claude tools from skill config (depth-aware search budget)
+  const tools = buildClaudeTools(skill, input?.depthMode);
 
   // If no API key, return the assembled prompt (dry run)
   if (!process.env.ANTHROPIC_API_KEY) {
