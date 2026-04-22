@@ -91,7 +91,7 @@ AI-assisted bid qualification. Pursuit teams self-assess across 24 questions; AI
 
 ## pwin-platform
 
-**Status:** Active. Node.js MCP server and HTTP Data API running. 59 skill YAML files built across 6 agent domains. Knowledge layer seeded.
+**Status:** Active. Node.js MCP server and HTTP Data API running. 60 skill YAML files built across 7 agent domains. Knowledge layer seeded.
 
 ### What it is
 The shared platform layer: serves data to all HTML products via HTTP, exposes 94 MCP tools to Claude, and executes declarative YAML skill configs via a skill runner.
@@ -102,7 +102,7 @@ The shared platform layer: serves data to all HTML products via HTTP, exposes 94
 |---|---|---|
 | `src/server.js` | **[BUILD]** | Server entry point. Runs HTTP API, MCP server, or both |
 | `src/api.js` | **[BUILD]** | HTTP Data API (port 3456): pursuit CRUD, per-product load/save, intel endpoints |
-| `src/mcp.js` | **[BUILD]** | MCP server: 94 typed tools for Claude, field-level permission enforcement |
+| `src/mcp.js` | **[BUILD]** | MCP server: 97 typed tools for Claude, field-level permission enforcement |
 | `src/competitive-intel.js` | **[BUILD]** | MCP tool module: 7 intel read tools bridging SQLite to Claude |
 | `src/skill-runner.js` | **[BUILD]** | Skill executor: assembles context, calls Claude, writes back results |
 | `src/store.js` | **[BUILD]** | JSON file store under `~/.pwin/` |
@@ -115,6 +115,7 @@ The shared platform layer: serves data to all HTML products via HTTP, exposes 94
 | `skills/agent4-commercial-financial/` | **[DATA]** | 9 skills: commercial model, cost modelling, pricing scenarios, risk pricing, bid cost forecast, sensitivity analysis, and more |
 | `skills/agent5-content-drafting/` | **[DATA]** | 10 skills: response drafting, executive summary, evidence compilation, governance packs, compliance verification, and more |
 | `skills/agent6-solution-delivery/` | **[DATA]** | 11 skills: operating model, delivery readiness, delivery risk, transition planning, staffing model, performance framework, and more |
+| `skills/competitive-intel/` | **[DATA]** | 1 skill: canonical-adjudicator — resolves Splink ambiguous clusters, classifies off-framework awards, detects canonical layer drift |
 | `schemas/opportunity-qualification-profile.json` | **[DATA]** | Shared schema: opportunity definition used across products |
 | `schemas/client-operating-context.json` | **[DATA]** | Shared schema: client environment context |
 | `schemas/sector-intelligence-dossier.json` | **[DATA]** | Shared schema: sector/market intelligence structure |
@@ -157,6 +158,7 @@ Internal-only UK public sector procurement intelligence database. Feeds Verdict,
 | `adjudicator/apply_batch_001.py` | **[BUILD]** | Apply adjudication result batch 001 |
 | `adjudicator/apply_batch_002.py` | **[BUILD]** | Apply adjudication result batch 002 |
 | `adjudicator/canonical_glossary.json` | **[DATA]** | Canonical buyer/supplier term definitions |
+| `adjudicator/framework_taxonomy.json` | **[DATA]** | CCS framework lot taxonomy used by the adjudicator skill — v0.1, 5 frameworks, 20 lots |
 | `queries/queries.py` | **[SUPPORT]** | CLI query library: summary, buyer, supplier, expiring, pipeline, awards, pwin, cpv |
 | `server.py` | **[BUILD]** | Local dev server bridging SQLite to the dashboard (port 8765) |
 | `dashboard.html` | **[BUILD]** | 6-tab interactive dashboard: buyers, suppliers, awards, pipeline, CPV, Companies House |

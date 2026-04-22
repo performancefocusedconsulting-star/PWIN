@@ -1757,6 +1757,148 @@ function createMcpServer() {
     }
   );
 
+  // ==========================================================================
+  // CANONICAL ADJUDICATOR WRITE TOOLS
+  // ==========================================================================
+
+  server.tool(
+    'log_adjudicator_decision',
+    'Append a canonical adjudicator decision to the decisions log. Call for EVERY decision in the session regardless of recommendation (auto_promote, escalate, or reject).',
+    {
+      decision: z.object({
+        decision_id: z.string().describe('Sequential run ID: ADJ-YYYYMMDD-NNN'),
+        decision_type: z.enum(['buyer_merge', 'supplier_merge', 'service_classification', 'drift_flag']),
+        recommendation: z.enum(['auto_promote', 'escalate', 'reject']),
+        confidence: z.number().min(0).max(1),
+        canonical_target: z.string().nullable().optional(),
+        raw_ids: z.array(z.string()),
+        evidence: z.array(z.string()),
+        playbook_rule: z.string().nullable().optional(),
+        uncertainty_notes: z.string().nullable().optional(),
+      }),
+      operator_outcome: z.enum(['human_approved', 'human_rejected', 'pending']).describe(
+        'human_approved = operator confirmed; human_rejected = operator overturned; pending = escalated, not yet resolved'
+      ).optional(),
+    },
+    async ({ decision, operator_outcome }) => {
+      const { appendFile, mkdir } = await import('node:fs/promises');
+      const { join: pathJoin } = await import('node:path');
+      const { fileURLToPath } = await import('node:url');
+      const dir = pathJoin(fileURLToPath(import.meta.url), '..', '..', '..', 'pwin-competitive-intel', 'adjudicator');
+      const filePath = pathJoin(dir, 'adjudicator_decisions.jsonl');
+      await mkdir(dir, { recursive: true });
+      const record = {
+        ...decision,
+        operator_outcome: operator_outcome || 'pending',
+        logged_at: new Date().toISOString(),
+      };
+      await appendFile(filePath, JSON.stringify(record) + '\n', 'utf-8');
+      return { content: [{ type: 'text', text: JSON.stringify({ logged: true, decision_id: decision.decision_id }, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'promote_canonical_decision',
+    'Execute an approved supplier merge in the canonical layer. Re-parents all supplier_to_canonical rows from the absorbed canonical to the survivor, deletes the absorbed record, and refreshes member_count. Marks the adjudication_queue row approved. Only valid for supplier_merge decisions confirmed by the operator.',
+    {
+      queue_id: z.string().describe('Row ID from adjudication_queue — the stable pair hash'),
+      survivor_canonical_id: z.string().describe('Canonical ID to keep — all absorbed members reparent here'),
+      absorbed_canonical_id: z.string().describe('Canonical ID to dissolve — all its members move to survivor'),
+      decision_id: z.string().describe('ADJ-YYYYMMDD-NNN from the adjudicator log, for traceability'),
+    },
+    async ({ queue_id, survivor_canonical_id, absorbed_canonical_id, decision_id }) => {
+      const { DatabaseSync } = await import('node:sqlite');
+      const { join: pathJoin } = await import('node:path');
+      const { fileURLToPath } = await import('node:url');
+      const dbPath = pathJoin(fileURLToPath(import.meta.url), '..', '..', '..', 'pwin-competitive-intel', 'db', 'bid_intel.db');
+      let db;
+      try {
+        db = new DatabaseSync(dbPath);
+      } catch (e) {
+        return { content: [{ type: 'text', text: JSON.stringify({ error: `Cannot open database: ${e.message}` }) }] };
+      }
+      try {
+        db.exec('PRAGMA foreign_keys = ON');
+        const row = db.prepare('SELECT status FROM adjudication_queue WHERE queue_id = ?').get(queue_id);
+        if (!row) return { content: [{ type: 'text', text: JSON.stringify({ error: `queue_id ${queue_id} not found in adjudication_queue` }) }] };
+        if (row.status !== 'pending') return { content: [{ type: 'text', text: JSON.stringify({ error: `queue_id ${queue_id} is already ${row.status} — not re-applying` }) }] };
+        const survivor = db.prepare('SELECT canonical_id FROM canonical_suppliers WHERE canonical_id = ?').get(survivor_canonical_id);
+        if (!survivor) return { content: [{ type: 'text', text: JSON.stringify({ error: `Survivor ${survivor_canonical_id} not found in canonical_suppliers` }) }] };
+        const moved = db.prepare('UPDATE supplier_to_canonical SET canonical_id = ? WHERE canonical_id = ?').run(survivor_canonical_id, absorbed_canonical_id);
+        db.prepare('DELETE FROM canonical_suppliers WHERE canonical_id = ?').run(absorbed_canonical_id);
+        db.prepare('UPDATE canonical_suppliers SET member_count = (SELECT COUNT(*) FROM supplier_to_canonical WHERE canonical_id = ?) WHERE canonical_id = ?').run(survivor_canonical_id, survivor_canonical_id);
+        db.prepare("UPDATE adjudication_queue SET status = 'approved', decision_json = ?, reviewed_at = ? WHERE queue_id = ?").run(
+          JSON.stringify({ decision_id, promoted_at: new Date().toISOString() }),
+          new Date().toISOString(),
+          queue_id,
+        );
+        return { content: [{ type: 'text', text: JSON.stringify({ promoted: true, decision_id, survivor_canonical_id, absorbed_canonical_id, members_moved: moved.changes }, null, 2) }] };
+      } catch (e) {
+        return { content: [{ type: 'text', text: JSON.stringify({ error: e.message }) }] };
+      } finally {
+        db.close();
+      }
+    }
+  );
+
+  server.tool(
+    'stage_escalation',
+    'Write an escalated adjudicator decision to the adjudicator_escalations staging table and mark the corresponding adjudication_queue row as deferred. Call after log_adjudicator_decision for every recommendation=escalate decision.',
+    {
+      decision_id: z.string().describe('ADJ-YYYYMMDD-NNN from the adjudicator log'),
+      decision_type: z.enum(['buyer_merge', 'supplier_merge', 'service_classification', 'drift_flag']),
+      confidence: z.number().min(0).max(1),
+      queue_id: z.string().nullable().optional().describe('adjudication_queue row to mark deferred; omit for non-queue escalations'),
+      canonical_target: z.string().nullable().optional(),
+      raw_ids: z.array(z.string()),
+      evidence: z.array(z.string()),
+      playbook_rule: z.string().nullable().optional(),
+      uncertainty_notes: z.string().nullable().optional(),
+    },
+    async ({ decision_id, decision_type, confidence, queue_id, canonical_target, raw_ids, evidence, playbook_rule, uncertainty_notes }) => {
+      const { DatabaseSync } = await import('node:sqlite');
+      const { join: pathJoin } = await import('node:path');
+      const { fileURLToPath } = await import('node:url');
+      const dbPath = pathJoin(fileURLToPath(import.meta.url), '..', '..', '..', 'pwin-competitive-intel', 'db', 'bid_intel.db');
+      let db;
+      try {
+        db = new DatabaseSync(dbPath);
+      } catch (e) {
+        return { content: [{ type: 'text', text: JSON.stringify({ error: `Cannot open database: ${e.message}` }) }] };
+      }
+      try {
+        db.exec(`CREATE TABLE IF NOT EXISTS adjudicator_escalations (
+          escalation_id TEXT PRIMARY KEY,
+          decision_type TEXT NOT NULL,
+          queue_id TEXT,
+          confidence REAL NOT NULL,
+          canonical_target TEXT,
+          raw_ids TEXT NOT NULL,
+          evidence TEXT NOT NULL,
+          playbook_rule TEXT,
+          uncertainty_notes TEXT,
+          operator_outcome TEXT NOT NULL DEFAULT 'pending',
+          logged_at TEXT NOT NULL DEFAULT (datetime('now')),
+          resolved_at TEXT
+        )`);
+        db.prepare(`INSERT OR IGNORE INTO adjudicator_escalations
+          (escalation_id, decision_type, queue_id, confidence, canonical_target, raw_ids, evidence, playbook_rule, uncertainty_notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+          .run(decision_id, decision_type, queue_id || null, confidence, canonical_target || null, JSON.stringify(raw_ids), JSON.stringify(evidence), playbook_rule || null, uncertainty_notes || null);
+        let queueUpdated = false;
+        if (queue_id) {
+          const r = db.prepare("UPDATE adjudication_queue SET status = 'deferred', reviewed_at = ? WHERE queue_id = ? AND status = 'pending'").run(new Date().toISOString(), queue_id);
+          queueUpdated = r.changes > 0;
+        }
+        return { content: [{ type: 'text', text: JSON.stringify({ staged: true, escalation_id: decision_id, queue_updated: queueUpdated }, null, 2) }] };
+      } catch (e) {
+        return { content: [{ type: 'text', text: JSON.stringify({ error: e.message }) }] };
+      } finally {
+        db.close();
+      }
+    }
+  );
+
   return server;
 }
 

@@ -4,8 +4,8 @@ subject: Canonical Adjudicator Skill — AI layer that resolves Splink ambiguiti
 purpose: design spec for the Phase 2 adjudicator skill referenced in Decision C08 of the canonical layer design register
 parent_design: pwin-competitive-intel/CANONICAL-LAYER-DESIGN.md
 parent_playbook: pwin-competitive-intel/CANONICAL-LAYER-PLAYBOOK.md
-status: draft
-version: 0.1
+status: active — Milestones A and B complete (2026-04-22)
+version: 0.3
 created: 2026-04-14
 ---
 
@@ -215,7 +215,7 @@ The staging tables accumulate between sessions. There is no data-freshness SLA �
 
 ## Open design questions
 
-1. **Where does the skill run?** Options: (a) inside the existing pwin-platform MCP server as a scheduled tool invocation, (b) as a standalone Python script invoked by cron that calls the Claude API directly, (c) as a Claude Code plugin skill triggered manually. Leaning toward (a) for operational integration with the rest of the platform, but (b) is simpler.
+1. ~~Where does the skill run?~~ **Decided 2026-04-22:** (c) Claude Code plugin skill in `pwin-platform/skills/competitive-intel/canonical-adjudicator.yaml`, triggered manually by the operator. Write-backs go via three MCP tools in `pwin-platform/src/mcp.js`: `log_adjudicator_decision` (JSONL append), `promote_canonical_decision` (canonical table mutation), `stage_escalation` (escalation staging table). Route B operating model confirmed — no API cost, Max subscription only.
 2. **How are few-shot examples selected at runtime?** All-decisions-ever will blow the context window within months. Need a retrieval step — probably nearest-neighbour on decision type + entity shape.
 3. **Human review UX.** Does the review page live in the competitive-intel dashboard, in pwin-bid-execution, or as a standalone tool? Affects how approvals flow back.
 4. **Morgan vs Alex.** Two personas now (Alex Mercer for Qualify, Morgan Ledger for canonicalisation). Both follow the same pattern, and that's deliberate — but we should confirm we want a separate identity for data stewardship rather than a generic "system" voice.
@@ -226,9 +226,9 @@ The staging tables accumulate between sessions. There is no data-freshness SLA �
 | Phase | What's needed | Status |
 |---|---|---|
 | Phase 0 — Discovery | Splink baseline + value-threshold simulation | Done (see DISCOVERY-REPORT.md) |
-| Phase 1 — Pipeline build | Splink configuration, canonical tables, framework lookup | Pending |
-| Phase 2 — Adjudicator skill | This document + `canonical_glossary.json` + `framework_taxonomy.json` + skill runner integration | **Blocked on Phase 1** |
-| Phase 3 — Validation | Re-run Skill 1 v2 against canonical layer | Blocked on Phase 2 |
+| Phase 1 — Pipeline build | Splink configuration, canonical tables, framework lookup | Done — 82,637 canonical suppliers, buyer canonical layer at 70.3% coverage |
+| Phase 2 — Adjudicator skill | Skill YAML, skill-runner context types, MCP write tools, framework taxonomy, schema staging tables | **Done 2026-04-22** — Milestones A + B complete |
+| Phase 3 — Validation | Run skill against a real `adjudication_queue` batch, validate promote/stage flow end-to-end | Next |
 
 ## Change log
 
@@ -236,3 +236,4 @@ The staging tables accumulate between sessions. There is no data-freshness SLA �
 |---|---|---|
 | 0.1 | 2026-04-14 | Initial draft. Three jobs, prompt shape, knowledge files, cost model, open questions. |
 | 0.2 | 2026-04-14 | Switched default operating model to Route B (Claude Code subscription, on-demand, human-in-the-loop). Removed fabricated API cost table; replaced with cost drivers and Phase 0 measurement plan. Pipeline split into scheduled deterministic half and on-demand AI half. |
+| 0.3 | 2026-04-22 | **Milestone A + B complete.** Skill YAML at `pwin-platform/skills/competitive-intel/canonical-adjudicator.yaml`. Four context types added to skill-runner.js (`canonical_glossary`, `framework_taxonomy`, `adjudicator_decisions`, `canonical_playbook`). `framework_taxonomy.json` built — v0.1, 5 CCS frameworks, 20 lots. Three MCP write tools added: `log_adjudicator_decision`, `promote_canonical_decision`, `stage_escalation`. Staging tables (`adjudication_queue`, `adjudicator_escalations`) documented in `db/schema.sql`. Open design question 1 resolved — Route B, plugin skill + MCP write tools confirmed. |

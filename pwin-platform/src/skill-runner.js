@@ -183,6 +183,38 @@ async function gatherContext(skill, input) {
         context.governanceSignoffMatrix = await store.getPlatformData('governance/governance_signoff_matrix.json');
         break;
       }
+      case 'canonical_glossary': {
+        const glossaryPath = join(import.meta.dirname, '..', '..', 'pwin-competitive-intel', 'adjudicator', 'canonical_glossary.json');
+        try {
+          const raw = await readFile(glossaryPath, 'utf-8');
+          context.canonical_glossary = JSON.parse(raw);
+        } catch { /* file not present — leave undefined, placeholder stays in prompt */ }
+        break;
+      }
+      case 'framework_taxonomy': {
+        const taxonomyPath = join(import.meta.dirname, '..', '..', 'pwin-competitive-intel', 'adjudicator', 'framework_taxonomy.json');
+        try {
+          const raw = await readFile(taxonomyPath, 'utf-8');
+          context.framework_taxonomy = JSON.parse(raw);
+        } catch { /* file not present */ }
+        break;
+      }
+      case 'adjudicator_decisions': {
+        const decisionsPath = join(import.meta.dirname, '..', '..', 'pwin-competitive-intel', 'adjudicator', 'adjudicator_decisions.jsonl');
+        try {
+          const raw = await readFile(decisionsPath, 'utf-8');
+          const lines = raw.trim().split('\n').filter(Boolean);
+          context.adjudicator_decisions = lines.slice(-50).map(l => JSON.parse(l));
+        } catch { /* file not present */ }
+        break;
+      }
+      case 'canonical_playbook': {
+        const playbookPath = join(import.meta.dirname, '..', '..', 'pwin-competitive-intel', 'CANONICAL-LAYER-PLAYBOOK.md');
+        try {
+          context.canonical_playbook = await readFile(playbookPath, 'utf-8');
+        } catch { /* file not present */ }
+        break;
+      }
       default:
         break;
     }

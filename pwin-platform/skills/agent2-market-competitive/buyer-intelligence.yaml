@@ -1,14 +1,15 @@
 id: buyer-intelligence
 agent: 2
-name: Buyer Intelligence Dossier v2
+name: Buyer Intelligence Dossier v2.1
 description: >
   Builds a deep, neutral, evidence-backed intelligence dossier on a named
   public-sector buying organisation. Produces structured JSON conforming to
-  client-profile-schema v2 — 11 sections covering organisation context,
-  strategic priorities, commissioning hypotheses, procurement behaviour,
-  stakeholder assumptions, culture, commercial posture, supplier ecosystem,
-  and risks. Per-field inline evidence (fact/inference/unknown) with source
-  register traceability. Phase 1: static dossier, no win-strategy reasoning.
+  client-profile-schema v2.1 — 12 sections covering organisation context,
+  strategic priorities, commissioning hypotheses (inc. buying cycle timing),
+  procurement behaviour, stakeholder assumptions, culture and change maturity,
+  commercial posture, supplier ecosystem, relationship history, and risks.
+  Per-field inline evidence (fact/inference/unknown) with source register
+  traceability. Phase 1: static dossier, no win-strategy reasoning.
   Library asset, reusable across pursuits.
 phase: 5
 order: 2
@@ -140,6 +141,18 @@ system_prompt: |
   - Section 6: "Inferred from published structures and procurement patterns.
     Requires pursuit-team validation."
 
+  **Section 4 — buying cycle timing fields:**
+  Infer `commissioningCycleStage`, `approvalsPending`, `marketEngagementLikelihood`,
+  `buyingReadiness`, and `timelineRisks` from procurement notices, planning notice
+  data, and market engagement signals in the FTS input. Supplement with targeted
+  searches where FTS data is thin:
+  - "{buyer} prior information notice" / "{buyer} market engagement {year}"
+  - "{buyer} procurement pipeline {category}"
+  - "{buyer} contract expiry {category}"
+  `buyingReadiness` must be one of: pre-pipeline, pipeline-identified,
+  pre-market-engagement, post-market-engagement, procurement-live, awarded.
+  All five fields use the per-field evidence wrapper with `type: "inference"`.
+
   ---
 
   ## SUPPLIER ECOSYSTEM (Section 9)
@@ -158,6 +171,26 @@ system_prompt: |
 
   ---
 
+  ## RELATIONSHIP HISTORY (Section 10)
+
+  This section draws entirely from **Tier 4 internal sources** — CRM data,
+  account notes, prior bid feedback, and relationship maps. In most runs no
+  Tier 4 data will be available in the input. When it is absent:
+  - Set `sectionConfidence` to "none"
+  - Set `tierNote` to "No Tier 4 data provided. All fields require account
+    team input before this section is usable."
+  - Populate `intelGaps` with the sub-fields that need internal validation
+  - Do NOT infer relationship history from public procurement data — a buyer
+    appearing in FTS award data does not imply any relationship with the bidder
+
+  When Tier 4 data is provided, capture: prior contracts (name, value, period,
+  status active/closed), active programmes, past bids (opportunity name, date,
+  win/loss/no-bid, feedback received), executive and SME relationships, named
+  advocates, named blockers, and explicit account intelligence gaps flagged by
+  the account team.
+
+  ---
+
   ## OUTPUT SCHEMA
 
   Produce a single JSON object with these top-level keys:
@@ -168,24 +201,29 @@ system_prompt: |
     "buyerSnapshot": { legalName, parentBody, organisationType, sector, subSector, geographicRemit, headcount, annualBudget, buyerArchetype, executiveSummary, keyRisks },
     "organisationContext": { sectionConfidence, mandate, operatingModel, organisationStructure, keyBusinessUnits, seniorLeadership, fundingModel, recentChanges },
     "strategicPriorities": { sectionConfidence, summaryNarrative, publishedStrategyThemes, majorProgrammes, regulatoryPressures, politicalPressures, fiscalPressures, servicePerformancePressures, publicStatementsOfIntent },
-    "commissioningContextHypotheses": { sectionConfidence, sectionCaveat, driversOfExternalBuying, pressuresShapingSpend, operationalPainPoints, outcomesSought, consequencesOfInaction },
+    "commissioningContextHypotheses": { sectionConfidence, sectionCaveat, driversOfExternalBuying, pressuresShapingSpend, operationalPainPoints, outcomesSought, consequencesOfInaction, commissioningCycleStage, approvalsPending, marketEngagementLikelihood, buyingReadiness, timelineRisks },
     "procurementBehaviour": { sectionConfidence, summaryNarrative, totalAwards, totalValue, dataWindow, preferredRoutes, frameworkUsage, typicalContractLength, typicalContractValue, categoryConcentration, innovationVsProven, priceVsQualityBias, renewalPatterns },
     "decisionUnitAssumptions": { sectionConfidence, sectionCaveat, businessOwnerRoles, commercialRoles, technicalStakeholders, financeAssuranceRoles, evaluatorGroups, intelligenceGaps },
-    "cultureAndPreferences": { sectionConfidence, decisionMakingFormality, governanceIntensity, riskTolerance, evidencePreferences, supplierInteractionStyle, presentationStyle },
+    "cultureAndPreferences": { sectionConfidence, decisionMakingFormality, governanceIntensity, riskTolerance, evidencePreferences, supplierInteractionStyle, presentationStyle, changeMaturity: { deliveryMaturity, digitalMaturity, governanceMaturity, supplierManagementMaturity, coCreationTolerance, phaseOrAgileCapability } },
     "commercialAndRiskPosture": { sectionConfidence, affordabilitySensitivity, riskTransferPosture, contractualCaution, cyberDataSensitivity, mobilisationSensitivity, auditFoiExposure },
     "supplierEcosystem": { sectionConfidence, summaryNarrative, incumbents: [{ supplierName, serviceLines, contractCount, totalValue, longestRelationship, strategicImportance, recentActivity, entrenchmentIndicators, dossierRef }], adjacentSuppliers, supplierConcentration, switchingEvidence, marketRefreshAreas },
+    "relationshipHistory": { sectionConfidence, tierNote, priorContracts: [{ contractName, value, period, status }], activeProgrammes, pastBids: [{ opportunityName, date, outcome, feedbackReceived }], executiveRelationships, knownAdvocates, knownBlockers, intelGaps },
     "risksAndSensitivities": { sectionConfidence, summaryNarrative, procurementControversies, programmeFailures, auditFindings, mediaScrutiny, publicSensitivities, positioningSensitivities },
     "sourceRegister": { sources: [{ sourceId, sourceName, sourceType, publicationDate, accessDate, reliability, sectionsSupported, url }], gaps, staleFields, lowConfidenceInferences },
-    "computedScores": {},
+    "computedScores": { buyerRiskAversionScore, changeMaturityScore, innovationAppetiteScore, incumbencyStrengthScore, commercialSensitivityScore, relationshipStrengthScore, winDifficultyScore },
     "linkedAssets": { supplierDossiers, sectorBriefs, pipelineScans }
   }
   ```
 
   **Rules for the JSON:**
-  - Set `meta.generatedBy` to "Agent 2 Skill 2 v2"
+  - Set `meta.generatedBy` to "Agent 2 Skill 2 v2.1"
   - Set `meta.taxonomyVersion` to "2.0"
-  - Set `meta.version` to "2.0"
-  - Leave `computedScores` as empty object `{}` — the renderer computes these
+  - Set `meta.version` to "2.1"
+  - Set all `computedScores` field values to null — the renderer derives scores
+    from evidence fields. Schema keys are fixed: buyerRiskAversionScore,
+    changeMaturityScore, innovationAppetiteScore, incumbencyStrengthScore,
+    commercialSensitivityScore, relationshipStrengthScore, winDifficultyScore.
+    Each is a 0–100 integer when computed by the renderer.
   - `buyerSnapshot.organisationalArchetype` is an evidenced field — YOU assess it
     with value, type, confidence, rationale, and sourceRefs. The value must be one
     of: strategic_central_commissioner, framework_first_operator,
@@ -218,6 +256,14 @@ system_prompt: |
     "major controversy or audit event", "pursuit launched against this buyer"
   - `organisationType` must be one of: department, agency, ndpb, nhs_trust,
     nhs_icb, local_authority, devolved, mod, regulator, other
+  - `changeMaturity` sub-fields each use the per-field evidence wrapper.
+    Each field value should be one of: high, medium, low, unknown. Assess
+    `deliveryMaturity` from programme delivery record; `digitalMaturity` from
+    transformation investment and published roadmaps; `governanceMaturity` from
+    audit findings and assurance structure; `supplierManagementMaturity` from
+    contract management patterns and renegotiation behaviour; `coCreationTolerance`
+    from market engagement style and dialogue procedure usage; `phaseOrAgileCapability`
+    from evidence of phased or iterative delivery in prior contracts.
 
   **Source register — expected volume:**
   - **deep**: 15-25 sources, 10+ web searches
@@ -231,7 +277,7 @@ system_prompt: |
   | Mode | Scope |
   |------|-------|
   | **snapshot** | Buyer snapshot, procurement behaviour summary, top 5 suppliers. No narratives, no hypotheses, no culture/risk sections. Fast. |
-  | **standard** | All 11 sections populated. Full source register. The default. |
+  | **standard** | All 12 sections populated. Full source register. The default. |
   | **deep** | Standard plus: full supplier ecosystem with entrenchment analysis, comprehensive strategy theme mapping, leadership background research, audit and scrutiny deep-dive, commissioning context with detailed rationale chains. |
 
   If no depth is specified, use **standard**.
@@ -284,7 +330,7 @@ user_prompt: |
 
   ## Instructions
 
-  Produce the complete v2 structured JSON buyer intelligence dossier following
+  Produce the complete v2.1 structured JSON buyer intelligence dossier following
   the schema and rules specified in your system prompt. Use web search to
   populate sections requiring Tier 1 and Tier 3 sources. Register all sources.
   Populate the per-field evidence pattern on all interpretive fields.

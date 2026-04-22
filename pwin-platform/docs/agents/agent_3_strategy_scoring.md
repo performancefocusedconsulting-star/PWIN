@@ -11,9 +11,9 @@
 
 ## 1. Agent Identity
 
-**Purpose:** Analyses evaluation frameworks, marks concentration, win theme coverage, scoring strategy, and PWIN scoring. Also owns the largest set of insight skills (UC1-7, UC9, UC12) that reason over the activity spine, response quality, and governance data. The "how do we win" and "are we on track" reasoning engine.
+**Purpose:** Analyses evaluation frameworks, win theme coverage, scoring strategy, and competitive positioning. Also owns the largest set of insight skills (UC1-7, UC9, UC12) that reason over the activity spine, response quality, and governance data. The "how do we win" and "are we on track" reasoning engine. Pursuit viability is assessed by PWIN Qualify — not this agent.
 
-**System prompt essence:** "You are a bid strategy and scoring analyst. You reason over evaluation frameworks, marks concentration, win theme coverage, and competitive positioning to maximise the probability of winning. You also monitor bid health — timeline, compliance, gate readiness, and production quality — surfacing risks and recommending mitigations. You think in terms of marks, scores, hurdle requirements, and disqualification risk."
+**System prompt essence:** "You are a bid strategy and scoring analyst. You reason over evaluation frameworks, win theme coverage, and competitive positioning to maximise the probability of winning. You also monitor bid health — timeline, compliance, gate readiness, and production quality — surfacing risks and recommending mitigations. You think in terms of marks, scores, hurdle requirements, and disqualification risk."
 
 **Operating principles:**
 - Every recommendation must be grounded in the evaluation framework — marks available, scoring criteria, hurdle requirements.
@@ -167,94 +167,13 @@ RECOMMENDATIONS
 
 ---
 
-#### Skill 2: PWIN Scoring (`pwin-scoring`)
-
-**Command:** `/pwin:pwin-score`
-**Trigger:** Human-invoked. Run at bid/no-bid decision point (SAL-06) and periodically during bid production to track trajectory.
-**Methodology activities:** SAL-06.2.1, SAL-06.2.2, SAL-06.2.3
-
-**What it does:**
-
-Completes the Deal Qualification Checklist, assesses strategic fit, and scores PWIN across all dimensions. Produces a scored assessment with dimension breakdown, rationale, and trend analysis.
-
-**Process:**
-
-```
-Step 1: Deal Qualification Checklist (SAL-06.2.1)
-  - Assess each qualification criterion:
-    - Can we deliver the solution? (capability match)
-    - Can we price competitively? (commercial viability)
-    - Can we staff the bid team? (resource availability)
-    - Can we meet the timeline? (production feasibility)
-    - Do we have relevant past performance? (evidence base)
-    - Is this strategically aligned? (portfolio fit)
-    - Do we have the incumbent relationship context? (competitive position)
-  - Each criterion: pass/fail/conditional with rationale
-
-Step 2: PWIN dimension scoring (SAL-06.2.2)
-  - Score each PWIN dimension on a 1-10 scale with rationale:
-    - Competitive position: incumbency, relationships, track record with this client
-    - Stakeholder relationships: buyer access, influencer mapping, sponsor strength
-    - Solution strength: capability match, innovation, methodology maturity
-    - Price competitiveness: market rate alignment, cost structure, value positioning
-    - Team capability: named individuals, availability, relevant experience
-    - Risk profile: delivery risk, contractual risk, reputational risk
-  - Each score grounded in available evidence, not optimism
-
-Step 3: Overall PWIN calculation (SAL-06.2.3)
-  - Weighted average across dimensions (weights configurable per opportunity type)
-  - Classify: Green (>70%), Amber (40-70%), Red (<40%)
-  - If any dimension is 3 or below: flag as "single-dimension kill risk"
-
-Step 4: Trend analysis (if previous scores exist)
-  - Compare current scores against previous PWIN assessments
-  - Identify dimensions trending up/down
-  - Flag dimensions that have deteriorated since last assessment
-```
-
-**Output template:**
-
-```
-PWIN Assessment
-===============
-Date:                      [date]
-Overall PWIN:              [score]% — [GREEN/AMBER/RED]
-Deal Qualification:        [PASS/CONDITIONAL/FAIL]
-
-DIMENSION SCORES
-  Competitive position:    [x/10] — [one-line rationale]
-  Stakeholder relationships: [x/10] — [one-line rationale]
-  Solution strength:       [x/10] — [one-line rationale]
-  Price competitiveness:   [x/10] — [one-line rationale]
-  Team capability:         [x/10] — [one-line rationale]
-  Risk profile:            [x/10] — [one-line rationale]
-
-SINGLE-DIMENSION RISKS
-  [any dimension at 3 or below — these can kill the bid regardless of overall score]
-
-TREND (if previous assessments exist)
-  [dimension-by-dimension comparison with direction arrows]
-  [narrative on what has changed and why]
-
-RECOMMENDATION
-  [pursue/proceed with caution/recommend no-bid]
-  [specific actions to improve weakest dimensions]
-```
-
-**Quality criteria:**
-- Scores must be evidence-based, not aspirational. A 7/10 on solution strength requires demonstrable capability, not hope.
-- The overall PWIN must weight dimensions appropriately — price competitiveness in a lowest-price evaluation is heavily weighted.
-- Single-dimension kill risks must be prominently flagged — they override the aggregate score.
-- Trend analysis must compare like-for-like — same dimensions, same scale.
-
----
 
 #### Skill 3: Capture Plan Assembly (`capture-plan`)
 
 **Command:** `/pwin:capture-plan`
 **Trigger:** Human-invoked. Run at the conclusion of the capture/strategy phase (SAL-06.4) to lock down all strategy outputs into a formal document.
 **Methodology activities:** SAL-06.4.1, SAL-06.4.2
-**Depends on:** Skills 1 and 2 (win themes and PWIN score), plus Agent 2 outputs (competitive intelligence) and Agent 4 outputs (commercial positioning).
+**Depends on:** Skill 1 (win themes), plus Agent 2 outputs (competitive intelligence), Agent 4 outputs (commercial positioning), and the latest Qualify pursuit viability assessment.
 
 **What it does:**
 
@@ -265,7 +184,6 @@ Assembles all upstream strategy outputs into a locked Capture Plan document and 
 ```
 Step 1: Strategy data assembly
   - Read win themes via get_win_themes()
-  - Read PWIN assessment via get_bid_insight() (latest PWIN scoring output)
   - Read evaluation framework via get_evaluation_framework()
   - Read competitive intelligence (from Agent 2 outputs stored as bid insights)
   - Read risk register via get_risks()
@@ -279,7 +197,7 @@ Step 2: Capture Plan document generation (SAL-06.4.1)
     - Win themes with evidence status
     - Competitive positioning and differentiation strategy
     - Scoring strategy (where to invest effort for maximum marks)
-    - PWIN assessment with dimension breakdown
+    - Pursuit viability status (from latest Qualify assessment)
     - Risk register with mitigations
     - Team structure and key personnel
     - Key dates and production timeline
@@ -308,7 +226,7 @@ Sections:
   2. Evaluation Methodology & Marks Landscape
   3. Win Strategy (themes, evidence, competitive positioning)
   4. Scoring Strategy (effort allocation by section value)
-  5. PWIN Assessment
+  5. Pursuit Viability Status (from Qualify)
   6. Risk Register & Mitigations
   7. Team & Resource Plan
   8. Key Dates & Production Timeline
@@ -321,7 +239,7 @@ BID MANDATE
 ===========
 For: [approval board/governance body]
 Recommendation: [bid/no-bid/bid with conditions]
-PWIN: [score]%
+Pursuit viability: [from Qualify — pursue / condition / walk away]
 Resource commitment: [person-days], [cost estimate]
 Key risk: [single most important risk]
 Approval conditions: [list if conditional]
@@ -330,7 +248,7 @@ Approval conditions: [list if conditional]
 **Quality criteria:**
 - The Capture Plan must be internally consistent — win themes, scoring strategy, effort allocation, and PWIN score must tell the same story.
 - The Bid Mandate must be decision-ready — a board member should be able to approve or reject based on this document alone.
-- All data must be current — stale PWIN scores or outdated win themes undermine the document.
+- All data must be current — stale intelligence or outdated win themes undermine the document. The Qualify pursuit viability assessment referenced must be the most recent one.
 - Strategy outputs from other agents (Agent 2 competitive intelligence, Agent 4 commercial positioning) must be incorporated, not duplicated.
 
 ---
@@ -340,7 +258,7 @@ Approval conditions: [list if conditional]
 **Command:** `/pwin:clarification-strategy`
 **Trigger:** Human-invoked. Run after win themes and competitive strategy are established, before the clarification window opens.
 **Methodology activities:** SAL-07.1.3
-**Depends on:** Skills 1 and 2, plus Agent 1 (ITT extraction for response sections) and Agent 2 (competitive intelligence).
+**Depends on:** Skill 1 (win themes), plus Agent 1 (ITT extraction for response sections) and Agent 2 (competitive intelligence).
 
 **What it does:**
 
@@ -629,8 +547,7 @@ Reads stakeholder register, governance gates, and engagement data. Identifies ga
 | 1 | Timeline Analysis (UC1) | Insight | Phase 3 | MCP read tools + activity data | First insight skill in the system — validates the AIInsight write pattern |
 | 2 | Compliance Coverage (UC4) | Insight | Phase 3 | Agent 1 output (response sections, evaluation framework) | Cross-entity insight reasoning over compliance data |
 | 3 | Win Theme Refinement | Productivity | Phase 4 | Win theme data (from capture phase or manual entry) | Win theme register creation and strategic alignment |
-| 4 | PWIN Scoring | Productivity | Phase 4 | Multiple data sources across app | Multi-dimensional scoring and trend analysis |
-| 5 | Gate Readiness (UC9) | Insight | Phase 4 | Governance gates + activity data | Gate recommendation pattern |
+| 4 | Gate Readiness (UC9) | Insight | Phase 4 | Governance gates + activity data | Gate recommendation pattern |
 | 6 | Standup Prioritisation (UC3) | Insight | Phase 4 | Standup actions + activity data | Daily operational insight pattern |
 | 7 | Win Theme Audit (UC5) | Insight | Phase 5 | Win themes + review scorecards | Post-review insight pattern |
 | 8 | Review Trajectory (UC7) | Insight | Phase 5 | Review scorecards across cycles | Multi-cycle trajectory analysis |
@@ -649,7 +566,7 @@ Reads stakeholder register, governance gates, and engagement data. Identifies ga
 | Total productivity tasks served | ~20 (8 High, 9 Medium, 3 Low) |
 | Average effort reduction (productivity) | 52% |
 | Insight skills | 11 (UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC9, UC12) |
-| Total skills | 15 (largest agent by skill count) |
+| Total skills | 14 (PWIN Scoring removed 2026-04-22 — pursuit viability is Qualify's domain) |
 | Implementation phases | Phase 3 (UC1, UC4 — first insight skills) through Phase 6 |
 | Methodology activities covered | SAL-04.1.1-4, SAL-04.2.1-2, SAL-06.2.1-3, SAL-06.4.1-2, SAL-07.1.3 |
 | Insight scope | Activity spine, response quality, governance gates, compliance, win themes, effort allocation, review trajectory, stakeholder engagement |
@@ -664,8 +581,8 @@ Reads stakeholder register, governance gates, and engagement data. Identifies ga
 | Source Agent | What Agent 3 consumes |
 |---|---|
 | Agent 1 (Document Intelligence) | EvaluationFramework, ResponseSections, compliance data, marks concentration — the foundation for all scoring and strategy work |
-| Agent 2 (Market Intelligence) | Competitive intelligence for win theme differentiation, PWIN scoring (competitive position dimension), clarification strategy |
-| Agent 4 (Commercial & Financial) | Commercial data for bid cost insight, price competitiveness dimension in PWIN scoring |
+| Agent 2 (Market Intelligence) | Competitive intelligence for win theme differentiation, buyer values for theme alignment, clarification strategy |
+| Agent 4 (Commercial & Financial) | Commercial data for bid cost insight and resource planning |
 
 **Agent 3 feeds into:**
 
@@ -678,5 +595,6 @@ Reads stakeholder register, governance gates, and engagement data. Identifies ga
 
 ---
 
-*Agent 3: Strategy & Scoring Analyst | v1.0 | April 2026 | PWIN Architect*
-*15 skills (4 productivity, 11 insight) | ~20 methodology tasks + 11 use cases | 52% avg effort reduction*
+*Agent 3: Win Strategy Analyst | v1.1 | April 2026 | PWIN Architect*
+*14 skills (3 productivity, 11 insight) | ~20 methodology tasks + 11 use cases | 52% avg effort reduction*
+*PWIN Scoring removed 2026-04-22 — pursuit viability is assessed by PWIN Qualify, not this agent*

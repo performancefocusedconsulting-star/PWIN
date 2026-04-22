@@ -251,10 +251,9 @@ Rationale:
 
 #### Agent 3: Win Strategy Analyst Agent
 **Capability:** Drives the capture-phase pursuit strategy across the Pre-Gate Pursuit Playbook (S1–S5). Develops win architecture, competitive positioning, buyer intelligence, win themes, and the capture plan. The "how do we win" reasoning engine for the pre-gate period. Consultant-led — the lead consultant invokes skills through commands at each stage.
-**Tasks served:** 7 capture-phase skills spanning S1 Opportunity Sense-Making through S5 Commitment Readiness
+**Tasks served:** 6 capture-phase skills spanning S1 Opportunity Sense-Making through S5 Commitment Readiness
 **Implementation:** Phase 3 (alongside Agent 2 — both operate in the capture phase with shared intelligence inputs)
 **Key skills:**
-- PWIN scoring across all dimensions (pwin-scoring)
 - Win theme development and testing against buyer values and competitive positioning (win-theme-mapping)
 - Win theme coverage audit per section and portfolio saturation (win-theme-audit)
 - Battle cards, ghost themes, counter-positioning — core foundation of Win Strategy (competitive-strategy)
@@ -370,7 +369,7 @@ Rationale:
 Two concerns surfaced alongside the Agent 7 addition remain unresolved. Both are captured in the wiki actions folder for future design work.
 
 - **Pursuit Orchestration layer.** The platform has eight specialist agents but no coordination layer that surfaces "what should happen next" across a live pursuit based on which upstream agents have completed work. V1 scope would be on-demand ("bid manager asks"); V2 scope would be event-driven. Not yet designed. This is a separate concern from Agent 0 (onboarding) — it sits across the pursuit lifecycle, not the client relationship. See `wiki/actions/pwin-plugin-orchestration-agent.md`.
-- **Agent 3 scope and Alex Mercer alignment. RESOLVED 2026-04-22.** Agent 3 split into Win Strategy Analyst (Agent 3, capture-phase skills) and Bid Management Analyst (Agent 8, execution-phase skills). The 7 capture skills (pwin-scoring, win-theme-mapping, win-theme-audit, competitive-strategy, capture-plan, clarification-strategy, stakeholder-engagement-risk) remain in Agent 3. The 7 execution skills (timeline-analysis, effort-reforecast, standup-priorities, compliance-coverage, marks-allocation, review-trajectory, gate-readiness) move to Agent 8. Path to Option C (Alex Mercer persona migration from Qualify product into plugin Agent 3) deferred until post Qualify v0.2 ship. See `wiki/actions/pwin-plugin-agent3-scope.md`.
+- **Agent 3 scope and Alex Mercer alignment. RESOLVED 2026-04-22.** Agent 3 split into Win Strategy Analyst (Agent 3, capture-phase skills) and Bid Management Analyst (Agent 8, execution-phase skills). The 6 capture skills (win-theme-mapping, win-theme-audit, competitive-strategy, capture-plan, clarification-strategy, stakeholder-engagement-risk) remain in Agent 3. PWIN scoring removed 2026-04-22 — pursuit viability is the narrative of PWIN Qualify, not a plugin skill. The 7 execution skills (timeline-analysis, effort-reforecast, standup-priorities, compliance-coverage, marks-allocation, review-trajectory, gate-readiness) move to Agent 8. Path to Option C (Alex Mercer persona migration from Qualify product into plugin Agent 3) deferred until post Qualify v0.2 ship. See `wiki/actions/pwin-plugin-agent3-scope.md`.
 
 **Agent dependency chain:**
 
@@ -503,8 +502,6 @@ pwin-architect-plugin/
 │   │   └── sector-scanning/
 │   │       └── SKILL.md
 │   ├── strategy-scoring/              — Agent 3 skills (Win Strategy Analyst — capture phase)
-│   │   ├── pwin-scoring/              — PWIN scoring across all dimensions
-│   │   │   └── SKILL.md
 │   │   ├── win-theme-mapping/         — win theme development, buyer value testing
 │   │   │   └── SKILL.md
 │   │   ├── win-theme-audit/           — UC5 — coverage per section, portfolio saturation

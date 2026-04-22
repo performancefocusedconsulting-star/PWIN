@@ -368,6 +368,67 @@ GROUP BY b.id, n.main_category
 HAVING awards_count >= 1
 ORDER BY awards_count DESC;
 
+-- ============================================================
+-- CANONICAL ADJUDICATOR STAGING — ADJUDICATION QUEUE
+-- Authoritative definition is in emit_adjudication_queue.py.
+-- Duplicated here so schema.sql initialises a fresh DB fully.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS adjudication_queue (
+    queue_id               TEXT PRIMARY KEY,
+    decision_type          TEXT NOT NULL,
+    left_canonical_id      TEXT NOT NULL,
+    right_canonical_id     TEXT NOT NULL,
+    left_name              TEXT,
+    right_name             TEXT,
+    left_member_count      INTEGER,
+    right_member_count     INTEGER,
+    left_ch_numbers        TEXT,
+    right_ch_numbers       TEXT,
+    left_postcodes         TEXT,
+    right_postcodes        TEXT,
+    left_localities        TEXT,
+    right_localities       TEXT,
+    left_name_variants     TEXT,
+    right_name_variants    TEXT,
+    left_id_kind           TEXT,
+    right_id_kind          TEXT,
+    structural_flag        TEXT,
+    max_match_probability  REAL NOT NULL,
+    supporting_pair_count  INTEGER NOT NULL,
+    status                 TEXT NOT NULL DEFAULT 'pending',
+    decision_json          TEXT,
+    reviewed_at            TEXT,
+    created_at             TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_adj_queue_status ON adjudication_queue(status);
+CREATE INDEX IF NOT EXISTS idx_adj_queue_prob   ON adjudication_queue(max_match_probability DESC);
+
+-- ============================================================
+-- CANONICAL ADJUDICATOR STAGING — ESCALATIONS
+-- Written by the stage_escalation MCP tool for every
+-- recommendation=escalate decision. Operator resolves by
+-- setting operator_outcome = human_approved | human_rejected.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS adjudicator_escalations (
+    escalation_id     TEXT PRIMARY KEY,
+    decision_type     TEXT NOT NULL,
+    queue_id          TEXT,
+    confidence        REAL NOT NULL,
+    canonical_target  TEXT,
+    raw_ids           TEXT NOT NULL,
+    evidence          TEXT NOT NULL,
+    playbook_rule     TEXT,
+    uncertainty_notes TEXT,
+    operator_outcome  TEXT NOT NULL DEFAULT 'pending',
+    logged_at         TEXT NOT NULL DEFAULT (datetime('now')),
+    resolved_at       TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_escalations_outcome ON adjudicator_escalations(operator_outcome);
+CREATE INDEX IF NOT EXISTS idx_escalations_type    ON adjudicator_escalations(decision_type);
+
+-- ============================================================
 -- Canonical supplier wins — one row per (canonical_supplier × award).
 -- Left-joins the canonical map so suppliers that have not been clustered
 -- yet (or were never seen by Splink) still appear under a synthetic

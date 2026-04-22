@@ -1,0 +1,226 @@
+{
+  "_meta": {
+    "version": "0.1",
+    "created": "2026-04-22",
+    "purpose": "Classification vocabulary for Morgan Ledger. When classifying an off-framework award, only assign a lot_id that exists in this file. If no lot fits at confidence >= 0.70, leave the award unclassified.",
+    "coverage": "5 high-usage CCS frameworks — G-Cloud 14, MCF4, DSP, TePAS 2, BPS3. Expand in v0.2 to include FM, Legal Services, and construction/infrastructure frameworks.",
+    "rm_number_note": "RM numbers are best-available from public CCS publications. Verify against https://www.crowncommercial.gov.uk/agreements before treating as authoritative."
+  },
+  "frameworks": [
+    {
+      "framework_id": "GC14",
+      "framework_rm": "RM1557.14",
+      "framework_name": "G-Cloud 14",
+      "lots": [
+        {
+          "lot_id": "GC14-L1",
+          "lot_name": "Cloud Hosting",
+          "description": "Infrastructure as a Service (IaaS) and Platform as a Service (PaaS) cloud computing resources, including virtual machines, containers, storage, databases, and associated infrastructure.",
+          "typical_examples": ["AWS EC2/ECS hosting", "Azure virtual machines", "Google Cloud PaaS", "managed Kubernetes", "cloud object storage", "CDN services", "cloud databases"],
+          "typical_value_band": "£10k–£10m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["SaaS applications (Lot 2)", "Support and migration services (Lot 3)", "End-user computing hardware"]
+        },
+        {
+          "lot_id": "GC14-L2",
+          "lot_name": "Cloud Software",
+          "description": "Software as a Service (SaaS) applications delivered via the cloud. Pre-built, configurable software products accessed via browser or API — not bespoke development.",
+          "typical_examples": ["CRM systems", "collaboration and productivity tools", "document management", "HR and payroll SaaS", "financial management systems", "case management platforms", "analytics and BI tools", "cyber security SaaS"],
+          "typical_value_band": "£5k–£5m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority", "ndpb"],
+          "exclusions": ["Bespoke software development (see DSP)", "Physical hardware", "Cloud infrastructure (Lot 1)"]
+        },
+        {
+          "lot_id": "GC14-L3",
+          "lot_name": "Cloud Support",
+          "description": "Services to support planning, transitioning, operating and improving cloud-hosted services. Includes cloud migration, managed cloud operations, cloud architecture consulting, and specialist cloud support.",
+          "typical_examples": ["cloud migration", "DevOps and site reliability engineering", "managed security operations (SOC)", "cloud architecture consulting", "disaster recovery as a service", "FinOps/cloud cost optimisation", "cloud assurance and testing"],
+          "typical_value_band": "£10k–£10m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Physical infrastructure", "Non-cloud IT support (see TePAS2)", "Software products (Lot 2)"]
+        }
+      ]
+    },
+    {
+      "framework_id": "MCF4",
+      "framework_rm": "RM6309",
+      "framework_name": "Management Consultancy Framework 4",
+      "lots": [
+        {
+          "lot_id": "MCF4-L1",
+          "lot_name": "Strategy and Policy",
+          "description": "Strategic advisory, organisational design, policy analysis, target operating model development, and business case support.",
+          "typical_examples": ["operating model design", "strategy development and execution", "policy review and reform", "business case development", "benefits realisation management", "service design strategy"],
+          "typical_value_band": "£100k–£20m",
+          "buyer_archetypes": ["department", "agency", "ndpb", "nhs_icb"],
+          "exclusions": ["Implementation and delivery management (Lot 4)", "Technology-led strategy where implementation predominates (Lot 3)"]
+        },
+        {
+          "lot_id": "MCF4-L2",
+          "lot_name": "Human Resources and Organisational Development",
+          "description": "HR strategy, workforce planning, talent management, organisational change, culture transformation, and people-related advisory.",
+          "typical_examples": ["workforce planning", "HR operating model", "culture change programme", "leadership development", "TUPE advisory", "pay benchmarking", "HR transformation"],
+          "typical_value_band": "£50k–£5m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Temporary staffing supply (workforce frameworks)", "Training delivery (Lot 6)"]
+        },
+        {
+          "lot_id": "MCF4-L3",
+          "lot_name": "Technology and Digital Consulting",
+          "description": "Technology strategy, digital transformation advisory, enterprise architecture, IT programme assurance, and digital operating model consulting. Advisory-led — not delivery of software.",
+          "typical_examples": ["digital strategy", "IT architecture review", "technology due diligence", "IT programme assurance", "data strategy", "cyber security strategy", "AI/automation advisory"],
+          "typical_value_band": "£100k–£20m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "nhs_icb"],
+          "exclusions": ["Software development and delivery (see DSP)", "Cloud hosting/software (see G-Cloud)", "Technology products (see TePAS2)"]
+        },
+        {
+          "lot_id": "MCF4-L4",
+          "lot_name": "Programme and Project Management",
+          "description": "Programme and project management support, portfolio management office, project assurance, and delivery management for complex transformation programmes.",
+          "typical_examples": ["PMO setup and management", "project assurance and review", "programme director support", "change and benefits management", "portfolio reporting and governance"],
+          "typical_value_band": "£100k–£20m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority", "mod"],
+          "exclusions": ["Construction project management (see infrastructure/construction frameworks)"]
+        },
+        {
+          "lot_id": "MCF4-L5",
+          "lot_name": "Finance",
+          "description": "Financial management consulting, commercial advisory, procurement strategy, financial modelling, and value-for-money review.",
+          "typical_examples": ["financial modelling", "business case financial analysis", "commercial strategy", "procurement advisory", "cost reduction programme", "finance transformation"],
+          "typical_value_band": "£50k–£10m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "nhs_icb"],
+          "exclusions": ["Statutory audit (separate procurement)", "Financial services products"]
+        },
+        {
+          "lot_id": "MCF4-L6",
+          "lot_name": "Research and Insights",
+          "description": "Policy research, market research, data analysis, programme evaluation, social research, and evidence synthesis.",
+          "typical_examples": ["policy evaluation", "market analysis", "literature review", "user research synthesis", "social research", "economic impact assessment", "rapid evidence assessment"],
+          "typical_value_band": "£10k–£2m",
+          "buyer_archetypes": ["department", "agency", "ndpb", "regulator"],
+          "exclusions": ["Primary data collection fieldwork (may be separate lot)", "Academic research commissions"]
+        },
+        {
+          "lot_id": "MCF4-L7",
+          "lot_name": "Marketing, Communications and Engagement",
+          "description": "Stakeholder engagement strategy, communications planning, public relations advisory, campaign strategy, and internal communications consulting.",
+          "typical_examples": ["communications strategy", "stakeholder engagement", "public affairs advisory", "internal communications programme", "brand and narrative advisory"],
+          "typical_value_band": "£10k–£2m",
+          "buyer_archetypes": ["department", "agency", "ndpb"],
+          "exclusions": ["Creative production and media buying (separate frameworks)", "Digital marketing platforms (see G-Cloud Lot 2)"]
+        }
+      ]
+    },
+    {
+      "framework_id": "DSP",
+      "framework_rm": "RM6194",
+      "framework_name": "Digital Specialists and Programmes",
+      "lots": [
+        {
+          "lot_id": "DSP-L1",
+          "lot_name": "Digital Specialists",
+          "description": "Individual specialist contractors for specific digital roles. Buyers recruit named individuals or small teams for defined roles, typically time-and-materials.",
+          "typical_examples": ["software developer", "data engineer", "UX researcher", "product manager", "cloud architect", "security analyst", "business analyst", "data scientist", "DevOps engineer"],
+          "typical_value_band": "£20k–£2m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["General temporary staffing (workforce frameworks)", "Permanent recruitment", "Outcome-based delivery (Lot 2)"]
+        },
+        {
+          "lot_id": "DSP-L2",
+          "lot_name": "Digital Outcomes",
+          "description": "Defined digital deliverables with clear outputs. The supplier is responsible for the outcome, not just supplying hours. Typically bounded phases with defined acceptance criteria.",
+          "typical_examples": ["discovery phase", "alpha or beta service build", "data platform build", "API development", "accessibility audit and remediation", "service prototype", "technical spike"],
+          "typical_value_band": "£20k–£5m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Multi-year managed services (Lot 3)", "Individual specialist supply (Lot 1)"]
+        },
+        {
+          "lot_id": "DSP-L3",
+          "lot_name": "Digital Programmes",
+          "description": "End-to-end programme delivery including multiple phases, release trains, or sustained delivery capacity. Complex, multi-year digital transformation programmes requiring blended teams.",
+          "typical_examples": ["digital transformation programme", "legacy system replacement", "multi-year agile development contract", "enterprise digital delivery", "whole-organisation digital change"],
+          "typical_value_band": "£500k–£50m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority", "mod"],
+          "exclusions": ["Single specialist supply (Lot 1)", "Single defined output (Lot 2)", "SaaS products (see G-Cloud Lot 2)"]
+        }
+      ]
+    },
+    {
+      "framework_id": "TePAS2",
+      "framework_rm": "RM6098",
+      "framework_name": "Technology Products and Associated Services 2",
+      "lots": [
+        {
+          "lot_id": "TePAS2-L1",
+          "lot_name": "Hardware",
+          "description": "Laptops, desktops, servers, peripherals, networking hardware, print hardware, and associated end-user computing and data centre equipment.",
+          "typical_examples": ["laptops", "desktops", "servers", "monitors", "network switches and routers", "printers", "tablets", "mobile devices", "storage arrays"],
+          "typical_value_band": "£5k–£10m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority", "mod"],
+          "exclusions": ["Cloud infrastructure (see G-Cloud Lot 1)", "Software licenses (Lot 2)"]
+        },
+        {
+          "lot_id": "TePAS2-L2",
+          "lot_name": "Software Licenses",
+          "description": "Software licenses, maintenance agreements, and upgrades for installed (on-premise or client-managed) software products. Volume licensing and enterprise agreements.",
+          "typical_examples": ["Microsoft EA license renewal", "Oracle database license", "antivirus/endpoint protection", "desktop productivity software", "server software", "security software licenses"],
+          "typical_value_band": "£5k–£10m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["SaaS/cloud software (see G-Cloud Lot 2)", "Bespoke development (see DSP)"]
+        },
+        {
+          "lot_id": "TePAS2-L3",
+          "lot_name": "Networking and Connectivity",
+          "description": "Wide area network services, LAN equipment, connectivity products, and network infrastructure for on-premise and hybrid environments.",
+          "typical_examples": ["WAN services", "MPLS connectivity", "LAN switches and routers", "wireless networking", "SD-WAN", "network management"],
+          "typical_value_band": "£10k–£5m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Cloud-native networking (see G-Cloud Lot 1)"]
+        },
+        {
+          "lot_id": "TePAS2-L4",
+          "lot_name": "Associated Services",
+          "description": "Installation, configuration, maintenance, and support services directly associated with technology products. Not standalone IT consultancy.",
+          "typical_examples": ["hardware installation and configuration", "software implementation", "break-fix maintenance", "warranty services", "IT asset disposal", "IT asset management services"],
+          "typical_value_band": "£5k–£2m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Strategic IT consulting (see MCF4 Lot 3)", "Cloud support (see G-Cloud Lot 3)", "Programme delivery (see DSP Lot 3)"]
+        }
+      ]
+    },
+    {
+      "framework_id": "BPS3",
+      "framework_rm": "RM6260",
+      "framework_name": "Business Process Services 3",
+      "lots": [
+        {
+          "lot_id": "BPS3-L1",
+          "lot_name": "Citizen-Facing Services",
+          "description": "Outsourced processing and administration of citizen-facing public services: benefits and entitlements, licensing, contact centre operations, case management, and similar high-volume processing.",
+          "typical_examples": ["benefits and entitlements processing", "contact centre services", "case management processing", "licensing administration", "grants processing", "citizen correspondence handling"],
+          "typical_value_band": "£1m–£100m",
+          "buyer_archetypes": ["department", "agency", "local_authority", "nhs_trust"],
+          "exclusions": ["Technology systems underpinning services (see DSP, G-Cloud)", "Strategic process redesign (see MCF4 Lot 1)"]
+        },
+        {
+          "lot_id": "BPS3-L2",
+          "lot_name": "Back Office and Corporate Services",
+          "description": "Outsourced corporate back-office functions: HR administration and payroll, finance and accounts processing, procurement support, and facilities administration.",
+          "typical_examples": ["HR shared services", "payroll processing", "accounts payable and receivable", "procurement shared services", "facilities helpdesk", "travel and expenses management"],
+          "typical_value_band": "£500k–£50m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Strategic HR consulting (see MCF4 Lot 2)", "Technology underpinning the service (see G-Cloud, DSP)"]
+        },
+        {
+          "lot_id": "BPS3-L3",
+          "lot_name": "Data Processing and Information Management",
+          "description": "High-volume data entry, validation, processing, and information management services. Structured data operations, not strategic analytics.",
+          "typical_examples": ["data migration and cleansing", "forms processing and digitisation", "document scanning", "data validation services", "records management", "archive digitisation"],
+          "typical_value_band": "£100k–£10m",
+          "buyer_archetypes": ["department", "agency", "nhs_trust", "local_authority"],
+          "exclusions": ["Strategic data analysis and evaluation (see MCF4 Lot 6)", "Data platform build (see DSP Lot 2)", "SaaS document management (see G-Cloud Lot 2)"]
+        }
+      ]
+    }
+  ]
+}
