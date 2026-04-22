@@ -14,14 +14,6 @@ phase: ~
 order: 1
 model: claude-sonnet-4-20250514
 
-# NOTE: The four context types below are not yet registered in skill-runner.js.
-# Before this skill can run end-to-end, add cases for canonical_glossary,
-# framework_taxonomy, adjudicator_decisions, and canonical_playbook to the
-# gatherContext() switch block in src/skill-runner.js, pointing at:
-#   canonical_glossary     → pwin-competitive-intel/adjudicator/canonical_glossary.json
-#   framework_taxonomy     → pwin-competitive-intel/adjudicator/framework_taxonomy.json
-#   adjudicator_decisions  → pwin-competitive-intel/adjudicator/adjudicator_decisions.jsonl (last 50)
-#   canonical_playbook     → pwin-competitive-intel/CANONICAL-LAYER-PLAYBOOK.md (as prose)
 context:
   - canonical_glossary
   - framework_taxonomy
@@ -39,14 +31,6 @@ input:
     - adjudicationMode         # "full" (all three jobs) | "clusters" | "classification" | "drift"
     - runId                    # Optional caller-supplied run identifier
 
-# NOTE: The three write tools below do not yet exist in pwin-platform/src/mcp.js.
-# Before this skill can commit decisions, add:
-#   promote_canonical_decision  → writes auto_promote / human_approved decisions to
-#                                 canonical_buyers / canonical_suppliers mapping tables
-#   stage_escalation            → writes escalate decisions to the staging table for
-#                                 later review (preserves operator decision trail)
-#   log_adjudicator_decision    → appends every decision (all recommendations) to
-#                                 pwin-competitive-intel/data/adjudicator_decisions.jsonl
 write_tools:
   - promote_canonical_decision
   - stage_escalation
