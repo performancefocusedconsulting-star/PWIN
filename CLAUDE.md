@@ -257,8 +257,8 @@ The PWIN Platform MCP server — a single Node.js process serving dual interface
 
 ### Reference Documents
 
-- `pwin-bid-execution/docs/mcp_server_architecture.md` — authoritative architecture spec (v1.0)
-- `pwin-bid-execution/docs/pwin_architect_plugin_architecture.md` — plugin architecture (v1.5), agent specs, skill definitions
+- `pwin-platform/docs/architecture/mcp_server_architecture.md` — authoritative architecture spec (v1.0)
+- `pwin-platform/docs/architecture/pwin_architect_plugin_architecture.md` — plugin architecture (v1.5), agent specs, skill definitions
 
 ### Technical Constraints
 
@@ -286,7 +286,7 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ## pwin-strategy
 
-AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Takes the qualification intelligence and transforms it into a locked win strategy, competitive positioning, and capture plan that Execution imports.
+AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Takes the qualification intelligence and transforms it into a locked win strategy, competitive positioning, and capture plan that **informs the bid manager** running Execution.
 
 ### Reference Documents
 
@@ -300,19 +300,21 @@ Qualify → Strategy → Execution
 ```
 
 - **Receives from Qualify:** PWIN score, category assessments, buyer values, stakeholder maturity, competitive positioning maturity
-- **Produces for Execution:** locked win themes, competitive strategy, stakeholder map, buyer values, client intelligence, capture plan (all written to `shared.json`)
+- **Produces for Execution:** locked win themes, competitive strategy, stakeholder map, buyer values, client intelligence, capture plan
 - **Data file:** `win_strategy.json` per pursuit (designed in MCP architecture, not yet populated)
+
+> **v1 handoff model — process-level, not programmatic.** In v1, Execution is a standalone single-HTML, localStorage app. It does not read from `shared.json` or any other product's data store. The bid manager carries Strategy's outputs mentally and re-enters relevant context through the Execution Setup Wizard. The "Consumed by Execution" column below describes where in Execution each entity is applied — by the bid manager, not by the application. Programmatic data sharing between Strategy and Execution requires the unresolved localStorage↔MCP bridge (see `bid_execution_architecture_v6.html` Session 13 note). Do not treat this as a v1 integration requirement.
 
 ### Shared Entities Owned by Strategy
 
-| Entity | Created by Strategy | Consumed by Execution |
+| Entity | Created by Strategy | Applied in Execution (by bid manager) |
 |--------|--------------------|-----------------------|
-| Win Themes | Defined and locked | Imported into SAL-04, threaded through responses |
-| Competitive Positioning | Full competitor strategy | SAL-03 imports, battle cards feed response writing |
-| Stakeholder Map | Enriched from Qualify maturity | SAL-10 imports, engagement tracked through bid |
-| Buyer Values | Confirmed and prioritised | SAL-01.2 imports, shapes solution design |
-| Client Intelligence | Built from capture engagement | SAL-01 imports |
-| Capture Plan | Produced and locked | SAL-06.4 imports, governs bid strategy |
+| Win Themes | Defined and locked | Referenced when executing SAL-04; threaded through responses |
+| Competitive Positioning | Full competitor strategy | Referenced in SAL-03; battle cards inform response writing |
+| Stakeholder Map | Enriched from Qualify maturity | Referenced in SAL-10; engagement tracked through bid |
+| Buyer Values | Confirmed and prioritised | Referenced in SAL-01.2; shapes solution design |
+| Client Intelligence | Built from capture engagement | Referenced in SAL-01 |
+| Capture Plan | Produced and locked | Referenced in SAL-06.4; governs bid strategy |
 
 ### Current Architecture
 
