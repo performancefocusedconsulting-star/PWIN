@@ -368,10 +368,132 @@ function cpvSearch(codePrefix) {
   }
 }
 
+// ── Sector Profile ───────────────────────────────────────────────────────
+
+// Maps sector names to buyer org_type values in the DB.
+// Falls back to LIKE search on buyer name if no org_type match.
+const SECTOR_ORG_TYPES = {
+  'local government': ['local_authority'],
+  'local authority': ['local_authority'],
+  'health': ['nhs_trust', 'nhs_icb'],
+  'nhs': ['nhs_trust', 'nhs_icb'],
+  'central government': ['department', 'agency', 'ndpb'],
+  'government': ['department', 'agency', 'ndpb'],
+  'defence': ['mod'],
+  'defense': ['mod'],
+};
+
+function sectorProfile(sectorName, limit = 15) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+
+  try {
+    const key = Object.keys(SECTOR_ORG_TYPES).find(k =>
+      sectorName.toLowerCase().includes(k) || k.includes(sectorName.toLowerCase())
+    );
+
+    let buyerWhere, buyerParams;
+    if (key) {
+      const types = SECTOR_ORG_TYPES[key];
+      const placeholders = types.map(() => '?').join(', ');
+      buyerWhere = `b.org_type IN (${placeholders})`;
+      buyerParams = types;
+    } else {
+      buyerWhere = 'LOWER(b.name) LIKE ?';
+      buyerParams = [`%${sectorName.toLowerCase()}%`];
+    }
+
+    const summary = db.prepare(`
+      SELECT COUNT(DISTINCT b.id) AS buyer_count,
+             COUNT(DISTINCT a.id) AS award_count,
+             SUM(a.value_amount_gross) AS total_spend,
+             AVG(a.value_amount_gross) AS avg_award_value,
+             AVG(n.total_bids) AS avg_bids_per_tender
+      FROM buyers b
+      JOIN notices n ON n.buyer_id = b.id
+      JOIN awards a ON a.ocid = n.ocid
+      WHERE ${buyerWhere} AND a.status IN ('active', 'pending')
+    `).get(...buyerParams);
+
+    const topBuyers = db.prepare(`
+      SELECT b.name, b.org_type,
+             COUNT(DISTINCT a.id) AS award_count,
+             SUM(a.value_amount_gross) AS total_spend,
+             AVG(a.value_amount_gross) AS avg_value
+      FROM buyers b
+      JOIN notices n ON n.buyer_id = b.id
+      JOIN awards a ON a.ocid = n.ocid
+      WHERE ${buyerWhere} AND a.status IN ('active', 'pending')
+      GROUP BY b.id ORDER BY total_spend DESC NULLS LAST LIMIT ?
+    `).all(...buyerParams, limit);
+
+    const topSuppliers = db.prepare(`
+      SELECT v.canonical_name AS name,
+             COUNT(DISTINCT v.award_id) AS wins,
+             SUM(v.value_amount_gross) AS total_value
+      FROM v_canonical_supplier_wins v
+      JOIN buyers b ON v.buyer_id = b.id
+      WHERE ${buyerWhere} AND v.value_quality IS NULL
+      GROUP BY v.canonical_id
+      ORDER BY wins DESC, total_value DESC LIMIT ?
+    `).all(...buyerParams, limit);
+
+    const methods = db.prepare(`
+      SELECT n.procurement_method,
+             COUNT(DISTINCT a.id) AS cnt,
+             SUM(a.value_amount_gross) AS total_value
+      FROM awards a
+      JOIN notices n ON a.ocid = n.ocid
+      JOIN buyers b ON n.buyer_id = b.id
+      WHERE ${buyerWhere} AND a.status IN ('active', 'pending')
+      GROUP BY n.procurement_method ORDER BY cnt DESC
+    `).all(...buyerParams);
+
+    const pipeline = db.prepare(`
+      SELECT p.title, b.name AS buyer, b.org_type,
+             p.estimated_value, p.future_notice_date, p.engagement_deadline
+      FROM planning_notices p
+      JOIN buyers b ON p.buyer_id = b.id
+      WHERE ${buyerWhere}
+      ORDER BY p.future_notice_date ASC NULLS LAST LIMIT 20
+    `).all(...buyerParams);
+
+    return {
+      sector: sectorName,
+      summary: {
+        buyerCount: summary.buyer_count,
+        awardCount: summary.award_count,
+        totalSpend: summary.total_spend,
+        avgAwardValue: summary.avg_award_value,
+        avgBidsPerTender: summary.avg_bids_per_tender,
+      },
+      topBuyers: topBuyers.map(b => ({
+        name: b.name, orgType: b.org_type,
+        awards: b.award_count, totalSpend: b.total_spend, avgValue: b.avg_value,
+      })),
+      topSuppliers: topSuppliers.map(s => ({
+        name: s.name, wins: s.wins, totalValue: s.total_value,
+      })),
+      procurementMethods: methods.map(m => ({
+        method: m.procurement_method, count: m.cnt, totalValue: m.total_value,
+      })),
+      forwardPipeline: pipeline.map(p => ({
+        title: p.title, buyer: p.buyer, buyerType: p.org_type,
+        estimatedValue: p.estimated_value,
+        futureNoticeDate: p.future_notice_date,
+        engagementDeadline: p.engagement_deadline,
+      })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
 export {
   dbSummary,
   buyerProfile,
   supplierProfile,
+  sectorProfile,
   expiringContracts,
   forwardPipeline,
   pwinSignals,

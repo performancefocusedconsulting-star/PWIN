@@ -18,6 +18,7 @@ context:
   - sector_knowledge
   - confidence_model
   - source_hierarchy
+  - fts_supplier_data
 
 product_data: []
 

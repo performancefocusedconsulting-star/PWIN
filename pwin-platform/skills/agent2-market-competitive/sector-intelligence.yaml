@@ -16,6 +16,7 @@ model: claude-sonnet-4-20250514
 context:
   - sector_knowledge
   - source_hierarchy
+  - fts_sector_data
 
 research_tools:
   - web_search

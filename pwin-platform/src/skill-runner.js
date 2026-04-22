@@ -17,6 +17,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { join, basename } from 'node:path';
 import { parse as parseYAML } from './yaml-lite.js';
 import * as store from './store.js';
+import * as intel from './competitive-intel.js';
 
 // ---------------------------------------------------------------------------
 // Skill loading
@@ -213,6 +214,36 @@ async function gatherContext(skill, input) {
         try {
           context.canonical_playbook = await readFile(playbookPath, 'utf-8');
         } catch { /* file not present */ }
+        break;
+      }
+      case 'fts_buyer_data': {
+        const buyerName = input?.buyerName;
+        if (buyerName) {
+          const data = intel.buyerProfile(buyerName);
+          context.ftsBuyerData = (data?.error || !data?.buyers?.length)
+            ? `No FTS data found for buyer: ${buyerName}`
+            : data;
+        }
+        break;
+      }
+      case 'fts_supplier_data': {
+        const supplierName = input?.supplierName;
+        if (supplierName) {
+          const data = intel.supplierProfile(supplierName);
+          context.ftsSupplierData = (data?.error || !data?.suppliers?.length)
+            ? `No FTS data found for supplier: ${supplierName}`
+            : data;
+        }
+        break;
+      }
+      case 'fts_sector_data': {
+        const sectorName = input?.sectorName;
+        if (sectorName) {
+          const data = intel.sectorProfile(sectorName);
+          context.ftsSectorData = data?.error
+            ? `No FTS data found for sector: ${sectorName}`
+            : data;
+        }
         break;
       }
       default:
