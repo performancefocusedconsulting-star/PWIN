@@ -170,6 +170,11 @@ def fetch_url(url: str) -> Optional[dict]:
             # and underlying socket errors as OSError. Neither is wrapped as URLError.
             log.warning("Read timeout / socket error attempt %d: %s", attempt, e)
             time.sleep(RETRY_DELAY * attempt)
+        except ValueError as e:
+            # json.JSONDecodeError (subclass of ValueError) — API returned non-JSON
+            # (e.g. HTML maintenance page). Retry in case it's transient.
+            log.warning("Non-JSON response attempt %d: %s", attempt, e)
+            time.sleep(RETRY_DELAY * attempt)
     log.error("All %d retries exhausted for %s", RETRY_MAX, url[:120])
     return None
 
