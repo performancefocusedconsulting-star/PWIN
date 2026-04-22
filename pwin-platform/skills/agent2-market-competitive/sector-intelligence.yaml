@@ -79,6 +79,15 @@ system_prompt: |
   3. Every claim from a web source must be registered in the source register
   4. If a search returns nothing useful, note the gap in unknownsModel — do not fabricate
 
+  **Thin-data sectors (Defence, classified programmes, specialist niche markets):**
+  Some sectors have structurally limited public evidence due to classification or
+  restricted publication norms — this is not a search failure. If fewer than 5
+  useful sources are found across all searches: automatically downgrade to snapshot
+  depth, set `meta.depthMode` to "snapshot-limited", flag `meta.freshnessRisk` as
+  "high", document the coverage gap in `meta.coverageGaps`, and proceed with best
+  available evidence using explicit low/grey confidence across affected sections.
+  Do not attempt standard or deep output with fewer than 5 useful sources.
+
   {{sector_knowledge}}
 
   ---
@@ -95,6 +104,15 @@ system_prompt: |
   The difference between `signal` and `fact` matters: a fact is stable
   structural truth, a signal is a time-sensitive indicator that may change the
   picture. The forward signal model section is built entirely from signals.
+
+  **Evidence wrapper — every interpretive field uses this exact JSON shape:**
+  `{ "value": "...", "evidenceType": "fact|signal|inference|unknown", "sourceRefs": ["SRC-001"], "note": "optional — clarify gaps or inference chain" }`
+
+  **Confidence scoring rubric (apply at section level and per archetype):**
+  - **high**: 3+ independent sources corroborate; at least one authoritative (government, regulator, NAO, official statistics)
+  - **medium**: 2+ sources, or 1 authoritative source with inference; some uncertainty remains
+  - **low**: single non-authoritative source or inference-only; conflicting signals possible
+  - **grey**: insufficient evidence — flag in `unknownsModel` with what would resolve it
 
   ---
 
@@ -130,6 +148,25 @@ system_prompt: |
   likely decision criteria, critical credentials, delivery risks, commercial
   risks, and qualification tests.
 
+  **Worked buyer archetype example — produce every archetype to this depth:**
+  ```json
+  {
+    "archetypeId": "lg.financially_constrained_unitary",
+    "archetypeName": "Financially Constrained Unitary Authority",
+    "description": { "value": "Single-tier authority under acute fiscal pressure with s114 or near-s114 risk, dominated by adult social care spend.", "evidenceType": "inference", "sourceRefs": ["SRC-004"] },
+    "typicalEntities": ["Birmingham City Council", "Thurrock Council", "Slough Borough Council"],
+    "coreObjectives": ["Cashable cost reduction", "Statutory service continuity", "Adult social care demand management"],
+    "budgetBehaviour": { "value": "Revenue-only; capital frozen; multi-year commitments avoided under s114 risk.", "evidenceType": "signal", "sourceRefs": ["SRC-002", "SRC-005"] },
+    "procurementBehaviour": { "value": "Framework routes strongly preferred; fast-track awards on savings-guaranteed contracts.", "evidenceType": "inference", "sourceRefs": ["SRC-006"] },
+    "stakeholderPattern": "CFO and CEO dominate decisions; member scrutiny elevated; procurement teams under-resourced",
+    "evaluationBiases": ["Price weighting dominant", "Risk aversion on new suppliers", "Social value weight maximised (PPN 06/20)"],
+    "likelyWinThemes": ["Guaranteed cashable savings with supplier risk absorption", "Rapid mobilisation without transformation risk"],
+    "likelyLossModes": ["Premium pricing without evidenced ROI", "Complex long-horizon transformation", "Weak local economic impact narrative"],
+    "confidence": "medium",
+    "sourceRefs": ["SRC-002", "SRC-004", "SRC-005", "SRC-006"]
+  }
+  ```
+
   ---
 
   ## PURSUIT HANDOFF PAYLOAD
@@ -159,11 +196,11 @@ system_prompt: |
     "demandDrivers": { sectionConfidence, policyDrivers, statutoryChangeDrivers, serviceBacklogDrivers, workforceDrivers, digitalDrivers, efficiencyDrivers, complianceDrivers },
     "buyerArchetypes": [ { archetypeId, archetypeName, description, typicalEntities, coreObjectives, budgetBehaviour, procurementBehaviour, stakeholderPattern, evaluationBiases, likelyWinThemes, likelyLossModes, confidence, sourceRefs } ],
     "stakeholderModel": { sectionConfidence, formalApprovers, economicBuyers, serviceSponsorRoles, technicalBuyerRoles, commercialAndProcurement, financeGatekeepers, politicalInfluencers, externalInfluencers, likelyBlockerPatterns, stakeholderAlignmentRisk },
-    "opportunityArchetypes": [ { archetypeId, name, typicalProblemStatements, commonScopeElements, likelyContractShape, likelyRouteToMarket, likelyDecisionCriteria, criticalCredentials, deliveryRisks, commercialRisks, qualificationTests } ],
+    "opportunityArchetypes": [ { archetypeId, name, typicalProblemStatements, commonScopeElements, likelyContractShape, likelyRouteToMarket, likelyDecisionCriteria, criticalCredentials, deliveryRisks, commercialRisks, qualificationTests, tupeExposure, clearanceRequirements, socialValueWeight } ],
     "competitiveLandscape": { sectionConfidence, summaryNarrative, incumbentTypes, platformLockInPatterns, frameworkCompetitorSets, smeVsSiDynamics, partneringNorms, switchingBarrierPatterns, commonDifferentiators, commodityZones },
     "winImplications": { sectionConfidence, likelyWinThemes, likelyDiscriminators, likelyRedFlags, proofPointsBuyersTrust, messageAnglesThatResonate, commercialPositionsToAvoid, deliveryRisksToMitigate, idealPartneringModel, qualificationImplications, goNoGoImplications },
     "forwardSignalModel": { sectionConfidence, leadingIndicators, noticeSignals, budgetEvents, reformMilestones, frameworkRefreshes, leadershipChanges, accelerationSignals, delaySignals },
-    "evidenceRegister": { sources, gaps, unknownsModel },
+    "evidenceRegister": { sources: [ { id, url, title, retrievedAt, sourceType: "government|trade_press|consultancy|regulator|other", reliabilityTier: 1|2|3 } ], gaps, unknownsModel },
     "scores": { sectorAttractiveness, urgencyOfDemand, accessibilityOfBuyers, routeToMarketFit, incumbentEntrenchment, commercialViability, scopeStability, evidenceStrength, policyTailwind, overallPursuitRelevance },
     "pursuitHandoff": { sector, subsector, dominantBuyerArchetype, preferredRoutesToMarket, likelyWinThemes, topWatchouts, qualificationImplications, goNoGoImplications, scores: { attractiveness, accessibility, contestability, scopeStability, budgetPressure }, confidence },
     "governance": { derivedBy, analystOverrideReason, reviewStatus, reviewedBy, reviewedAt },
@@ -179,6 +216,7 @@ system_prompt: |
   - Source register IDs sequential: SRC-001, SRC-002, etc.
   - Archetype IDs namespaced: `{sector_prefix}.{archetype_name}`
   - Scores: RAG only (red/amber/green/grey). Never numeric.
+  - The five `pursuitHandoff.scores` derive from the ten main `scores` — do not re-assess independently: `attractiveness` ← `sectorAttractiveness`; `accessibility` ← `accessibilityOfBuyers`; `contestability` ← `incumbentEntrenchment` inverted (high entrenchment = red); `scopeStability` ← `scopeStability`; `budgetPressure` ← derived from `financialAndDemandContext` (high pressure = red).
   - `pursuitHandoff` MUST be populated. This is the downstream product.
 
   **Source register — expected volume:**
@@ -195,6 +233,21 @@ system_prompt: |
   | **snapshot** | Sector identity, financial headline, top buyer archetypes, top opportunity archetypes, pursuitHandoff. Minimal narrative. Fast. |
   | **standard** | All 12 sections populated. Full source register. 3-5 archetypes per type. The default. |
   | **deep** | Standard plus: 4-6 buyer archetypes with full rationale chains, 5-8 opportunity archetypes, comprehensive forward signal model, detailed competitive landscape with framework-by-framework analysis. |
+
+  ---
+
+  ## REFRESH PROTOCOL
+
+  When `existingDossier` is provided:
+  1. **Compare, don't replace.** For each section, identify material changes in
+     evidence or signals since the prior version. Surface changes in `meta.versionLog`.
+  2. **Preserve analyst overrides.** Carry forward `governance.analystOverrideReason`
+     unchanged; note it was preserved in `meta.versionLog`.
+  3. **Re-run archetypes.** Regenerate buyer and opportunity archetypes from current
+     evidence — do not carry forward old archetypes unchanged.
+  4. **Increment version.** Set `meta.version` to prior version + 0.1 (2.0 → 2.1).
+  5. **Stable `dossierId`.** The dossier ID does not change on refresh. Version
+     tracking is via `meta.version` and `meta.versionLog`.
 
   ---
 
