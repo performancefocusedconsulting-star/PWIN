@@ -1,7 +1,9 @@
-# PWIN Architect — Bid Execution Product
+# PWIN Architect — Platform Plugin Architecture
 ## AI Plugin Architecture Brief for Claude Code
 
-**Version:** 1.7 | April 2026
+> **LOCATION NOTE:** This document lives in `pwin-bid-execution/docs/` for historical reasons but is **platform-wide in scope**. It governs `pwin-architect-plugin/`, not bid-execution alone. The actual plugin implementation — agent specs, renderers, and output schemas — is in `pwin-architect-plugin/agents/`.
+
+**Version:** 1.8 | April 2026
 **Status:** Authoritative design input for all Claude Code build sessions
 **Scope:** Plugin architecture, MCP server design, data schema, AI write-back capability, ITT ingestion skills, 20 AI intelligence use cases, capability-based agent architecture, cross-product interfaces, SaaS trajectory
 **Aligned with:** Architecture v6 (Session 13, 2026-04-02), [[pwin-bid-execution/docs/methodology_gold_standard|Gold Standard Template]] (Session 11, 2026-04-01), AI Use Cases Reference v1.0, [[pwin-bid-execution/docs/ai_suitability_assessment|AI Suitability Assessment]] (295 L3 tasks, practitioner-validated)
@@ -41,7 +43,7 @@ The platform is composed of discrete products, each addressing a distinct phase 
 | Competitor Dossiers | Pre-compiled intelligence on frequent competitors. Quarterly refresh cadence | Concept — to be built |
 | Client Profiles | Buyer intelligence, stakeholder maps, procurement history by buyer | Concept — to be built |
 | BidEquity Verdict | Forensic post-loss bid review. 7-domain evaluation, independent scoring, traceability analysis, Pursuit Maturity Score. Two-pass model (platform + consultant). | PRD v2.0 — build plan defined, ~11 new skills on existing platform |
-| Win Strategy | AI-driven capture-phase strategy development. 4-phase pipeline: baseline PWIN scoring → guided strategy elicitation → strategy synthesis → adversarial challenge & lock | Design complete — architecture diagram agreed (Session 11) |
+| Win Strategy | AI-driven capture-phase strategy development. Plugin-only, command-driven, consultant-led. Five-stage Pre-Gate Pursuit Playbook (S1–S5): Opportunity Sense-Making → Buyer & Field Shaping → Win Architecture Design → Commercial Risk Suitability Review → Commitment Readiness. Powered by Agent 3 (Win Strategy Analyst). Artefacts written to win_strategy.json. No separate HTML app. | Architecture decided 2026-04-22. Command set design pending — see wiki/actions/pwin-win-strategy-command-set.md |
 
 ### The Shared Intelligence Layer
 
@@ -247,20 +249,24 @@ Rationale:
 **Human review gate:** Strategic validation — verify judgements against relationship intelligence.
 **Design note (from practitioner review):** This agent has a life outside individual bids. Client intelligence and competitor profiling should run on a scheduled, recurring basis (monthly or quarterly) as a BidEquity operational cost, not a per-bid activity. The platform needs a client intelligence layer that persists across bids.
 
-#### Agent 3: Strategy & Scoring Analyst Agent
-**Capability:** Analyses evaluation frameworks, marks concentration, win theme coverage, scoring strategy. The "how do we win" reasoning engine.
-**Tasks served:** ~20 (Bid Manager analytical tasks) | 12 High-rated | Avg reduction 58%
-**Implementation:** Phase 1 (alongside Agent 1 — depends on its evaluation framework output)
+#### Agent 3: Win Strategy Analyst Agent
+**Capability:** Drives the capture-phase pursuit strategy across the Pre-Gate Pursuit Playbook (S1–S5). Develops win architecture, competitive positioning, buyer intelligence, win themes, and the capture plan. The "how do we win" reasoning engine for the pre-gate period. Consultant-led — the lead consultant invokes skills through commands at each stage.
+**Tasks served:** 7 capture-phase skills spanning S1 Opportunity Sense-Making through S5 Commitment Readiness
+**Implementation:** Phase 3 (alongside Agent 2 — both operate in the capture phase with shared intelligence inputs)
 **Key skills:**
-- Marks concentration analysis (SAL-05.2.1)
-- Win theme-to-criteria mapping (SAL-04.1.2, SAL-05.2.4)
-- Scoring strategy per section (SAL-05.2.3)
-- PWIN scoring across all dimensions (SAL-06.2.3)
-- Capture effectiveness assessment (SAL-06.1.1)
-**Inputs:** Evaluation framework (from Agent 1) + win themes + response structure + competitive intelligence.
-**Outputs:** Scoring strategy, marks allocation, win theme coverage matrix, PWIN score.
-**Tools:** MCP read tools (evaluation framework, response sections, win themes), analytical calculator.
-**Human review gate:** Strategic validation — scoring strategy is a human decision informed by AI analysis.
+- PWIN scoring across all dimensions (pwin-scoring)
+- Win theme development and testing against buyer values and competitive positioning (win-theme-mapping)
+- Win theme coverage audit per section and portfolio saturation (win-theme-audit)
+- Battle cards, ghost themes, counter-positioning — core foundation of Win Strategy (competitive-strategy)
+- Capture plan assembly and Bid Mandate production (capture-plan)
+- Strategic clarification questions with competitive rationale and "do not ask" list (clarification-strategy)
+- Stakeholder engagement risk, gate participation gaps, clearance risks (stakeholder-engagement-risk)
+**Inputs:** Competitive intelligence (from Agent 2) + platform intel layer (procurement data, buyer analysis, market insight) + client operating context (from Agent 0) + opportunity specifics entered by consultant.
+**Outputs:** Stage artefacts written to win_strategy.json — Opportunity Brief, Buyer Decision Thesis, Stakeholder Map, Competitor Field Map, Incumbent Defensibility Assessment, Path to Win Statement, Win Themes, Proof Map, Solution Spine, Commercial Stance, Gate Pack, Formal Recommendation.
+**Tools:** MCP read tools (win_strategy.json, shared.json, competitive intel tools), MCP write tools (win_strategy artefact fields), Agent 2 intelligence outputs.
+**Human review gate:** Consultant-led at each stage gate. Outputs reviewed and signed off before the next stage begins. Final gate pack is the formal Commencement Gate input (Full Go / Conditional Go / Watch Shape / No Bid).
+**Relationship to Qualify:** Qualify (Alex Mercer) runs periodically throughout the capture period as the executive-facing viability assessment — not once at the start, but at governance points across the 4–5 month capture window. As Win Strategy artefacts accumulate in win_strategy.json, each Qualify re-run draws on richer context. Agent 3 develops the win position; Qualify periodically assesses it.
+**Relationship to Alex Mercer:** Alex Mercer's reasoning domain (PWIN, competitive positioning, win strategy) is the same domain as this agent. Alex operates on the qualification form in the Qualify product; Agent 3 operates on the accumulated capture intelligence. Path to full unification (Option C) deferred until post Qualify v0.2 — see wiki/actions/pwin-plugin-agent3-scope.md.
 
 #### Agent 4: Commercial & Financial Modelling Agent
 **Capability:** Cost modelling, pricing analysis, scenario planning, risk-premium calculation, bid cost forecasting.
@@ -327,6 +333,24 @@ Rationale:
 **Human review gate:** Legal sign-off required — AI produces the assessment; the legal lead validates risk judgements and acceptability. Commercial lead (Agent 4) then maps delivery risk register entries to risk premium sensitivity analysis. Executive decides on risk premium at governance gate.
 **Write-back model (agreed 2026-04-21):** Legal risk findings write to the existing `RiskAssumption` entity (registerType: delivery). No new legal-specific entity required. Commercial lead applies sensitivity analysis from risk register entries when building the risk premium. Pending decision: whether a `legalRiskCategory` field on RiskAssumption is needed for commercial filtering — logged as `wiki/actions/pwin-plugin-legal-writeout-model.md`.
 
+#### Agent 8: Bid Management Analyst Agent
+**Capability:** Monitors and analyses the live bid execution process. Reads activity data, response production progress, governance gate status, review trajectories, and standup actions to surface risks, prioritise daily actions, and maintain bid momentum. The operational eyes of the bid manager during execution — a different persona and data scope from Agent 3's capture-phase strategy work.
+**Tasks served:** 7 operational insight skills (UC1, UC2, UC3, UC4, UC6, UC7, UC9) — all execution-phase
+**Implementation:** Phase 3 (alongside Agent 3 — depends on Bid Execution data layer and MCP server)
+**Key skills:**
+- Activity date gaps, cascade risks, downstream impact — BUILD FIRST (timeline-analysis — UC1)
+- Revised forecast dates based on actual progress (effort-reforecast — UC2)
+- Daily prioritised action list, max 5, deferred-action carry-forward (standup-priorities — UC3)
+- Weighted risk matrix of compliance gaps and disqualification risks (compliance-coverage — UC4)
+- Effort-per-mark efficiency, reallocation recommendations to maximise score (marks-allocation — UC6)
+- Score trajectory per response item across review cycles (review-trajectory — UC7)
+- Per-criterion pass/fail/at-risk for governance gates, auto-generates recovery actions (gate-readiness — UC9)
+**Inputs:** Bid Execution live data via MCP — activities, response items, review cycles, governance gates, standup actions, calendar, team data. No uploaded documents needed — insight skills read internal bid data only.
+**Outputs:** AIInsight records written back into Bid Execution (append-only): ActivityAIInsight, ComplianceCoverageAIInsight, GateReadinessAIInsight, EffortAllocationAIInsight. StandupAction records (source: ai_generated).
+**Tools:** MCP read tools (all Bid Execution entities — activities, response items, gates, reviews, calendar, team), MCP write tools (AIInsight append-only, standup action creation).
+**Human review gate:** Bid manager reviews flagged risks and accepts or rejects mitigations. AI surfaces and recommends; human decides and acts.
+**Why separate from Agent 3:** Agent 3 is a capture-phase strategist — forward-looking, judgement-heavy, operating before the bid commences. Agent 8 is an execution-phase analyst — deadline-driven, operational, monitoring live bid state. Different personas, different data scopes, different cadences. Combining them in one agent compromises both system prompts.
+
 #### Agent 0: Client Operating Context Agent
 **Capability:** Onboarding agent for paying clients. Runs AI-led structured interviews (with consultant facilitation) with the client firm's Managing Partner / CEO, Bid Operations & Delivery Directors, and Commercial lead to produce a signed-off Client Operating Context document. Captures strategic objectives, pursuit preferences, red lines, differentiation, culture/decision style, bid operating model, delivery/mobilisation reality, and commercial profile. This is the **top of the dependency chain** — every other agent reads this context; nothing feeds into it.
 **Tasks served:** Billable onboarding engagement (£15–25k range). Not mapped to the 295 L3 task inventory because onboarding precedes pursuit work.
@@ -346,7 +370,7 @@ Rationale:
 Two concerns surfaced alongside the Agent 7 addition remain unresolved. Both are captured in the wiki actions folder for future design work.
 
 - **Pursuit Orchestration layer.** The platform has eight specialist agents but no coordination layer that surfaces "what should happen next" across a live pursuit based on which upstream agents have completed work. V1 scope would be on-demand ("bid manager asks"); V2 scope would be event-driven. Not yet designed. This is a separate concern from Agent 0 (onboarding) — it sits across the pursuit lifecycle, not the client relationship. See `wiki/actions/pwin-plugin-orchestration-agent.md`.
-- **Agent 3 scope and Alex Mercer alignment.** Agent 3's 14 implemented skills span two distinct phases: capture-phase win strategy (capture plan, competitive strategy, PWIN scoring, win theme mapping/audit) and bid-execution management (compliance coverage, gate readiness, marks allocation, standup priorities, effort reforecast, review trajectory, timeline analysis). This is also where the Qualify product's Alex Mercer persona operates. Decision needed: keep as one agent with phase-scoped skill packs, or split into Agent 3 (Win Strategy Analyst — Alex Mercer) and a new Agent 8 (Bid Management Analyst). See `wiki/actions/pwin-plugin-agent3-scope.md`.
+- **Agent 3 scope and Alex Mercer alignment. RESOLVED 2026-04-22.** Agent 3 split into Win Strategy Analyst (Agent 3, capture-phase skills) and Bid Management Analyst (Agent 8, execution-phase skills). The 7 capture skills (pwin-scoring, win-theme-mapping, win-theme-audit, competitive-strategy, capture-plan, clarification-strategy, stakeholder-engagement-risk) remain in Agent 3. The 7 execution skills (timeline-analysis, effort-reforecast, standup-priorities, compliance-coverage, marks-allocation, review-trajectory, gate-readiness) move to Agent 8. Path to Option C (Alex Mercer persona migration from Qualify product into plugin Agent 3) deferred until post Qualify v0.2 ship. See `wiki/actions/pwin-plugin-agent3-scope.md`.
 
 **Agent dependency chain:**
 
@@ -367,8 +391,9 @@ Two concerns surfaced alongside the Agent 7 addition remain unresolved. Both are
   ▼        ▼          ▼
 ┌─────────┐ ┌─────────┐ ┌──────────┐
 │ Agent 2  │ │ Agent 3  │ │ Agent 7   │
-│ Market   │ │ Strategy │ │ Legal &   │ ──── All depend on Agent 1
-│ Intel    │ │ & Scoring│ │ Compliance│      extracted documents
+│ Market   │ │ Win      │ │ Legal &   │ ──── All depend on Agent 1
+│ Intel    │ │ Strategy │ │ Compliance│      extracted documents
+│          │ │ Analyst  │ │           │
 └────┬─────┘ └────┬────┘ └────┬──────┘
      │            │            │
      └────────────┼────────────┘
@@ -379,14 +404,22 @@ Two concerns surfaced alongside the Agent 7 addition remain unresolved. Both are
          │ Financial     │
          └──────┬───────┘
                 │
-         ┌──────┴───────┐
-         ▼              ▼
-   ┌──────────┐  ┌───────────┐
-   │ Agent 5   │  │ Agent 6    │
-   │ Content   │  │ Solution   │ ──── Production and design
-   │ Drafting  │  │ & Delivery │      draw on all upstream
-   └───────────┘  └────────────┘
+    ┌───────────┼────────────┐
+    ▼           ▼            ▼
+┌──────────┐ ┌──────────┐ ┌──────────────────────┐
+│ Agent 5   │ │ Agent 6   │ │ Agent 8               │
+│ Content   │ │ Solution  │ │ Bid Management        │
+│ Drafting  │ │ & Delivery│ │ Analyst               │
+└───────────┘ └───────────┘ └──────────────────────┘
+                                      │
+                              Reads Bid Execution
+                              live data directly
+                              (not via Agent 1) ────
+                              Activities, responses,
+                              gates, reviews, standups
 ```
+
+> **Agent 8 data source note:** Agent 8 does not depend on Agent 1 document extraction. It reads live Bid Execution operational data via MCP — the same data the bid manager enters during execution. It sits at the production phase level in the diagram because that is when it operates, but its dependency chain is separate from the document intelligence chain above it.
 
 **What differs between agents (same Claude model for all):**
 
@@ -469,32 +502,35 @@ pwin-architect-plugin/
 │   │   │   └── SKILL.md
 │   │   └── sector-scanning/
 │   │       └── SKILL.md
-│   ├── strategy-scoring/              — Agent 3 skills (largest — includes most insight skills)
-│   │   ├── marks-concentration/
+│   ├── strategy-scoring/              — Agent 3 skills (Win Strategy Analyst — capture phase)
+│   │   ├── pwin-scoring/              — PWIN scoring across all dimensions
 │   │   │   └── SKILL.md
-│   │   ├── win-theme-mapping/
+│   │   ├── win-theme-mapping/         — win theme development, buyer value testing
 │   │   │   └── SKILL.md
-│   │   ├── scoring-strategy/
+│   │   ├── win-theme-audit/           — UC5 — coverage per section, portfolio saturation
 │   │   │   └── SKILL.md
-│   │   ├── pwin-scoring/
+│   │   ├── competitive-strategy/      — battle cards, ghost themes, counter-positioning
 │   │   │   └── SKILL.md
+│   │   ├── capture-plan/              — assembles all strategy outputs into locked Capture Plan
+│   │   │   └── SKILL.md
+│   │   ├── clarification-strategy/    — strategic clarification questions with competitive rationale
+│   │   │   └── SKILL.md
+│   │   └── stakeholder-engagement/    — UC12 — gate participation gaps, clearance risks
+│   │       └── SKILL.md
+│   ├── bid-management/                — Agent 8 skills (Bid Management Analyst — execution phase)
 │   │   ├── timeline-analysis/         — UC1 insight skill — BUILD FIRST
-│   │   │   └── SKILL.md
-│   │   ├── compliance-coverage/       — UC4 insight skill
-│   │   │   └── SKILL.md
-│   │   ├── standup-prioritisation/    — UC3 insight skill
-│   │   │   └── SKILL.md
-│   │   ├── gate-readiness/            — UC9 insight skill
-│   │   │   └── SKILL.md
-│   │   ├── marks-allocation/          — UC6 insight skill
-│   │   │   └── SKILL.md
-│   │   ├── win-theme-audit/           — UC5 insight skill
-│   │   │   └── SKILL.md
-│   │   ├── review-trajectory/         — UC7 insight skill
 │   │   │   └── SKILL.md
 │   │   ├── effort-reforecasting/      — UC2 insight skill
 │   │   │   └── SKILL.md
-│   │   └── stakeholder-engagement/    — UC12 insight skill
+│   │   ├── standup-prioritisation/    — UC3 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── compliance-coverage/       — UC4 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── marks-allocation/          — UC6 insight skill
+│   │   │   └── SKILL.md
+│   │   ├── review-trajectory/         — UC7 insight skill
+│   │   │   └── SKILL.md
+│   │   └── gate-readiness/            — UC9 insight skill
 │   │       └── SKILL.md
 │   ├── commercial-financial/          — Agent 4 skills
 │   │   ├── cost-modelling/
@@ -1254,11 +1290,11 @@ The 20 AI use cases designed in Session 13 are implemented as insight skills dis
 
 | Agent | Insight Skills (from use cases) | Rationale |
 |---|---|---|
-| **Agent 3: Strategy & Scoring** | UC1 (Timeline Analysis), UC2 (Effort Reforecasting), UC3 (Standup Prioritisation), UC4 (Compliance Coverage), UC5 (Win Theme Audit), UC6 (Marks Allocation), UC7 (Review Trajectory) | All reason over activity spine, response quality, and scoring data — Agent 3's core domain |
+| **Agent 3: Win Strategy Analyst** | UC5 (Win Theme Audit), UC12 (Stakeholder Engagement) | Capture-phase strategy domain — win theme coverage and stakeholder risk are pre-gate concerns |
+| **Agent 8: Bid Management Analyst** | UC1 (Timeline Analysis), UC2 (Effort Reforecasting), UC3 (Standup Prioritisation), UC4 (Compliance Coverage), UC6 (Marks Allocation), UC7 (Review Trajectory), UC9 (Gate Readiness) | All reason over live Bid Execution data — activities, response items, review cycles, governance gates |
 | **Agent 4: Commercial & Financial** | UC10 (Risk/Pricing Validation), UC11 (Bid Cost Forecasting) | Commercial data domain |
 | **Agent 1: Document Intelligence** | UC13 (Clarification Impact), UC14 (ITT Amendment Detection) | Document ingestion and cross-referencing |
 | **Agent 5: Content & Response Drafting** | UC15 (Presentation Intelligence) | Content generation domain |
-| **Agent 3: Strategy & Scoring** | UC9 (Gate Readiness), UC12 (Stakeholder Engagement) | Governance analysis |
 | **Agent 6: Solution & Delivery** | UC8 (Reviewer Calibration) | Team/reviewer data domain |
 | **Deferred (V2/V3)** | UC16-20 (Team Performance) | Requires multi-bid data |
 
@@ -1483,5 +1519,5 @@ The plugin architecture is a forward-looking design document. Build priority fol
 
 ---
 
-*PWIN Architect — AI Plugin Architecture Brief | v1.7 | April 2026 | BIP Management Consulting | Confidential*
-*Aligned with Architecture v6, Session 14 (2026-04-02). Updated 2026-04-21 (v1.6): Agent 7 (Legal & Compliance) added. Updated 2026-04-21 (v1.7): Agent 0 corrected to Client Operating Context Agent (onboarding) — already designed and implemented as YAML skills; the previously-proposed "pursuit orchestration" role is a separate open concern, not Agent 0. Agent 3 scope question flagged: the 14 implemented Agent 3 skills span capture-phase strategy and bid-execution management, and the Qualify Alex Mercer persona overlaps the capture-phase half — decision pending on whether to split. Capability-based agent architecture now 8 agents (0 + 1–7), with 2 open design questions: pursuit orchestration layer, Agent 3 split.*
+*PWIN Architect — AI Plugin Architecture Brief | v1.8 | April 2026 | BIP Management Consulting | Confidential*
+*Aligned with Architecture v6, Session 14 (2026-04-02). Updated 2026-04-21 (v1.6): Agent 7 (Legal & Compliance) added. Updated 2026-04-21 (v1.7): Agent 0 corrected to Client Operating Context Agent (onboarding); Agent 3 scope question flagged. Updated 2026-04-22 (v1.8): Agent 3 scope RESOLVED — split into Agent 3 (Win Strategy Analyst, 7 capture-phase skills) and Agent 8 (Bid Management Analyst, 7 execution-phase skills). Win Strategy architecture decided: plugin-only, command-driven, no separate HTML app, Pre-Gate Pursuit Playbook (S1–S5). Capability-based agent architecture now 9 agents (0 + 1–8). One open design question remains: Pursuit Orchestration layer.*

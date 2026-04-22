@@ -69,7 +69,7 @@ This is still the right default for **prototypes** and for **consultant standalo
 | pwin-bid-execution | Single HTML, localStorage | Internal bid manager tool, single user, sensitive bid data should not leave the user's machine | Multi-user collaboration is required |
 | pwin-qualify (consulting standalone) | Single HTML, content inlined at build time | Ships to consultants on laptops, must work offline | The consultant deployment shifts to hosted SaaS with login |
 | pwin-qualify (website MVP) | Single HTML on Cloudflare Pages, AI via Worker proxy | **Currently exposes the rubrics, persona, and trigger rules in public browser source — server-side migration in scope for v0.2 (Pursuit Viability) ship, agreed 2026-04-15** | Shipping with v0.2: rubrics, persona, calibration matrix, RAG logic, and challenger overlay output schema move into the Worker so the browser becomes a thin display layer. Rationale: v0.2 creates the IP that's worth protecting; deferral logic ("no real moat to protect yet") no longer holds. Consulting standalone stays client-side (must work offline). |
-| pwin-strategy | Not yet built | — | At design time, not after |
+| pwin-strategy | Plugin-only, command-driven, no separate HTML app. Agent 3 (Win Strategy Analyst) invoked by consultant via commands. Artefacts written to win_strategy.json. | Consultant is the operator, not a self-service user. Methodology not yet battle-tested — build UI after first live engagement validates the workflow. | When a visual workflow status view is needed after the S1–S5 command workflow is validated on a real engagement. |
 | pwin-portfolio | Single HTML prototype | Internal leadership view, not public | If exposed externally |
 | bidequity-verdict | Runs on the pwin-platform MCP server | Two-pass forensic review needs server-side execution and platform knowledge access | — |
 | pwin-platform | Node.js + MCP server | Multi-product orchestration is inherently server-side | — |
@@ -258,7 +258,7 @@ The PWIN Platform MCP server — a single Node.js process serving dual interface
 ### Reference Documents
 
 - `pwin-platform/docs/architecture/mcp_server_architecture.md` — authoritative architecture spec (v1.0)
-- `pwin-platform/docs/architecture/pwin_architect_plugin_architecture.md` — plugin architecture (v1.5), agent specs, skill definitions
+- `pwin-platform/docs/architecture/pwin_architect_plugin_architecture.md` — plugin architecture (v1.8), agent specs, skill definitions, 9-agent capability model (0 + 1–8)
 
 ### Technical Constraints
 
@@ -286,24 +286,43 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ## pwin-strategy
 
-AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Takes the qualification intelligence and transforms it into a locked win strategy, competitive positioning, and capture plan that **informs the bid manager** running Execution.
+AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Develops and locks the win strategy, competitive positioning, and capture plan that **informs the bid manager** running Execution.
+
+Win Strategy runs in parallel with Qualify across the 4–5 month pre-gate capture window — they are not sequential. Qualify runs periodically as the executive-facing viability assessment; Win Strategy is the consultant-driven workflow that builds the evidence base Qualify assesses.
 
 ### Reference Documents
 
-- No design documents yet — product folder created, awaiting design.
+- `pwin-platform/docs/architecture/pwin_architect_plugin_architecture.md` — plugin architecture (v1.8), Agent 3 (Win Strategy Analyst) spec and skill list
+- Pre-Gate Pursuit Playbook diagram (session artefact, 2026-04-22) — defines the 5-stage methodology and 4 workstreams
 
 ### Position in Product Lifecycle
 
+Win Strategy occupies the capture phase — after the initial pursue decision from Qualify, before the Formal Commencement Gate:
+
 ```
-Qualify → Strategy → Execution
-  "Should we bid?"   "How do we win?"   "Execute the bid"
+Qualify (initial) → Win Strategy (capture, 4–5 months) → Formal Gate → Bid Execution
+ "Should we bid?"    "How do we win?"                     Go/No-Go     "Execute the bid"
 ```
 
-- **Receives from Qualify:** PWIN score, category assessments, buyer values, stakeholder maturity, competitive positioning maturity
-- **Produces for Execution:** locked win themes, competitive strategy, stakeholder map, buyer values, client intelligence, capture plan
-- **Data file:** `win_strategy.json` per pursuit (designed in MCP architecture, not yet populated)
+Qualify does not hand off to Win Strategy and stop. Qualify re-runs throughout the capture window — at governance checkpoints, after major intelligence updates, and just before the gate. Each re-run gets richer context as Win Strategy artefacts accumulate in `win_strategy.json`.
 
-> **v1 handoff model — process-level, not programmatic.** In v1, Execution is a standalone single-HTML, localStorage app. It does not read from `shared.json` or any other product's data store. The bid manager carries Strategy's outputs mentally and re-enters relevant context through the Execution Setup Wizard. The "Consumed by Execution" column below describes where in Execution each entity is applied — by the bid manager, not by the application. Programmatic data sharing between Strategy and Execution requires the unresolved localStorage↔MCP bridge (see `bid_execution_architecture_v6.html` Session 13 note). Do not treat this as a v1 integration requirement.
+**The five capture stages (Pre-Gate Pursuit Playbook):**
+
+| Stage | Name | Key Outputs |
+|---|---|---|
+| S1 | Opportunity Sense-Making | Opportunity Brief, Initial Buyer Need Hypothesis, Initial Fit Assessment |
+| S2 | Buyer & Field Shaping | Buyer Decision Thesis, Stakeholder Map, Competitor Field Map, Incumbent Defensibility Assessment |
+| S3 | Win Architecture Design | Path to Win Statement, Win Themes, Proof Map, Solution Spine |
+| S4 | Commercial Risk Suitability Review | Commercial Stance, Suitability Review, Risk Redline Summary, Gap Fix Plan |
+| S5 | Commitment Readiness | Gate Pack, Formal Recommendation (Full Go / Conditional Go / Watch Shape / No Bid) |
+
+**Four workstreams running across all stages:** Buyer & Opportunity Shaping, Competitive & Incumbent Intelligence, Solution & Proof Strategy, Commercial Risk & Suitability, Pursuit Readiness & Governance.
+
+- **Receives from Qualify:** PWIN score, category assessments, buyer values, stakeholder maturity, competitive positioning maturity (from initial and periodic re-runs)
+- **Produces for Execution:** locked win themes, competitive strategy, stakeholder map, buyer values, client intelligence, capture plan — carried by the bid manager into Execution (process-level handoff in v1)
+- **Data file:** `win_strategy.json` per pursuit (MCP platform, written to by Agent 3 skills)
+
+> **v1 handoff model — process-level, not programmatic.** In v1, Execution is a standalone single-HTML, localStorage app. It does not read from `shared.json` or any other product's data store. The bid manager carries Strategy's outputs mentally and re-enters relevant context through the Execution Setup Wizard. Programmatic data sharing between Strategy and Execution requires the unresolved localStorage↔MCP bridge. Do not treat this as a v1 integration requirement.
 
 ### Shared Entities Owned by Strategy
 
@@ -318,7 +337,16 @@ Qualify → Strategy → Execution
 
 ### Current Architecture
 
-Not yet built. When designed, the architecture should be chosen using the [Architecture Decisions](#architecture-decisions) framework above — not inherited from prior products. Likely shape: a single HTML application backed by the PWIN Platform Data API for `win_strategy.json` persistence, with the MCP server providing read/write endpoints and shared entity sync to Bid Execution. Whether the AI prompt assembly should live in the browser or server-side is an open question and should be decided at design time using the same security/IP framework that flagged the Qualify website MVP.
+**Plugin-only. No separate HTML application.**
+
+Architecture decided 2026-04-22. Rationale: the methodology (S1–S5 workflow) has not yet been validated on a live engagement. Building a UI around an unvalidated workflow risks building the wrong thing. The consultant is a power user and does not need buttons — they drive through commands. Build the UI once the workflow is proven.
+
+- **Agent 3 (Win Strategy Analyst)** — the AI capability. 7 capture-phase skills invoked by the consultant through commands. See plugin architecture doc for full skill specs.
+- **Commands** — one per major artefact / stage gate. Command set design is the next design task (`wiki/actions/pwin-win-strategy-command-set.md`).
+- **win_strategy.json** — artefacts accumulate here per pursuit. Read by Qualify when re-running periodic viability assessments.
+- **Qualify integration (future, post Qualify v0.2)** — Qualify's context assembly reads `win_strategy.json` when it exists, enriching each re-run with accumulated capture intelligence. This is what makes the PWIN trajectory story real — each Qualify re-run is more informed than the last. See `wiki/actions/pwin-qualify-context-evolution.md`.
+
+**Re-evaluate when:** the S1–S5 command workflow has been run on a real engagement and the consultant can articulate what they need to see at a glance — then build the status view.
 
 ---
 
