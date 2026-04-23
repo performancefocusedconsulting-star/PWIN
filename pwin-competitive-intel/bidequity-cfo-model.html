@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BidEquity — CFO Business Case Model</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #0a0e1a;
+  --bg-card:    #131829;
+  --bg-card-2:  #1a2035;
+  --gold:       #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim:   #7a5e28;
+  --green:      #48a870;
+  --text:       #e8e4d9;
+  --text-dim:   #8a8890;
+  --text-muted: #555a6e;
+  --border:     rgba(201,168,76,0.15);
+  --border-dim: rgba(255,255,255,0.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;font-weight:300;background:var(--bg);color:var(--text);line-height:1.65}
+.page{max-width:1060px;margin:0 auto;padding:3.5rem 2rem 6rem}
+
+/* Typography */
+.eyebrow{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
+h1{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1.13;margin-bottom:.85rem}
+h2{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:400}
+.subtitle{font-size:.9rem;color:var(--text-dim);max-width:700px;line-height:1.75;margin-bottom:.75rem}
+.datasrc{font-family:'DM Mono',monospace;font-size:.57rem;letter-spacing:.08em;color:var(--text-muted)}
+header{border-bottom:1px solid var(--border-dim);padding-bottom:2.5rem;margin-bottom:3.5rem}
+.section{margin-bottom:4.5rem}
+.sec-head{margin-bottom:1.8rem}
+.sec-sub{font-size:.88rem;color:var(--text-dim);margin-top:.5rem;max-width:680px;line-height:1.7}
+
+/* Metric cards */
+.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);margin-bottom:3.5rem}
+.metric{background:var(--bg-card);padding:2rem;text-align:center}
+.m-label{font-family:'DM Mono',monospace;font-size:.57rem;letter-spacing:.17em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:.65rem}
+.m-value{font-family:'Cormorant Garamond',serif;font-size:3.4rem;font-weight:300;color:var(--gold-light);line-height:1;margin-bottom:.4rem}
+.m-sub{font-size:.78rem;color:var(--text-dim)}
+
+/* Tier table */
+.tier-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-bottom:.5rem}
+.tier-table th{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-weight:400}
+.tier-table td{padding:.85rem 1rem;border-bottom:1px solid var(--border-dim);vertical-align:middle}
+.tier-table tr:nth-child(odd) td{background:rgba(255,255,255,.015)}
+.tier-table .t-total td{background:var(--bg-card);border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:.8rem;color:var(--gold-light)}
+.t-name{font-weight:400;color:var(--text)}
+.t-anchor{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--text-muted);margin-top:.2rem;line-height:1.4}
+.bar-bg{background:var(--border-dim);height:3px;border-radius:2px;margin-top:.4rem;width:80px;margin-left:auto}
+.bar-fill{height:3px;border-radius:2px;background:var(--gold);opacity:.55}
+
+/* Levers */
+.levers-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);margin-bottom:1px}
+.lever-card{background:var(--bg-card);padding:1.8rem 2rem}
+.lever-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bg);background:var(--gold);padding:.2em .6em;margin-bottom:.9rem}
+.lever-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:300;margin-bottom:.45rem}
+.lever-desc{font-size:.82rem;color:var(--text-dim);margin-bottom:1.4rem;line-height:1.65}
+.sl-wrap{margin-bottom:.8rem}
+.sl-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.55rem}
+.sl-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.sl-val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold-light)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;cursor:pointer;outline:none;--pct:0%;background:linear-gradient(to right,var(--gold) 0%,var(--gold) var(--pct),rgba(255,255,255,.1) var(--pct),rgba(255,255,255,.1) 100%)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--gold);border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 3px rgba(201,168,76,.2)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--gold);border-radius:50%;cursor:pointer;border:2px solid var(--bg)}
+.lever-out{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim);padding-top:.75rem;border-top:1px solid var(--border-dim);display:flex;align-items:baseline;gap:.4rem}
+.lever-saving{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold-light)}
+
+/* Impact row */
+.impact-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);border-top:none}
+.impact-cell{background:var(--bg-card-2);padding:1.4rem 1.5rem}
+
+/* Company calculator */
+.profile-sel{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border-dim);margin-bottom:2rem}
+.prof-btn{background:var(--bg-card);border:none;padding:.85rem .5rem;cursor:pointer;text-align:center;color:var(--text-dim);transition:background .15s;width:100%}
+.prof-btn:hover{background:var(--bg-card-2)}
+.prof-btn.active{background:var(--bg-card-2);color:var(--gold-light)}
+.prof-name{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}
+.prof-eg{font-size:.68rem;color:var(--text-muted);line-height:1.4}
+.prof-btn.active .prof-eg{color:var(--text-dim)}
+.inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem}
+.inp-group{margin-bottom:1.4rem}
+label.inp-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:.5rem}
+input[type=number]{background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:1.5rem;padding:.5rem .8rem;width:100%;outline:none}
+input[type=number]:focus{border-color:var(--gold-dim)}
+
+/* Results */
+.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);margin-bottom:1px}
+.res-card{background:var(--bg-card);padding:1.6rem 1.8rem}
+.res-card.highlight{background:var(--bg-card-2);border:none}
+.res-label{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.17em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:.6rem}
+.res-value{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:300;color:var(--gold-light);line-height:1;margin-bottom:.4rem}
+.res-value.green{color:var(--green)}
+.res-sub{font-size:.76rem;color:var(--text-dim);line-height:1.5}
+
+/* Pursuit ROI bar */
+.pursuit-bar{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr;align-items:center;gap:1.2rem;background:var(--bg-card-2);border:1px solid var(--border);border-top:none;padding:1.6rem 1.8rem}
+.pb-arrow{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--gold);text-align:center}
+
+/* Methodology */
+.meth-table{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:1.2rem}
+.meth-table th{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);padding:.55rem .8rem;text-align:left;border-bottom:1px solid var(--border);font-weight:400}
+.meth-table td{padding:.75rem .8rem;border-bottom:1px solid var(--border-dim);color:var(--text-dim);vertical-align:top}
+.caveat{font-size:.79rem;color:var(--text-muted);border-left:2px solid var(--gold-dim);padding-left:1rem;line-height:1.65;margin-bottom:.75rem}
+.caveat strong{color:var(--text-dim)}
+
+@media(max-width:700px){
+  .metric-row,.results-grid{grid-template-columns:1fr}
+  .levers-grid,.impact-row{grid-template-columns:1fr}
+  .profile-sel{grid-template-columns:1fr 1fr}
+  .inputs-grid{grid-template-columns:1fr}
+  .pursuit-bar{grid-template-columns:1fr;text-align:center}
+  .pb-arrow{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">BidEquity · Strategic Intelligence</div>
+  <h1>The Bid Investment Business Case</h1>
+  <p class="subtitle">UK government strategic suppliers invest an estimated £3.9 billion per year pursuing contracts. This model quantifies that investment by tier, isolates the sunk cost on losing bids, and calculates the financial return from deploying BidEquity's pursuit intelligence and AI bid production services.</p>
+  <div class="datasrc">Volume: FTS award data · 37 UK government strategic suppliers · trailing 12 months to April 2026 · Unit costs: calibrated from disclosed bid costs on real UK government contracts · April 2026</div>
+</header>
+
+<!-- ── SECTION 1: Industry Picture ───────────────────────── -->
+<section class="section">
+
+  <div class="metric-row">
+    <div class="metric">
+      <span class="m-label">Total Annual Bid Investment</span>
+      <div class="m-value">£3.9bn</div>
+      <div class="m-sub">37 strategic suppliers · all tiers</div>
+    </div>
+    <div class="metric">
+      <span class="m-label">Sunk Cost on Losing Bids</span>
+      <div class="m-value">£2.6bn</div>
+      <div class="m-sub">67% of total spend · zero commercial return</div>
+    </div>
+    <div class="metric">
+      <span class="m-label">Annual Bid Submissions</span>
+      <div class="m-value">9,376</div>
+      <div class="m-sub">across all tiers · 33% baseline win rate</div>
+    </div>
+  </div>
+
+  <div class="sec-head">
+    <div class="eyebrow">Bid Investment by Tier</div>
+    <h2>Where the £3.9 Billion Goes</h2>
+    <p class="sec-sub">Bid volumes derived from FTS award data adjusted for FTS coverage gaps and converted to bid submissions using disclosed supplier win rates. Unit costs calibrated from real bid cost data on UK government contracts.</p>
+  </div>
+
+  <table class="tier-table">
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th>TCV Range</th>
+        <th style="text-align:right">Bids/yr</th>
+        <th style="text-align:right">Unit Cost</th>
+        <th style="text-align:right">Total Spend</th>
+        <th style="text-align:right">Share</th>
+      </tr>
+    </thead>
+    <tbody id="tier-tbody"></tbody>
+  </table>
+  <div class="datasrc" style="margin-top:.5rem">* Framework call-off volume estimated — FTS captures &lt;15% of this tier. All other tiers use FTS unique competition counts, adjusted for FTS coverage rate and multiplied by estimated strategic bidders per competition.</div>
+
+</section>
+
+<!-- ── SECTION 2: Two Levers ──────────────────────────────── -->
+<section class="section">
+
+  <div class="sec-head">
+    <div class="eyebrow">BidEquity Value Model</div>
+    <h2>The Two Levers</h2>
+    <p class="sec-sub">BidEquity creates value through two independent and compounding mechanisms. Adjust the assumptions — the industry impact and your company calculator update in real time.</p>
+  </div>
+
+  <div class="levers-grid">
+    <div class="lever-card">
+      <div class="lever-tag">Lever A</div>
+      <div class="lever-title">Pursuit Selection</div>
+      <p class="lever-desc">Eliminates bids before full cost is incurred. Better intelligence at the go/no-go stage means fewer resources committed to opportunities the supplier cannot win.</p>
+      <div class="sl-wrap">
+        <div class="sl-head">
+          <span class="sl-label">Bids eliminated</span>
+          <span class="sl-val" id="la-disp">20%</span>
+        </div>
+        <input type="range" id="sl-la" min="5" max="40" step="1" value="20" oninput="onSlider(this,'la-disp',v=>v+'%')">
+      </div>
+      <div class="lever-out">
+        Industry saving: <span class="lever-saving" id="la-ind-saving">—</span> /yr
+      </div>
+    </div>
+    <div class="lever-card">
+      <div class="lever-tag">Lever B</div>
+      <div class="lever-title">AI Bid Cost Reduction</div>
+      <p class="lever-desc">Reduces the cost of bids that proceed. AI-assisted research, first-draft writing, compliance checking, and commercial modelling reduce team effort at every stage — including large complex pursuits.</p>
+      <div class="sl-wrap">
+        <div class="sl-head">
+          <span class="sl-label">Cost reduction per bid</span>
+          <span class="sl-val" id="lb-disp">40%</span>
+        </div>
+        <input type="range" id="sl-lb" min="10" max="60" step="1" value="40" oninput="onSlider(this,'lb-disp',v=>v+'%')">
+      </div>
+      <div class="lever-out">
+        Industry saving: <span class="lever-saving" id="lb-ind-saving">—</span> /yr
+      </div>
+    </div>
+  </div>
+
+  <div class="impact-row">
+    <div class="impact-cell">
+      <span class="m-label">Combined Industry Saving</span>
+      <div class="m-value" id="ind-combined" style="font-size:2.2rem">—</div>
+      <div class="m-sub">per year · both levers</div>
+    </div>
+    <div class="impact-cell">
+      <span class="m-label">Average Per Supplier</span>
+      <div class="m-value" id="ind-per-sup" style="font-size:2.2rem">—</div>
+      <div class="m-sub">per year</div>
+    </div>
+    <div class="impact-cell">
+      <span class="m-label">Revised Industry Spend</span>
+      <div class="m-value" id="ind-revised" style="font-size:2.2rem">—</div>
+      <div class="m-sub">after both levers</div>
+    </div>
+    <div class="impact-cell">
+      <span class="m-label">Indicative Retainer ROI</span>
+      <div class="m-value" id="ind-roi" style="font-size:2.2rem">—</div>
+      <div class="m-sub">per supplier · £720k retainer</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── SECTION 3: Company Calculator ─────────────────────── -->
+<section class="section">
+
+  <div class="sec-head">
+    <div class="eyebrow">Your Company</div>
+    <h2>Personalised Business Case</h2>
+    <p class="sec-sub">Select your company profile, enter your figures, and adjust the win rate and margin assumptions. Lever A and Lever B carry through from the model above.</p>
+  </div>
+
+  <div class="profile-sel" id="profile-sel"></div>
+
+  <div class="inputs-grid">
+    <div>
+      <div class="inp-group">
+        <label class="inp-label" for="inp-rev">UK Gov Revenue (£m)</label>
+        <input type="number" id="inp-rev" value="2000" min="50" max="20000" oninput="calcAll()">
+      </div>
+      <div class="inp-group">
+        <div class="sl-head">
+          <span class="sl-label inp-label">Win Rate</span>
+          <span class="sl-val" id="wr-disp">33%</span>
+        </div>
+        <input type="range" id="sl-wr" min="15" max="65" step="1" value="33" oninput="onSlider(this,'wr-disp',v=>v+'%')">
+        <div class="datasrc" style="margin-top:.4rem">Serco discloses 32% · Capita discloses 64% (different denominators — see methodology)</div>
+      </div>
+    </div>
+    <div>
+      <div class="inp-group">
+        <div class="sl-head">
+          <span class="sl-label inp-label">Operating Margin %</span>
+          <span class="sl-val" id="gm-disp">7%</span>
+        </div>
+        <input type="range" id="sl-gm" min="2" max="15" step="1" value="7" oninput="onSlider(this,'gm-disp',v=>v+'%')">
+        <div class="datasrc" style="margin-top:.4rem">Serco 6.7% · Mitie 5.2% · Babcock 7.1% · Capita 4.8% (FY2024 reported)</div>
+      </div>
+      <div class="inp-group">
+        <label class="inp-label" for="inp-ret">Annual BidEquity Retainer (£k)</label>
+        <input type="number" id="inp-ret" value="720" min="50" max="10000" oninput="calcAll()">
+      </div>
+    </div>
+  </div>
+
+  <div class="results-grid">
+    <div class="res-card">
+      <span class="res-label">Estimated Bid Spend</span>
+      <div class="res-value" id="r-spend">—</div>
+      <div class="res-sub" id="r-spend-pct">per year</div>
+    </div>
+    <div class="res-card">
+      <span class="res-label">Sunk Cost on Losses</span>
+      <div class="res-value" id="r-sunk">—</div>
+      <div class="res-sub" id="r-sunk-pct">zero commercial return</div>
+    </div>
+    <div class="res-card highlight">
+      <span class="res-label">BidEquity Annual Saving</span>
+      <div class="res-value green" id="r-saving">—</div>
+      <div class="res-sub">A: <span id="r-sa">—</span> · B: <span id="r-sb">—</span></div>
+    </div>
+    <div class="res-card highlight">
+      <span class="res-label">Retainer ROI</span>
+      <div class="res-value green" id="r-roi">—</div>
+      <div class="res-sub" id="r-roi-sub">return per £1 invested</div>
+    </div>
+  </div>
+
+  <div class="pursuit-bar">
+    <div>
+      <span class="res-label">Current Pursuit ROI</span>
+      <div class="res-value" id="r-proi-cur" style="font-size:2.2rem">—</div>
+      <div class="res-sub">Gross profit ÷ total bid spend today</div>
+    </div>
+    <div class="pb-arrow">→</div>
+    <div>
+      <span class="res-label">BidEquity Pursuit ROI</span>
+      <div class="res-value green" id="r-proi-new" style="font-size:2.2rem">—</div>
+      <div class="res-sub">Same wins · lower cost base</div>
+    </div>
+    <div class="pb-arrow">Δ</div>
+    <div>
+      <span class="res-label">ROI Improvement</span>
+      <div class="res-value green" id="r-proi-delta" style="font-size:2.2rem">—</div>
+      <div class="res-sub">Additional return per £1 of bid investment</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── SECTION 4: Methodology ─────────────────────────────── -->
+<section class="section">
+
+  <div class="sec-head">
+    <div class="eyebrow">Methodology &amp; Assumptions</div>
+    <h2>How the Model is Built</h2>
+  </div>
+
+  <table class="meth-table">
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th>Volume derivation</th>
+        <th>Unit cost anchor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="color:var(--text)">Framework call-off</td><td>Bottom-up estimate — FTS captures &lt;15% of this tier; framework call-offs not individually notified</td><td>4 people · 2–3 weeks · £3,500/person-week = £35k empirical</td></tr>
+      <tr><td style="color:var(--text)">Notified small</td><td>63 FTS unique competitions ÷ 55% coverage × 4.5 strategic bidders</td><td>Interpolated from framework anchor and notified mid calibration</td></tr>
+      <tr><td style="color:var(--text)">Notified mid</td><td>42 FTS unique competitions ÷ 70% coverage × 5.5 strategic bidders</td><td>£400k at £35m / 2–3 month ITT · £750k–£1m at £100m / 8-month process</td></tr>
+      <tr><td style="color:var(--text)">Major services</td><td>48 FTS unique competitions ÷ 75% coverage × 5.5 strategic bidders</td><td>£1m lower bound (direct experience) · £3m+ upper bound · £1.5m blended</td></tr>
+      <tr><td style="color:var(--text)">Strategic programme</td><td>27 FTS unique competitions ÷ 80% coverage × 4.5 strategic bidders</td><td>Project Selborne: £1.2bn contract · 2-year pursuit = £12m bid cost · £14m blended</td></tr>
+      <tr><td style="color:var(--text)">Defence mega</td><td>4 FTS unique competitions ÷ 45% coverage × 3.5 strategic bidders</td><td>Project Marshall: ~£5bn contract = £25m bid cost</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caveat"><strong>On volume:</strong> FTS unique competition counts deduplicate consortium and multi-lot award notices. Coverage corrections account for framework call-offs at £25m+ tier (notified under PCR 2015 but inconsistently) and defence/security exemptions at the mega tier. Strategic bidder counts are estimated from observed average supplier appointments per competition (FTS total_bids field) cross-checked against market knowledge of qualified prime contractors per sector.</div>
+  <div class="caveat"><strong>On unit costs:</strong> All costs are fully-loaded (staff time, overhead, management, external advisors, pricing support). Loaded rate calibrated at £3,500 per person-week from empirical framework call-off data. Major contract costs include senior partner time, red team reviews, independent pricing committees, TUPE analysis, legal, and mobilisation planning for complex service contracts.</div>
+  <div class="caveat"><strong>On the company calculator:</strong> Bid spend rates by company type are calibrated from the Serco model (£4.9bn revenue, ~£104m estimated bid spend = 2.1%) and adjusted for deal mix by profile. Win rate adjustment: companies with a lower win rate submit proportionally more bids per £m of order intake — the model scales bid spend by the ratio of baseline (33%) to the company's stated rate. Pursuit ROI = gross profit on UK gov wins ÷ total bid spend.</div>
+  <div class="caveat"><strong>On Lever B:</strong> A 40–50% reduction in bid cost is achievable on large complex pursuits through AI-assisted research synthesis, first-draft proposal generation, compliance matrix automation, and real-time commercial modelling. The saving is not uniform — it is highest on research-heavy phases (S1–S3 of a competitive dialogue) and lowest on governance-intensive activities (BAFO, board sign-off, legal review). The slider allows conservative and stretch scenarios.</div>
+
+</section>
+
+</div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+const TIERS = [
+  { name:'Framework call-off', tcv:'< £5m',       bids:8000, uc:35000,     anchor:'4 people · 2–3 wks · £3,500/pw *' },
+  { name:'Notified small',     tcv:'£5m – 25m',   bids:515,  uc:125000,    anchor:'Interpolated · FTS: 63 unique competitions' },
+  { name:'Notified mid',       tcv:'£25m – 100m', bids:330,  uc:550000,    anchor:'£400k at £35m / ITT · £750k–£1m at £100m / 8m' },
+  { name:'Major services',     tcv:'£100m – 500m',bids:350,  uc:1500000,   anchor:'Experience: £1m lower · £3m+ upper · FTS: 48 competitions' },
+  { name:'Strategic programme',tcv:'£500m – 5bn', bids:150,  uc:14000000,  anchor:'Selborne: £1.2bn, 2yr = £12m · FTS: 27 competitions' },
+  { name:'Defence mega',       tcv:'£5bn+',       bids:31,   uc:25000000,  anchor:'Marshall: ~£5bn = £25m · FTS: 4 competitions' },
+];
+
+const TOT_SPEND = TIERS.reduce((s,t)=>s+t.bids*t.uc, 0);
+const TOT_BIDS  = TIERS.reduce((s,t)=>s+t.bids, 0);
+const N_SUPS    = 37;
+const BASE_WR   = 0.33;
+
+const PROFILES = {
+  outsourcer:   { label:'Large Outsourcer',  eg:'Serco · Mitie · Sodexo',          rate:0.021, rev:2000 },
+  it:           { label:'IT / Digital',       eg:'Capita · Atos · CGI · Capgemini', rate:0.018, rev:1500 },
+  defence:      { label:'Defence Prime',      eg:'BAE · Babcock · Leidos',           rate:0.025, rev:3000 },
+  fm:           { label:'FM / Facilities',    eg:'Aramark · ISS · G4S',             rate:0.014, rev:800  },
+  construction: { label:'Construction',       eg:'Kier · Balfour Beatty · AECOM',   rate:0.016, rev:2500 },
+};
+
+let activeProfile = 'outsourcer';
+
+// ── Formatters ───────────────────────────────────────────────────────────────
+
+function fM(v) {
+  if (v >= 1e9) return '£' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2).replace(/\.?0+$/,'') + 'bn';
+  if (v >= 1e6) return '£' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1).replace(/\.?0+$/,'') + 'm';
+  return '£' + Math.round(v/1000).toLocaleString() + 'k';
+}
+function fX(v) { return v.toFixed(1) + '×'; }
+function fD(v) { return '+' + v.toFixed(1) + '×'; }
+
+// ── Slider ───────────────────────────────────────────────────────────────────
+
+function onSlider(el, dispId, fmt) {
+  const v = +el.value, min = +el.min, max = +el.max;
+  el.style.setProperty('--pct', ((v-min)/(max-min)*100)+'%');
+  document.getElementById(dispId).textContent = fmt(v);
+  calcAll();
+}
+
+function initSliders() {
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    const v = +el.value, min = +el.min, max = +el.max;
+    el.style.setProperty('--pct', ((v-min)/(max-min)*100)+'%');
+  });
+}
+
+// ── Tier table ───────────────────────────────────────────────────────────────
+
+function renderTiers() {
+  const tb = document.getElementById('tier-tbody');
+  let html = '';
+  TIERS.forEach(t => {
+    const tot = t.bids * t.uc;
+    const pct = tot / TOT_SPEND * 100;
+    html += `<tr>
+      <td><div class="t-name">${t.name}</div><div class="t-anchor">${t.anchor}</div></td>
+      <td style="color:var(--text-dim);font-size:.82rem">${t.tcv}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-size:.8rem">${t.bids.toLocaleString()}</td>
+      <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text-dim)">${fM(t.uc)}</td>
+      <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--gold-light)">${fM(tot)}</td>
+      <td style="text-align:right">
+        <span style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim)">${pct.toFixed(0)}%</span>
+        <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(pct*1.8,100)}%"></div></div>
+      </td>
+    </tr>`;
+  });
+  html += `<tr class="t-total">
+    <td colspan="2"><strong>Total · 37 strategic suppliers</strong></td>
+    <td style="text-align:right">${TOT_BIDS.toLocaleString()}</td>
+    <td style="text-align:right">${fM(TOT_SPEND/TOT_BIDS)}<span style="font-size:.6rem;opacity:.7"> blended</span></td>
+    <td style="text-align:right">${fM(TOT_SPEND)}</td>
+    <td></td>
+  </tr>`;
+  tb.innerHTML = html;
+}
+
+// ── Profile selector ──────────────────────────────────────────────────────────
+
+function renderProfiles() {
+  document.getElementById('profile-sel').innerHTML = Object.entries(PROFILES).map(([k,p]) => `
+    <button class="prof-btn${k===activeProfile?' active':''}" onclick="setProfile('${k}')">
+      <span class="prof-name">${p.label}</span>
+      <span class="prof-eg">${p.eg}</span>
+    </button>`).join('');
+}
+
+function setProfile(k) {
+  activeProfile = k;
+  document.getElementById('inp-rev').value = PROFILES[k].rev;
+  renderProfiles();
+  calcAll();
+}
+
+// ── Calculations ──────────────────────────────────────────────────────────────
+
+function get(id) { return parseFloat(document.getElementById(id).value); }
+function sid(id) { return parseFloat(document.getElementById(id).value); }
+
+function calcAll() {
+  const la = sid('sl-la') / 100;
+  const lb = sid('sl-lb') / 100;
+
+  // Industry
+  const iSaveA   = TOT_SPEND * la;
+  const iSaveB   = TOT_SPEND * (1-la) * lb;
+  const iTotal   = iSaveA + iSaveB;
+  const iRevised = TOT_SPEND - iTotal;
+  const iPerSup  = iTotal / N_SUPS;
+  const iROI     = iPerSup / 720000;
+
+  document.getElementById('la-ind-saving').textContent = fM(iSaveA);
+  document.getElementById('lb-ind-saving').textContent = fM(iSaveB);
+  document.getElementById('ind-combined').textContent  = fM(iTotal);
+  document.getElementById('ind-per-sup').textContent   = fM(iPerSup);
+  document.getElementById('ind-revised').textContent   = fM(iRevised);
+  document.getElementById('ind-roi').textContent       = fX(iROI);
+
+  // Company
+  const rev     = get('inp-rev') * 1e6;
+  const wr      = sid('sl-wr') / 100;
+  const gm      = sid('sl-gm') / 100;
+  const ret     = get('inp-ret') * 1000;
+
+  const rate    = PROFILES[activeProfile].rate;
+  const spend   = rev * rate * (BASE_WR / wr);
+  const sunk    = spend * (1 - wr);
+
+  const saveA   = spend * la;
+  const saveB   = spend * (1 - la) * lb;
+  const saving  = saveA + saveB;
+  const newSpend= spend - saving;
+
+  const gp      = rev * gm;
+  const pROI    = gp / spend;
+  const pROInew = gp / newSpend;
+  const pDelta  = pROInew - pROI;
+  const rROI    = saving / ret;
+
+  document.getElementById('r-spend').textContent    = fM(spend);
+  document.getElementById('r-spend-pct').textContent= `~${(spend/rev*100).toFixed(1)}% of UK gov revenue`;
+  document.getElementById('r-sunk').textContent     = fM(sunk);
+  document.getElementById('r-sunk-pct').textContent = `${(sunk/spend*100).toFixed(0)}% of bid spend · no return`;
+  document.getElementById('r-saving').textContent   = fM(saving);
+  document.getElementById('r-sa').textContent       = fM(saveA);
+  document.getElementById('r-sb').textContent       = fM(saveB);
+  document.getElementById('r-roi').textContent      = fX(rROI);
+  document.getElementById('r-roi-sub').textContent  = `${fM(saving)} saving ÷ ${fM(ret)} retainer`;
+
+  document.getElementById('r-proi-cur').textContent  = fX(pROI);
+  document.getElementById('r-proi-new').textContent  = fX(pROInew);
+  document.getElementById('r-proi-delta').textContent= fD(pDelta);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+renderTiers();
+renderProfiles();
+initSliders();
+calcAll();
+</script>
+</body>
+</html>
