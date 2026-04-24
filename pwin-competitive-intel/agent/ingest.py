@@ -26,6 +26,13 @@ from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 
+import db_utils
+from db_utils import (
+    get_db, init_schema,
+    upsert_buyer_row, upsert_supplier_row, upsert_notice_row,
+    upsert_award_row, upsert_cpv_row, link_award_supplier,
+)
+
 # ── Config ─────────────────────────────────────────────────────────────────
 
 BASE_URL    = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
@@ -44,89 +51,6 @@ log = logging.getLogger("ingest")
 
 
 # ── Database ────────────────────────────────────────────────────────────────
-
-def get_db(path: Path) -> sqlite3.Connection:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(path))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA foreign_keys=ON")
-    return conn
-
-
-def _migrate_schema(conn: sqlite3.Connection):
-    """Add columns that were appended to schema.sql after the DB was first created.
-
-    CREATE TABLE IF NOT EXISTS silently skips tables that already exist,
-    so new columns must be added via ALTER TABLE.  Each migration is
-    guarded by a PRAGMA table_info check so it is safe to re-run.
-    """
-    # Collect existing columns per table once
-    def _columns(table):
-        return {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
-
-    # ── notices: framework fields (added 2026-04-12, Decision C06) ──
-    notices_cols = _columns("notices")
-    framework_additions = [
-        ("is_framework",          "INTEGER DEFAULT 0"),
-        ("framework_method",      "TEXT"),
-        ("framework_type",        "TEXT"),
-        ("parent_framework_ocid", "TEXT"),
-        ("parent_framework_title","TEXT"),
-    ]
-    for col, typedef in framework_additions:
-        if col not in notices_cols:
-            conn.execute(f"ALTER TABLE notices ADD COLUMN {col} {typedef}")
-            log.info("Migrated notices: added column %s", col)
-
-    # ── awards: value_quality flag (added 2026-04, canonical-layer playbook §16) ──
-    try:
-        awards_cols = _columns("awards")
-    except sqlite3.OperationalError:
-        awards_cols = set()
-    if awards_cols and "value_quality" not in awards_cols:
-        conn.execute("ALTER TABLE awards ADD COLUMN value_quality TEXT")
-        log.info("Migrated awards: added column value_quality")
-
-    # ── adjudication_queue: max_match_probability (added after initial table creation) ──
-    try:
-        adj_cols = _columns("adjudication_queue")
-        if adj_cols and "max_match_probability" not in adj_cols:
-            conn.execute("ALTER TABLE adjudication_queue ADD COLUMN max_match_probability REAL NOT NULL DEFAULT 0.0")
-            log.info("Migrated adjudication_queue: added column max_match_probability")
-    except sqlite3.OperationalError:
-        pass  # table doesn't exist yet — CREATE TABLE will handle it
-
-    # ── data_source: multi-source tag (added 2026-04-24) ──
-    for table in ("notices", "awards", "buyers", "suppliers"):
-        cols = _columns(table)
-        if "data_source" not in cols:
-            conn.execute(f"ALTER TABLE {table} ADD COLUMN data_source TEXT DEFAULT 'fts'")
-            log.info("Migrated %s: added column data_source", table)
-
-    # ── notices: CF SME suitability flag (added 2026-04-24) ──
-    notices_cols_v2 = _columns("notices")
-    if "suitable_for_sme" not in notices_cols_v2:
-        conn.execute("ALTER TABLE notices ADD COLUMN suitable_for_sme INTEGER DEFAULT 0")
-        log.info("Migrated notices: added column suitable_for_sme")
-
-    conn.commit()
-
-
-def init_schema(conn: sqlite3.Connection):
-    # Run migrations first so existing tables gain any new columns
-    # before the CREATE TABLE IF NOT EXISTS statements (which are no-ops
-    # for tables that already exist).
-    try:
-        _migrate_schema(conn)
-    except Exception:
-        pass  # table doesn't exist yet — CREATE TABLE will handle it
-
-    schema = SCHEMA_PATH.read_text()
-    conn.executescript(schema)
-    conn.commit()
-    log.info("Schema initialised")
-
 
 def get_cursor(conn: sqlite3.Connection) -> str:
     row = conn.execute(
@@ -408,7 +332,6 @@ def upsert_buyer(conn: sqlite3.Connection, party: dict):
     addr = party.get("address", {})
     contact = party.get("contactPoint", {})
     details = party.get("details", {})
-
     org_type = None
     devolved = None
     for cls in details.get("classifications", []):
@@ -416,67 +339,43 @@ def upsert_buyer(conn: sqlite3.Connection, party: dict):
             org_type = cls.get("id")
         if cls.get("scheme") == "UK_CA_DEVOLVED_REGULATIONS":
             devolved = cls.get("id")
-
-    conn.execute("""
-        INSERT INTO buyers (id, name, org_type, devolved_region, street_address, locality,
-            postal_code, region_code, contact_name, contact_email, contact_telephone, website, last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-        ON CONFLICT(id) DO UPDATE SET
-            name=excluded.name,
-            org_type=COALESCE(excluded.org_type, org_type),
-            devolved_region=COALESCE(excluded.devolved_region, devolved_region),
-            street_address=COALESCE(excluded.street_address, street_address),
-            locality=COALESCE(excluded.locality, locality),
-            postal_code=COALESCE(excluded.postal_code, postal_code),
-            region_code=COALESCE(excluded.region_code, region_code),
-            contact_name=COALESCE(excluded.contact_name, contact_name),
-            contact_email=COALESCE(excluded.contact_email, contact_email),
-            contact_telephone=COALESCE(excluded.contact_telephone, contact_telephone),
-            website=COALESCE(excluded.website, website),
-            last_updated=datetime('now')
-    """, (
-        party.get("id"), party.get("name"), org_type, devolved,
-        addr.get("streetAddress"), addr.get("locality"), addr.get("postalCode"),
-        addr.get("region"), contact.get("name"), contact.get("email"),
-        contact.get("telephone"), details.get("url"),
-    ))
+    upsert_buyer_row(conn, {
+        "id": party.get("id"),
+        "name": party.get("name"),
+        "org_type": org_type,
+        "devolved_region": devolved,
+        "street_address": addr.get("streetAddress"),
+        "locality": addr.get("locality"),
+        "postal_code": addr.get("postalCode"),
+        "region_code": addr.get("region"),
+        "contact_name": contact.get("name"),
+        "contact_email": contact.get("email"),
+        "contact_telephone": contact.get("telephone"),
+        "website": details.get("url"),
+        "data_source": "fts",
+    })
 
 
 def upsert_supplier(conn: sqlite3.Connection, party: dict) -> str:
-    """Upsert supplier and return their ID."""
     addr = party.get("address", {})
     contact = party.get("contactPoint", {})
     details = party.get("details", {})
-
-    conn.execute("""
-        INSERT INTO suppliers (id, name, companies_house_no, scale, is_vcse, is_sheltered,
-            is_public_mission, street_address, locality, postal_code, region_code,
-            contact_email, website, last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-        ON CONFLICT(id) DO UPDATE SET
-            name=excluded.name,
-            companies_house_no=COALESCE(excluded.companies_house_no, companies_house_no),
-            scale=COALESCE(excluded.scale, scale),
-            is_vcse=COALESCE(excluded.is_vcse, is_vcse),
-            is_sheltered=COALESCE(excluded.is_sheltered, is_sheltered),
-            is_public_mission=COALESCE(excluded.is_public_mission, is_public_mission),
-            street_address=COALESCE(excluded.street_address, street_address),
-            locality=COALESCE(excluded.locality, locality),
-            postal_code=COALESCE(excluded.postal_code, postal_code),
-            region_code=COALESCE(excluded.region_code, region_code),
-            contact_email=COALESCE(excluded.contact_email, contact_email),
-            website=COALESCE(excluded.website, website),
-            last_updated=datetime('now')
-    """, (
-        party.get("id"), party.get("name"), _extract_coh(party),
-        details.get("scale"),
-        int(details.get("vcse", False)),
-        int(details.get("shelteredWorkshop", False)),
-        int(details.get("publicServiceMissionOrganization", False)),
-        addr.get("streetAddress"), addr.get("locality"), addr.get("postalCode"),
-        addr.get("region"), contact.get("email"), details.get("url"),
-    ))
-    return party.get("id")
+    return upsert_supplier_row(conn, {
+        "id": party.get("id"),
+        "name": party.get("name"),
+        "companies_house_no": _extract_coh(party),
+        "scale": details.get("scale"),
+        "is_vcse": int(details.get("vcse", False)),
+        "is_sheltered": int(details.get("shelteredWorkshop", False)),
+        "is_public_mission": int(details.get("publicServiceMissionOrganization", False)),
+        "street_address": addr.get("streetAddress"),
+        "locality": addr.get("locality"),
+        "postal_code": addr.get("postalCode"),
+        "region_code": addr.get("region"),
+        "contact_email": contact.get("email"),
+        "website": details.get("url"),
+        "data_source": "fts",
+    })
 
 
 def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
@@ -519,58 +418,42 @@ def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
             parent_framework_title = rp.get("title")
             break
 
-    conn.execute("""
-        INSERT INTO notices (
-            ocid, buyer_id, latest_release_id,
-            title, description, procurement_method, procurement_method_detail,
-            main_category, legal_basis, above_threshold,
-            value_amount, value_amount_gross, currency,
-            tender_end_date, published_date, tender_status,
-            total_bids, final_stage_bids, sme_bids, vcse_bids,
-            has_renewal, renewal_description,
-            notice_type, notice_url, latest_tag,
-            is_framework, framework_method, framework_type,
-            parent_framework_ocid, parent_framework_title,
-            last_updated
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
-        ON CONFLICT(ocid) DO UPDATE SET
-            latest_release_id=excluded.latest_release_id,
-            tender_status=COALESCE(excluded.tender_status, tender_status),
-            total_bids=COALESCE(excluded.total_bids, total_bids),
-            final_stage_bids=COALESCE(excluded.final_stage_bids, final_stage_bids),
-            sme_bids=COALESCE(excluded.sme_bids, sme_bids),
-            vcse_bids=COALESCE(excluded.vcse_bids, vcse_bids),
-            has_renewal=COALESCE(excluded.has_renewal, has_renewal),
-            renewal_description=COALESCE(excluded.renewal_description, renewal_description),
-            notice_url=COALESCE(excluded.notice_url, notice_url),
-            latest_tag=excluded.latest_tag,
-            is_framework=COALESCE(excluded.is_framework, is_framework),
-            framework_method=COALESCE(excluded.framework_method, framework_method),
-            framework_type=COALESCE(excluded.framework_type, framework_type),
-            parent_framework_ocid=COALESCE(excluded.parent_framework_ocid, parent_framework_ocid),
-            parent_framework_title=COALESCE(excluded.parent_framework_title, parent_framework_title),
-            last_updated=datetime('now')
-    """, (
-        release.get("ocid"), buyer_id, release.get("id"),
-        tender.get("title"), tender.get("description"),
-        tender.get("procurementMethod"), tender.get("procurementMethodDetails"),
-        tender.get("mainProcurementCategory") or next(
-            (a.get("mainProcurementCategory") for a in awards), None
-        ),
-        _safe(tender, "legalBasis", "id"),
-        int(tender.get("aboveThreshold") or any(a.get("aboveThreshold") for a in awards) or False),
-        amount, amount_gross, val.get("currency", "GBP"),
-        _dt(tender.get("tenderPeriod", {}).get("endDate")),
-        _dt(release.get("date")),
-        tender.get("status"),
-        bid_stats.get("bids"), bid_stats.get("finalStageBids"),
-        bid_stats.get("smeFinalStageBids"), bid_stats.get("vcseFinalStageBids"),
-        int(has_renewal), renewal_desc,
-        notice.get("noticeType"), notice.get("url"),
-        ",".join(tags),
-        is_framework, framework_method, framework_type,
-        parent_framework_ocid, parent_framework_title,
-    ))
+    upsert_notice_row(conn, {
+        "ocid": release.get("ocid"),
+        "buyer_id": buyer_id,
+        "latest_release_id": release.get("id"),
+        "title": tender.get("title"),
+        "description": tender.get("description"),
+        "procurement_method": tender.get("procurementMethod"),
+        "procurement_method_detail": tender.get("procurementMethodDetails"),
+        "main_category": tender.get("mainProcurementCategory") or next(
+            (a.get("mainProcurementCategory") for a in awards), None),
+        "legal_basis": _safe(tender, "legalBasis", "id"),
+        "above_threshold": int(
+            tender.get("aboveThreshold") or
+            any(a.get("aboveThreshold") for a in awards) or False),
+        "value_amount": amount,
+        "value_amount_gross": amount_gross,
+        "currency": val.get("currency", "GBP"),
+        "tender_end_date": _dt(tender.get("tenderPeriod", {}).get("endDate")),
+        "published_date": _dt(release.get("date")),
+        "tender_status": tender.get("status"),
+        "total_bids": bid_stats.get("bids"),
+        "final_stage_bids": bid_stats.get("finalStageBids"),
+        "sme_bids": bid_stats.get("smeFinalStageBids"),
+        "vcse_bids": bid_stats.get("vcseFinalStageBids"),
+        "has_renewal": int(has_renewal),
+        "renewal_description": renewal_desc,
+        "notice_type": notice.get("noticeType"),
+        "notice_url": notice.get("url"),
+        "latest_tag": ",".join(tags),
+        "is_framework": is_framework,
+        "framework_method": framework_method,
+        "framework_type": framework_type,
+        "parent_framework_ocid": parent_framework_ocid,
+        "parent_framework_title": parent_framework_title,
+        "data_source": "fts",
+    })
 
 
 def upsert_lots(conn: sqlite3.Connection, release: dict):
@@ -646,38 +529,25 @@ def upsert_awards(conn: sqlite3.Connection, release: dict, supplier_ids: dict):
             amount_gross is not None and amount_gross >= 10e9
         ) else None
 
-        conn.execute("""
-            INSERT INTO awards (
-                id, ocid, lot_id, title, status, award_date,
-                value_amount, value_amount_gross, currency,
-                contract_start_date, contract_end_date, contract_max_extend,
-                date_signed, contract_status, award_criteria,
-                value_quality, last_updated
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
-            ON CONFLICT(id) DO UPDATE SET
-                status=COALESCE(excluded.status, status),
-                value_amount=COALESCE(excluded.value_amount, value_amount),
-                value_amount_gross=COALESCE(excluded.value_amount_gross, value_amount_gross),
-                contract_start_date=COALESCE(excluded.contract_start_date, contract_start_date),
-                contract_end_date=COALESCE(excluded.contract_end_date, contract_end_date),
-                contract_max_extend=COALESCE(excluded.contract_max_extend, contract_max_extend),
-                date_signed=COALESCE(excluded.date_signed, date_signed),
-                contract_status=COALESCE(excluded.contract_status, contract_status),
-                value_quality=excluded.value_quality,
-                last_updated=datetime('now')
-        """, (
-            award_id, ocid, lot_id,
-            award.get("title"), award.get("status"),
-            _dt(award.get("date")),
-            val.get("amount"), amount_gross,
-            val.get("currency", "GBP"),
-            _dt(cp.get("startDate")), _dt(cp.get("endDate")),
-            _dt(cp.get("maxExtentDate")),
-            _dt(linked_contract.get("dateSigned")),
-            linked_contract.get("status"),
-            criteria,
-            value_quality,
-        ))
+        upsert_award_row(conn, {
+            "id": award_id,
+            "ocid": ocid,
+            "lot_id": lot_id,
+            "title": award.get("title"),
+            "status": award.get("status"),
+            "award_date": _dt(award.get("date")),
+            "value_amount": val.get("amount"),
+            "value_amount_gross": amount_gross,
+            "currency": val.get("currency", "GBP"),
+            "contract_start_date": _dt(cp.get("startDate")),
+            "contract_end_date": _dt(cp.get("endDate")),
+            "contract_max_extend": _dt(cp.get("maxExtentDate")),
+            "date_signed": _dt(linked_contract.get("dateSigned")),
+            "contract_status": linked_contract.get("status"),
+            "award_criteria": criteria,
+            "value_quality": value_quality,
+            "data_source": "fts",
+        })
 
         # Link suppliers to this award
         # Suppliers may be listed in the award but not in parties — create stubs
@@ -688,15 +558,9 @@ def upsert_awards(conn: sqlite3.Connection, release: dict, supplier_ids: dict):
                 continue
             if sup_id not in supplier_ids:
                 # Create a minimal supplier record from award data
-                conn.execute("""
-                    INSERT OR IGNORE INTO suppliers (id, name, last_updated)
-                    VALUES (?, ?, datetime('now'))
-                """, (sup_id, sup.get("name", "Unknown")))
+                upsert_supplier_row(conn, {"id": sup_id, "name": sup.get("name", "Unknown"), "data_source": "fts"})
                 supplier_ids[sup_id] = True
-            conn.execute("""
-                INSERT OR IGNORE INTO award_suppliers (award_id, supplier_id)
-                VALUES (?, ?)
-            """, (award_id, sup_id))
+            link_award_supplier(conn, award_id, sup_id)
 
         count += 1
 
@@ -716,10 +580,7 @@ def upsert_cpv_codes(conn: sqlite3.Connection, release: dict):
         cpvs.append((top_cls["id"], top_cls.get("description", "")))
 
     for code, desc in cpvs:
-        conn.execute("""
-            INSERT OR IGNORE INTO cpv_codes (ocid, code, description)
-            VALUES (?, ?, ?)
-        """, (ocid, code, desc))
+        upsert_cpv_row(conn, ocid, code, desc)
 
 
 def upsert_planning(conn: sqlite3.Connection, release: dict, buyer_id: str):
@@ -833,7 +694,7 @@ def main():
     args = parser.parse_args()
 
     conn = get_db(DB_PATH)
-    init_schema(conn)
+    init_schema(conn, SCHEMA_PATH)
 
     # Two distinct modes:
     #   - backfill mode (--backfill / --resume): persists API next-page URL between runs,
