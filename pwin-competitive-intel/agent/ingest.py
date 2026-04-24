@@ -26,9 +26,9 @@ from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 
-import db_utils
 from db_utils import (
     get_db, init_schema,
+    get_ingest_state, set_ingest_state, clear_ingest_state,
     upsert_buyer_row, upsert_supplier_row, upsert_notice_row,
     upsert_award_row, upsert_cpv_row, link_award_supplier,
 )
@@ -53,39 +53,24 @@ log = logging.getLogger("ingest")
 # ── Database ────────────────────────────────────────────────────────────────
 
 def get_cursor(conn: sqlite3.Connection) -> str:
-    row = conn.execute(
-        "SELECT value FROM ingest_state WHERE key='last_cursor'"
-    ).fetchone()
-    return row["value"] if row and row["value"] else ""
+    return get_ingest_state(conn, "last_cursor")
 
 
 def set_cursor(conn: sqlite3.Connection, value: str):
-    conn.execute(
-        "INSERT OR REPLACE INTO ingest_state (key, value, updated) VALUES (?, ?, datetime('now'))",
-        ("last_cursor", value),
-    )
-    conn.commit()
+    set_ingest_state(conn, "last_cursor", value)
 
 
 def get_backfill_url(conn: sqlite3.Connection) -> str:
     """Saved API next-page URL for an in-progress backfill, or empty if none."""
-    row = conn.execute(
-        "SELECT value FROM ingest_state WHERE key='backfill_next_url'"
-    ).fetchone()
-    return row["value"] if row and row["value"] else ""
+    return get_ingest_state(conn, "backfill_next_url")
 
 
 def set_backfill_url(conn: sqlite3.Connection, value: str):
-    conn.execute(
-        "INSERT OR REPLACE INTO ingest_state (key, value, updated) VALUES (?, ?, datetime('now'))",
-        ("backfill_next_url", value),
-    )
-    conn.commit()
+    set_ingest_state(conn, "backfill_next_url", value)
 
 
 def clear_backfill_url(conn: sqlite3.Connection):
-    conn.execute("DELETE FROM ingest_state WHERE key='backfill_next_url'")
-    conn.commit()
+    clear_ingest_state(conn, "backfill_next_url")
 
 
 # ── API fetch ───────────────────────────────────────────────────────────────

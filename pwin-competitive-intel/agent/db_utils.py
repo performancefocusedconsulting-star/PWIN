@@ -87,6 +87,11 @@ def set_ingest_state(conn: sqlite3.Connection, key: str, value: str):
     conn.commit()
 
 
+def clear_ingest_state(conn: sqlite3.Connection, key: str):
+    conn.execute("DELETE FROM ingest_state WHERE key=?", (key,))
+    conn.commit()
+
+
 # ── Upsert row primitives ─────────────────────────────────────────────────────
 # All functions accept a dict whose keys match column names.
 # Missing keys default to None (or the column's SQL DEFAULT).
