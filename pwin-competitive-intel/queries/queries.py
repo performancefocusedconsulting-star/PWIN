@@ -59,16 +59,42 @@ def print_table(rows, headers: list, col_widths: list):
 def db_summary():
     conn = get_db()
     print("\nDatabase summary")
-    print("=" * 50)
-    for table in ["buyers", "suppliers", "notices", "lots", "awards", "award_suppliers",
-                   "cpv_codes", "planning_notices"]:
+    print("=" * 60)
+    for table in ["buyers", "suppliers", "notices", "lots", "awards",
+                  "award_suppliers", "cpv_codes", "planning_notices"]:
         count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-        print(f"  {table:<25} {count:>8,}")
+        print(f"  {table:<25} {count:>10,}")
+
+    # Per-source breakdown (present only once data_source column exists)
+    try:
+        print(f"\n  {'Source':<10}  {'Notices':>10}  {'Awards':>10}  "
+              f"{'Buyers':>10}  {'Suppliers':>10}")
+        print("  " + "-" * 56)
+        for src in ("fts", "cf"):
+            n = conn.execute(
+                "SELECT COUNT(*) FROM notices WHERE COALESCE(data_source,'fts')=?", (src,)
+            ).fetchone()[0]
+            a = conn.execute(
+                "SELECT COUNT(*) FROM awards WHERE COALESCE(data_source,'fts')=?", (src,)
+            ).fetchone()[0]
+            b = conn.execute(
+                "SELECT COUNT(*) FROM buyers WHERE COALESCE(data_source,'fts')=?", (src,)
+            ).fetchone()[0]
+            s = conn.execute(
+                "SELECT COUNT(*) FROM suppliers WHERE COALESCE(data_source,'fts')=?", (src,)
+            ).fetchone()[0]
+            print(f"  {src:<10}  {n:>10,}  {a:>10,}  {b:>10,}  {s:>10,}")
+    except Exception:
+        pass  # data_source column not yet present on older DBs
 
     cursor = conn.execute(
         "SELECT value FROM ingest_state WHERE key='last_cursor'"
     ).fetchone()
-    print(f"\n  Last ingest cursor: {cursor['value'] if cursor and cursor['value'] else 'none'}")
+    cf_cur = conn.execute(
+        "SELECT value FROM ingest_state WHERE key='cf_last_date'"
+    ).fetchone()
+    print(f"\n  FTS cursor  : {cursor['value'] if cursor and cursor['value'] else 'none'}")
+    print(f"  CF cursor   : {cf_cur['value'] if cf_cur and cf_cur['value'] else 'none'}")
 
     # Value stats (exclude flagged outliers — see schema comment on awards.value_quality)
     val = conn.execute("""
