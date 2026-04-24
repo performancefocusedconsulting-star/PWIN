@@ -163,3 +163,90 @@ def _cf_award_row(notice: dict, ocid: str) -> dict | None:
         "status":              "active" if award_val is not None else None,
         "data_source":         "cf",
     }
+
+
+# ── API fetch ────────────────────────────────────────────────────────────────
+
+def fetch_cf_page(from_date: str, to_date: str, page: int) -> dict | None:
+    payload = json.dumps({
+        "publishedFrom": from_date,
+        "publishedTo":   to_date,
+        "size":          PAGE_SIZE,
+        "page":          page,
+    }).encode("utf-8")
+
+    for attempt in range(1, RETRY_MAX + 1):
+        try:
+            req = Request(
+                CF_SEARCH_URL,
+                data=payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Accept":       "application/json",
+                    "User-Agent":   "PWIN-CompetitiveIntel/1.0",
+                },
+                method="POST",
+            )
+            with urlopen(req, timeout=60) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except HTTPError as e:
+            log.warning("HTTP %s attempt %d", e.code, attempt)
+            if e.code == 429:
+                time.sleep(RETRY_DELAY * attempt)
+            elif e.code >= 500:
+                time.sleep(RETRY_DELAY)
+            else:
+                break
+        except (URLError, TimeoutError, OSError) as e:
+            log.warning("Network error attempt %d: %s", attempt, e)
+            time.sleep(RETRY_DELAY * attempt)
+        except ValueError as e:
+            log.warning("Non-JSON response attempt %d: %s", attempt, e)
+            time.sleep(RETRY_DELAY * attempt)
+    log.error("All %d retries exhausted for page %d [%s..%s]", RETRY_MAX, page, from_date[:10], to_date[:10])
+    return None
+
+
+# ── Notice processor ─────────────────────────────────────────────────────────
+
+def process_cf_notice(conn: sqlite3.Connection, notice: dict) -> dict:
+    counts = {"buyers": 0, "suppliers": 0, "notices": 0, "awards": 0}
+
+    org = notice.get("organisation") or notice.get("buyerOrganisation") or {}
+    if not org or not org.get("name"):
+        log.debug("Notice %s has no organisation — skipping", notice.get("id"))
+        return counts
+
+    # Buyer
+    buyer_row = _cf_buyer_row(org)
+    db_utils.upsert_buyer_row(conn, buyer_row)
+    buyer_id = buyer_row["id"]
+    counts["buyers"] += 1
+
+    # Notice
+    notice_row = _cf_notice_row(notice, buyer_id)
+    ocid = notice_row["ocid"]
+    db_utils.upsert_notice_row(conn, notice_row)
+    counts["notices"] += 1
+
+    # CPV codes — CF uses industryCodes or cpvCodes
+    for cpv in (notice.get("industryCodes") or notice.get("cpvCodes") or []):
+        code = cpv.get("code") or cpv.get("id")
+        if code:
+            db_utils.upsert_cpv_row(conn, ocid, str(code),
+                                    cpv.get("label") or cpv.get("description") or "")
+
+    # Award + suppliers (award notices only)
+    award_row = _cf_award_row(notice, ocid)
+    if award_row:
+        db_utils.upsert_award_row(conn, award_row)
+        award_id = award_row["id"]
+        counts["awards"] += 1
+
+        for sup in (notice.get("suppliers") or notice.get("awardedSuppliers") or []):
+            sup_row = _cf_supplier_row(sup)
+            db_utils.upsert_supplier_row(conn, sup_row)
+            db_utils.link_award_supplier(conn, award_id, sup_row["id"])
+            counts["suppliers"] += 1
+
+    return counts

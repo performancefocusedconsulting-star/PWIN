@@ -4,6 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "agent"))
 import db_utils
@@ -147,6 +148,106 @@ class TestCfHelpers(unittest.TestCase):
         self.assertEqual(row["companies_house_no"], "12345678")
         self.assertEqual(row["postal_code"], "EC1A 1BB")
         self.assertEqual(row["data_source"], "cf")
+
+
+class TestProcessCfNotice(unittest.TestCase):
+    def setUp(self):
+        self.conn = _mem_db()
+
+    def test_tender_upserts_buyer_and_notice(self):
+        import ingest_cf
+        ingest_cf.process_cf_notice(self.conn, SAMPLE_TENDER)
+        self.conn.commit()
+        buyer = self.conn.execute("SELECT * FROM buyers WHERE id='cf-buyer-9001'").fetchone()
+        self.assertIsNotNone(buyer)
+        self.assertEqual(buyer["data_source"], "cf")
+        notice = self.conn.execute("SELECT * FROM notices WHERE ocid='cf-2021-123456'").fetchone()
+        self.assertIsNotNone(notice)
+        self.assertEqual(notice["suitable_for_sme"], 1)
+        self.assertEqual(notice["data_source"], "cf")
+
+    def test_tender_stores_cpv_codes(self):
+        import ingest_cf
+        ingest_cf.process_cf_notice(self.conn, SAMPLE_TENDER)
+        self.conn.commit()
+        cpv = self.conn.execute(
+            "SELECT * FROM cpv_codes WHERE ocid='cf-2021-123456'"
+        ).fetchone()
+        self.assertIsNotNone(cpv)
+        self.assertEqual(cpv["code"], "72250000")
+
+    def test_award_creates_award_row(self):
+        import ingest_cf
+        ingest_cf.process_cf_notice(self.conn, SAMPLE_AWARD)
+        self.conn.commit()
+        award = self.conn.execute(
+            "SELECT * FROM awards WHERE id='cf-award-2021-999999'"
+        ).fetchone()
+        self.assertIsNotNone(award)
+        self.assertEqual(award["value_amount_gross"], 45000)
+        self.assertEqual(award["data_source"], "cf")
+
+    def test_award_links_supplier(self):
+        import ingest_cf
+        ingest_cf.process_cf_notice(self.conn, SAMPLE_AWARD)
+        self.conn.commit()
+        link = self.conn.execute(
+            "SELECT * FROM award_suppliers WHERE award_id='cf-award-2021-999999'"
+        ).fetchone()
+        self.assertIsNotNone(link)
+        supplier = self.conn.execute(
+            "SELECT * FROM suppliers WHERE id=?", (link["supplier_id"],)
+        ).fetchone()
+        self.assertEqual(supplier["name"], "Acme Ltd")
+        self.assertEqual(supplier["companies_house_no"], "12345678")
+
+    def test_notice_without_organisation_is_skipped(self):
+        import ingest_cf
+        notice = {**SAMPLE_TENDER, "organisation": None}
+        counts = ingest_cf.process_cf_notice(self.conn, notice)
+        self.assertEqual(counts["notices"], 0)
+
+    def test_process_is_idempotent(self):
+        import ingest_cf
+        ingest_cf.process_cf_notice(self.conn, SAMPLE_TENDER)
+        ingest_cf.process_cf_notice(self.conn, SAMPLE_TENDER)
+        self.conn.commit()
+        count = self.conn.execute(
+            "SELECT COUNT(*) FROM notices WHERE ocid='cf-2021-123456'"
+        ).fetchone()[0]
+        self.assertEqual(count, 1)
+
+
+class TestFetchCfPage(unittest.TestCase):
+    def test_returns_parsed_json(self):
+        import ingest_cf
+        mock_body = json.dumps({
+            "results": [SAMPLE_TENDER],
+            "pagingInfo": {"totalResults": 1, "totalPages": 1, "currentPage": 1},
+        }).encode("utf-8")
+
+        mock_resp = MagicMock()
+        mock_resp.read.return_value = mock_body
+        mock_resp.__enter__ = lambda s: mock_resp
+        mock_resp.__exit__ = MagicMock(return_value=False)
+
+        with patch("ingest_cf.urlopen", return_value=mock_resp):
+            result = ingest_cf.fetch_cf_page(
+                "2021-01-01T00:00:00", "2021-01-31T23:59:59", 1
+            )
+
+        self.assertIn("results", result)
+        self.assertEqual(len(result["results"]), 1)
+        self.assertEqual(result["results"][0]["id"], "2021-123456")
+
+    def test_returns_none_on_http_error(self):
+        import ingest_cf
+        with patch("ingest_cf.urlopen", side_effect=HTTPError(None, 500, "err", {}, None)):
+            with patch("ingest_cf.time.sleep"):
+                result = ingest_cf.fetch_cf_page(
+                    "2021-01-01T00:00:00", "2021-01-31T23:59:59", 1
+                )
+        self.assertIsNone(result)
 
 
 if __name__ == "__main__":
