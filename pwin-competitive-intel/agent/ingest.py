@@ -88,6 +88,15 @@ def _migrate_schema(conn: sqlite3.Connection):
         conn.execute("ALTER TABLE awards ADD COLUMN value_quality TEXT")
         log.info("Migrated awards: added column value_quality")
 
+    # ── adjudication_queue: max_match_probability (added after initial table creation) ──
+    try:
+        adj_cols = _columns("adjudication_queue")
+        if adj_cols and "max_match_probability" not in adj_cols:
+            conn.execute("ALTER TABLE adjudication_queue ADD COLUMN max_match_probability REAL NOT NULL DEFAULT 0.0")
+            log.info("Migrated adjudication_queue: added column max_match_probability")
+    except sqlite3.OperationalError:
+        pass  # table doesn't exist yet — CREATE TABLE will handle it
+
     conn.commit()
 
 

@@ -71,11 +71,28 @@ system_prompt: |
     Query: "{supplier} partnership announcement", "{supplier} alliance"
 
   **Search strategy:**
-  1. Start with 3-5 targeted searches for the supplier's financials, leadership,
-     and public scrutiny record
-  2. Use search results to populate the structured sections
-  3. Every claim from a web source must cite the source name, tier, and date
-  4. If a search returns nothing useful, note the gap — do not fabricate
+  1. **Contracts Finder (run first).** Before any other search, query Contracts
+     Finder for this supplier's award history. This captures framework call-offs
+     and below-threshold contracts that never appear in FTS. Query:
+     `site:contractsfinder.service.gov.uk "{supplierName}"` and
+     `"{supplierName}" contractsfinder.service.gov.uk award`.
+     Framework call-offs are the primary incumbent evidence for central government
+     buyers — FTS alone will undercount the supplier's real footprint significantly.
+  2. **GOV.UK departmental spend data.** Search for the supplier in published
+     monthly spend datasets: `"{supplierName}" site:gov.uk "spending data"` and
+     `"{supplierName}" site:gov.uk "expenditure over £25,000"`. These CSVs confirm
+     actual payment relationships and can surface buyer relationships invisible to
+     both FTS and Contracts Finder.
+  3. Run 3-5 targeted searches for financials, leadership, and public scrutiny record.
+  4. Use search results to populate the structured sections.
+  5. Every claim from a web source must cite the source name, tier, and date.
+  6. If a search returns nothing useful, note the gap — do not fabricate.
+
+  **Coverage note:** FTS data in the input captures open competition notices above
+  ~£138k. Contracts Finder captures awards including framework call-offs from £10k
+  (central gov) / £25k (NHS/LA). For any supplier with significant central
+  government exposure, their true contract footprint will be materially larger than
+  the FTS data alone suggests. Treat FTS as a floor, not a ceiling.
 
   **Do NOT skip web search.** A dossier without financial data, leadership, and
   narrative analysis is incomplete. If search is unavailable, flag the sections
