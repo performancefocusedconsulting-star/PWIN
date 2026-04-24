@@ -97,6 +97,19 @@ def _migrate_schema(conn: sqlite3.Connection):
     except sqlite3.OperationalError:
         pass  # table doesn't exist yet — CREATE TABLE will handle it
 
+    # ── data_source: multi-source tag (added 2026-04-24) ──
+    for table in ("notices", "awards", "buyers", "suppliers"):
+        cols = _columns(table)
+        if "data_source" not in cols:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN data_source TEXT DEFAULT 'fts'")
+            log.info("Migrated %s: added column data_source", table)
+
+    # ── notices: CF SME suitability flag (added 2026-04-24) ──
+    notices_cols_v2 = _columns("notices")
+    if "suitable_for_sme" not in notices_cols_v2:
+        conn.execute("ALTER TABLE notices ADD COLUMN suitable_for_sme INTEGER DEFAULT 0")
+        log.info("Migrated notices: added column suitable_for_sme")
+
     conn.commit()
 
 

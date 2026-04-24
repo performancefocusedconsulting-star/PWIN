@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS buyers (
     contact_email       TEXT,
     contact_telephone   TEXT,
     website             TEXT,
+    data_source         TEXT DEFAULT 'fts',
     first_seen          TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated        TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS suppliers (
     ch_directors        TEXT,              -- JSON array of current director names
     ch_parent           TEXT,              -- immediate parent company name (if group)
     ch_enriched_at      TEXT,              -- when we last pulled from CH
+    data_source         TEXT DEFAULT 'fts',
     first_seen          TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated        TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -122,6 +124,9 @@ CREATE TABLE IF NOT EXISTS notices (
     parent_framework_ocid   TEXT,                        -- OCID of the parent framework (for call-offs)
     parent_framework_title  TEXT,                        -- Name of the parent framework (for call-offs)
 
+    data_source             TEXT DEFAULT 'fts',
+    suitable_for_sme        INTEGER DEFAULT 0,
+
     ingested_at             TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated            TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -181,6 +186,8 @@ CREATE TABLE IF NOT EXISTS awards (
     -- §16 for the threshold rationale.
     value_quality           TEXT,
 
+    data_source             TEXT DEFAULT 'fts',
+
     ingested_at             TEXT NOT NULL DEFAULT (datetime('now')),
     last_updated            TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -191,6 +198,8 @@ CREATE INDEX IF NOT EXISTS idx_awards_end_date ON awards(contract_end_date);
 CREATE INDEX IF NOT EXISTS idx_awards_status ON awards(status);
 CREATE INDEX IF NOT EXISTS idx_awards_value ON awards(value_amount_gross);
 CREATE INDEX IF NOT EXISTS idx_awards_value_quality ON awards(value_quality);
+CREATE INDEX IF NOT EXISTS idx_notices_source ON notices(data_source);
+CREATE INDEX IF NOT EXISTS idx_awards_source  ON awards(data_source);
 
 -- ============================================================
 -- AWARD_SUPPLIERS (many-to-many: awards can have multiple suppliers)
