@@ -2,7 +2,8 @@
 """
 PWIN Competitive Intelligence — Scheduler
 ==========================================
-Wrapper for cron / GitHub Actions. Runs incremental ingest.
+Nightly wrapper: FTS ingest → CF ingest → (CH enrichment run separately).
+CF failure is non-fatal; FTS failure causes non-zero exit.
 
 Direct:     python scheduler.py
 Cron:       0 2 * * * cd /path/to/pwin-competitive-intel && python agent/scheduler.py >> logs/ingest.log 2>&1
@@ -28,21 +29,23 @@ logging.basicConfig(
 )
 log = logging.getLogger("scheduler")
 
-INGEST_SCRIPT = Path(__file__).parent / "ingest.py"
+INGEST_SCRIPT    = Path(__file__).parent / "ingest.py"
+INGEST_CF_SCRIPT = Path(__file__).parent / "ingest_cf.py"
 
 
-def run_ingest():
-    log.info("Starting scheduled ingest run")
-    result = subprocess.run(
-        [sys.executable, str(INGEST_SCRIPT)],
-        capture_output=False,
-    )
+def run_script(script: Path, label: str) -> int:
+    log.info("Starting %s", label)
+    result = subprocess.run([sys.executable, str(script)], capture_output=False)
     if result.returncode == 0:
-        log.info("Ingest completed successfully")
+        log.info("%s completed successfully", label)
     else:
-        log.error("Ingest failed with exit code %d", result.returncode)
+        log.error("%s failed with exit code %d", label, result.returncode)
     return result.returncode
 
 
 if __name__ == "__main__":
-    sys.exit(run_ingest())
+    fts_rc = run_script(INGEST_SCRIPT, "FTS ingest")
+    cf_rc  = run_script(INGEST_CF_SCRIPT, "CF ingest")  # non-fatal in v1
+    if cf_rc != 0:
+        log.warning("CF ingest failed — continuing (non-fatal)")
+    sys.exit(0 if fts_rc == 0 else fts_rc)

@@ -35,6 +35,10 @@ jobs:
       - name: Run ingest
         run: python agent/ingest.py
 
+      - name: Run CF ingest
+        run: python agent/ingest_cf.py
+        continue-on-error: true
+
       - name: Enrich suppliers from Companies House
         if: env.COMPANIES_HOUSE_API_KEY != ''
         env:
