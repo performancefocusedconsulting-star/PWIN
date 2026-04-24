@@ -145,6 +145,7 @@ def upsert_supplier_row(conn: sqlite3.Connection, row: dict) -> str:
             region_code=COALESCE(excluded.region_code, region_code),
             contact_email=COALESCE(excluded.contact_email, contact_email),
             website=COALESCE(excluded.website, website),
+            data_source=excluded.data_source,
             last_updated=datetime('now')
     """, r)
     return row["id"]
