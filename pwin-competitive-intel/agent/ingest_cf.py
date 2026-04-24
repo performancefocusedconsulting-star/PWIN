@@ -31,7 +31,7 @@ from ingest import _looks_like_ch_number, _normalize_ch_number
 
 CF_SEARCH_URL = (
     "https://www.contractsfinder.service.gov.uk"
-    "/Published/Notices/PublishedSearchApi/Search"
+    "/Published/Notices/OCDS/Search"
 )
 DB_PATH     = Path(__file__).parent.parent / "db" / "bid_intel.db"
 SCHEMA_PATH = Path(__file__).parent.parent / "db" / "schema.sql"
@@ -165,27 +165,150 @@ def _cf_award_row(notice: dict, ocid: str) -> dict | None:
     }
 
 
+# ── OCDS release translator ───────────────────────────────────────────────────
+
+def _ocds_release_to_cf_notice(release: dict) -> dict:
+    """Translate a CF OCDS release into the bespoke CF notice dict
+    that process_cf_notice() expects.  Keeps parser logic in one place."""
+    tender = release.get("tender") or {}
+    parties = release.get("parties") or []
+    tags = release.get("tag") or []
+
+    # Buyer party
+    buyer_party = next(
+        (p for p in parties if "buyer" in (p.get("roles") or [])), {}
+    )
+    buyer_addr = buyer_party.get("address") or {}
+
+    # Build organisation dict matching _cf_buyer_row expectations
+    org = {
+        "id":   buyer_party.get("id") or "",
+        "name": buyer_party.get("name") or "",
+        "address": {
+            "postcode": buyer_addr.get("postalCode"),
+            "town":     buyer_addr.get("locality"),
+        },
+    }
+
+    # Value: prefer tender.value.amount
+    tender_val = tender.get("value") or {}
+    value_amount = tender_val.get("amount")
+
+    # Notice type / status derived from tag
+    is_award = any("award" in t.lower() for t in tags)
+    notice_type = "Contract Award Notice" if is_award else "Contract Notice"
+    raw_status  = (tender.get("status") or "").lower()
+
+    # Tender period
+    tender_period = tender.get("tenderPeriod") or {}
+    contract_period = tender.get("contractPeriod") or {}
+
+    # Suitability
+    suitability = tender.get("suitability") or {}
+
+    # CPV codes from tender.classification + tender.items
+    cpv_codes: list[dict] = []
+    classification = tender.get("classification")
+    if classification and classification.get("id"):
+        cpv_codes.append({
+            "code":  classification["id"],
+            "label": classification.get("description") or "",
+        })
+
+    # Award data (first award only)
+    awards_list = release.get("awards") or []
+    award = awards_list[0] if awards_list else None
+    award_val_dict = (award or {}).get("value") or {}
+    award_period = (award or {}).get("contractPeriod") or {}
+
+    # Suppliers: from parties with supplier role, enriched with identifiers
+    supplier_id_map: dict[str, dict] = {}
+    for p in parties:
+        if "supplier" in (p.get("roles") or []):
+            p_id = p.get("id") or ""
+            p_addr = p.get("address") or {}
+            ident = p.get("identifier") or {}
+            # Extract CH number from GB-COH scheme
+            ch_no = None
+            if ident.get("scheme") == "GB-COH":
+                ch_no = ident.get("id")
+            elif p_id.startswith("GB-COH-"):
+                ch_no = p_id[len("GB-COH-"):]
+            supplier_id_map[p_id] = {
+                "supplierName":         p.get("name") or "",
+                "companiesHouseNumber": ch_no,
+                "address": {
+                    "postcode": p_addr.get("postalCode"),
+                    "town":     p_addr.get("locality"),
+                },
+            }
+
+    # Award suppliers list (cross-reference with party details)
+    suppliers = []
+    if award:
+        for s in (award.get("suppliers") or []):
+            sid = s.get("id") or ""
+            enriched = supplier_id_map.get(sid) or {
+                "supplierName": s.get("name") or "",
+                "address": {},
+            }
+            suppliers.append(enriched)
+
+    # Derive a stable notice id from the CF OCID (strip prefix)
+    ocid = release.get("ocid") or ""
+    notice_id = ocid.replace("ocds-b5fd17-", "") if ocid.startswith("ocds-b5fd17-") else ocid
+
+    return {
+        "id":              notice_id,
+        "title":           tender.get("title"),
+        "description":     tender.get("description"),
+        "publishedDate":   release.get("date"),
+        "deadlineDate":    tender_period.get("endDate"),
+        "valueLow":        value_amount,
+        "valueHigh":       value_amount,
+        "noticeType":      notice_type,
+        "status":          raw_status if raw_status else ("awarded" if is_award else "live"),
+        "isSuitableForSme": suitability.get("sme") or False,
+        "industryCodes":   cpv_codes,
+        "organisation":    org,
+        "awardedDate":     (award or {}).get("date"),
+        "awardedValue":    award_val_dict.get("amount"),
+        "suppliers":       suppliers,
+        "contractStart":   award_period.get("startDate"),
+        "contractEnd":     award_period.get("endDate"),
+    }
+
+
 # ── API fetch ────────────────────────────────────────────────────────────────
 
-def fetch_cf_page(from_date: str, to_date: str, page: int) -> dict | None:
-    payload = json.dumps({
-        "publishedFrom": from_date,
-        "publishedTo":   to_date,
-        "size":          PAGE_SIZE,
-        "page":          page,
-    }).encode("utf-8")
+def fetch_cf_page(from_date: str, to_date: str, cursor: str | None = None) -> dict | None:
+    """Fetch one page of CF OCDS releases.
+
+    Uses the GET /Published/Notices/OCDS/Search endpoint.
+    On the first call pass cursor=None; subsequent pages use the cursor
+    returned in data["links"]["next"].
+    Returns the raw OCDS response dict (keys: releases, links, …) or None.
+    """
+    if cursor:
+        url = cursor  # links.next is the full URL already
+    else:
+        url = (
+            f"{CF_SEARCH_URL}"
+            f"?publishedFrom={from_date}"
+            f"&publishedTo={to_date}"
+            f"&stages=planning,tender,award"
+            f"&limit={PAGE_SIZE}"
+        )
 
     for attempt in range(1, RETRY_MAX + 1):
         try:
             req = Request(
-                CF_SEARCH_URL,
-                data=payload,
+                url,
                 headers={
-                    "Content-Type": "application/json",
-                    "Accept":       "application/json",
-                    "User-Agent":   "PWIN-CompetitiveIntel/1.0",
+                    "Accept":     "application/json",
+                    "User-Agent": "PWIN-CompetitiveIntel/1.0",
                 },
-                method="POST",
+                method="GET",
             )
             with urlopen(req, timeout=60) as resp:
                 return json.loads(resp.read().decode("utf-8"))
@@ -203,7 +326,7 @@ def fetch_cf_page(from_date: str, to_date: str, page: int) -> dict | None:
         except ValueError as e:
             log.warning("Non-JSON response attempt %d: %s", attempt, e)
             time.sleep(RETRY_DELAY * attempt)
-    log.error("All %d retries exhausted for page %d [%s..%s]", RETRY_MAX, page, from_date[:10], to_date[:10])
+    log.error("All %d retries exhausted [%s..%s]", RETRY_MAX, from_date[:10], to_date[:10])
     return None
 
 
@@ -255,3 +378,128 @@ def process_cf_notice(conn: sqlite3.Connection, notice: dict) -> dict:
             counts["suppliers"] += 1
 
     return counts
+
+
+# ── Date windowing ────────────────────────────────────────────────────────────
+
+def _date_windows(from_date: str, to_date: str):
+    """Yield (from_iso, to_iso) monthly windows between two ISO date strings."""
+    start = datetime.fromisoformat(from_date[:10])
+    end   = datetime.fromisoformat(to_date[:10])
+    while start <= end:
+        if start.month == 12:
+            month_end = start.replace(day=31)
+        else:
+            month_end = start.replace(month=start.month + 1, day=1) - timedelta(days=1)
+        window_end = min(month_end, end)
+        yield (
+            start.strftime("%Y-%m-%dT00:00:00"),
+            window_end.strftime("%Y-%m-%dT23:59:59"),
+        )
+        start = window_end + timedelta(days=1)
+
+
+def ingest_window(
+    conn: sqlite3.Connection,
+    from_date: str,
+    to_date: str,
+    limit: int | None = None,
+) -> dict:
+    total = {"buyers": 0, "suppliers": 0, "notices": 0, "awards": 0}
+    processed = 0
+    cursor: str | None = None
+    page = 1
+
+    while True:
+        log.info("CF page %d  [%s -> %s]", page, from_date[:10], to_date[:10])
+        data = fetch_cf_page(from_date, to_date, cursor)
+        if not data:
+            log.error("Failed to fetch page %d — aborting this window", page)
+            break
+
+        releases = data.get("releases") or []
+        if not releases:
+            log.info("No results on page %d — window done", page)
+            break
+
+        for release in releases:
+            notice = _ocds_release_to_cf_notice(release)
+            counts = process_cf_notice(conn, notice)
+            for k in total:
+                total[k] += counts.get(k, 0)
+            processed += 1
+            if limit and processed >= limit:
+                log.info("Reached --limit %d", limit)
+                conn.commit()
+                return total
+
+        conn.commit()
+
+        # CF OCDS uses cursor-based pagination via links.next
+        links = data.get("links") or {}
+        next_url = links.get("next")
+        if not next_url:
+            break
+        cursor = next_url
+        page += 1
+        time.sleep(1.0)
+
+    return total
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main():
+    parser = argparse.ArgumentParser(description="PWIN Competitive Intel — Contracts Finder ingest")
+    parser.add_argument("--from", dest="from_date",
+                        help="Start date ISO (default: cf_last_date stored in DB)")
+    parser.add_argument("--limit", type=int,
+                        help="Max notices per run (testing)")
+    args = parser.parse_args()
+
+    conn = db_utils.get_db(DB_PATH)
+    db_utils.init_schema(conn, SCHEMA_PATH)
+
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+
+    if args.from_date:
+        start = args.from_date
+        log.info("CF ingest from %s (--from flag)", start[:10])
+    else:
+        start = db_utils.get_ingest_state(conn, CF_STATE_KEY) or "2021-01-01T00:00:00"
+        log.info("CF ingest from %s (stored cursor)", start[:10])
+
+    log.info("CF ingest to   %s", now[:10])
+
+    grand_total = {"buyers": 0, "suppliers": 0, "notices": 0, "awards": 0}
+    last_window_end = None
+
+    try:
+        for from_dt, to_dt in _date_windows(start, now):
+            window = ingest_window(conn, from_dt, to_dt, args.limit)
+            for k in grand_total:
+                grand_total[k] += window.get(k, 0)
+            last_window_end = to_dt
+            if args.limit and grand_total["notices"] >= args.limit:
+                break
+    except KeyboardInterrupt:
+        log.warning("Interrupted — progress committed up to last window")
+    except Exception as e:
+        log.error("CF ingest aborted: %s", e)
+        raise
+    finally:
+        if last_window_end:
+            db_utils.set_ingest_state(conn, CF_STATE_KEY, last_window_end[:19])
+            log.info("CF cursor advanced to %s", last_window_end[:10])
+
+        log.info("=" * 60)
+        log.info("CF ingest complete")
+        log.info("  Notices    : %d", grand_total["notices"])
+        log.info("  Awards     : %d", grand_total["awards"])
+        log.info("  Buyers     : %d", grand_total["buyers"])
+        log.info("  Suppliers  : %d", grand_total["suppliers"])
+        conn.close()
+
+
+if __name__ == "__main__":
+    main()

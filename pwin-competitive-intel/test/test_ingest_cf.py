@@ -221,9 +221,11 @@ class TestProcessCfNotice(unittest.TestCase):
 class TestFetchCfPage(unittest.TestCase):
     def test_returns_parsed_json(self):
         import ingest_cf
+        # CF now uses the OCDS GET endpoint — response has 'releases' key
         mock_body = json.dumps({
-            "results": [SAMPLE_TENDER],
-            "pagingInfo": {"totalResults": 1, "totalPages": 1, "currentPage": 1},
+            "releases": [{"ocid": "ocds-b5fd17-test-1", "id": "test-1", "tag": ["tender"],
+                          "tender": {"title": "Test", "status": "active"}, "parties": []}],
+            "links": {},
         }).encode("utf-8")
 
         mock_resp = MagicMock()
@@ -233,19 +235,19 @@ class TestFetchCfPage(unittest.TestCase):
 
         with patch("ingest_cf.urlopen", return_value=mock_resp):
             result = ingest_cf.fetch_cf_page(
-                "2021-01-01T00:00:00", "2021-01-31T23:59:59", 1
+                "2021-01-01T00:00:00", "2021-01-31T23:59:59"
             )
 
-        self.assertIn("results", result)
-        self.assertEqual(len(result["results"]), 1)
-        self.assertEqual(result["results"][0]["id"], "2021-123456")
+        self.assertIn("releases", result)
+        self.assertEqual(len(result["releases"]), 1)
+        self.assertEqual(result["releases"][0]["ocid"], "ocds-b5fd17-test-1")
 
     def test_returns_none_on_http_error(self):
         import ingest_cf
         with patch("ingest_cf.urlopen", side_effect=HTTPError(None, 500, "err", {}, None)):
             with patch("ingest_cf.time.sleep"):
                 result = ingest_cf.fetch_cf_page(
-                    "2021-01-01T00:00:00", "2021-01-31T23:59:59", 1
+                    "2021-01-01T00:00:00", "2021-01-31T23:59:59"
                 )
         self.assertIsNone(result)
 
