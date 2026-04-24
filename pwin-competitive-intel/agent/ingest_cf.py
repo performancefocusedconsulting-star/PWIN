@@ -27,6 +27,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).parent))
 import db_utils
+from ingest import _looks_like_ch_number, _normalize_ch_number
 
 CF_SEARCH_URL = (
     "https://www.contractsfinder.service.gov.uk"
@@ -101,7 +102,7 @@ def _cf_buyer_row(org: dict) -> dict:
 def _cf_supplier_row(sup: dict) -> dict:
     addr = sup.get("address") or {}
     raw_ch = sup.get("companiesHouseNumber") or sup.get("companiesHouseNo")
-    ch_no = str(raw_ch).strip() if raw_ch and len(str(raw_ch)) <= 10 else None
+    ch_no = _normalize_ch_number(raw_ch) if raw_ch and _looks_like_ch_number(raw_ch) else None
     return {
         "id":                _cf_supplier_id(sup),
         "name":              sup.get("supplierName") or sup.get("name") or "Unknown",
@@ -140,7 +141,7 @@ def _cf_award_row(notice: dict, ocid: str) -> dict | None:
     if "award" not in notice_type:
         return None
     has_signal = (
-        notice.get("awardedValue") or
+        notice.get("awardedValue") is not None or
         notice.get("awardedDate") or
         notice.get("suppliers") or
         notice.get("awardedSuppliers")
@@ -159,6 +160,6 @@ def _cf_award_row(notice: dict, ocid: str) -> dict | None:
         "value_amount_gross":  award_val,
         "contract_start_date": _dt_cf(notice.get("contractStart")),
         "contract_end_date":   _dt_cf(notice.get("contractEnd")),
-        "status":              "active" if award_val else None,
+        "status":              "active" if award_val is not None else None,
         "data_source":         "cf",
     }
