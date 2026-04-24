@@ -115,6 +115,7 @@ def upsert_buyer_row(conn: sqlite3.Connection, row: dict):
             contact_email=COALESCE(excluded.contact_email, contact_email),
             contact_telephone=COALESCE(excluded.contact_telephone, contact_telephone),
             website=COALESCE(excluded.website, website),
+            data_source=excluded.data_source,
             last_updated=datetime('now')
     """, r)
 
@@ -136,6 +137,8 @@ def upsert_supplier_row(conn: sqlite3.Connection, row: dict) -> str:
             companies_house_no=COALESCE(excluded.companies_house_no, companies_house_no),
             scale=COALESCE(excluded.scale, scale),
             is_vcse=COALESCE(excluded.is_vcse, is_vcse),
+            is_sheltered=COALESCE(excluded.is_sheltered, is_sheltered),
+            is_public_mission=COALESCE(excluded.is_public_mission, is_public_mission),
             street_address=COALESCE(excluded.street_address, street_address),
             locality=COALESCE(excluded.locality, locality),
             postal_code=COALESCE(excluded.postal_code, postal_code),
@@ -228,6 +231,7 @@ def upsert_award_row(conn: sqlite3.Connection, row: dict):
             date_signed=COALESCE(excluded.date_signed, date_signed),
             contract_status=COALESCE(excluded.contract_status, contract_status),
             value_quality=excluded.value_quality,
+            data_source=excluded.data_source,
             last_updated=datetime('now')
     """, r)
 
