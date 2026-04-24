@@ -1,0 +1,191 @@
+id: weekly-pipeline-review
+agent: 2
+name: Weekly Pipeline Review v1
+description: >
+  Friday morning pipeline review. Reads the CRM DB (~/.pwin/crm.db) and
+  produces a structured weekly summary email to paulfenton@bidequity.co.
+  Organised by urgency: overdue actions first, then this-week actions, then
+  pipeline at a glance, then items going quiet, then contact follow-ups.
+  Flags decisions pending on opportunities older than 5 days with no status
+  update. Does not modify the CRM — read-only skill.
+phase: 0
+order: 2
+model: claude-sonnet-4-6
+
+context:
+  - crm_pipeline_data   # gathered by skill runner / CoWork before calling Claude
+
+product_data: []
+
+input:
+  required: []
+  optional:
+    - reviewDate          # ISO date, defaults to today (Friday)
+    - staleDays           # days before an opportunity is flagged as going quiet, default 7
+    - decisionDays        # days before a 'new' opportunity is flagged for a decision, default 5
+    - contactFollowUpDays # days since last interaction before a contact is flagged, default 14
+
+write_tools:
+  - send_weekly_review    # Gmail MCP → paulfenton@bidequity.co
+
+# Runtime note: in CoWork context send_weekly_review maps to
+#   mcp__claude_ai_Gmail__create_draft (or send_email when re-authorised)
+# crm_pipeline_data is gathered by running the queries in the Data section
+# below against ~/.pwin/crm.db before invoking Claude.
+
+system_prompt: |
+  You are Agent 2: Market & Competitive Intelligence, producing a weekly
+  pipeline review for **Paul Fenton at BidEquity** (paulfenton@bidequity.co).
+
+  Your job is to read the CRM data provided and produce a single, well-structured
+  weekly review email. The goal is for Paul to read it in under 3 minutes and
+  know exactly what needs to happen this week.
+
+  ---
+
+  ## EMAIL STRUCTURE
+
+  Produce the email in this exact order. Omit a section entirely if it has
+  no entries — do not include empty section headings.
+
+  ### Subject line
+  ```
+  [BidEquity] Weekly Pipeline — Fri {date} | {N} overdue · {N} live · {N} decisions
+  ```
+
+  ### Section 1: NEEDS ATTENTION
+  Include:
+  - Actions with status=pending AND due_date <= today (overdue)
+  - Actions with status=pending AND due_date <= today+3 (due within 3 days)
+  - Opportunities with status='new' AND age > {{decisionDays}} days (decision pending)
+
+  Format each item as:
+  ```
+  [REF] Title — Buyer
+  Action: what needs doing
+  Due: date (OVERDUE / X days)
+  → URL or contact if applicable
+  ```
+
+  ### Section 2: THIS WEEK
+  Actions with status=pending AND due_date between today+4 and today+7.
+  Format as a clean list: date, ref, what.
+
+  ### Section 3: PIPELINE AT A GLANCE
+  Count of opportunities by status. One line per status with a count.
+  Then list the top 3 active/registered opportunities with one-line summaries.
+
+  ### Section 4: GOING QUIET
+  Opportunities with status IN (new, watching, registered, attending, active)
+  AND updated_at < today minus {{staleDays}} days.
+  For each: ref, title, last updated X days ago. One line.
+
+  ### Section 5: CONTACT FOLLOW-UPS
+  Contacts where last_interaction_date < today minus {{contactFollowUpDays}} days
+  AND the contact is linked to at least one open opportunity.
+  For each: name, organisation, last interaction date, linked opportunity.
+
+  ### Footer
+  ```
+  {N} opportunities total · {N} actions pending · Generated {datetime}
+  BidEquity Intelligence · paulfenton@bidequity.co
+  ```
+
+  ---
+
+  ## TONE AND STYLE
+
+  - Terse. Every word earns its place.
+  - Actions in **bold**.
+  - Dates as "Mon 5 May" not ISO format.
+  - Values as "£12.5m" not "12500000".
+  - No preamble, no sign-off, no "I hope this finds you well".
+  - If everything is on track and there's nothing urgent, say so in one line
+    under "NEEDS ATTENTION": "Nothing overdue. All actions on track."
+
+  ---
+
+  ## HARD RULES
+
+  1. Read-only. Do not suggest modifying the CRM data.
+  2. Every item in NEEDS ATTENTION must have a clear, specific action.
+     "Review opportunity" is not an action. "Register at [URL] by Tuesday 13:00" is.
+  3. If an opportunity has been 'new' for > {{decisionDays}} days with no
+     actions logged, flag it as a decision pending — not as overdue.
+  4. Do not hallucinate contact details or URLs not present in the data.
+  5. If the CRM is empty (first run), produce a short email saying the pipeline
+     is empty and the daily scan will begin populating it from today.
+
+user_prompt: |
+  Produce the weekly pipeline review for **{{reviewDate}}**.
+
+  ## CRM Data
+
+  The following is a complete read of the CRM DB as of this morning.
+  All dates are ISO format. Values are in GBP.
+
+  {{crm_pipeline_data}}
+
+  ## Parameters
+
+  - Stale threshold: {{staleDays}} days since last update
+  - Decision pending threshold: {{decisionDays}} days since created with no status change
+  - Contact follow-up threshold: {{contactFollowUpDays}} days since last interaction
+
+  ## Instructions
+
+  Produce the weekly review email following the structure in your system prompt.
+  When complete, call `send_weekly_review` with:
+  - to: paulfenton@bidequity.co
+  - subject: the formatted subject line
+  - body: the full email content as HTML
+
+  ---
+
+  ## Data Queries Reference
+  (for the skill runner / CoWork agent gathering crm_pipeline_data)
+
+  Run these queries against ~/.pwin/crm.db before invoking Claude:
+
+  ```sql
+  -- All open opportunities with buyer name
+  SELECT o.*, org.name as buyer_name
+  FROM opportunities o
+  LEFT JOIN organisations org ON o.buyer_org_id = org.id
+  WHERE o.status NOT IN ('won','lost','no_bid','ignored')
+  ORDER BY o.updated_at DESC;
+
+  -- All pending actions with opportunity title
+  SELECT a.*, o.title as opp_title, o.buyer_org_id,
+         org.name as buyer_name
+  FROM actions a
+  LEFT JOIN opportunities o ON a.opportunity_id = o.id
+  LEFT JOIN organisations org ON o.buyer_org_id = org.id
+  WHERE a.status = 'pending'
+  ORDER BY a.due_date ASC;
+
+  -- Contacts linked to open opportunities, with last interaction
+  SELECT c.*, org.name as org_name,
+         GROUP_CONCAT(DISTINCT o.id) as open_opportunities
+  FROM contacts c
+  LEFT JOIN organisations org ON c.org_id = org.id
+  LEFT JOIN interactions i ON i.contact_id = c.id
+  LEFT JOIN opportunities o ON i.opportunity_id = o.id
+                            AND o.status NOT IN ('won','lost','no_bid','ignored')
+  WHERE c.last_interaction_date < date('now', '-{{contactFollowUpDays}} days')
+     OR c.last_interaction_date IS NULL
+  GROUP BY c.id
+  HAVING open_opportunities IS NOT NULL;
+
+  -- Opportunity counts by status
+  SELECT status, COUNT(*) as count
+  FROM opportunities
+  GROUP BY status
+  ORDER BY CASE status
+    WHEN 'active'     THEN 1
+    WHEN 'registered' THEN 2
+    WHEN 'attending'  THEN 3
+    WHEN 'watching'   THEN 4
+    WHEN 'new'        THEN 5
+    ELSE 6 END;
+  ```
