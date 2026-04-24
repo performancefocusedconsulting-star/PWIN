@@ -212,9 +212,14 @@ def fetch_cf_page(from_date: str, to_date: str, page: int) -> dict | None:
 def process_cf_notice(conn: sqlite3.Connection, notice: dict) -> dict:
     counts = {"buyers": 0, "suppliers": 0, "notices": 0, "awards": 0}
 
+    notice_id = str(notice.get("id") or notice.get("noticeIdentifier") or "")
+    if not notice_id:
+        log.warning("CF notice has no id — skipping")
+        return counts
+
     org = notice.get("organisation") or notice.get("buyerOrganisation") or {}
     if not org or not org.get("name"):
-        log.debug("Notice %s has no organisation — skipping", notice.get("id"))
+        log.debug("Notice %s has no organisation — skipping", notice_id)
         return counts
 
     # Buyer
