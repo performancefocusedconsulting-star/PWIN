@@ -136,14 +136,34 @@ The PWIN score is built from five layers, each independently defensible, each pr
 
 **What it produces:** A mathematical adjustment to the under-the-hood Qualify category scores based on Layer 3, before they contribute to the platform composite.
 
-**How it works:** Each underlying category score from Qualify (the hidden numerical score, not the disclosed viability tier) is examined against the evidence in Win Strategy. If a category claim has no supporting evidence, a haircut is applied (default proposed: 15% reduction in that category's contribution). If evidence exists, the haircut is removed proportional to the strength and recency of the evidence. This is the mechanism that prevents "Happy Ears" — the well-documented industry phenomenon where capture teams over-score subjective categories to justify continued pursuit.
+**How it works:** Each underlying category score from Qualify (the hidden numerical score, not the disclosed viability tier) is examined against the evidence in Win Strategy. If a category lacks supporting evidence where evidence is reasonable to expect at the current pursuit stage, a haircut is applied to reduce that category's contribution to the composite. If evidence exists, the haircut is removed proportional to the strength and recency of the evidence. This is the mechanism that prevents "Happy Ears" — the well-documented industry phenomenon where capture teams over-score subjective categories to justify continued pursuit.
+
+A flat 15% haircut applied uniformly would punish two very different situations identically: (a) a team claiming a strong buyer relationship with no logged interactions to back it up (genuine Happy Ears that the CDF should bite), and (b) a team strategically entering a new sector at the start of capture, where evidence is not yet possible (legitimate new-territory development that the CDF should *not* punish). The CDF must distinguish them.
+
+**Three-part design:**
+
+**(1) Stage-aware haircut.** The haircut percentage scales with where the pursuit is in the lifecycle. The same staging that drives the Qualify viability tier mapping (Identify / Capture / Pursue / Submit) drives the CDF intensity:
+
+| Stage | CDF haircut for unevidenced evidence-bearing categories | Why |
+|---|---|---|
+| Identify | 0% | No evidence is expected yet — assessment is mostly strategic fit |
+| Capture | 5% | Building should be underway; light pressure on unevidenced claims |
+| Pursue | 15% | Full discipline — the gap between claim and evidence becomes a real risk |
+| Submit | 20% | By now the evidence should exist or the claim is empty |
+
+**(2) Claim-type-aware application.** Not every Qualify category is the kind that needs an interaction log to back it. Each category is tagged as either *evidence-bearing* (e.g. Stakeholder Position & Access, Buyer Need & Decision Logic, Competitive Position & Incumbent Dynamics — claims here are about external relationships and intelligence and ought to be backed by logged artefacts) or *strategic-fit* (e.g. Procurement, Proposition & Solution Fit at the conceptual level; Commercial, Delivery & Pursuit Readiness at the team-capability level — claims here are about capability and judgement, not external evidence). The CDF acts on the evidence-bearing categories only. The strategic-fit categories are not haircut for absence of evidence because evidence is not the right test for them.
+
+**(3) Doesn't double-count Historical Pattern.** The Historical Pattern layer already captures the structural challenge of new-sector entry. A supplier with no awards in defence will get a low Historical Pattern anchor for a defence pursuit — that is the data telling the truth. Adding a CDF haircut on top of an already-low anchor would double-count the same structural reality. The CDF acts only on the dimension Historical Pattern doesn't already reflect — the team's *opinion-vs-evidence gap*, not the team's *track-record-in-the-segment gap*.
+
+**Together:** new-sector entrants get a fair read — low Historical Pattern (correctly), no piling-on from the CDF at Identify/early Capture, and the Structural Ceiling caps optimism at 25% (new customer, new offering) which is the right ceiling for that situation. Inflated assessments at Pursue/Submit get the discipline they need.
 
 **Why it matters at v1:** Even before the historical pattern layer is mature, the Cognitive Discount Factor on its own raises PWIN above any current scoring methodology. It is a discipline mechanism, not a data mechanism. It works from day one once Qualify and Win Strategy are linked.
 
 **Tunable parameters (deferred to implementation):**
 
-- Default haircut percentage
-- How evidence strength is graded
+- The four stage haircut percentages (proposed 0% / 5% / 15% / 20%) — subject to calibration once labelled outcomes accumulate
+- The split of Qualify categories into evidence-bearing vs strategic-fit (proposed v0.2 split listed above) — subject to review once first live engagements run
+- How evidence strength is graded (binary present/absent at v1; partial / weighted at v2)
 - Decay rate (evidence loses validity over time as the buyer context evolves)
 
 ### 3.5 Layer 5 — Structural Ceiling (the reality constraint)
@@ -172,7 +192,8 @@ Step 1  Historical Pattern produces an anchor probability (Layer 1)
 Step 2  Qualify produces per-category viability tiers for disclosure
         and under-the-hood category scores for composition (Layer 2)
 Step 3  Capture Evidence categorises which Qualify claims are backed (Layer 3)
-Step 4  Cognitive Discount Factor adjusts Qualify per Layer 3 (Layer 4)
+Step 4  Cognitive Discount Factor adjusts the under-the-hood Qualify
+        category scores per Layer 3 (Layer 4)
 Step 5  Anchor + adjusted Qualify produce a raw composite PWIN
 Step 6  Structural Ceiling applies as a hard cap (Layer 5)
 Step 7  Confidence indicator is computed from completeness and recency
@@ -180,7 +201,106 @@ Step 7  Confidence indicator is computed from completeness and recency
 Output  PWIN score + confidence + visible layer breakdown
 ```
 
-This is intentionally less mathematically pure than a full Bayesian update model (which would treat each input as a probability statement with its own prior and posterior). The decision (recorded here) is that **the data we have at v1 cannot support full Bayesian rigour without producing false precision**. A layered, transparent, well-documented composite is more honest at v1. v2 introduces explicit Bayesian updating once we have more confidence in the priors.
+#### 3.6.1 The composite formula (v1) — anchor + bounded adjustment
+
+The Historical Pattern layer is the **anchor** and the adjusted Qualify layer is a **bounded adjustment** to that anchor. This is more defensible than a flat weighted average because the two layers describe different things — Historical Pattern says *how this kind of opportunity normally goes*, Qualify says *what this team thinks about this specific case*. The team's view is the most volatile input in the system and bounding its influence respects the relative trustworthiness of each layer.
+
+The v1 formula:
+
+```
+Q_overall = weighted_average(Q_adjusted_per_category, category_weights)
+            -- where Q_adjusted_per_category is the under-the-hood
+            -- score per category after CDF haircut (Layer 4)
+
+adjustment = ((Q_overall - 0.5) / 0.5) × 15 percentage points
+             -- bounded at ±15 points; 0.5 is the neutral midpoint;
+             -- so Q_overall = 0.8 produces +9pp, Q_overall = 0.2 produces -9pp
+
+raw_composite = Historical_Pattern + adjustment
+
+PWIN = min(raw_composite, Structural_Ceiling)
+```
+
+**Worked behaviour:**
+
+- If the team's adjusted Qualify view sits at the neutral midpoint (Q_overall = 0.5), the composite is just the historical anchor. The team's read is consistent with the data; no shift.
+- If the team's view is positive (Q_overall = 0.8), the composite shifts the anchor up by ~9 percentage points. Bounded — even maximum optimism cannot move the answer more than 15 points off the historical anchor.
+- If the team's view is negative (Q_overall = 0.2), the composite shifts the anchor down by ~9 percentage points. Same bound on pessimism.
+
+**Why ±15 points is the v1 bound:**
+
+The bound reflects how much weight v1 is willing to give to a layer that has not yet been calibrated against outcomes. A larger bound (say ±25) makes the team's view dominate the answer in cases where Historical Pattern is moderate; a smaller bound (say ±5) makes Qualify decorative. ±15 keeps Qualify materially influential without letting it overrule a strong historical signal in either direction. The bound is a tunable parameter and should be re-calibrated once ~50 labelled pursuit outcomes exist.
+
+**Why this is honest at v1:**
+
+This is not Bayesian inference. It is anchor-plus-adjustment composition with explicit, transparent maths. Anyone reading the composite can trace the headline number back to the layer values. The decision (recorded here) is that **the data we have at v1 cannot support full Bayesian rigour without producing false precision**. v2 introduces explicit Bayesian updating once we have more confidence in the priors. v3 introduces a true predictive classifier once ~100 labelled pursuit outcomes accumulate.
+
+#### 3.6.2 Worked examples
+
+The CDF design (§3.4) and the composite formula (§3.6.1) need to be seen working on representative cases. Three worked examples follow. Categories are abbreviated; assume the v0.2 five-category model: BNDL = Buyer Need & Decision Logic (evidence-bearing), SPA = Stakeholder Position & Access (evidence-bearing), CPID = Competitive Position & Incumbent Dynamics (evidence-bearing), PPSF = Procurement, Proposition & Solution Fit (strategic-fit), CDPR = Commercial, Delivery & Pursuit Readiness (strategic-fit).
+
+**Example A — Incumbent defending a contract at Capture stage.**
+
+Context: large central-government BPO contract up for recompete. Team has worked the account for years.
+
+| Layer | Value | How |
+|---|---|---|
+| Historical Pattern | 60% | Strong incumbency advantage in similar awards across the buyer's portfolio |
+| Qualify (under-the-hood, before CDF) | BNDL: 0.75, SPA: 0.80, CPID: 0.70, PPSF: 0.85, CDPR: 0.78 |
+| Evidence flag (per category) | BNDL: yes, SPA: yes, CPID: no, PPSF: n/a (strategic-fit), CDPR: n/a (strategic-fit) |
+| CDF haircut at Capture | 5% on unevidenced evidence-bearing categories. CPID is the only one. |
+| Q_adjusted | BNDL: 0.75, SPA: 0.80, CPID: 0.70 × 0.95 = 0.665, PPSF: 0.85, CDPR: 0.78 |
+| Q_overall (weighted by category weights from v0.2 weight profile, BPO managed service) | ≈ 0.77 |
+| Adjustment | ((0.77 − 0.5) / 0.5) × 15 = +8.1pp |
+| Raw composite | 60% + 8.1 = 68.1% |
+| Structural Ceiling | Existing customer, current offering = 95% — does not bite. **But Shipley recompete cap at 70%** does bite (incumbent rebid). |
+| **Final PWIN** | **68.1%** |
+
+The team's bullishness shifts the anchor up by 8 points, the unevidenced competitive intelligence costs them ~3 points of category contribution, the ceiling sits comfortably above the answer. Defensible read.
+
+**Example B — Strategic new-sector entry at Identify stage.**
+
+Context: established consultancy with no defence track record exploring whether to pursue an MOD opportunity.
+
+| Layer | Value | How |
+|---|---|---|
+| Historical Pattern | 12% | Supplier has no defence award history — data correctly reflects new-sector difficulty |
+| Qualify (under-the-hood, before CDF) | BNDL: 0.70, SPA: 0.60, CPID: 0.55, PPSF: 0.75, CDPR: 0.80 — team is excited about the strategic fit and capability |
+| Evidence flag (per category) | All marked "n/a — Identify stage" |
+| CDF haircut at Identify | **0% across all categories** — no evidence is expected at this stage. The new-sector entrant is not punished for the absence of artefacts that cannot yet exist. |
+| Q_adjusted | Unchanged from raw |
+| Q_overall | ≈ 0.70 |
+| Adjustment | ((0.70 − 0.5) / 0.5) × 15 = +6.0pp |
+| Raw composite | 12% + 6.0 = 18.0% |
+| Structural Ceiling | New customer, new offering = 25% — does not bite at 18% |
+| **Final PWIN** | **18%** |
+
+This is the test case from the design discussion. The new-sector entrant gets a fair read. Historical Pattern correctly reflects that this is a structurally hard pursuit (the data is not flattered). The CDF does not pile on. The team's strategic conviction lifts the answer modestly. The ceiling is the cap of last resort and does not bite. The supplier sees 18% PWIN with banded confidence — a low number that is honest about the structural challenge, not a punitive zero.
+
+**Example C — Optimistic team at Submit, evidence base is thin.**
+
+Context: competitive segment where this supplier has a moderate track record. Team has been in capture for months and is now at submission, but the evidence log is thin and several subjective claims have nothing backing them.
+
+| Layer | Value | How |
+|---|---|---|
+| Historical Pattern | 40% | Competitive segment, moderate supplier record |
+| Qualify (under-the-hood, before CDF) | BNDL: 0.85, SPA: 0.80, CPID: 0.75, PPSF: 0.78, CDPR: 0.82 |
+| Evidence flag (per category) | BNDL: no, SPA: no, CPID: no, PPSF: n/a, CDPR: n/a |
+| CDF haircut at Submit | 20% on unevidenced evidence-bearing categories. All three of BNDL, SPA, CPID. |
+| Q_adjusted | BNDL: 0.85 × 0.80 = 0.68, SPA: 0.80 × 0.80 = 0.64, CPID: 0.75 × 0.80 = 0.60, PPSF: 0.78, CDPR: 0.82 |
+| Q_overall | ≈ 0.69 |
+| Adjustment | ((0.69 − 0.5) / 0.5) × 15 = +5.7pp |
+| Raw composite | 40% + 5.7 = 45.7% |
+| Structural Ceiling | (Mixed — assume new customer, current offering = 50% — does bite if raw goes higher) |
+| **Final PWIN** | **45.7%** |
+
+The team's view, before discipline, would have lifted the anchor to 40% + 11.4pp = 51.4% (above the structural ceiling, capped at 50%). The CDF discipline brings the unevidenced over-scoring back down. The supplier sees a moderate-confidence 46% — appropriately moderated for a pursuit where the team is bullish but has not built the evidence base.
+
+These three examples demonstrate the three behaviours that mattered most in the design discussion: incumbents get fair credit for evidenced position, new-sector entrants get a fair (low but honest) read without punitive piling-on, and optimistic teams without evidence are appropriately disciplined.
+
+#### 3.6.3 Why this v1 mechanism is honest
+
+This is not Bayesian inference. It is transparent anchor-plus-adjustment composition with explicit maths. Anyone reading the composite can trace the headline number back to the layer values, and the decision (recorded here) is that **the data we have at v1 cannot support full Bayesian rigour without producing false precision**. A layered, transparent, well-documented composite is more honest at v1. v2 introduces explicit Bayesian updating once we have more confidence in the priors and once enough labelled outcomes exist to calibrate them.
 
 ---
 
@@ -383,9 +503,9 @@ PWIN is that system. It is the multi-layered probability engine designed to allo
 
 The following are explicitly *not* locked in by this design and are deferred to implementation planning or future spec work.
 
-1. **Default Cognitive Discount Factor percentage.** Proposed at 15% per category for unevidenced claims. Subject to calibration against historical pursuits once enough labelled outcomes exist.
+1. ~~**Default Cognitive Discount Factor percentage.**~~ **Resolved (2026-04-25).** A flat haircut was rejected because it punishes new-sector entry as if it were inflation. The CDF is now stage-aware (0% / 5% / 15% / 20% across Identify / Capture / Pursue / Submit), claim-type-aware (acts only on evidence-bearing categories, not strategic-fit categories), and explicitly does not double-count the Historical Pattern layer. See §3.4. The four stage percentages and the evidence-bearing/strategic-fit category split remain subject to calibration against labelled outcomes.
 
-2. **Layer weights in the composite formula.** This design specifies the layers but not the precise mathematical weighting between Historical Pattern and Qualify Assessment in the composite. Implementation planning must specify this; eval harness fixtures should test the weighting choices.
+2. ~~**Layer weights in the composite formula.**~~ **Resolved (2026-04-25).** v1 uses anchor + bounded adjustment, not a weighted average: the Historical Pattern is the anchor, the adjusted Qualify shifts it by up to ±15 percentage points based on how the team's view differs from the neutral midpoint. See §3.6.1. The ±15 bound is the v1 default and is a tunable parameter to be re-calibrated once ~50 labelled pursuit outcomes exist.
 
 3. **Confidence band thresholds.** The Low / Medium / High confidence indicator needs explicit thresholds against the four contributing factors (coverage, recency, evidence ratio, sample size).
 
