@@ -11,11 +11,11 @@
 
 This document consolidates several strands of thinking into one architectural decision: **PWIN the score is moving out of any single product and becoming a platform-level composite** that combines multiple distinct lenses on the same opportunity.
 
-Today, Qualify is the only thing that produces a "PWIN percentage." That conflates the company brand (PWIN), the product (Qualify), and the score itself. It also forces Qualify to carry credibility weight a 24-question questionnaire cannot bear in front of a sceptical executive audience.
+Today, Qualify is the only thing that produces a "PWIN percentage." That conflates the company brand (PWIN), the product (Qualify), and the score itself. It also forces Qualify to carry credibility weight a 25-question questionnaire cannot bear in front of a sceptical executive audience.
 
 Going forward:
 
-- **Qualify becomes one of several inputs** — a structured assessment of the team's view, producing six category scores plus rationale, but not claiming to be the probability of winning.
+- **Qualify becomes one of several inputs** — a structured assessment of the team's view, producing a per-category and headline pursuit-viability tier plus rationale, recommendations, evidence, and confidence. Qualify does not claim to be the probability of winning, does not surface a number, and does not use the word PWIN.
 - **The PWIN score lives at the platform level** and combines several lenses: a historical pattern lens drawn from real procurement data, the Qualify assessment lens, evidence accumulated by Win Strategy during capture, a structural ceiling drawn from established methodology, and a discipline that mathematically discounts subjective claims that have no evidence behind them.
 - **The score is presented as layers, not a single splashed number.** Executives see how the answer was reached before they see the answer. The single number exists for portfolio aggregation and weighted pipeline value, but it does not lead the disclosure.
 - **Confidence is a first-class output alongside the score.** "PWIN 42%, medium confidence, here is what would raise it" is a fundamentally different conversation from "PWIN 42%, trust us."
@@ -38,13 +38,13 @@ Three different things currently share the name "PWIN":
 
 When the score lives inside a single product, every limitation of that product becomes a limitation of the score. Qualify is a structured self-assessment with AI-assisted challenge. It is genuinely useful, but it cannot — by itself — produce a probability that a sceptical bid director will accept as the answer. They will rightly ask: what about the historical evidence? What about the capture intelligence we have gathered over the last four months? What about the structural reality that this is a new buyer and a new offering?
 
-A 24-question scorecard cannot answer those questions on its own.
+A 25-question scorecard cannot answer those questions on its own.
 
 ### 1.2 What changes
 
 PWIN the score is decoupled from any individual product:
 
-- **Qualify** produces six category scores (Competitive Position, Partnership Intelligence, Solution Strength, Opportunity Insight, Value Proposition, Pursuit Posture) with rationale and challenger commentary. It does not produce a single probability.
+- **Qualify** produces a per-category viability tier across five categories (Buyer Need & Decision Logic; Stakeholder Position & Access; Competitive Position & Incumbent Dynamics; Procurement, Proposition & Solution Fit; Commercial, Delivery & Pursuit Readiness) on a five-band scale (Strong / On Track / Conditional / Major Concerns / Walk Away), each with rationale, recommendations, evidence, and confidence — plus a headline pursuit viability tier on the same scale. It does not produce a single probability and never displays a numerical score.
 - **Win Strategy** produces capture artefacts (buyer thesis, stakeholder map, competitor field map, win themes, proof map, evidence log) that accumulate during the capture window. It does not produce a probability either.
 - **Competitive Intel** (the contracts database) produces historical patterns — award shares, incumbency strength, buyer-supplier relationship history, competition density. It does not produce a probability.
 - **The PWIN score itself** is computed at the platform level by combining the above into a single composite, applying structural ceilings and bias-correction discipline.
@@ -65,15 +65,19 @@ Qualify retains its full intellectual content. What changes is the framing of it
 
 | Item | What Qualify produces |
 |---|---|
-| Six category scores | Each on a 0–100 readiness scale with rationale (Competitive Position, Partnership Intelligence, Solution Strength, Opportunity Insight, Value Proposition, Pursuit Posture) |
-| Per-question detail | The 24 underlying question responses, with Alex Mercer's challenge notes |
-| Rebid risk assessment | When the incumbent rebid modifier is active, the additional 9-field assessment |
-| Inflation flags | Per-category indicators where the team's self-assessment exceeded what the evidence supports |
-| Confidence indicator | How complete and how recent the assessment is |
+| Per-category viability tier | Each category placed on a five-band tier scale: **Strong / On Track / Conditional / Major Concerns / Walk Away**. Tier mapping is stage-aware (Identify / Capture / Pursue / Submit) — the same evidence base maps to a more lenient tier early in capture and a harsher tier closer to submission. |
+| Headline pursuit viability tier | A roll-up across the categories on the same five-band scale, paired with confidence. This is the headline disclosed output of Qualify. |
+| Per-category rationale, recommendations, and evidence | What is driving the tier, what would move it up, and what evidence backs it. |
+| Per-question detail | The underlying question responses on the four-band agreement scale (Strongly Agree / Agree / Disagree / Strongly Disagree), each with an evidence-quality grade and Alex Mercer's challenge notes. |
+| Rebid risk assessment | When the incumbent rebid modifier is active, the additional dedicated assessment. |
+| Inflation flags | Per-category indicators where the team's self-assessment exceeded what the evidence supports. |
+| Confidence indicator | How complete and how recent the assessment is. |
 
-What Qualify no longer produces:
+What Qualify no longer produces, and what it never says out loud:
 
-- A single PWIN percentage. The verdict that follows from the score (Pursue / Condition / Walk-Away) moves to the platform layer because it depends on the integrated PWIN score, not on Qualify alone.
+- **Qualify never surfaces a numerical score and never uses the word PWIN.** Its disclosed vocabulary is *pursuit viability*, *confidence*, *evidence*, and *recommendations*.
+- A numerical score per category is still computed under the hood (it is what drives the tier mapping and what feeds the platform-level PWIN composite), but `surfacedToUser` is `false` by design — the team sees the tier, the rationale, and the coaching, not the number.
+- The verdict that follows from the integrated score (Pursue / Condition / Walk Away at platform level) is informed by Qualify's viability tier but is decided at the platform layer, where the other four layers also contribute.
 
 ### 2.2 Why Qualify is still valuable
 
@@ -108,13 +112,15 @@ The PWIN score is built from five layers, each independently defensible, each pr
 
 ### 3.2 Layer 2 — Qualify Assessment (the team's view)
 
-**What it produces:** Six category scores with rationale and challenger commentary, as described in Section 2.
+**What it produces (disclosed to the user):** A per-category viability tier on a five-band scale (Strong / On Track / Conditional / Major Concerns / Walk Away), each with rationale, recommendations, evidence quality, and confidence — plus a headline pursuit viability tier on the same scale. Tier mapping is stage-aware (Identify / Capture / Pursue / Submit). When viability comes back as Conditional or worse, a qualification coaching process surfaces the major deficiencies and what would need to change to move the tier up. Qualify never surfaces a numerical score and never uses the word PWIN — its vocabulary is viability, confidence, evidence, and recommendations.
 
-**What feeds it:** The 24-question pack, Alex Mercer's persona, the opportunity-type calibration, and the rebid modifier when applicable.
+**What it produces (under the hood, fed up to the platform):** A numerical category score per category, with confidence weighting. This is what feeds the platform PWIN composite alongside the other four layers. The number is computed but `surfacedToUser` is `false` by design.
+
+**What feeds it:** The question pack, Alex Mercer's persona, the opportunity-type calibration, and the rebid modifier when applicable.
 
 **What it claims:** A structured, challenged, comparable view of how the pursuit team perceives the opportunity. This is genuine judgement — it is not the same as historical evidence and it is not the same as capture intelligence, but it is the input that captures the team's reading of factors no data feed can see.
 
-**What it does not claim:** That the team's view is the answer. The Cognitive Discount Factor (Layer 4) explicitly haircuts category scores that lack supporting evidence in Win Strategy artefacts.
+**What it does not claim:** That the team's view is the answer. The Cognitive Discount Factor (Layer 4) explicitly haircuts the underlying category scores that lack supporting evidence in Win Strategy artefacts before they contribute to the platform composite.
 
 ### 3.3 Layer 3 — Capture Evidence (the validation)
 
@@ -128,9 +134,9 @@ The PWIN score is built from five layers, each independently defensible, each pr
 
 ### 3.4 Layer 4 — Cognitive Discount Factor (the discipline)
 
-**What it produces:** A mathematical adjustment to the Qualify category scores based on Layer 3.
+**What it produces:** A mathematical adjustment to the under-the-hood Qualify category scores based on Layer 3, before they contribute to the platform composite.
 
-**How it works:** Each category score from Qualify is examined against the evidence in Win Strategy. If a category claim has no supporting evidence, a haircut is applied (default proposed: 15% reduction in that category's contribution). If evidence exists, the haircut is removed proportional to the strength and recency of the evidence. This is the mechanism that prevents "Happy Ears" — the well-documented industry phenomenon where capture teams over-score subjective categories to justify continued pursuit.
+**How it works:** Each underlying category score from Qualify (the hidden numerical score, not the disclosed viability tier) is examined against the evidence in Win Strategy. If a category claim has no supporting evidence, a haircut is applied (default proposed: 15% reduction in that category's contribution). If evidence exists, the haircut is removed proportional to the strength and recency of the evidence. This is the mechanism that prevents "Happy Ears" — the well-documented industry phenomenon where capture teams over-score subjective categories to justify continued pursuit.
 
 **Why it matters at v1:** Even before the historical pattern layer is mature, the Cognitive Discount Factor on its own raises PWIN above any current scoring methodology. It is a discipline mechanism, not a data mechanism. It works from day one once Qualify and Win Strategy are linked.
 
@@ -163,7 +169,8 @@ The five layers are combined into a single PWIN score and a confidence indicator
 
 ```
 Step 1  Historical Pattern produces an anchor probability (Layer 1)
-Step 2  Qualify category scores produce a positioning view (Layer 2)
+Step 2  Qualify produces per-category viability tiers for disclosure
+        and under-the-hood category scores for composition (Layer 2)
 Step 3  Capture Evidence categorises which Qualify claims are backed (Layer 3)
 Step 4  Cognitive Discount Factor adjusts Qualify per Layer 3 (Layer 4)
 Step 5  Anchor + adjusted Qualify produce a raw composite PWIN
@@ -186,16 +193,18 @@ Rather than a single number splashed across the top, the executive view defaults
 ```
 PWIN  42%   Confidence: Medium
 ─────────────────────────────────────────────────
-Historical pattern         35%    high confidence (47 comparable awards)
-Qualify assessment         78%    moderate confidence
-After cognitive discount   52%    3 of 8 claims have evidence
-Structural ceiling         50%    hard cap (new customer, current offering)
+Historical pattern         35%         high confidence (47 comparable awards)
+Qualify viability          On Track    medium confidence
+                                       (4 of 5 categories Strong or On Track,
+                                        1 Conditional — Stakeholder Position)
+After cognitive discount   52%         3 of 8 subjective claims have evidence
+Structural ceiling         50%         hard cap (new customer, current offering)
 
 Trajectory  +7 points in 14 days, driven by buyer interaction
             logged 18 April 2026
 ```
 
-The single number (42%) exists for portfolio aggregation and the standard weighted pipeline value calculation. But it does not lead the disclosure. The layers do.
+Note the deliberate mix of representations. Layers that come from data (Historical Pattern, Cognitive Discount, Structural Ceiling) are shown as percentages because that is what they natively produce. The Qualify layer is shown as a five-band tier because that is what Qualify natively produces and discloses — the number that feeds the composite is computed under the hood and never displayed at the Qualify layer. The single PWIN headline (42%) exists for portfolio aggregation and the standard weighted pipeline value calculation. But it does not lead the disclosure. The layers do.
 
 ### 4.2 Why this solves executive scepticism
 
@@ -288,7 +297,7 @@ The roadmap is sequenced so that **each version stands alone commercially**. Non
 
 **What ships:**
 
-- Qualify outputs change to remove the single PWIN claim. Qualify produces six category scores with rationale only.
+- Qualify outputs change to remove the single PWIN claim. Qualify produces per-category viability tiers across five categories on the five-band scale (Strong / On Track / Conditional / Major Concerns / Walk Away), each with rationale, recommendations, evidence, and confidence — plus a headline pursuit viability tier and the qualification coaching layer that fires on Conditional or worse. The numerical category score that feeds the platform composite is computed but not displayed.
 - Historical Pattern layer ships with descriptive analytics: award shares, incumbency strength, buyer-supplier relationship strength, procurement route distribution. No ML.
 - Cognitive Discount Factor ships in basic form: subjective category claims attract a default haircut unless evidence exists in Win Strategy.
 - Structural Ceiling ships at full strength (SMA quadrants + Shipley recompete cap). This is a small mechanism that delivers brutal honesty.
@@ -392,7 +401,7 @@ The following are explicitly *not* locked in by this design and are deferred to 
 
 9. **The "true win rate" claim and external messaging.** The data confidence audit in §5 is honest about what we can and cannot derive. Marketing materials and the website Qualify experience must not over-claim. A messaging review is needed before any public launch claim that uses PWIN's confidence-graded scoring as a differentiator.
 
-10. **Qualify's standalone consulting use case.** The consulting standalone HTML app that ships to consultants on laptops cannot easily access platform-level PWIN computation when offline. A v1 fallback for the standalone (display category scores only, with "platform-level PWIN computation requires connectivity" messaging) is acceptable. Implementation choice.
+10. **Qualify's standalone consulting use case.** The consulting standalone HTML app that ships to consultants on laptops cannot access platform-level PWIN computation when offline — but this is no longer a problem on the new framing. Qualify's job is the viability assessment, the coaching layer, and the disclosed tier output, none of which depend on the platform PWIN composite. The standalone runs the full Qualify experience offline; the platform PWIN composite simply doesn't surface in standalone mode. Implementation: confirm the offline build does not attempt to read or display platform PWIN.
 
 ---
 
