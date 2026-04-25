@@ -47,10 +47,15 @@ jobs:
         if: env.COMPANIES_HOUSE_API_KEY != ''
         env:
           COMPANIES_HOUSE_API_KEY: ${{ secrets.COMPANIES_HOUSE_API_KEY }}
-        # --limit 1000 at ~3.5s/supplier ≈ 58 min. CH rate limit: 600 calls / 5 min,
-        # 3 calls/supplier ⇒ max 200 suppliers / 5 min. At 1000/night, ~44 nights
-        # to catch up the ~43,838 suppliers with CH numbers.
-        run: python agent/enrich-ch.py --limit 1000
+        # --limit 5000 at ~2s/supplier ≈ 2.8 hours per run.
+        # CH rate limit: 600 calls / 5 min, 3 calls/supplier ⇒ ~200 suppliers / 5 min
+        # is the cap; the script's 600ms inter-call delay keeps us under it.
+        # ~87,000 suppliers with CH numbers are unenriched as of 2026-04-25;
+        # at 5,000/night this clears in ~17 nights, then the steady-state need
+        # is ~50-200 new suppliers/night. Once caught up, drop --limit back to
+        # 1000 (or remove it) to free up GitHub Actions minutes.
+        # If the per-job 6h ceiling becomes an issue, lower this number.
+        run: python agent/enrich-ch.py --limit 5000
 
       - name: Tag new big contracts with service category (procurement codes)
         # Incremental — only contracts where cpv_category IS NULL. Fast (~seconds).
