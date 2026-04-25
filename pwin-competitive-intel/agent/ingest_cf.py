@@ -480,6 +480,8 @@ def main():
             for k in grand_total:
                 grand_total[k] += window.get(k, 0)
             last_window_end = to_dt
+            db_utils.set_ingest_state(conn, CF_STATE_KEY, last_window_end[:19])
+            conn.commit()
             if args.limit and grand_total["notices"] >= args.limit:
                 break
     except KeyboardInterrupt:

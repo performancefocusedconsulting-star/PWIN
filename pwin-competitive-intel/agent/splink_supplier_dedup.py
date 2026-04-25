@@ -213,6 +213,7 @@ def write_canonical(
             FOREIGN KEY (canonical_id) REFERENCES canonical_suppliers(canonical_id)
         );
         CREATE INDEX IF NOT EXISTS idx_s2c_canonical ON supplier_to_canonical(canonical_id);
+        CREATE INDEX IF NOT EXISTS idx_canonical_name ON canonical_suppliers(canonical_name);
         DELETE FROM supplier_to_canonical;
         DELETE FROM canonical_suppliers;
     """)
