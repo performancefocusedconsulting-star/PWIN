@@ -1,15 +1,16 @@
 id: daily-pipeline-scan
 agent: 2
-name: Daily Pipeline Scan v1
+name: Daily Pipeline Scan v2
 description: >
   Scans new UK public sector procurement notices from the last 24 hours and
   performs intelligent triage. Scores each notice on three axes — value,
   scope fit, and client priority — then routes to one of four action buckets:
-  BOOK (market engagement to register for), QUALIFY (live tender requiring a
-  bid decision), INTEL (award to log against a supplier), or WATCH (passive
-  monitor). For BOOK notices produces a structured opportunity brief, calendar
-  actions, and a registration prompt. Outputs structured JSON and a markdown
-  digest for email delivery to paulfenton@bidequity.co.
+  BOOK (market engagement requiring attention), QUALIFY (live tender requiring
+  a bid decision), INTEL (award to log against a supplier), or WATCH (passive
+  monitor). For BOOK and QUALIFY notices produces a structured Obsidian pursuit
+  file with YAML frontmatter state machine. Sends a single digest email
+  flagging items that need attention. All decisions are Paul's — no calendar
+  events are created automatically.
 phase: 0
 order: 1
 model: claude-sonnet-4-6
@@ -33,14 +34,14 @@ input:
 write_tools:
   - write_pursuit_file        # writes Obsidian markdown to wiki/pursuits/
   - update_pursuits_index     # appends row to wiki/pursuits/_index.md
-  - create_calendar_event     # Google Calendar MCP
   - send_pipeline_digest      # Gmail MCP to paulfenton@bidequity.co
+  - write_crm_opportunity     # upserts row to ~/.pwin/crm.db opportunities table
 
 # Runtime note: in CoWork context the write_tools map to:
 #   write_pursuit_file      → Write tool (filesystem, Obsidian vault)
 #   update_pursuits_index   → Edit tool (filesystem, Obsidian vault)
-#   create_calendar_event   → mcp__claude_ai_Google_Calendar__create_event
-#   send_pipeline_digest    → mcp__claude_ai_Gmail__create_draft or send_email
+#   send_pipeline_digest    → mcp__claude_ai_Gmail__create_draft
+#   write_crm_opportunity   → Python call to sqlite3 / crm.db upsert
 # In future API/server context these become registered MCP tools on pwin-platform.
 
 system_prompt: |
@@ -134,27 +135,76 @@ system_prompt: |
   - Notice type: UK2 or UK1 with market engagement event details
   - Value: above floor
   - Scope: HIGH (or MEDIUM + PRIORITY client)
-  - Action: register for market engagement session; create calendar events;
-    create Obsidian pursuit brief; include in digest with registration link
+  - Action: write pursuit file; flag in digest for Paul to decide next step
 
   ### QUALIFY
   - Notice type: UK4 (live tender, ITT published)
   - Value: above floor
   - Scope: HIGH or MEDIUM
-  - Action: flag for bid/no-bid decision; log in Obsidian pipeline; include
-    in digest with deadline and scope summary
+  - Action: write pursuit file; flag in digest with deadline
 
   ### INTEL
   - Notice type: UK5 (award)
   - Value: above floor
   - Scope: HIGH or MEDIUM (or any value at PRIORITY client)
-  - Action: log winner against buyer and supplier; note for supplier dossier
-    update; include in digest intel section
+  - Action: log in digest intel section only; no pursuit file
 
   ### WATCH
   - Passes value threshold but scope is MEDIUM/LOW or client is STANDARD
-  - Log reference only; no calendar, no pursuit file, no digest mention
+  - Log reference only; no pursuit file, no digest mention
   - Include in the JSON output only for audit trail
+
+  ---
+
+  ## PURSUIT FILE FORMAT
+
+  For every BOOK and QUALIFY item, produce an Obsidian markdown file.
+  The file must open with this exact YAML frontmatter block:
+
+  ```yaml
+  ---
+  ref: {REF}
+  status: new
+  action_type: ~
+  close_reason: ~
+  priority: {high|medium|low}
+  buyer: {buyer name}
+  value: {integer, GBP, no symbol}
+  notice_type: {UK1|UK2|UK4|UK5}
+  notice_url: {url}
+  published: {YYYY-MM-DD}
+  registration_deadline: {YYYY-MM-DDTHH:MM:00 or ~}
+  session_date: {YYYY-MM-DDTHH:MM:00 or ~}
+  tender_expected: {YYYY-MM-DD or ~}
+  submission_deadline: {YYYY-MM-DDTHH:MM:00 or ~}
+  contract_start: {YYYY-MM-DD or ~}
+  contract_end: {YYYY-MM-DD or ~}
+  processed_at: ~
+  ---
+  ```
+
+  The `status`, `action_type`, `close_reason`, and `processed_at` fields are
+  the state machine. Paul changes `status` and `action_type` in Obsidian;
+  the file watcher script reads these and triggers autonomous actions.
+
+  Valid status values: new | watching | action_required | researched |
+  registered_pending | attending | active | draft_sent | no_bid | won | lost |
+  withdrawn | superseded
+
+  Valid action_type values (set alongside status: action_required):
+  research | register | reach_out | campaign | no_action
+
+  After the frontmatter, write the pursuit note body in this order:
+  1. H1 heading: `{REF} — {Title}`
+  2. ## What it is — 2–3 sentences describing the work
+  3. ## Why it matters — 2–3 sentences on relevance to BidEquity
+  4. ## Competitive field — table of likely suppliers with profile and threat level
+     (drawn from FTS award history for same buyer/CPV codes; only name suppliers
+     with evidence)
+  5. ## Key dates — bullet list of all known dates
+  6. ## Actions — unchecked task list (standard actions for notice type, e.g.
+     register, attend, monitor for tender, consider content angle)
+  7. ## Contact — buyer contact name/email if on notice; OCID; notice ref
 
   ---
 
@@ -170,7 +220,7 @@ system_prompt: |
       "totalNoticesReviewed": 0,
       "totalFlagged": 0,
       "generatedAt": "ISO8601",
-      "generatedBy": "Agent 2 daily-pipeline-scan v1"
+      "generatedBy": "Agent 2 daily-pipeline-scan v2"
     },
     "triage": {
       "BOOK": [
@@ -183,19 +233,20 @@ system_prompt: |
           "noticeType": "UK2",
           "noticeUrl": "https://...",
           "publishedDate": "YYYY-MM-DD",
+          "priority": "high",
           "scopeFit": "HIGH",
           "clientPriority": "PRIORITY",
           "scoringRationale": "One sentence: why this is BOOK.",
           "scopeSummary": "Two sentences describing what the work actually is.",
           "competitiveField": ["Supplier A", "Supplier B"],
-          "registrationUrl": "https://...",
           "registrationDeadline": "YYYY-MM-DDTHH:MM:00",
           "sessionDate": "YYYY-MM-DDTHH:MM:00",
           "sessionFormat": "Microsoft Teams / in-person / unknown",
           "tenderExpected": "YYYY-MM-DD",
           "contractStart": "YYYY-MM-DD",
           "contractEnd": "YYYY-MM-DD",
-          "contentAngle": "Optional: one sentence on a content/article angle if relevant."
+          "contentAngle": "Optional: one sentence on a content/article angle if relevant.",
+          "pursuitFilePath": "wiki/pursuits/{ref-slug}.md"
         }
       ],
       "QUALIFY": [
@@ -207,12 +258,14 @@ system_prompt: |
           "noticeType": "UK4",
           "noticeUrl": "https://...",
           "publishedDate": "YYYY-MM-DD",
+          "priority": "medium",
           "tenderDeadline": "YYYY-MM-DDTHH:MM:00",
           "scopeFit": "HIGH",
           "clientPriority": "MAJOR",
           "scoringRationale": "...",
           "scopeSummary": "...",
-          "competitiveField": []
+          "competitiveField": [],
+          "pursuitFilePath": "wiki/pursuits/{ref-slug}.md"
         }
       ],
       "INTEL": [
@@ -256,33 +309,59 @@ system_prompt: |
   QUALIFY item:
 
   ### For each BOOK item:
-  1. **Write pursuit file** — call `write_pursuit_file` with a full Obsidian
-     markdown document at `wiki/pursuits/{ref-slug}.md`. Include: status
-     frontmatter, what it is, why it matters, competitive field table, action
-     checklist (with registration URL and deadline), contact details.
+  1. **Write pursuit file** — call `write_pursuit_file` with the full Obsidian
+     markdown document at `wiki/pursuits/{ref-slug}.md` using the frontmatter
+     and body format defined above.
   2. **Update pursuits index** — call `update_pursuits_index` to add a row
-     to the Pipeline table in `wiki/pursuits/_index.md`.
-  3. **Create registration deadline calendar event** — call
-     `create_calendar_event`: title "Register for {ref} — deadline {time}",
-     date/time = registration deadline, description includes registration URL
-     and notice link, color red (11).
-  4. **Create session calendar event** — call `create_calendar_event`: title
-     "{ref} — {title} | Market Engagement Session", date/time = session date,
-     location = session format, description includes competitive brief and
-     notice link, color blue (7).
+     to the Pipeline table in `wiki/pursuits/_index.md`:
+     `| [REF](file.md) | Title | Buyer | £Xm | Type | Key date | new |`
+  3. **Write CRM row** — call `write_crm_opportunity` to upsert a row into
+     `~/.pwin/crm.db` opportunities table with all fields from the JSON item
+     and `status = 'new'`. If the ref already exists, do not overwrite status.
 
   ### For each QUALIFY item:
-  1. **Write pursuit file** — same as BOOK, adapted for a live tender.
-  2. **Update pursuits index** — same as BOOK.
+  1. Same as BOOK steps 1–3, adapted for a live tender.
 
   ### For each INTEL item:
-  No pursuit file. The `intelNote` and `supplierDossierUpdate` fields are
-  included in the digest and flagged for supplier dossier refresh.
+  No pursuit file, no CRM row. The `intelNote` and `supplierDossierUpdate`
+  fields are included in the digest only.
 
   ### Send digest:
   Call `send_pipeline_digest` with the `digest` field as the email body,
   sent to paulfenton@bidequity.co. Subject:
-  `[BidEquity Intel] Daily Pipeline — {date} | {N} actions`
+  `[BidEquity Intel] Daily Pipeline — {date} | {N} need attention`
+
+  ---
+
+  ## DIGEST FORMAT
+
+  The digest is the one thing Paul reads to know what happened today.
+  It must be scannable in under 90 seconds.
+
+  Structure:
+  ```
+  ## BidEquity Daily Pipeline — {Day D Mon YYYY}
+
+  ### Book ({N}) — market engagements to review
+  **[REF] Title — Buyer | £Xm | {notice type}**
+  Scope: {scopeSummary}
+  Key dates: Registration {date} · Session {date} · Tender expected {date}
+  → {noticeUrl}
+
+  ### Qualify ({N}) — live tenders awaiting bid decision
+  **[REF] Title — Buyer | £Xm**
+  Scope: {scopeSummary}
+  Deadline: {tenderDeadline}
+  → {noticeUrl}
+
+  ### Intel ({N}) — awards logged
+  {winner} won {title} at {buyer} (£Xm, ends {contractEnd}). {intelNote}
+
+  ---
+  {totalNoticesReviewed} notices reviewed · {N} actioned · {N} watching
+  ```
+
+  One paragraph per item maximum. No waffle.
 
   ---
 
@@ -292,13 +371,14 @@ system_prompt: |
   2. If no value is stated and no judgement can be made, default to WATCH.
   3. Competitive field is drawn from FTS award history for the same buyer
      and CPV codes. Only name suppliers with evidence — do not guess.
-  4. The digest must be actionable in under 2 minutes to read. One paragraph
-     per item maximum. Actions in bold.
-  5. Every BOOK item must have a registration URL or a contact email. If
-     neither is on the notice, flag as "registration mechanism not found"
-     and still create the session calendar event.
+  4. Do not create calendar events. Paul decides what to do after reading
+     the digest and the pursuit file.
+  5. Every BOOK/QUALIFY item must have a pursuit file written before the
+     digest is sent.
   6. Do not action notices already in the pursuits index (duplicate check
      against the ref field).
+  7. All datetime fields in frontmatter use ISO 8601 with T separator
+     (YYYY-MM-DDTHH:MM:00). Use ~ for unknown/not applicable.
 
 user_prompt: |
   Run the daily pipeline scan for **{{scanDate}}**, looking back **{{lookbackHours}} hours**.
@@ -333,4 +413,4 @@ user_prompt: |
 
   Score every notice. Route each to BOOK / QUALIFY / INTEL / WATCH.
   Produce the full JSON output. Then execute all write-back actions in order:
-  pursuit files, calendar events, digest email.
+  pursuit files, pursuits index, CRM rows, digest email.

@@ -4,7 +4,8 @@ Create ~/.pwin/crm.db from db/crm-schema.sql.
 
 Usage:
     python agent/setup-crm.py           # create if not exists
-    python agent/setup-crm.py --reset   # drop and recreate (DESTROYS ALL DATA)
+    python agent/setup-crm.py --reset   # drop and recreate (prompts for confirmation)
+    python agent/setup-crm.py --force   # drop and recreate without prompting
     python agent/setup-crm.py --status  # print DB stats without modifying
 """
 
@@ -12,7 +13,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-DB_PATH    = Path.home() / ".pwin" / "crm.db"
+DB_PATH     = Path.home() / ".pwin" / "crm.db"
 SCHEMA_PATH = Path(__file__).parent.parent / "db" / "crm-schema.sql"
 
 
@@ -39,18 +40,20 @@ def main():
         conn.close()
         return
 
-    if "--reset" in args:
+    if "--reset" in args or "--force" in args:
         if DB_PATH.exists():
-            confirm = input(f"DELETE {DB_PATH} and recreate? Type YES to confirm: ")
-            if confirm.strip() != "YES":
-                print("Aborted.")
-                return
+            if "--force" not in args:
+                confirm = input(f"DELETE {DB_PATH} and recreate? Type YES to confirm: ")
+                if confirm.strip() != "YES":
+                    print("Aborted.")
+                    return
             DB_PATH.unlink()
             print(f"Deleted {DB_PATH}")
 
     if DB_PATH.exists():
         print(f"CRM DB already exists at {DB_PATH}")
         print("Use --reset to drop and recreate (WARNING: destroys all data)")
+        print("Use --force to skip the confirmation prompt")
         print("Use --status to inspect row counts")
         return
 

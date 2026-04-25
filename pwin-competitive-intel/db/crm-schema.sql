@@ -1,7 +1,12 @@
--- BidEquity CRM Schema v1
+-- BidEquity CRM Schema v2
 -- DB location: ~/.pwin/crm.db
 -- Separate from bid_intel.db (FTS intelligence data, bulk-replaced on reimport)
 -- This DB is operational — never overwritten by ingest
+--
+-- v2 changes (2026-04-24):
+--   opportunities.status — aligned with Obsidian YAML state machine
+--   contacts.linkedin_id — stable dedup key for Evaboot CSV imports
+--   organisations/contacts PKs remain INTEGER (no UUID needed at this scale)
 
 PRAGMA journal_mode=WAL;
 PRAGMA foreign_keys=ON;
@@ -35,6 +40,7 @@ CREATE TABLE IF NOT EXISTS contacts (
     role                  TEXT,
     email                 TEXT,
     linkedin              TEXT,
+    linkedin_id           TEXT    UNIQUE,   -- stable dedup key for Evaboot CSV imports
     strength              TEXT    DEFAULT 'cold'
                                   CHECK(strength IN ('cold','warm','known','advocate')),
     first_met             TEXT,   -- ISO date
@@ -46,8 +52,24 @@ CREATE TABLE IF NOT EXISTS contacts (
 );
 
 -- ── Opportunities ─────────────────────────────────────────────────────────────
--- One row per procurement notice that has been flagged by the daily scan or
--- added manually. Primary key is the notice ref (e.g. BLC0329).
+-- One row per procurement notice flagged by the daily scan or added manually.
+-- Primary key is the notice ref (e.g. BLC0329) — natural key, stable.
+--
+-- Status lifecycle (mirrors Obsidian YAML frontmatter state machine):
+--
+--   new              → just ingested, unread
+--   watching         → noted, passive monitor, no action taken
+--   action_required  → Paul has set an action_type in Obsidian; watcher will fire
+--   researched       → watcher generated a research brief in the pursuit file
+--   registered_pending → Gmail registration draft created; waiting to send/confirm
+--   attending        → registered and attending / attended market engagement session
+--   active           → tender live, bid in progress
+--   draft_sent       → outreach or campaign draft sent
+--   no_bid           → decided not to bid (reason in decision_reason)
+--   won
+--   lost
+--   withdrawn        → buyer withdrew or cancelled the procurement (soft delete)
+--   superseded       → replaced by a subsequent notice (ref in decision_reason)
 
 CREATE TABLE IF NOT EXISTS opportunities (
     id                    TEXT    PRIMARY KEY,  -- notice ref, e.g. BLC0329
@@ -55,19 +77,33 @@ CREATE TABLE IF NOT EXISTS opportunities (
     buyer_org_id          INTEGER REFERENCES organisations(id),
     value                 REAL,
     notice_type           TEXT,   -- UK1 / UK2 / UK4 / UK5
+    priority              TEXT    NOT NULL DEFAULT 'medium'
+                                  CHECK(priority IN ('high','medium','low')),
     status                TEXT    NOT NULL DEFAULT 'new'
                                   CHECK(status IN (
-                                      'new',        -- just ingested, no decision yet
-                                      'watching',   -- noted, monitoring
-                                      'registered', -- registered for market engagement
-                                      'attending',  -- attending / attended session
-                                      'active',     -- tender live, bid in progress
-                                      'no_bid',     -- decided not to bid
-                                      'ignored',    -- dismissed (reason logged)
+                                      'new',
+                                      'watching',
+                                      'action_required',
+                                      'researched',
+                                      'registered_pending',
+                                      'attending',
+                                      'active',
+                                      'draft_sent',
+                                      'no_bid',
                                       'won',
-                                      'lost'
+                                      'lost',
+                                      'withdrawn',
+                                      'superseded'
                                   )),
-    decision_reason       TEXT,   -- why ignored / no_bid / lost
+    action_type           TEXT    CHECK(action_type IN (
+                                      'research',
+                                      'register',
+                                      'reach_out',
+                                      'campaign',
+                                      'no_action',
+                                      NULL
+                                  )),
+    decision_reason       TEXT,   -- why no_bid / lost / withdrawn / superseded
     published_date        TEXT,   -- ISO date
     registration_deadline TEXT,   -- ISO datetime
     session_date          TEXT,   -- ISO datetime
@@ -78,14 +114,14 @@ CREATE TABLE IF NOT EXISTS opportunities (
     notice_url            TEXT,
     pursuit_file          TEXT,   -- path to Obsidian markdown brief
     content_angle         TEXT,   -- article/post idea if relevant
+    processed_at          TEXT,   -- ISO datetime, set by watcher after actioning
     created_at            TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at            TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
 -- ── Interactions ──────────────────────────────────────────────────────────────
 -- Immutable audit log. Everything that happens, timestamped.
--- opportunity_id, contact_id, org_id are all optional — an interaction can be
--- linked to any combination of them.
+-- opportunity_id, contact_id, org_id are all optional.
 
 CREATE TABLE IF NOT EXISTS interactions (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,17 +131,18 @@ CREATE TABLE IF NOT EXISTS interactions (
                                 'email',
                                 'call',
                                 'meeting',
-                                'event',            -- attended a session/event
+                                'event',
                                 'article_published',
-                                'registered',       -- registered for market engagement
-                                'no_bid',           -- formal no-bid decision logged
-                                'note'              -- general note
+                                'registered',
+                                'no_bid',
+                                'watcher_action',   -- automated action by file watcher
+                                'note'
                             )),
     opportunity_id  TEXT    REFERENCES opportunities(id),
     contact_id      INTEGER REFERENCES contacts(id),
     org_id          INTEGER REFERENCES organisations(id),
     summary         TEXT    NOT NULL,
-    outcome         TEXT,   -- what this interaction led to
+    outcome         TEXT,
     created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -116,13 +153,13 @@ CREATE TABLE IF NOT EXISTS actions (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     type            TEXT    NOT NULL
                             CHECK(type IN (
-                                'register',      -- register for market engagement
-                                'attend',        -- attend a session/event
-                                'reach_out',     -- contact someone
-                                'write_content', -- write article/post
-                                'monitor',       -- watch for tender to drop
-                                'bid_decision',  -- make go/no-bid call
-                                'follow_up'      -- follow up after interaction
+                                'register',
+                                'attend',
+                                'reach_out',
+                                'write_content',
+                                'monitor',
+                                'bid_decision',
+                                'follow_up'
                             )),
     opportunity_id  TEXT    REFERENCES opportunities(id),
     contact_id      INTEGER REFERENCES contacts(id),
@@ -137,6 +174,7 @@ CREATE TABLE IF NOT EXISTS actions (
 -- ── Indexes ───────────────────────────────────────────────────────────────────
 
 CREATE INDEX IF NOT EXISTS idx_opp_status      ON opportunities(status);
+CREATE INDEX IF NOT EXISTS idx_opp_priority    ON opportunities(priority);
 CREATE INDEX IF NOT EXISTS idx_opp_updated     ON opportunities(updated_at);
 CREATE INDEX IF NOT EXISTS idx_opp_buyer       ON opportunities(buyer_org_id);
 CREATE INDEX IF NOT EXISTS idx_actions_due     ON actions(due_date, status);
@@ -145,3 +183,4 @@ CREATE INDEX IF NOT EXISTS idx_interactions_opp     ON interactions(opportunity_
 CREATE INDEX IF NOT EXISTS idx_interactions_contact ON interactions(contact_id);
 CREATE INDEX IF NOT EXISTS idx_contacts_org    ON contacts(org_id);
 CREATE INDEX IF NOT EXISTS idx_contacts_strength    ON contacts(strength);
+CREATE INDEX IF NOT EXISTS idx_contacts_linkedin    ON contacts(linkedin_id);
