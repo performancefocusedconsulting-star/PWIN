@@ -19,3 +19,11 @@ pwin-competitive-intel/analysis/
 
 # Ad-hoc UI screenshots captured at the repo root
 /qualify-*.png
+/cfo-*.png
+
+# Runtime logs from competitive intel agents — generated, not source
+pwin-competitive-intel/logs/
+pwin-competitive-intel/agent/*.log
+
+# Skill test outputs — local artefacts, not source
+pwin-platform/test/skill-tests/results/
