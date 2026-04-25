@@ -123,8 +123,11 @@ input[type=number]:focus{border-color:var(--gold-dim)}
 <header>
   <div class="eyebrow">BidEquity · Strategic Intelligence</div>
   <h1>The Bid Investment Business Case</h1>
-  <p class="subtitle">UK government strategic suppliers invest an estimated £3.9 billion per year pursuing contracts. This model quantifies that investment by tier, isolates the sunk cost on losing bids, and calculates the financial return from deploying BidEquity's pursuit intelligence and AI bid production services.</p>
-  <div class="datasrc">Volume: FTS award data · 37 UK government strategic suppliers · trailing 12 months to April 2026 · Unit costs: calibrated from disclosed bid costs on real UK government contracts · April 2026</div>
+  <p class="subtitle">UK government strategic suppliers invest approximately <strong>£3.3 billion per year</strong> pursuing contracts, of which approximately <strong>£2.2 billion is sunk cost on losing bids</strong>. This model quantifies that investment by tier, isolates the sunk cost on losing bids, and calculates the financial return from deploying BidEquity's pursuit intelligence and AI bid production services.</p>
+  <div class="datasrc" style="line-height:1.8">Source: Find a Tender Service + Contracts Finder combined dataset · 37 UK government strategic suppliers · trailing 12 months to April 2026 · Per-contract forensic model anchored on cost-of-sale economics (1.93% blended) · Methodology: <em>docs/strategic-supplier-pursuit-spend-methodology-2026-04-25.md</em> (refreshed 25 April 2026)</div>
+  <div class="datasrc" style="margin-top:.6rem;padding:.7rem 1rem;background:var(--bg-card);border-left:2px solid var(--gold);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:0;text-transform:none">
+    <strong style="color:var(--gold-light)">Methodology refreshed 25 April 2026.</strong> Earlier versions of this model cited £3.93bn / £2.0bn from a value-tier model. The forensic per-contract rebuild on the combined Find a Tender + Contracts Finder dataset, with bid-type-aware classification (direct awards, extensions, renewals, framework call-offs handled distinctly), produces £3.34bn / £2.17bn — within 15% of the original headline but methodologically defensible to forensic interrogation. The interactive tier table below uses the original model for illustrative breakdown; the headline is now anchored on the new methodology.
+  </div>
 </header>
 
 <!-- ── SECTION 1: Industry Picture ───────────────────────── -->
@@ -133,25 +136,25 @@ input[type=number]:focus{border-color:var(--gold-dim)}
   <div class="metric-row">
     <div class="metric">
       <span class="m-label">Total Annual Bid Investment</span>
-      <div class="m-value">£3.9bn</div>
-      <div class="m-sub">37 strategic suppliers · all tiers</div>
+      <div class="m-value">£3.3bn</div>
+      <div class="m-sub">37 strategic suppliers · ~2% cost-of-sale on £173bn of TCV won</div>
     </div>
     <div class="metric">
       <span class="m-label">Sunk Cost on Losing Bids</span>
-      <div class="m-value">£2.6bn</div>
-      <div class="m-sub">67% of total spend · zero commercial return</div>
+      <div class="m-value">£2.2bn</div>
+      <div class="m-sub">~65% of total spend · zero commercial return</div>
     </div>
     <div class="metric">
-      <span class="m-label">Annual Bid Submissions</span>
-      <div class="m-value">9,376</div>
-      <div class="m-sub">across all tiers · 33% baseline win rate</div>
+      <span class="m-label">Strategic Supplier Wins / Year</span>
+      <div class="m-value">1,302</div>
+      <div class="m-sub">unique competitions across 8 bid types · forensic per-contract analysis</div>
     </div>
   </div>
 
   <div class="sec-head">
-    <div class="eyebrow">Bid Investment by Tier</div>
-    <h2>Where the £3.9 Billion Goes</h2>
-    <p class="sec-sub">Bid volumes derived from FTS award data adjusted for FTS coverage gaps and converted to bid submissions using disclosed supplier win rates. Unit costs calibrated from real bid cost data on UK government contracts.</p>
+    <div class="eyebrow">Bid Investment by Tier · Illustrative Breakdown</div>
+    <h2>Where the £3.3 Billion Goes</h2>
+    <p class="sec-sub">The headline £3.3bn is from the 25 April 2026 forensic per-contract model. The tier table below uses the original tier-based view as an illustrative breakdown — the per-tier numbers are indicative of relative volume and effort by contract size; the canonical figures are in the methodology document.</p>
   </div>
 
   <table class="tier-table">
