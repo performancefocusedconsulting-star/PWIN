@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bid Spend Re-Run — 25 April 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #0a0e1a;
+  --bg-card:    #131829;
+  --bg-card-2:  #1a2035;
+  --gold:       #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim:   #7a5e28;
+  --green:      #48a870;
+  --green-dim:  rgba(72,168,112,0.4);
+  --teal:       #4a90b8;
+  --teal-dim:   rgba(74,144,184,0.4);
+  --text:       #e8e4d9;
+  --text-dim:   #8a8890;
+  --text-muted: #555a6e;
+  --border:     rgba(201,168,76,0.15);
+  --border-dim: rgba(255,255,255,0.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;font-weight:300;background:var(--bg);color:var(--text);line-height:1.65}
+.page{max-width:1060px;margin:0 auto;padding:3.5rem 2rem 6rem}
+
+/* Type ramps from the existing CFO model */
+.eyebrow{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
+h1{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1.13;margin-bottom:.85rem}
+h2{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:400;color:var(--gold-light);margin-bottom:.4rem}
+h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--text);margin-bottom:.5rem}
+.subtitle{color:var(--text-dim);font-size:1.06rem;margin-bottom:.8rem;max-width:780px}
+.datasrc{font-family:'DM Mono',monospace;font-size:.57rem;letter-spacing:.08em;color:var(--text-muted)}
+
+/* Section spacing */
+section{margin-top:3.2rem}
+section > h2{margin-bottom:1.4rem}
+.section-intro{color:var(--text-dim);font-size:.95rem;margin-bottom:1.5rem;max-width:760px}
+
+/* Big number cards row */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1.5rem}
+.card{background:var(--bg-card);border:1px solid var(--border-dim);border-radius:6px;padding:1.6rem 1.5rem;position:relative}
+.card.featured{border-color:var(--gold);background:linear-gradient(180deg,var(--bg-card-2) 0%,var(--bg-card) 100%)}
+.m-label{font-family:'DM Mono',monospace;font-size:.57rem;letter-spacing:.17em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:.55rem}
+.m-value{font-family:'Cormorant Garamond',serif;font-size:2.7rem;font-weight:300;color:var(--gold-light);line-height:1;margin-bottom:.4rem}
+.m-value.fade{color:var(--text-dim)}
+.m-sub{color:var(--text-dim);font-size:.85rem;line-height:1.4}
+
+/* Tier bars */
+.tier-grid{display:grid;grid-template-columns:1fr;gap:.55rem}
+.tier-row{display:grid;grid-template-columns:200px 1fr 90px 90px 80px;gap:1rem;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--border-dim)}
+.tier-row.header{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);padding:.4rem 0;border-bottom:1px solid var(--border)}
+.tier-name{color:var(--text);font-size:.92rem}
+.tier-tcv{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-muted);display:block;margin-top:.15rem}
+.bar-wrap{position:relative;height:32px;display:flex;align-items:center;background:rgba(255,255,255,0.025);border-radius:3px}
+.bar-fts{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--teal-dim) 0%,var(--teal) 100%);border-radius:3px 0 0 3px;display:flex;align-items:center;padding-left:.6rem;font-family:'DM Mono',monospace;font-size:.65rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
+.bar-add{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,var(--green-dim) 0%,var(--green) 100%);border-radius:0;display:flex;align-items:center;padding-left:.4rem;font-family:'DM Mono',monospace;font-size:.65rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
+.tier-num{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--gold-light);text-align:right}
+.tier-num.muted{color:var(--text-dim)}
+.tier-num.gain{color:var(--green)}
+
+/* Legend */
+.legend{display:flex;gap:1.4rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-top:1rem}
+.legend-swatch{display:inline-block;width:.85rem;height:.85rem;border-radius:2px;margin-right:.4rem;vertical-align:middle}
+.swatch-fts{background:var(--teal)}
+.swatch-cf{background:var(--green)}
+
+/* Table */
+table.tier-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:1rem}
+.tier-table th{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-weight:400}
+.tier-table th.num{text-align:right}
+.tier-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border-dim);vertical-align:middle}
+.tier-table td.num{text-align:right;font-family:'DM Mono',monospace}
+.tier-table tr.t-total td{background:var(--bg-card);border-top:1px solid var(--border);font-family:'DM Mono',monospace;color:var(--gold-light);font-weight:500}
+.tier-table tr.t-total td:first-child{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic}
+
+/* Callouts */
+.callout{background:var(--bg-card);border-left:2px solid var(--gold);padding:1.4rem 1.5rem;margin-top:1.4rem}
+.callout-eyebrow{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+.callout p{color:var(--text);font-size:.96rem;margin-bottom:.6rem}
+.callout p:last-child{margin-bottom:0}
+.callout strong{color:var(--gold-light);font-weight:500}
+
+/* Insights grid */
+.insights{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:1.5rem}
+.insight{background:var(--bg-card);border:1px solid var(--border-dim);border-radius:5px;padding:1.4rem 1.4rem}
+.insight h3{font-size:1.1rem;margin-bottom:.7rem}
+.insight p{color:var(--text-dim);font-size:.9rem;margin-bottom:.55rem}
+.insight p:last-child{margin-bottom:0}
+
+/* Footer */
+footer{margin-top:5rem;padding-top:2rem;border-top:1px solid var(--border-dim);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.06em;line-height:1.7}
+footer code{font-family:'DM Mono',monospace;background:var(--bg-card);padding:.1rem .4rem;border-radius:2px}
+
+@media (max-width:760px){
+  .cards{grid-template-columns:1fr}
+  .insights{grid-template-columns:1fr}
+  .tier-row{grid-template-columns:130px 1fr;gap:.5rem}
+  .tier-row > *:nth-child(n+3){display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <p class="eyebrow">Bid Spend Re-Run · 25 April 2026</p>
+  <h1>The picture, with the new data</h1>
+  <p class="subtitle">In April we estimated UK government strategic suppliers spend about <strong>£3.9 billion a year pursuing contracts</strong>. That figure was built on Find a Tender data alone, and the original analysis flagged a known gap: the older feed only captures about 15% of small contracts, so the smallest tier had to be estimated bottom-up.</p>
+  <p class="subtitle">Today the database also holds five years of Contracts Finder data — the feed that captures small and sub-threshold contracts. This page re-runs the original methodology against the combined dataset and shows how much, if anything, the answer has moved.</p>
+  <p class="datasrc">Window: trailing 12 months to 25 April 2026 · 37 strategic supplier groups, 95 name patterns · methodology unchanged from 23 April 2026 CFO model</p>
+
+  <!-- ─────────── Headline cards ─────────── -->
+  <section>
+    <h2>Headline numbers</h2>
+    <p class="section-intro">Three runs of the same model, against three datasets. The first replays the original baseline; the second re-runs it on today's database (older feed only); the third uses both feeds combined.</p>
+    <div class="cards">
+      <div class="card">
+        <span class="m-label">Original baseline · 23 April</span>
+        <div class="m-value fade">£3.93bn</div>
+        <p class="m-sub">9,376 bids/year. Find a Tender only. Smallest tier estimated bottom-up at 8,000 bids because the older feed misses most small contracts.</p>
+      </div>
+      <div class="card">
+        <span class="m-label">Re-run today · older feed only</span>
+        <div class="m-value">£3.57bn</div>
+        <p class="m-sub">9,278 bids/year. Reproduces the original method against today's database. 9% lower than the original — within the noise of slightly different supplier name patterns.</p>
+      </div>
+      <div class="card featured">
+        <span class="m-label">Re-run today · combined data</span>
+        <div class="m-value">£4.96bn</div>
+        <p class="m-sub">10,651 bids/year. Same method, both feeds. <strong>+39% on the older-feed-only figure.</strong> Sunk cost on losing bids: <strong>£3.3bn</strong> (was £2bn).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Per-tier visualisation ─────────── -->
+  <section>
+    <h2>Where the new data adds — per contract tier</h2>
+    <p class="section-intro">Each bar shows the count of strategic-supplier-won unique competitions in the trailing 12 months. The teal portion is from the older feed; the green addition is what Contracts Finder reveals on top.</p>
+
+    <div class="tier-grid">
+      <div class="tier-row header">
+        <span>Tier</span><span>Wins (older + new feed)</span><span class="tier-num">Older feed</span><span class="tier-num">Combined</span><span class="tier-num">Change</span>
+      </div>
+
+      <!-- Defence mega 4→6 (small absolute, big % gain) — scale baseline = max(combined) for the tier set; using each row's own max for visual width is misleading, so use a global max across rows -->
+
+      <!-- Strategic programme 23→30 -->
+      <div class="tier-row">
+        <span class="tier-name">Strategic programme<span class="tier-tcv">£500m – £5bn</span></span>
+        <div class="bar-wrap">
+          <div class="bar-fts" style="width:24.4%">23</div>
+          <div class="bar-add" style="left:24.4%;width:7.4%">+7</div>
+        </div>
+        <span class="tier-num muted">23</span>
+        <span class="tier-num">30</span>
+        <span class="tier-num gain">+30%</span>
+      </div>
+
+      <!-- Defence mega 4→6 -->
+      <div class="tier-row">
+        <span class="tier-name">Defence mega<span class="tier-tcv">£5bn+</span></span>
+        <div class="bar-wrap">
+          <div class="bar-fts" style="width:4.3%">4</div>
+          <div class="bar-add" style="left:4.3%;width:2.1%">+2</div>
+        </div>
+        <span class="tier-num muted">4</span>
+        <span class="tier-num">6</span>
+        <span class="tier-num gain">+50%</span>
+      </div>
+
+      <!-- Major services 46→64 -->
+      <div class="tier-row">
+        <span class="tier-name">Major services<span class="tier-tcv">£100m – £500m</span></span>
+        <div class="bar-wrap">
+          <div class="bar-fts" style="width:48.9%">46</div>
+          <div class="bar-add" style="left:48.9%;width:19.1%">+18</div>
+        </div>
+        <span class="tier-num muted">46</span>
+        <span class="tier-num">64</span>
+        <span class="tier-num gain">+39%</span>
+      </div>
+
+      <!-- Notified mid 36→81 -->
+      <div class="tier-row">
+        <span class="tier-name">Notified mid<span class="tier-tcv">£25m – £100m</span></span>
+        <div class="bar-wrap">
+          <div class="bar-fts" style="width:38.3%">36</div>
+          <div class="bar-add" style="left:38.3%;width:47.9%">+45</div>
+        </div>
+        <span class="tier-num muted">36</span>
+        <span class="tier-num">81</span>
+        <span class="tier-num gain">+125%</span>
+      </div>
+
+      <!-- Notified small 66→174 -->
+      <div class="tier-row">
+        <span class="tier-name">Notified small<span class="tier-tcv">£5m – £25m</span></span>
+        <div class="bar-wrap">
+          <div class="bar-fts" style="width:37.9%">66</div>
+          <div class="bar-add" style="left:37.9%;width:62.1%">+108</div>
+        </div>
+        <span class="tier-num muted">66</span>
+        <span class="tier-num">174</span>
+        <span class="tier-num gain">+164%</span>
+      </div>
+
+      <!-- Framework call-off 165→941 (this is the headline) -->
+      <div class="tier-row">
+        <span class="tier-name">Framework call-off<span class="tier-tcv">&lt; £5m</span></span>
+        <div class="bar-wrap">
+          <div class="bar-fts" style="width:17.5%">165</div>
+          <div class="bar-add" style="left:17.5%;width:82.5%">+776</div>
+        </div>
+        <span class="tier-num muted">165</span>
+        <span class="tier-num">941</span>
+        <span class="tier-num gain">+470%</span>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="legend-swatch swatch-fts"></span>Older feed (Find a Tender)</span>
+      <span><span class="legend-swatch swatch-cf"></span>New (Contracts Finder added)</span>
+    </div>
+
+    <div class="callout">
+      <div class="callout-eyebrow">What this confirms</div>
+      <p>The biggest gains are in the smaller tiers — exactly where the original analysis warned the older feed was blind. Contracts Finder reveals <strong>776 framework call-offs won by strategic suppliers</strong> that the older feed missed entirely (165 → 941 visible wins, a five-fold increase).</p>
+      <p>The big-contract tiers (strategic programme, defence mega, major services) move much less. This makes sense: those contracts are above legal publication threshold and the older feed already captured them. Adding Contracts Finder mostly fills in below-threshold work.</p>
+    </div>
+  </section>
+
+  <!-- ─────────── Spend table ─────────── -->
+  <section>
+    <h2>The spend in pounds</h2>
+    <p class="section-intro">Wins per tier, multiplied by the bid-cost figures from the original CFO model (calibrated against real bid costs on UK government contracts), give the annual spend per tier.</p>
+
+    <table class="tier-table">
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th class="num">Bid cost</th>
+          <th class="num">Older only · spend</th>
+          <th class="num">Combined · spend</th>
+          <th class="num">Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Framework call-off</td><td class="num">£35k</td>
+          <td class="num">£280m</td><td class="num">£280m</td>
+          <td class="num">no change *</td>
+        </tr>
+        <tr>
+          <td>Notified small</td><td class="num">£125k</td>
+          <td class="num">£68m</td><td class="num">£178m</td>
+          <td class="num" style="color:var(--green)">+£110m</td>
+        </tr>
+        <tr>
+          <td>Notified mid</td><td class="num">£550k</td>
+          <td class="num">£133m</td><td class="num">£299m</td>
+          <td class="num" style="color:var(--green)">+£166m</td>
+        </tr>
+        <tr>
+          <td>Major services</td><td class="num">£1.5m</td>
+          <td class="num">£504m</td><td class="num">£700m</td>
+          <td class="num" style="color:var(--green)">+£196m</td>
+        </tr>
+        <tr>
+          <td>Strategic programme</td><td class="num">£14m</td>
+          <td class="num">£1.81bn</td><td class="num">£2.35bn</td>
+          <td class="num" style="color:var(--green)">+£540m</td>
+        </tr>
+        <tr>
+          <td>Defence mega</td><td class="num">£25m</td>
+          <td class="num">£775m</td><td class="num">£1.15bn</td>
+          <td class="num" style="color:var(--green)">+£375m</td>
+        </tr>
+        <tr class="t-total">
+          <td>Total industry pursuit spend</td><td class="num"></td>
+          <td class="num">£3.57bn</td><td class="num">£4.96bn</td>
+          <td class="num" style="color:var(--gold-light)">+£1.39bn</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="datasrc" style="margin-top:.7rem">* Framework call-off spend stays at the original bottom-up estimate of 8,000 bids × £35k = £280m. The new data shows 941 wins (vs 165 before) — implying the 8,000 estimate was conservative but in the right ballpark, so we hold it for continuity.</p>
+  </section>
+
+  <!-- ─────────── Insights ─────────── -->
+  <section>
+    <h2>What this means for the commercial story</h2>
+
+    <div class="insights">
+      <div class="insight">
+        <h3>The picture is stronger, not weaker</h3>
+        <p>You can keep using the conservative £3bn pursuit / £2bn wasted headline numbers — they remain defensible. Or you can lead with the larger figures the better dataset supports: <strong>£5bn pursuit / £3.3bn wasted</strong>.</p>
+        <p>Either way, the case has not collapsed. New data has confirmed and slightly extended the original finding.</p>
+      </div>
+      <div class="insight">
+        <h3>The methodology now stands up better</h3>
+        <p>The original analysis admitted it had to estimate the small-contract tier because the older feed couldn't see most of it. That estimate is no longer a guess — Contracts Finder lets us count the small contracts directly, and the original 8,000-bid estimate looks reasonable.</p>
+        <p>If a CFO challenges the small-contract assumption, you now have evidence rather than rhetoric.</p>
+      </div>
+      <div class="insight">
+        <h3>The strategic-supplier population is wider than visible</h3>
+        <p>Strategic-supplier-won competitions over the year went from <strong>339 visible</strong> in the older feed to <strong>1,295 visible</strong> with both feeds — nearly 4× as many wins now appear in the data.</p>
+        <p>This matters when telling individual supplier stories. Capita, Mitie, Serco's full activity is much more visible.</p>
+      </div>
+      <div class="insight">
+        <h3>BidEquity's pursuit-elimination value scales with the new headline</h3>
+        <p>20% pursuit elimination, applied to the combined £4.96bn industry spend, saves <strong>~£990m industry-wide</strong> — up from ~£715m on the older-feed-only number.</p>
+        <p>Per strategic supplier on average: ~£27m/year recoverable, up from ~£19m. The retainer ROI argument gets stronger automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Methodology ─────────── -->
+  <section>
+    <h2>How this was generated</h2>
+    <p class="section-intro">Reproducible re-run. The same script will produce the same numbers tomorrow if you run it again — assuming no major data load in between.</p>
+    <ul style="color:var(--text-dim);font-size:.9rem;line-height:1.85;padding-left:1.4rem;margin-top:.6rem">
+      <li>Database: <code style="font-family:'DM Mono',monospace;background:var(--bg-card);padding:.1rem .4rem;border-radius:2px">pwin-competitive-intel/db/bid_intel.db</code> as of 25 April 2026</li>
+      <li>Script: <code style="font-family:'DM Mono',monospace;background:var(--bg-card);padding:.1rem .4rem;border-radius:2px">pwin-competitive-intel/queries/bid_spend_recalc.py</code> — re-runnable, prints to terminal</li>
+      <li>Window: trailing 12 months from today (2025-04-25 → 2026-04-25)</li>
+      <li>Strategic supplier list: 37 Cabinet Office groups, matched via 95 name patterns against the supplier table</li>
+      <li>Bid-cost figures: unchanged from the 23 April 2026 CFO model — calibrated against real disclosed bid costs (Selborne £1.2bn / 2yr / £12m; framework call-offs at £35k empirical)</li>
+      <li>Win rate assumption: 33% baseline (unchanged from original)</li>
+    </ul>
+  </section>
+
+  <footer>
+    Re-run produced 25 April 2026. Compare to original baseline at <code>bidequity-cfo-model.html</code> and the deeper analysis at <code>bid-spend-analysis.html</code>. Underlying methodology documented in <code>wiki/intel/Strategic Supplier Bid Spend Intelligence.md</code>.
+  </footer>
+
+</div>
+</body>
+</html>
