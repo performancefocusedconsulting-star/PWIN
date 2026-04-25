@@ -32,6 +32,10 @@ jobs:
           restore-keys: |
             bid-intel-db-
 
+      - name: Install Python dependencies for cleaning steps
+        # rapidfuzz is needed by fuzzy-match-buyers.py (no other runtime deps)
+        run: pip install rapidfuzz
+
       - name: Run ingest
         run: python agent/ingest.py
 
@@ -47,6 +51,16 @@ jobs:
         # 3 calls/supplier ⇒ max 200 suppliers / 5 min. At 1000/night, ~44 nights
         # to catch up the ~43,838 suppliers with CH numbers.
         run: python agent/enrich-ch.py --limit 1000
+
+      - name: Tag new big contracts with service category (procurement codes)
+        # Incremental — only contracts where cpv_category IS NULL. Fast (~seconds).
+        run: python agent/classify-by-cpv.py --only-untagged
+        continue-on-error: true
+
+      - name: Match new buyers to master list (fuzzy, threshold 95)
+        # Strict-match writeback. ~8 min on full unmatched set; only safe matches.
+        run: python agent/fuzzy-match-buyers.py --threshold 95 --apply
+        continue-on-error: true
 
       - name: Export data for D1
         run: python agent/sync-d1.py

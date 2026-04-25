@@ -15,6 +15,18 @@ When you need context not already in this project (prior decisions, research, se
 Use `/save` to file any valuable insight, decision, or answer into the wiki at the end of a session.
 Do NOT read the wiki for general coding questions or things already in this project's CLAUDE.md.
 
+## Communication style
+
+Write to the user as a non-technical reader. Specifically:
+
+- **No jargon.** No three-letter acronyms (FTS, CF, MCP, OCDS, CPV, D1, OCP, JSON, YAML, SQL, etc.) on first use without spelling them out in plain English the first time and giving a one-line explanation of what the thing actually is. Better: avoid the acronym entirely and just describe what it is ("the UK government's contracts data feed" not "FTS").
+- **No insider words.** "Canonical", "schema", "cursor", "idempotent", "quadratic", "post-pass", "subquery", "throughput", "ingest" — either replace with everyday language ("master list", "structure of the database", "bookmark", "safe to re-run", "extremely slow", "follow-up step", "an extra lookup", "speed", "loading data in") or explain in one line what they mean before using them.
+- **Pretend the reader is smart but not technical.** A senior consultant who runs a bid business — not a database engineer.
+- **Numbers and outcomes are fine.** "We loaded 331,000 contracts" is plain. "We backfilled 331k notices via the OCDS endpoint" is not.
+- **If a technical word is genuinely needed,** define it inline the first time, in plain English, in brackets.
+
+This applies to every reply, not just summaries.
+
 ## Project
 
 PWIN is a monorepo containing multiple products, each in its own subfolder. It is in early development.
