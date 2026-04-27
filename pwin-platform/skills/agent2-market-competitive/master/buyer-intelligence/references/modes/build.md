@@ -62,6 +62,15 @@ fresh build.
 Read `references/source-hierarchy.md` for the full 5-tier hierarchy,
 confidence calibration, and freshness rules before starting research.
 
+**In deep mode, before starting research, list `references/extraction-templates/`
+and Read every file in it.** They are short and define what you must
+extract from each document type. You apply them in step 1.3 below, but
+you must know what they look like before you canvass sources, so the
+extraction structure shapes how you read each document. Use the Read
+tool on each `.md` file in that folder. If the directory is empty or
+inaccessible, list it explicitly and record the absence in
+`meta.degradedReason` rather than inferring templates do not exist.
+
 The dossier organises buyer intelligence around **seven lenses**: Mandate,
 Pressure, Money, Buying behaviour, Risk posture, Supplier landscape, and
 Pursuit implications. Read `references/output-schema.md` (the lens reference
@@ -287,8 +296,26 @@ fts = d['procurementBehaviour'].get('totalAwards')
 print(f'FTS data: {\"YES\" if fts else \"NO - missing structured procurement data\"}')
 snapshot = d.get('procurementBehaviourSnapshot', {}).get('snapshotSourcedFrom')
 print(f'Behaviour snapshot: {snapshot or \"MISSING\"}')
+
+# Deep-mode template gate
+depth = d.get('meta', {}).get('depthMode', '')
+templates_applied = d.get('meta', {}).get('extractionTemplatesApplied', [])
+if depth == 'deep':
+    n = len(templates_applied)
+    if n < 3:
+        print(f'TEMPLATE GATE FAIL: depthMode=deep but only {n} templates applied (>=3 required)')
+        print('REMEDY: either re-run with extraction templates loaded from references/extraction-templates/, or honestly downgrade meta.depthMode to standard with degradedReason')
+    else:
+        print(f'Template gate: {n} templates applied (OK)')
+else:
+    print(f'Template gate: not enforced (depthMode={depth})')
 "
 ```
+
+If the template gate fails, do not deliver. Either re-run the deep-mode
+research step with `references/extraction-templates/` Read into context,
+or honestly downgrade `meta.depthMode` to `standard` and record the
+reason in `meta.degradedReason`. Silent skipping is not acceptable.
 
 Then read `references/consumer-contract.md` and verify that each decision
 question has at least one populated path in the dossier. If a

@@ -45,7 +45,9 @@ Load these as needed:
 | INJECT mode full workflow | `references/modes/inject.md` |
 | AMEND mode full workflow | `references/modes/amend.md` |
 | Section-specific notes (hypothesis sections, supplier ecosystem, relationship history, pursuit implications, degraded mode) | `references/section-notes.md` |
-| Document-type extraction templates (digital strategy, annual report, NAO/PAC report) | `references/extraction-templates/` |
+| Digital / transformation strategy extraction template | `references/extraction-templates/digital-strategy.md` |
+| Annual Report and Accounts extraction template | `references/extraction-templates/annual-report.md` |
+| NAO / PAC / select committee report extraction template | `references/extraction-templates/nao-pac-report.md` |
 
 ---
 
@@ -272,13 +274,28 @@ These apply across every mode.
     postures to expect, anxieties to neutralise. See
     `references/output-schema.md` for the implication categories. This
     section is mandatory in standard and deep modes.
-15. **Apply extraction templates in deep mode.** When a source matches a
-    document type that has a dedicated template (per
-    `references/source-classification.md`), load and apply the template
-    before writing into the dossier. Record each application in
-    `meta.extractionTemplatesApplied`.
+15. **Apply extraction templates in deep mode.** Before compiling the
+    dossier JSON in deep mode, identify the top 3–5 highest-substance
+    documents in your source register. For each, check
+    `references/source-classification.md` for a matching extraction
+    template. **Use the Read tool to open the template file** (e.g.
+    `references/extraction-templates/digital-strategy.md`) and follow
+    its schema and `extractionQualityCheck` rules. Apply the template's
+    `dossierMappings` to populate the dossier. Record every application
+    in `meta.extractionTemplatesApplied`. The Step 5 verification gate
+    enforces a minimum of 3 applied templates in deep mode — if you
+    cannot meet that, downgrade `meta.depthMode` to `standard` and
+    record why in `meta.degradedReason` rather than skipping silently.
 16. **Read the consumer contract before delivering.** Before saving the
     final dossier, read `references/consumer-contract.md` and verify
     that each decision question has at least one populated path in the
     dossier. If a consumer-critical path is missing, raise it as an
     action.
+17. **Verify resources before inferring absence.** If a referenced
+    resource (file, folder, MCP tool) is not in your context when you
+    expect it, list its directory or invoke the tool to confirm it
+    actually does not exist before recording it as absent. Do not
+    confabulate "not present in this skill build" or equivalent
+    explanations from a faint memory of the instructions. The skill
+    package may include resources you have not yet loaded — explicit
+    enumeration prevents silent skipping.
