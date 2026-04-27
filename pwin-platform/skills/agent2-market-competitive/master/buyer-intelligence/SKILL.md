@@ -141,7 +141,7 @@ The dossier build follows this sequence:
 
 0. **Fetch FTS data** — call pwin-platform MCP tools if available
 1. **Research** — web searches following the search strategy below
-2. **Compile JSON** — build the structured dossier conforming to the v2.2 schema
+2. **Compile JSON** — build the structured dossier conforming to the v3.0 schema
 3. **Render HTML** — run the bundled renderer to produce the BidEquity-branded report
 4. **Save both files** — JSON and HTML to the user's workspace folder
 5. **Verify completeness** — check all required sections are populated
@@ -182,16 +182,23 @@ fresh build.
 
 ### Step 1: Research
 
-Read `references/source-hierarchy.md` for the full 4-tier hierarchy,
+Read `references/source-hierarchy.md` for the full 5-tier hierarchy,
 confidence calibration, and freshness rules before starting research.
 
-You have a `web_search` tool. USE IT. FTS procurement data is Tier 2 —
-essential for procurement behaviour and supplier ecosystem, but insufficient
-for organisation context, strategy, leadership, culture, and risks.
+The dossier organises buyer intelligence around **seven lenses**: Mandate,
+Pressure, Money, Buying behaviour, Risk posture, Supplier landscape, and
+Pursuit implications. Read `references/output-schema.md` (the lens reference
+section) to see how each lens maps to dossier sections. As you research,
+tag each source you register with the lens(es) it contributes to —
+`sourceRegister.sources[].lensesContributed` is mandatory.
+
+You have a `web_search` tool. USE IT. Tier 4 procurement data is essential
+for procurement behaviour and supplier ecosystem, but insufficient for
+organisation context, strategy, leadership, culture, and risks.
 
 **Sections that require web search:** organisation context, strategic
 priorities, risks and sensitivities, culture and preferences, commercial
-posture.
+posture, pursuit implications.
 
 #### Adapt search strategy to organisation type
 
@@ -201,43 +208,120 @@ buyers.
 
 | Organisation type | Key strategy sources | Key scrutiny sources |
 |---|---|---|
-| Central government dept / agency | Annual report, spending review, strategy document | NAO report, PAC hearing |
+| Central government dept / agency | Annual report, spending review, departmental plan, strategy document | NAO report, PAC hearing |
 | NHS trust / ICB | CQC inspection, NHSI oversight letter, board papers | NHS England performance oversight, integrated care strategy |
 | Local authority | Council plan, MTFS, cabinet reports | External audit letter, DLUHC monitoring, CIPFA benchmarking |
 | Devolved body (Wales / Scotland / NI) | Government programme/strategy (may be in Welsh/Gaelic), Senedd/COSLA/PSNI scrutiny | WAO / Audit Scotland / NIAO — NOT NAO |
 | Defence (MoD / agencies) | Defence Command Paper, acquisition strategy, DSIS | PAC, NAO defence reviews, JSC scrutiny |
 | NDPB / regulator | Framework document, corporate plan, triennial review | Sponsoring department correspondence, departmental select committee |
 
+#### Retrieval checklist (Tier-organised)
+
+Canvas the following document types when building a dossier on a UK central-
+government department. Adapt by organisation type per the table above. Not
+every document will exist for every buyer; record absences as gaps in the
+action register.
+
+**Tier 1 — Authoritative buyer sources (must-check)**
+- Annual Report and Accounts (including Performance Report and Governance Statement)
+- Outcome Delivery Plan / Single Departmental Plan / Corporate Plan
+- Departmental Strategy
+- Digital / transformation strategy
+- Data strategy or data roadmap
+- AI Strategy / AI Action Plan / AI ethics framework
+- Cyber security strategy or guidance
+- Workforce / People plan
+- Estate / sustainability strategy
+- Commercial / procurement strategy
+- Efficiency / productivity plan
+- Commercial pipeline / pipeline notices
+- Procurement page (`doing business with us`)
+- Senior leadership announcement / press release (most recent)
+- Official statistics and dashboards (where service performance is reported)
+- Research and evaluation reports
+- SME / VCSE action plan
+- Framework document, if agency / ALB
+- Public body review / sponsorship review, if applicable
+
+**Tier 2 — Centre-of-government (sample as needed)**
+- Spending Review settlement
+- Main Estimate and Supplementary Estimate
+- Major Projects Portfolio data (IPA / GMPP)
+- DDaT Playbook, AI Playbook, digital assurance guidance (where the buyer
+  is bound by them)
+
+**Tier 3 — External scrutiny (must-check for risk posture)**
+- NAO reports
+- PAC reports
+- Departmental select committee reports
+- Inspectorate or regulator reports (where applicable)
+
+**Tier 4 — Market and procurement intelligence (auto-fetched in Step 0)**
+- Find a Tender notices and award notices
+- Contracts Finder records
+- Contracts register
+- Spend transparency data
+- Buyer-behaviour profile (`get_buyer_behaviour_profile` MCP tool — pin
+  results into `procurementBehaviourSnapshot`)
+
+**Tier 5 — Relationship intelligence (only via amend mode)**
+- CRM / account plan, prior bid feedback, account team interviews
+
 #### Search sequence
 
-1. **Resolve buyer identity.** Before substantive research, confirm the current
-   legal name, parent body, and whether the organisation has been restructured,
-   merged, renamed, or had functions transferred. Search for restructure,
-   merger, successor body, and rename events. Record predecessor/successor
-   names in `organisationContext.recentChanges`. Historical data for a
-   predecessor body may not apply to a successor.
+1. **Resolve buyer identity.** Before substantive research, confirm the
+   current legal name, parent body, and whether the organisation has been
+   restructured, merged, renamed, or had functions transferred. Search for
+   restructure, merger, successor body, and rename events. Record
+   predecessor/successor names in `organisationContext.recentChanges`.
+   Historical data for a predecessor body may not apply to a successor.
 
-2. **Run targeted searches** covering: strategy document, senior leadership,
-   annual report / corporate plan, procurement or commercial strategy, scrutiny
-   record, major programmes, supplier/contract data, and commercial/SME
-   strategy. The number of searches depends on depth mode:
-   - deep: 10+ web searches
-   - standard: 5–8 web searches
-   - snapshot: 2–3 web searches
+2. **Canvas the retrieval checklist.** Work through the Tier 1, Tier 2, and
+   Tier 3 lists above. The number of searches depends on depth mode:
+   - **deep:** canvas the full list; for the top 3–5 highest-substance
+     documents (typically annual report, departmental plan, digital
+     strategy, NAO report if recent, GMPP entry if available), apply the
+     dedicated extraction template from
+     `references/extraction-templates/`. End-to-end read, structured
+     extraction, mapped into the dossier per the template's
+     `dossierMappings` block. 10+ web searches, 15–25 sources.
+   - **standard:** canvas the Tier 1 must-check list and Tier 3 NAO/PAC.
+     5–8 web searches, 8–15 sources. No extraction templates.
+   - **snapshot:** Annual Report + Outcome Delivery Plan + most recent
+     scrutiny report. 2–3 web searches, 3–5 sources.
 
-3. **Populate sections from results.** Register every source as you go.
+3. **Apply extraction templates (deep mode).** When a source matches a
+   document type with a dedicated template (see
+   `references/source-classification.md` rightmost column), load the
+   template, extract per its schema, and use the template's
+   `dossierMappings` to populate the dossier with the right operations
+   (extend / replace / upgrade). Record the extraction in
+   `meta.extractionTemplatesApplied`.
 
-4. **If a search returns nothing useful,** try one alternative query before
+4. **Tag every source with lenses.** `sourceRegister.sources[].lensesContributed`
+   is mandatory. Use the lens column in `references/source-classification.md`
+   as the starting point.
+
+5. **Populate the action register.** Every gap, stale field, and low-confidence
+   inference identified during research becomes an entry in
+   `actionRegister.actions` with priority, owner role, and recommended next
+   step. Do not finish the build with an empty action register unless the
+   dossier has zero gaps (effectively never).
+
+6. **If a search returns nothing useful,** try one alternative query before
    declaring a section data-insufficient. Do NOT fabricate to fill gaps.
 
-**Contradictory sources:** When two sources give different values for the same
-fact, prefer the higher-tier source. If both are Tier 1, prefer the more
-recent. Record both sources and note the discrepancy in the field's `rationale`.
+**Contradictory sources:** When two sources give different values for the
+same fact, prefer the higher-tier source. If both are Tier 1, prefer the
+more recent. Record both sources and note the discrepancy in the field's
+`rationale`. When Tier 1 says one thing and Tier 4 procurement data says
+another, Tier 4 wins on what the buyer *actually does*; Tier 1 wins on what
+they *intend*.
 
 ### Step 2: Compile JSON
 
 Read `references/output-schema.md` for the full schema, field rules, and
-archetype definitions. Produce a single JSON object conforming to the v2.2
+archetype definitions. Produce a single JSON object conforming to the v3.0
 schema.
 
 Every interpretive field uses an inline evidence wrapper:
@@ -300,18 +384,22 @@ import json
 with open('<json-path>') as f:
     d = json.load(f)
 sections = ['meta','buyerSnapshot','organisationContext','strategicPriorities',
-  'commissioningContextHypotheses','procurementBehaviour','decisionUnitAssumptions',
-  'cultureAndPreferences','commercialAndRiskPosture','supplierEcosystem',
-  'relationshipHistory','risksAndSensitivities','sourceRegister','computedScores',
-  'linkedAssets','changeSummary']
+  'commissioningContextHypotheses','procurementBehaviour','procurementBehaviourSnapshot',
+  'decisionUnitAssumptions','cultureAndPreferences','commercialAndRiskPosture',
+  'supplierEcosystem','relationshipHistory','risksAndSensitivities','pursuitImplications',
+  'sourceRegister','actionRegister','computedScores','linkedAssets','changeSummary']
 for s in sections:
     val = d.get(s)
     status = 'NULL' if val is None else ('EMPTY' if val == {} or val == [] else 'OK')
     print(f'{s}: {status}')
 print(f'Sources: {len(d[\"sourceRegister\"][\"sources\"])}')
 print(f'Incumbents: {len(d[\"supplierEcosystem\"][\"incumbents\"])}')
+print(f'Open actions: {len([a for a in d[\"actionRegister\"][\"actions\"] if a[\"status\"] == \"open\"])}')
+print(f'Pursuit implications: {len(d[\"pursuitImplications\"][\"implications\"])}')
 fts = d['procurementBehaviour'].get('totalAwards')
 print(f'FTS data: {\"YES\" if fts else \"NO - missing structured procurement data\"}')
+snapshot = d.get('procurementBehaviourSnapshot', {}).get('snapshotSourcedFrom')
+print(f'Behaviour snapshot: {snapshot or \"MISSING\"}')
 "
 ```
 
@@ -608,18 +696,27 @@ This section is the primary target for **amend mode** operations.
 
 ## Depth modes
 
-| Mode | Sections to populate | Scope |
-|------|----------------------|-------|
-| **snapshot** | `meta`, `buyerSnapshot`, `procurementBehaviour`, `supplierEcosystem` (top 5 only), `sourceRegister` | All other sections null. No narratives, hypotheses, culture, risk, or relationship sections. 2–3 web searches. |
-| **standard** | All sections | Full source register. The default. |
-| **deep** | All sections, extended depth | Standard plus: full supplier entrenchment analysis, comprehensive strategy theme mapping, leadership background research, audit/scrutiny deep-dive, detailed commissioning rationale chains. |
+The depth mode controls how deeply each source is mined, not just how many
+sources are canvassed.
+
+| Mode | Sections to populate | Scope | Extraction templates |
+|------|----------------------|-------|----------------------|
+| **snapshot** | `meta`, `buyerSnapshot`, `procurementBehaviour`, `procurementBehaviourSnapshot`, `supplierEcosystem` (top 5 only), `sourceRegister`, `actionRegister` (priority gaps only) | All other sections null. No narratives, hypotheses, culture, risk, pursuit-implications, or relationship sections. 2–3 web searches. | None |
+| **standard** | All sections | Full source register, full action register, full pursuit implications. The default. | None — breadth-led canvas |
+| **deep** | All sections, extended depth | Standard plus: full supplier entrenchment and vulnerability analysis, comprehensive strategy theme mapping with quantified targets, leadership background research, audit/scrutiny deep-dive, detailed commissioning rationale chains. | **Yes** — for the top 3–5 highest-substance documents in the source register, apply the dedicated extraction template from `references/extraction-templates/`. End-to-end read with structured extraction. Record applications in `meta.extractionTemplatesApplied`. |
 
 If no depth specified, use **standard**.
 
 **Source register expected volume:**
-- deep: 15–25 sources, 10+ web searches
-- standard: 8–15 sources, 5–8 web searches
-- snapshot: 3–5 sources, 2–3 web searches
+- deep: 15–25 sources, 10+ web searches, 3–5 extraction templates applied
+- standard: 8–15 sources, 5–8 web searches, no templates
+- snapshot: 3–5 sources, 2–3 web searches, no templates
+
+**Token-cost note:** Deep mode does not push everything into one prompt.
+Each extraction template is applied to one document at a time, scoped to
+that template's schema. The dossier compiles incrementally as templates
+are applied. This keeps token cost manageable and avoids the single-prompt
+saturation that would degrade reasoning quality.
 
 ---
 
@@ -679,7 +776,31 @@ substantively hollow output.
    fetched (Step 5 verification script).
 10. **Save to intel cache.** Always save final JSON to
     `C:\Users\User\.pwin\intel\buyers\` as well as the workspace folder.
-11. **Preserve Tier 4 data across all modes.** Never discard internal
+11. **Preserve Tier 5 data across all modes.** Never discard internal
     intelligence (SRC-INT-nnn sources, relationshipHistory content, amend-
     supplied stakeholder data) during refresh or rebuild unless the user
     explicitly requests it.
+12. **Tag every source with at least one lens.**
+    `sourceRegister.sources[].lensesContributed` is mandatory. The seven
+    lenses are: mandate, pressure, money, buying-behaviour, risk-posture,
+    supplier-landscape, pursuit-implications. See
+    `references/source-classification.md` for the lens column.
+13. **Populate the action register on every build and refresh.** Each gap,
+    stale field, and low-confidence inference becomes an action with
+    priority, owner role, and recommended next step. An empty action
+    register is only valid if the dossier has zero gaps.
+14. **Populate pursuit implications.** The seventh lens earns the dossier its
+    keep. Surface buyer-derived, bidder-neutral implications that any pursuit
+    against this buyer should observe — language to use or avoid, evidence to
+    over-prepare, commercial postures to expect, anxieties to neutralise. See
+    `references/output-schema.md` for the implication categories. This
+    section is mandatory in standard and deep modes.
+15. **Apply extraction templates in deep mode.** When a source matches a
+    document type that has a dedicated template (per
+    `references/source-classification.md`), load and apply the template
+    before writing into the dossier. Record each application in
+    `meta.extractionTemplatesApplied`.
+16. **Read the consumer contract before delivering.** Before saving the final
+    dossier, read `references/consumer-contract.md` and verify that each
+    decision question has at least one populated path in the dossier. If a
+    consumer-critical path is missing, raise it as an action.
