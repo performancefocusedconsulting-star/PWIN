@@ -1,0 +1,81 @@
+{
+  "skill_name": "incumbency-advantage-displacement-strategy",
+  "evals": [
+    {
+      "id": 1,
+      "name": "weak_incumbent_high_switching_risk",
+      "prompt": "Produce an incumbent assessment for pursuit PUR-2026-TEST-01. The incumbent is Serco, delivering electronic monitoring services for the Ministry of Justice. Public evidence shows SLA issues — an NAO report from 2024 noted 'persistent delays in equipment installation' and user satisfaction scores of 62%. However, Serco operates core tracking systems, holds all operational data, and approximately 400 frontline staff would transfer under TUPE. The contract has been extended twice. The buyer has published a new ITT with transformation language but the specification closely mirrors the current operating model. Our client is a mid-tier challenger with strong EM technology but no previous MoJ contract.",
+      "expected_output": "Recommendation should be go_with_conditions. Must identify high TUPE risk, high systems dependency, and buyer fear of transition as the primary barriers — not incumbent performance. Must not recommend negative bid language about Serco. Must flag that the specification mirroring the current model may signal incumbent advantage. Must produce TUPE-specific actions and require mobilisation evidence. Displacement feasibility score should be 2-3, not higher, despite the evidenced weakness.",
+      "files": [],
+      "assertions": [
+        {"text": "Recommendation is go_with_conditions", "type": "content_check"},
+        {"text": "TUPE is identified as a go/no-go factor, not a secondary detail", "type": "content_check"},
+        {"text": "No disparaging language about Serco appears in messages to use or win themes", "type": "content_check"},
+        {"text": "Displacement feasibility score is 3 or below", "type": "content_check"},
+        {"text": "Specification bias toward incumbent is flagged", "type": "content_check"},
+        {"text": "NAO report is cited as Tier 2 evidence with a specific source reference", "type": "content_check"},
+        {"text": "Open questions include workforce data availability and TUPE information provision", "type": "content_check"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "strong_incumbent_low_change_appetite",
+      "prompt": "Produce an incumbent assessment for pursuit PUR-2026-TEST-02. The incumbent is BAE Systems, delivering managed IT services to a Defence agency. Contract has run for 8 years with two extensions. No public evidence of performance issues. The new procurement specification closely mirrors current service. Evaluation weighting is 60% price, 30% quality, 10% social value. All delivery staff hold SC clearance. Our client is a large systems integrator with strong Defence credentials but no current relationship with this buyer.",
+      "expected_output": "Recommendation should be no_go or selective_go. Must identify that repeated extensions signal buyer satisfaction, not dissatisfaction. Must assess security clearance as a material switching barrier. Must flag that the specification mirrors current service as probable incumbent advantage. Must identify the procurement as likely a price test or compliance re-procurement. Must not overstate displacement potential based on generic challenger credentials.",
+      "files": [],
+      "assertions": [
+        {"text": "Recommendation is no_go or selective_go", "type": "content_check"},
+        {"text": "Contract extensions are interpreted as satisfaction signal, not displacement window", "type": "content_check"},
+        {"text": "Security clearance is assessed as a switching barrier", "type": "content_check"},
+        {"text": "Procurement is classified as likely market_test or compliance_reprocurement", "type": "content_check"},
+        {"text": "Buyer change appetite score is 2 or below", "type": "content_check"},
+        {"text": "Red-team questions challenge whether this is worth bidding", "type": "content_check"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "bidder_is_incumbent_with_known_issues",
+      "prompt": "Produce an incumbent assessment for pursuit PUR-2026-TEST-03. Our client IS the current incumbent, delivering contact centre services for a large central government department. Performance has been adequate — SLAs are met but user satisfaction surveys show 68% approval, down from 74% two years ago. There are known issues: reporting is slow, the technology platform is ageing, and two senior stakeholders have expressed frustration about lack of innovation. A new director of operations has been appointed by the buyer. The contract is worth £45m over 5 years. Three competitors are expected to bid.",
+      "expected_output": "Recommendation should be defensive_recompete. Must not rely on continuity alone. Must identify the declining satisfaction trend as a risk. Must acknowledge the new director as a potential change catalyst. Must produce a continuity-plus-improvement narrative. Must identify specific weaknesses to address proactively (reporting, technology, innovation) before competitors exploit them. Must not recommend complacent messaging.",
+      "files": [],
+      "assertions": [
+        {"text": "Recommendation is defensive_recompete", "type": "content_check"},
+        {"text": "Scenario is classified as incumbent_recompete", "type": "content_check"},
+        {"text": "Declining satisfaction trend (74% to 68%) is flagged as a risk", "type": "content_check"},
+        {"text": "New director is identified as a change appetite factor", "type": "content_check"},
+        {"text": "Messages to avoid include complacent language like 'we know you best' or 'no transition risk'", "type": "content_check"},
+        {"text": "Bid execution actions include proactively addressing reporting, technology, and innovation gaps", "type": "content_check"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "unknown_incumbent",
+      "prompt": "Produce an incumbent assessment for pursuit PUR-2026-TEST-04. A county council has published a tender for waste collection and street cleansing services. The procurement documents reference 'the current service' but do not name the provider. We do not know whether the service is delivered in-house, by a single contractor, or by multiple contractors across different areas. The contract value is estimated at £80m over 7 years. Our client is an SME specialist waste management company with strong local authority references but turnover of £15m.",
+      "expected_output": "Recommendation should be intelligence_gap. Must not fabricate incumbent details. Must produce a conditional framework with scenarios for in-house, single contractor, and fragmented delivery. Must generate intelligence-gathering actions. Must flag the SME's turnover vs contract value as a structural concern. Must identify specific sources to check (Contracts Finder, council minutes, annual reports, FOI).",
+      "files": [],
+      "assertions": [
+        {"text": "Recommendation is intelligence_gap", "type": "content_check"},
+        {"text": "No incumbent details are fabricated", "type": "content_check"},
+        {"text": "Multiple provisional scenarios are presented (in-house, single contractor, fragmented)", "type": "content_check"},
+        {"text": "SME turnover vs contract value mismatch is flagged as a structural barrier", "type": "content_check"},
+        {"text": "Specific intelligence sources are listed (Contracts Finder, council records, FOI)", "type": "content_check"},
+        {"text": "Open questions section is the longest section of the output", "type": "content_check"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "procurement_as_price_test",
+      "prompt": "Produce an incumbent assessment for pursuit PUR-2026-TEST-05. The incumbent is Capita, delivering business process outsourcing for a government agency. Capita has delivered the service for 6 years. The buyer extended twice (both 12-month extensions). Published performance data shows SLAs consistently met. The new procurement is similar in scope — no transformation language, no innovation weighting. Evaluation is 70% price, 30% quality. Internal sales intelligence (from a relationship manager) suggests 'the buyer is happy with the service but needs to demonstrate value for money'. Our client is a large BPO provider with competitive pricing.",
+      "expected_output": "Recommendation should be no_go or price_disciplined_selective_go. Must identify the procurement as a probable price test. Must flag the internal intelligence as Tier 6 (unverified) — useful but not sufficient for a go decision. Must assess whether the 70% price weighting creates a viable path or just helps the buyer negotiate with Capita. Must not recommend full bid investment without validating buyer change intent.",
+      "files": [],
+      "assertions": [
+        {"text": "Recommendation is no_go or price_disciplined_selective_go", "type": "content_check"},
+        {"text": "Procurement is classified as market_test or cost_reduction", "type": "content_check"},
+        {"text": "Internal sales intelligence is labelled as Tier 6 / unverified_intelligence", "type": "content_check"},
+        {"text": "Risk of funding a procurement that benefits the incumbent is explicitly stated", "type": "content_check"},
+        {"text": "Bid execution actions limit investment until buyer change intent is validated", "type": "content_check"},
+        {"text": "Both extensions are interpreted as satisfaction signals", "type": "content_check"}
+      ]
+    }
+  ]
+}
