@@ -31,6 +31,42 @@ The reason they diverge: **a single mega-buyer like the Ministry of Defence appe
 
 **Corollary:** when prioritising curation work, sort the unmatched residual by **award count or award value**, not by alphabetical order or buyer name frequency. The next 10 high-volume unmatched buyers will give you more coverage gain than the next 100 random ones.
 
+## 1b. Alias coverage is the second bottleneck — and it's invisible until a dossier surfaces it
+
+> **Added 2026-04-27** after the MoJ live dossier surfaced this. Read it before quoting any buyer-aggregation number.
+
+There are **three** numbers that matter, not two:
+
+1. **% of canonical entities defined** — does the canonical layer know that "Ministry of Justice" is a real entity with the canonical ID `ministry-of-justice`?
+2. **% of awards mapped** — covered above. The headline-grabbing number.
+3. **% of raw buyer rows linked to their canonical entity via the alias glossary** — the number we forgot to track.
+
+(1) and (3) sound similar but they are not the same number. The canonical layer can correctly identify MoJ as one entity (point 1 = 100%) while only linking 81% of the raw MoJ rows to it (point 3 = 81%). The 19% orphaned rows still appear as raw fragmented buyers to any consumer that joins through `canonical_buyer_aliases`.
+
+The reason: `canonical_buyer_aliases` is only as comprehensive as the aliases registered for each entity. The Phase 0 build registered 1–2 aliases per canonical entity (the basic name and the abbreviation). Real raw data emits each entity under a much wider set of name spellings — see Section 3 for the full taxonomy. Any raw row whose name doesn't exact-match a registered alias is silently dropped from canonical aggregation.
+
+Spot-check across UK ministerial departments (2026-04-27) showed orphan rates from 1% (DfE) to 88% (FCDO):
+
+| Dept | Orphan rate (raw rows not linked to canonical) |
+|---|---:|
+| FCDO | 88% |
+| Cabinet Office | 84% |
+| HM Treasury | 60% |
+| DHSC | 47% |
+| MoJ | 19% |
+| MoD | 7% |
+| Home Office | 5% |
+| DWP | 2% |
+| DfE | 1% |
+
+The pattern is not random. The departments most likely to publish under formal legal names ("The Secretary of State for X acting through Y") and the departments most active on Contracts Finder (where the publisher consistently appends a full stop to the buyer name — "Ministry of Justice." rather than "Ministry of Justice") are the ones most affected. So the orphaning is **systematically biased** away from precisely the data we added Contracts Finder ingestion to capture.
+
+**Rule:** when reporting coverage to anyone (including yourself), always report all three numbers — entities defined, awards mapped, raw rows linked. The third one is the dossier-quality number. The first two are misleadingly reassuring on their own.
+
+**Operational consequence:** every buyer dossier produced before the alias backfill (action [`pwin-canonical-buyer-alias-coverage-backfill`](../../../Obsidian%20Vault/wiki/actions/pwin-canonical-buyer-alias-coverage-backfill.md)) is computed from the alias-linked subset only. The procurement-behaviour numbers (cancellation rate, PGO benchmark, competition profile) are directionally correct but quantitatively biased. Until the backfill is done, every buyer dossier should carry a "buyer aggregation X% complete pending canonical alias backfill" data-confidence line, and pre-fix dossiers should not be quoted externally as definitive.
+
+**Lesson for the future cleaning skill:** never measure coverage by entity definition alone. Measure it by raw-row linkage rate against the orphan list, broken down by buyer (so the worst offenders surface). The cleaning skill should run an "orphan rate report" as a routine output of every canonical refresh — without it, a high-quality canonical layer can be sitting next to a low-quality alias glossary and nobody notices.
+
 ## 2. The four-source model (and why no single source is enough)
 
 Real coverage needs four data sources merged into one canonical layer:
