@@ -1016,18 +1016,32 @@ async function loadBuyerDirect(name) {
 }
 
 async function loadBuyerBehaviour(name) {
-  // Append a placeholder card so the user sees something immediately —
-  // the behaviour data takes 5-15s on first run while the per-category
-  // dormant thresholds are computed (cached for 24h thereafter).
+  // Append a placeholder card so the user sees something immediately.
+  // Behaviour data takes 5-15s for canonical buyers (Ministry of Defence,
+  // Home Office), 20-40s for fragmented buyers (sub-organisations whose
+  // name doesn't resolve to a canonical entity, e.g. "Defence Digital").
+  // The first call after server start can be slower while the per-category
+  // dormant thresholds are computed and cached for 24h.
   const placeholderId = 'behaviour-loading';
+  const startedAt = Date.now();
   document.getElementById('buyerResults').insertAdjacentHTML('beforeend', `
     <div class="card" id="${placeholderId}">
       <div class="card-title">Buyer behaviour (last 5 years)</div>
-      <p style="color:var(--text-muted);font-style:italic">Loading behavioural intelligence…</p>
+      <p style="color:var(--text-muted);font-style:italic">
+        Computing behavioural intelligence — this typically takes 10 to 30 seconds
+        on first request. <span id="behaviour-elapsed">elapsed: 0s</span>
+      </p>
     </div>`);
+  // Live elapsed counter so a long wait visibly progresses
+  const elapsedTicker = setInterval(() => {
+    const el = document.getElementById('behaviour-elapsed');
+    if (!el) { clearInterval(elapsedTicker); return; }
+    el.textContent = `elapsed: ${Math.round((Date.now() - startedAt) / 1000)}s`;
+  }, 1000);
 
   try {
     const data = await apiFetch('buyer-behaviour', { name });
+    clearInterval(elapsedTicker);
     const target = document.getElementById(placeholderId);
     if (!target) return;
     if (data.error) {
@@ -1040,6 +1054,7 @@ async function loadBuyerBehaviour(name) {
     }
     target.outerHTML = renderBuyerBehaviour(data);
   } catch (e) {
+    clearInterval(elapsedTicker);
     const target = document.getElementById(placeholderId);
     if (target) target.outerHTML = `
       <div class="card">

@@ -782,7 +782,7 @@ function _resolveBuyerCanonical(db, nameQuery) {
   if (!rawRows.length) return null;
   return {
     canonicalId: null,
-    canonicalName: rawRows[0].name,
+    canonicalName: q,
     canonicalType: null,
     rawBuyerIds: rawRows.map(r => r.id),
     fragmented: true,

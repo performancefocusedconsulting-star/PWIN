@@ -713,9 +713,12 @@ def _resolve_buyer_canonical(conn, name_query):
     if not raw_rows:
         return None
 
+    # Use the user's search term as the display name in fragmented mode
+    # rather than the first raw match (which is often a long nested name
+    # like "Battlefield Tactical … , Defence Digital, Ministry of Defence").
     return {
         "canonical_id":    None,
-        "canonical_name":  raw_rows[0]["name"],
+        "canonical_name":  q,
         "canonical_type":  None,
         "raw_buyer_ids":   [r["id"] for r in raw_rows],
         "fragmented":      True,
