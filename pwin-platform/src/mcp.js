@@ -1757,6 +1757,19 @@ function createMcpServer() {
     }
   );
 
+  server.tool(
+    'get_buyer_behaviour_profile',
+    'Get behavioural intelligence on a buyer: empirical Probability of Going Out (PGO) signals from the last 5 years of UK procurement data. Returns volume trend, outcome mix (awarded / cancelled / no-compliant-bid / dormant / live), notice-to-award timeline distribution, top categories with outcome breakdown, cancellation rate vs peers of the same organisation type, procurement method mix, competition intensity, distressed-incumbent flag, and a one-sentence summary suitable for lifting into a Win Strategy document. Use when assessing whether a buyer\'s stated tender intention is likely to actually go to market and reach award. Returns same numbers across both Find a Tender (above threshold) and Contracts Finder (below threshold) where the canonical buyer is resolved; cancellation analysis is FTS-only because Contracts Finder lacks the signal.',
+    {
+      name: z.string().describe('Buyer name — canonical name, abbreviation, or partial match (e.g. "Ministry of Defence", "MOD", "Home Office", "Birmingham City Council")'),
+      years: z.number().optional().describe('Time window in years (default 5)'),
+    },
+    async ({ name, years }) => {
+      const result = compIntel.buyerBehaviourProfile(name, { years });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
   // ==========================================================================
   // CANONICAL ADJUDICATOR WRITE TOOLS
   // ==========================================================================

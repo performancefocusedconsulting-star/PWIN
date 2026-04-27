@@ -518,9 +518,26 @@ def api_search(params):
 
 # ── HTTP Server ───────────────────────────────────────────────────────────
 
+def api_buyer_behaviour(params):
+    """Behaviour analytics endpoint — calls the JSON-emitting variant of
+    the buyer_behaviour CLI command in queries/queries.py."""
+    name = params.get("name", [None])[0]
+    if not name:
+        return {"error": "name parameter required"}
+    try:
+        years = int(params.get("years", ["5"])[0])
+    except ValueError:
+        years = 5
+    # Lazy import — avoids paying CPV-cache build cost on every server start
+    sys.path.insert(0, str(Path(__file__).parent / "queries"))
+    from queries import buyer_behaviour_data
+    return buyer_behaviour_data(name, years=years)
+
+
 ROUTES = {
     "/api/summary": lambda p: api_summary(),
     "/api/buyer": api_buyer,
+    "/api/buyer-behaviour": api_buyer_behaviour,
     "/api/supplier": api_supplier,
     "/api/expiring": api_expiring,
     "/api/pipeline": api_pipeline,

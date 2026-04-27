@@ -1,7 +1,8 @@
 # PWIN Competitive Intelligence
 
 Internal-only intelligence database of UK public sector procurement,
-built on the Find a Tender Service (FTS) OCDS open data and Companies House.
+built on the Find a Tender Service (FTS) above-threshold feed,
+the Contracts Finder below-threshold feed, and Companies House.
 
 ## Role within the platform
 
@@ -24,9 +25,12 @@ data here is for internal product enrichment only.
 ## What's in the database
 
 - **5+ years** of UK procurement data (Jan 2021 → present)
-- ~175k contract notices, ~24k buyers, ~161k suppliers, ~186k awards
+- ~177k Find a Tender (above-threshold) notices and ~331k Contracts Finder
+  (below-threshold) notices — ~508k notices in total
+- ~447k awards (FTS + CF), ~55k buyer rows, ~161k supplier rows
 - Lots, CPV categorisation, supplier↔award many-to-many, planning notices
 - Companies House enrichment available for suppliers with valid CH numbers
+- Source of every row tagged in `data_source` (`fts` or `cf`)
 
 Data is loaded by two complementary mechanisms (see *Ingestion* below):
 
@@ -48,7 +52,12 @@ python agent/ingest.py --limit 50
 
 ## Ingestion
 
-There are two ingest paths and they complement each other.
+There are three ingest paths covering the two source feeds:
+
+- **Find a Tender (above-threshold):** OCP weekly bulk file for history,
+  plus the live FTS API for keep-current.
+- **Contracts Finder (below-threshold):** the CF search API,
+  loaded by `agent/ingest_cf.py`.
 
 ### 1. OCP bulk import (canonical for historical depth)
 
@@ -116,6 +125,27 @@ python agent/ingest.py --resume                            # run to completion
 
 Backfill mode does NOT touch the incremental cursor — the two state
 machines are fully independent.
+
+### 3. Contracts Finder (below-threshold feed)
+
+Contracts Finder publishes UK below-threshold contracting activity.
+This is the high-volume layer where most local-authority and NHS-trust
+procurement sits — without it, buyer rollups for those organisation
+types miss the bulk of real activity.
+
+```bash
+python agent/ingest_cf.py                    # incremental from cf_last_date
+python agent/ingest_cf.py --from 2021-01-01  # backfill from a specific date
+python agent/ingest_cf.py --limit 500        # bounded for testing
+```
+
+CF rows are tagged `data_source = 'cf'` throughout (buyers, suppliers,
+notices, awards). The CF cursor (`cf_last_date` in `ingest_state`) is
+fully independent of the FTS cursor. CF buyer IDs use the
+`cf-buyer-<orgId>` scheme; the canonical buyer layer resolves both
+schemes via name-based aliasing in `canonical_buyer_aliases`, so
+queries that go through canonical resolution treat the two sources
+as one entity.
 
 ## Dashboard
 
@@ -256,14 +286,21 @@ Used for incremental keep-current and forward-pipeline planning notices:
 - Contract award notices (who won, at what value, how many bidders)
 - Contract detail notices (signed contracts with dates)
 
+**Contracts Finder** (Cabinet Office, Open Government Licence).
+Below-threshold UK contracting activity. Loaded by `agent/ingest_cf.py`
+and tagged `data_source = 'cf'` throughout. This is the high-volume
+layer where most local-authority and NHS-trust procurement sits;
+without it any buyer rollup for those organisation types
+understates real activity.
+
 **Companies House API** (Companies House, Open Government Licence).
 - Company status, type, incorporation date
 - Directors (current), persons of significant control
 - SIC codes, registered address
 - Accounts filing dates
 
-**Not yet integrated:** Contracts Finder (below-threshold contracts),
-KPI data, delivery performance, contract modifications post-award.
+**Not yet integrated:** KPI data, delivery performance, contract
+modifications post-award.
 
 ## Known limitations
 

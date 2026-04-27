@@ -1,5 +1,6 @@
 db/*.db
 db/*.db-*
+db/_*.json
 logs/*.log
 data/
 __pycache__/

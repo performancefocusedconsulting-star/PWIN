@@ -1007,11 +1007,215 @@ async function loadBuyerDirect(name) {
     const match = (data.buyers || []).find(b => b.name === name) || (data.buyers || [])[0];
     if (match) {
       renderBuyerProfile(match);
+      loadBuyerBehaviour(name);  // fire-and-forget — appends below
     } else {
       document.getElementById('buyerResults').innerHTML = `
         <div class="empty-state"><h3>No results</h3><p>No buyer matching "${name}" found.</p></div>`;
     }
   } catch (e) { showError('buyerResults'); }
+}
+
+async function loadBuyerBehaviour(name) {
+  // Append a placeholder card so the user sees something immediately —
+  // the behaviour data takes 5-15s on first run while the per-category
+  // dormant thresholds are computed (cached for 24h thereafter).
+  const placeholderId = 'behaviour-loading';
+  document.getElementById('buyerResults').insertAdjacentHTML('beforeend', `
+    <div class="card" id="${placeholderId}">
+      <div class="card-title">Buyer behaviour (last 5 years)</div>
+      <p style="color:var(--text-muted);font-style:italic">Loading behavioural intelligence…</p>
+    </div>`);
+
+  try {
+    const data = await apiFetch('buyer-behaviour', { name });
+    const target = document.getElementById(placeholderId);
+    if (!target) return;
+    if (data.error) {
+      target.outerHTML = `
+        <div class="card">
+          <div class="card-title">Buyer behaviour</div>
+          <p style="color:var(--text-muted)">${data.error}</p>
+        </div>`;
+      return;
+    }
+    target.outerHTML = renderBuyerBehaviour(data);
+  } catch (e) {
+    const target = document.getElementById(placeholderId);
+    if (target) target.outerHTML = `
+      <div class="card">
+        <div class="card-title">Buyer behaviour</div>
+        <p style="color:var(--text-muted)">Behaviour endpoint unavailable.</p>
+      </div>`;
+  }
+}
+
+function renderBuyerBehaviour(d) {
+  const m = d.outcomeMix;
+  const v = d.volume;
+  const c = d.competition;
+  const tl = d.timeline;
+  const cn = d.cancellation;
+  const pct = (x) => (x == null ? '—' : `${x}%`);
+  const fmtN = (x) => (x == null ? '—' : Number(x).toLocaleString());
+
+  // Headline stats — 5 boxes
+  const stats = `
+    <div class="stat-grid" style="grid-template-columns:repeat(5, 1fr)">
+      <div class="stat-box">
+        <div class="stat-value">${fmtN(m.sampleSize)}</div>
+        <div class="stat-label">Notices in window</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${pct(m.awardedOfClosedPct)}</div>
+        <div class="stat-label">Awarded (of closed)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${pct(m.sharesPct.cancelled)}</div>
+        <div class="stat-label">Cancelled (FTS only)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${pct(m.sharesPct.dormant)}</div>
+        <div class="stat-label">Dormant</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${c.avgBidders != null ? c.avgBidders.toFixed(1) : '—'}</div>
+        <div class="stat-label">Avg bidders</div>
+      </div>
+    </div>`;
+
+  // Outcome mix as a stacked horizontal bar
+  const buckets = [
+    { k: 'awarded',        col: 'var(--green)',  label: 'Awarded' },
+    { k: 'cancelled',      col: 'var(--amber)',  label: 'Cancelled' },
+    { k: 'noCompliantBid', col: '#9b59b6',       label: 'No bid' },
+    { k: 'dormant',        col: '#7f8c8d',       label: 'Dormant' },
+    { k: 'inFlight',       col: '#3498db',       label: 'Live' },
+  ];
+  const total = m.sampleSize || 1;
+  const barSegs = buckets.map(b => {
+    const n = m.buckets[b.k] || 0;
+    const w = (n * 100 / total).toFixed(2);
+    if (n === 0) return '';
+    return `<span style="display:inline-block;height:18px;width:${w}%;background:${b.col};vertical-align:top" title="${b.label}: ${n.toLocaleString()} (${w}%)"></span>`;
+  }).join('');
+  const legend = buckets.map(b => `
+    <span><span class="swatch" style="background:${b.col}"></span>${b.label}: ${(m.buckets[b.k] || 0).toLocaleString()} (${pct(m.sharesPct[b.k])})</span>`).join('');
+
+  const outcomeBar = `
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Outcome mix</div>
+      <div style="border:1px solid var(--border);border-radius:2px;overflow:hidden;line-height:0">${barSegs}</div>
+      <div class="proc-legend" style="margin-top:8px;flex-wrap:wrap;gap:12px;">${legend}</div>
+    </div>`;
+
+  // PGO summary line
+  const summary = d.summary
+    ? `<div style="background:var(--surface-2);padding:14px 16px;border-left:3px solid var(--accent);margin-bottom:20px;font-style:italic;line-height:1.55">${d.summary}</div>`
+    : `<div style="color:var(--text-muted);font-style:italic;margin-bottom:20px">Sample too small to generate PGO summary line (need ≥25 closed notices).</div>`;
+
+  // Timeline + cancellation peer comparison
+  const timelineLine = (tl && tl.medianDays != null)
+    ? `<strong>Timeline:</strong> Median ${tl.medianDays} days from publish to award. 90% complete within ${tl.p90Days} days. <span style="color:var(--text-muted)">(n=${tl.pairedN.toLocaleString()} paired)</span>`
+    : `<strong>Timeline:</strong> <span style="color:var(--text-muted)">${tl ? tl.suppressedReason : 'no data'}</span>`;
+
+  let cancelLine = `<strong>Cancellation rate:</strong> ${pct(cn.thisBuyerPct)} of ${cn.ftsTotal.toLocaleString()} FTS notices`;
+  if (cn.peer && cn.peer.peerCount) {
+    cancelLine += ` &middot; peer median ${cn.peer.peerMedianPct}% across ${cn.peer.peerCount} ${cn.peer.peerType} buyers &middot; <strong>${cn.peer.positionLabel}</strong>`;
+  } else if (cn.peer) {
+    cancelLine += ` &middot; <span style="color:var(--text-muted)">${cn.peer.note || 'no peer set'}</span>`;
+  }
+
+  let competitionLine = '';
+  if (c.lowCompetitionSharePct != null) {
+    competitionLine = `<strong>Competition:</strong> ${c.lowCompetitionSharePct}% of bid-recorded notices attracted fewer than 3 bidders`;
+    if (c.lowCompetitionSharePct > 25) competitionLine += ' &middot; <span style="color:var(--amber)">elevated no-compliant-bid risk</span>';
+  }
+
+  let trendLine = '';
+  if (v.trendDirection) {
+    trendLine = `<strong>Volume trend:</strong> ${v.trendDirection} (${v.trendDeltaPct >= 0 ? '+' : ''}${v.trendDeltaPct}% YoY)`;
+  }
+
+  const insightLines = [trendLine, timelineLine, cancelLine, competitionLine]
+    .filter(Boolean)
+    .map(l => `<div style="margin-bottom:6px">${l}</div>`)
+    .join('');
+
+  // Category footprint table
+  const catRows = (d.categoryFootprint || []).map(cat => `
+    <tr>
+      <td>${cat.label}</td>
+      <td class="num">${fmtN(cat.total)}</td>
+      <td class="num">${pct(cat.awardedPct)}</td>
+      <td class="num">${pct(cat.cancelledPct)}</td>
+      <td class="num">${pct(cat.dormantPct)}</td>
+      <td class="num">${pct(cat.inFlightPct)}</td>
+    </tr>`).join('');
+  const catTable = catRows ? `
+    <table>
+      <thead><tr>
+        <th>Category</th>
+        <th style="text-align:right">N</th>
+        <th style="text-align:right">Awarded</th>
+        <th style="text-align:right">Cancelled</th>
+        <th style="text-align:right">Dormant</th>
+        <th style="text-align:right">Live</th>
+      </tr></thead>
+      <tbody>${catRows}</tbody>
+    </table>` : '<p style="color:var(--text-muted)">No category data</p>';
+
+  // Distress
+  const dr = d.distress;
+  let distressBlock;
+  if (!dr.count) {
+    distressBlock = `<p style="color:var(--text-muted)">No live contracts with a distressed-supplier flag in this buyer's portfolio. <span style="font-size:12px">(Coverage: ~27% of suppliers carry a Companies House number; flag fires only on enriched suppliers.)</span></p>`;
+  } else {
+    const dRows = dr.contracts.slice(0, 10).map(x => `
+      <tr>
+        <td>${truncate(x.title, 50)}</td>
+        <td>${x.supplierName}</td>
+        <td><span style="color:var(--amber)">${x.chStatus}</span></td>
+        <td class="num">${fmtCurrency(x.contractValue)}</td>
+        <td class="mono">${fmtDate(x.contractEndDate)}</td>
+      </tr>`).join('');
+    distressBlock = `
+      <p style="color:var(--amber);margin-bottom:8px"><strong>${dr.count} live contract${dr.count === 1 ? '' : 's'} with a distressed incumbent.</strong></p>
+      <table>
+        <thead><tr><th>Contract</th><th>Supplier</th><th>Status</th><th style="text-align:right">Value</th><th>Expires</th></tr></thead>
+        <tbody>${dRows}</tbody>
+      </table>`;
+  }
+
+  // Sample-quality and fragmented warnings
+  const warnings = [];
+  if (d.meta.fragmented) {
+    warnings.push(`<div style="color:var(--amber);margin-bottom:8px">⚠ This buyer did not resolve to a canonical entity. Aggregations may be incomplete.</div>`);
+  }
+  if (m.sampleQuality === 'too_small') {
+    warnings.push(`<div style="color:var(--amber);margin-bottom:8px">⚠ Sample size (${m.sampleSize}) too small for reliable percentages. Counts only.</div>`);
+  } else if (m.sampleQuality === 'indicative') {
+    warnings.push(`<div style="color:var(--text-muted);margin-bottom:8px">Indicative only — sample n=${m.sampleSize}.</div>`);
+  }
+
+  return `
+    <div class="card">
+      <div class="card-title">Buyer behaviour (last ${d.meta.yearsWindow} years)</div>
+      ${warnings.join('')}
+      ${stats}
+      ${outcomeBar}
+      ${summary}
+      <div style="line-height:1.7;margin-bottom:18px">${insightLines}</div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Category footprint</div>
+        ${catTable}
+      </div>
+      <div class="card">
+        <div class="card-title">Distressed incumbents (live contracts)</div>
+        ${distressBlock}
+      </div>
+    </div>`;
 }
 
 function renderBuyerProfile(b) {

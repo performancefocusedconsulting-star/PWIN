@@ -86,6 +86,7 @@ This is still the right default for **prototypes** and for **consultant standalo
 | bidequity-verdict | Runs on the pwin-platform MCP server | Two-pass forensic review needs server-side execution and platform knowledge access | — |
 | pwin-platform | Node.js + MCP server | Multi-product orchestration is inherently server-side | — |
 | pwin-competitive-intel | Python pipeline + SQLite + Cloudflare D1 | Data ingestion and serverless query layer for an internal-only DB | — |
+| Agent 2 intelligence skills (buyer / supplier / sector / incumbency) | Master copies live at `pwin-platform/skills/agent2-market-competitive/master/<skill>/SKILL.md` and run from the Claude.ai subscription. The matching YAML files in the same folder are deprecated. | The per-minute usage cap on the pay-per-use API could not handle the token volume these skills produce; the subscription has different metering and works reliably. Decision recorded 2026-04-27. | The API tier is upgraded, or the skills are re-engineered to use Anthropic's bulk-processing route, at which point the YAML versions can be revived from the master `SKILL.md`. |
 
 ---
 
@@ -296,6 +297,44 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ---
 
+## Agent 2 intelligence skills (operational runtime)
+
+The four Agent 2 intelligence skills — **buyer-intelligence**, **supplier-intelligence**, **sector-intelligence**, and **incumbency-advantage-displacement-strategy** — do not run via the platform skill-runner today. They run from the user's Claude.ai subscription because the per-minute usage cap on the pay-per-use API could not handle the token volume each dossier produces (large injected context plus long structured JSON output blew through the cap mid-run).
+
+### Where the master files live
+
+```
+pwin-platform/skills/agent2-market-competitive/master/
+├── SKILL-UNIVERSAL-SPEC.md         # rulebook every skill conforms to
+├── buyer-intelligence/
+│   ├── SKILL.md                    # the live skill
+│   ├── references/                 # output schema, source rules
+│   └── scripts/render_dossier.py   # HTML renderer
+├── supplier-intelligence/   (same shape)
+├── sector-intelligence/     (same shape)
+└── incumbency-advantage-displacement-strategy/   (same shape, plus evals/)
+```
+
+These are the live versions. The matching `<skill>.yaml` files in the parent folder are deprecated and carry a header notice saying so.
+
+### Editing workflow
+
+1. **Edit the master `SKILL.md` directly** in the repo, in whichever environment you're working (Claude Code, text editor, Claude.ai pointed at the repo path).
+2. **Review for content quality** by pasting the file into Claude.ai's skill-creator and into ChatGPT — different models catch different blind spots. Do this on major rewrites, not for small tweaks.
+3. **Apply feedback as further commits** to the repo — git history is the audit trail.
+4. **Final structural sanity check** in Claude.ai's skill-creator before packaging a major new version.
+5. **Run from Claude.ai** — the subscription packages and executes the skill.
+
+The output JSON dossiers land in `~/.pwin/intel/<type>/<slug>-<artefact>.json` on the laptop. The platform's existing MCP tools (`get_buyer_profile`, `get_competitor_dossier`, etc.) serve those stored dossiers to the other PWIN products.
+
+### Re-evaluate when
+
+The deprecated YAMLs can be revived if either (a) the API tier is upgraded enough to handle the throughput, or (b) the skills are re-engineered to use Anthropic's bulk-processing route (the "Batch API" — cheaper, much higher throughput, designed for non-realtime work). At that point the master SKILL.md is the source from which a new YAML is regenerated.
+
+See `wiki/decisions/intelligence-skills-claude-ai-canonical.md` for the full decision record.
+
+---
+
 ## pwin-strategy
 
 AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Develops and locks the win strategy, competitive positioning, and capture plan that **informs the bid manager** running Execution.
@@ -450,7 +489,7 @@ Internal-only intelligence database of UK public sector procurement, built on th
 
 ### Platform Integration
 
-- **MCP tools** — 7 read tools added to `pwin-platform/src/mcp.js` via `competitive-intel.js` module (uses node:sqlite): `get_competitive_intel_summary`, `get_buyer_profile`, `get_supplier_profile`, `get_expiring_contracts`, `get_forward_pipeline`, `get_pwin_signals`, `search_cpv_codes`
+- **MCP tools** — 8 read tools added to `pwin-platform/src/mcp.js` via `competitive-intel.js` module (uses node:sqlite): `get_competitive_intel_summary`, `get_buyer_profile`, `get_supplier_profile`, `get_expiring_contracts`, `get_forward_pipeline`, `get_pwin_signals`, `search_cpv_codes`, and `get_buyer_behaviour_profile` (the buyer-behaviour analytics v1 layer — full nine-section profile with outcome mix, timeline, cancellation peer comparison, distressed-incumbent flag, and a consultant-liftable summary sentence; powers the empirical PGO figure for Win Strategy, Verdict, and the future paid Qualify tier)
 - **Platform Data API** — `/api/intel/*` endpoints added to `pwin-platform/src/api.js` (same queries, served via HTTP for HTML apps)
 - **Qualify integration (current state)** — both `pwin-qualify/docs/PWIN_Architect_v1.html` and `bidequity-co/qualify-app.html` currently fetch buyer profile + PWIN signals before every AI review (auto-detects: localhost → platform API, production → Cloudflare Worker). **This is being suppressed for the public lead-gen release**: when public release is imminent, the intel calls will be feature-flagged off in the public versions of these apps. They stay available for internal Bid Execution / Win Strategy / Verdict consumption and for the future paid Qualify tier. Re-enabling on the paid tier is gated on data-quality work (entity resolution, CH name-matching) clearing the misleading-assertion risk.
 

@@ -304,6 +304,16 @@ async function handleRequest(req, res) {
       return json(res, 200, compIntel.dbSummary());
     }
 
+    // GET /api/intel/buyer-behaviour?name=xxx&years=5
+    // Registered BEFORE /api/intel/buyer so the longer path wins on startsWith.
+    if (method === 'GET' && url.startsWith('/api/intel/buyer-behaviour')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      const name = qs.get('name');
+      if (!name) return badRequest(res, 'name parameter required');
+      const years = parseInt(qs.get('years') || '5');
+      return json(res, 200, compIntel.buyerBehaviourProfile(name, { years }));
+    }
+
     // GET /api/intel/buyer?name=xxx
     if (method === 'GET' && url.startsWith('/api/intel/buyer')) {
       const qs = new URLSearchParams(url.split('?')[1] || '');

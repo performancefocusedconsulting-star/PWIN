@@ -8,10 +8,11 @@
 
 import { DatabaseSync } from 'node:sqlite';
 import { join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 
 // Database path — sibling product folder
 const DB_PATH = join(import.meta.dirname, '..', '..', 'pwin-competitive-intel', 'db', 'bid_intel.db');
+const CPV_P95_CACHE = join(import.meta.dirname, '..', '..', 'pwin-competitive-intel', 'db', '_cpv_p95_cache.json');
 
 function getDb() {
   if (!existsSync(DB_PATH)) return null;
@@ -489,6 +490,857 @@ function sectorProfile(sectorName, limit = 15) {
   }
 }
 
+// ── Daily pipeline scan support ──────────────────────────────────────────
+// Returns notices + planning notices published in the last N hours, with
+// the buyer joined in. Used by the daily-pipeline-scan skill (Agent 2)
+// to triage new procurement activity. Results are intentionally rich so
+// the LLM can score on value/scope/buyer without further DB lookups.
+
+function pipelineRecentNotices({
+  hoursLookback = 24,
+  valueFloor = 1_000_000,     // include notices >= this OR with NULL value
+  rowLimit = 150,             // hard cap per table to keep prompt tractable
+  descTruncateChars = 2000,   // long descriptions cost tokens; keep enough for triage
+} = {}) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    const cutoff = `datetime('now', '-${Math.max(1, parseInt(hoursLookback))} hours')`;
+    const floor = Number(valueFloor) || 0;
+    const limit = Math.max(1, parseInt(rowLimit));
+
+    const noticesSql = `
+      SELECT n.ocid, n.buyer_id, n.title, n.description, n.value_amount,
+             n.value_amount_gross, n.currency, n.notice_type, n.latest_tag,
+             n.published_date, n.tender_end_date, n.notice_url,
+             n.is_framework, n.framework_type, n.suitable_for_sme,
+             n.main_category, n.cpv_category, n.procurement_method,
+             n.procurement_method_detail, n.tender_status,
+             n.data_source,
+             b.name AS buyer_name, b.org_type AS buyer_org_type,
+             b.region_code AS buyer_region
+      FROM notices n
+      LEFT JOIN buyers b ON n.buyer_id = b.id
+      WHERE n.published_date >= ${cutoff}
+        AND (
+          n.value_amount IS NULL
+          OR n.value_amount >= ?
+          OR n.value_amount_gross >= ?
+        )
+      ORDER BY COALESCE(n.value_amount, n.value_amount_gross, 0) DESC,
+               n.published_date DESC
+      LIMIT ?
+    `;
+    const truncate = s => (s && s.length > descTruncateChars
+      ? s.slice(0, descTruncateChars) + ` … [truncated, ${s.length - descTruncateChars} more chars]`
+      : s);
+    const notices = db.prepare(noticesSql).all(floor, floor, limit).map(r => ({
+      ocid: r.ocid,
+      buyerId: r.buyer_id,
+      buyerName: r.buyer_name,
+      buyerOrgType: r.buyer_org_type,
+      buyerRegion: r.buyer_region,
+      title: r.title,
+      description: truncate(r.description),
+      value: r.value_amount,
+      valueGross: r.value_amount_gross,
+      currency: r.currency,
+      noticeType: r.notice_type,
+      latestTag: r.latest_tag,
+      publishedDate: r.published_date,
+      tenderEndDate: r.tender_end_date,
+      noticeUrl: r.notice_url,
+      isFramework: !!r.is_framework,
+      frameworkType: r.framework_type,
+      suitableForSme: !!r.suitable_for_sme,
+      mainCategory: r.main_category,
+      cpvCategory: r.cpv_category,
+      procurementMethod: r.procurement_method,
+      procurementMethodDetail: r.procurement_method_detail,
+      tenderStatus: r.tender_status,
+      dataSource: r.data_source,
+    }));
+
+    const planningSql = `
+      SELECT p.ocid, p.buyer_id, p.title, p.description, p.estimated_value,
+             p.engagement_deadline, p.future_notice_date, p.notice_url,
+             p.notice_type, p.published_date,
+             b.name AS buyer_name, b.org_type AS buyer_org_type,
+             b.region_code AS buyer_region
+      FROM planning_notices p
+      LEFT JOIN buyers b ON p.buyer_id = b.id
+      WHERE p.published_date >= ${cutoff}
+        AND (p.estimated_value IS NULL OR p.estimated_value >= ?)
+      ORDER BY COALESCE(p.estimated_value, 0) DESC, p.published_date DESC
+      LIMIT ?
+    `;
+    const planningNotices = db.prepare(planningSql).all(floor, limit).map(r => ({
+      ocid: r.ocid,
+      buyerId: r.buyer_id,
+      buyerName: r.buyer_name,
+      buyerOrgType: r.buyer_org_type,
+      buyerRegion: r.buyer_region,
+      title: r.title,
+      description: truncate(r.description),
+      estimatedValue: r.estimated_value,
+      engagementDeadline: r.engagement_deadline,
+      futureNoticeDate: r.future_notice_date,
+      noticeUrl: r.notice_url,
+      noticeType: r.notice_type,
+      publishedDate: r.published_date,
+    }));
+
+    return {
+      hoursLookback: parseInt(hoursLookback),
+      cutoff: db.prepare(`SELECT ${cutoff} AS c`).get().c,
+      noticeCount: notices.length,
+      planningCount: planningNotices.length,
+      notices,
+      planningNotices,
+    };
+  } finally {
+    db.close();
+  }
+}
+
+// Recent awards for a set of buyers — used as the competitive-field
+// reference block when the daily-pipeline-scan skill triages a batch.
+// Default: last 730 days, value floor £1m, max 200 rows total.
+function pipelineRecentAwardsForBuyers({
+  buyerIds = [],
+  daysLookback = 730,
+  valueFloor = 1_000_000,
+  rowLimit = 200,
+} = {}) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  if (!Array.isArray(buyerIds) || buyerIds.length === 0) {
+    db.close();
+    return { count: 0, awards: [], note: 'No buyer IDs supplied' };
+  }
+  try {
+    const placeholders = buyerIds.map(() => '?').join(',');
+    const sql = `
+      SELECT a.id AS award_id, a.ocid, a.title AS award_title, a.value_amount,
+             a.value_amount_gross, a.award_date, a.contract_start_date,
+             a.contract_end_date,
+             n.procurement_method,
+             n.title AS notice_title, n.main_category, n.cpv_category,
+             b.id AS buyer_id, b.name AS buyer_name,
+             (SELECT GROUP_CONCAT(s.name, ' | ')
+                FROM award_suppliers asup
+                JOIN suppliers s ON asup.supplier_id = s.id
+                WHERE asup.award_id = a.id) AS suppliers
+      FROM awards a
+      JOIN notices n ON a.ocid = n.ocid
+      JOIN buyers b ON n.buyer_id = b.id
+      WHERE n.buyer_id IN (${placeholders})
+        AND a.award_date >= date('now', '-${parseInt(daysLookback)} days')
+        AND COALESCE(a.value_amount, a.value_amount_gross, 0) >= ?
+      ORDER BY a.award_date DESC, COALESCE(a.value_amount, a.value_amount_gross, 0) DESC
+      LIMIT ?
+    `;
+    const params = [...buyerIds, valueFloor, rowLimit];
+    const rows = db.prepare(sql).all(...params).map(r => ({
+      awardId: r.award_id,
+      ocid: r.ocid,
+      buyerId: r.buyer_id,
+      buyerName: r.buyer_name,
+      noticeTitle: r.notice_title,
+      awardTitle: r.award_title,
+      mainCategory: r.main_category,
+      cpvCategory: r.cpv_category,
+      value: r.value_amount,
+      valueGross: r.value_amount_gross,
+      awardDate: r.award_date,
+      contractStart: r.contract_start_date,
+      contractEnd: r.contract_end_date,
+      procurementMethod: r.procurement_method,
+      suppliers: r.suppliers ? r.suppliers.split(' | ').map(s => s.trim()).filter(Boolean) : [],
+    }));
+    return {
+      buyerIdCount: buyerIds.length,
+      daysLookback: parseInt(daysLookback),
+      valueFloor,
+      count: rows.length,
+      awards: rows,
+    };
+  } finally {
+    db.close();
+  }
+}
+
+// ── Buyer Behaviour Analytics (v1) ───────────────────────────────────────
+// JSON-returning equivalent of the CLI in pwin-competitive-intel/queries/
+// queries.py:buyer_behaviour. Powers the empirical Probability of Going
+// Out (PGO) figure for Win Strategy, Verdict, and the future paid Qualify
+// tier.
+//
+// Caveats baked in (same as the CLI version):
+//   - Contracts Finder rows have no cancellation marker → cancellation
+//     analysis is FTS-only, with the FTS share disclosed.
+//   - Procurement-method fields are essentially FTS-only.
+//   - Amendment behaviour deferred to Phase 2 (data not in current schema).
+//   - Distress flag fires on ch_status='dissolved' only.
+//   - Peer-buyer comparison uses canonical_buyers.type only.
+
+const CPV_DIVISION_LABELS = {
+  '03': 'Agriculture / forestry',  '09': 'Petroleum / fuels',
+  '14': 'Mining / minerals',       '15': 'Food / beverages',
+  '16': 'Agricultural machinery',  '18': 'Clothing / footwear',
+  '19': 'Leather / textiles',      '22': 'Printed matter',
+  '24': 'Chemicals',               '30': 'Office / IT equipment',
+  '31': 'Electrical / electronic', '32': 'Radio / TV / comms equipment',
+  '33': 'Medical / pharma equipment','34': 'Transport equipment',
+  '35': 'Security / defence equipment','37': 'Sports / musical / arts goods',
+  '38': 'Laboratory / measuring',  '39': 'Furniture',
+  '41': 'Water utility',           '42': 'Industrial machinery',
+  '43': 'Mining / quarrying machinery','44': 'Construction materials',
+  '45': 'Construction works',      '48': 'Software packages',
+  '50': 'Repair / maintenance',    '51': 'Installation services',
+  '55': 'Hotel / catering',        '60': 'Transport services',
+  '63': 'Supporting transport / travel','64': 'Postal / telecoms services',
+  '65': 'Public utilities',        '66': 'Financial / insurance services',
+  '70': 'Real estate services',    '71': 'Architectural / engineering',
+  '72': 'IT services',             '73': 'Research / development',
+  '75': 'Public administration',   '76': 'Oil / gas services',
+  '77': 'Agricultural services',   '79': 'Business / consultancy services',
+  '80': 'Education / training',    '85': 'Health / social care',
+  '90': 'Sewage / waste / cleaning','92': 'Recreational / cultural / sport',
+  '98': 'Other community / social services',
+};
+
+function _cpvDivisionLabel(div) {
+  if (!div) return 'Uncategorised';
+  return CPV_DIVISION_LABELS[div] || `CPV ${div}`;
+}
+
+function _safePct(num, denom, places = 1) {
+  if (!denom) return null;
+  return Number(((num * 100.0) / denom).toFixed(places));
+}
+
+function _resolveBuyerCanonical(db, nameQuery) {
+  const q = (nameQuery || '').trim();
+  const qLow = q.toLowerCase();
+  let canonicalId = null;
+
+  // Path 1 — exact alias
+  let row = db.prepare(
+    'SELECT canonical_id FROM canonical_buyer_aliases WHERE alias_lower = ?'
+  ).get(qLow);
+  if (row) canonicalId = row.canonical_id;
+
+  // Path 2 — abbreviation
+  if (!canonicalId) {
+    row = db.prepare(
+      'SELECT canonical_id FROM canonical_buyers ' +
+      'WHERE LOWER(abbreviation) = ? LIMIT 1'
+    ).get(qLow);
+    if (row) canonicalId = row.canonical_id;
+  }
+
+  // Path 3 — canonical name LIKE (only resolve if exactly one match)
+  if (!canonicalId) {
+    const rows = db.prepare(
+      'SELECT canonical_id, canonical_name FROM canonical_buyers ' +
+      'WHERE LOWER(canonical_name) LIKE ? ' +
+      'ORDER BY LENGTH(canonical_name) ASC LIMIT 5'
+    ).all(`%${qLow}%`);
+    if (rows.length === 1) canonicalId = rows[0].canonical_id;
+    else if (rows.length > 1) {
+      return {
+        ambiguous: true,
+        candidates: rows.map(r => r.canonical_name),
+      };
+    }
+  }
+
+  if (canonicalId) {
+    const canon = db.prepare(
+      'SELECT canonical_id, canonical_name, type FROM canonical_buyers WHERE canonical_id = ?'
+    ).get(canonicalId);
+    const ids = db.prepare(`
+      SELECT DISTINCT b.id
+      FROM buyers b
+      JOIN canonical_buyer_aliases a ON LOWER(TRIM(b.name)) = a.alias_lower
+      WHERE a.canonical_id = ?
+    `).all(canonicalId).map(r => r.id);
+    return {
+      canonicalId: canon.canonical_id,
+      canonicalName: canon.canonical_name,
+      canonicalType: canon.type,
+      rawBuyerIds: ids,
+      fragmented: false,
+    };
+  }
+
+  // Path 4 — fragmented fallback
+  const rawRows = db.prepare(
+    'SELECT id, name FROM buyers WHERE LOWER(name) LIKE ? ORDER BY name LIMIT 200'
+  ).all(`%${qLow}%`);
+  if (!rawRows.length) return null;
+  return {
+    canonicalId: null,
+    canonicalName: rawRows[0].name,
+    canonicalType: null,
+    rawBuyerIds: rawRows.map(r => r.id),
+    fragmented: true,
+  };
+}
+
+function _stageBuyerIdTempTable(db, ids) {
+  db.exec('DROP TABLE IF EXISTS _bb_ids');
+  db.exec('CREATE TEMP TABLE _bb_ids (id TEXT PRIMARY KEY)');
+  const ins = db.prepare('INSERT OR IGNORE INTO _bb_ids (id) VALUES (?)');
+  for (const id of ids) ins.run(id);
+}
+
+function _loadCpvP95Cache() {
+  // The Python CLI populates this cache; we read it if it's <24h old.
+  // Falls back to an empty object (consumers use 'overall' default).
+  try {
+    if (!existsSync(CPV_P95_CACHE)) return null;
+    const ageMs = Date.now() - statSync(CPV_P95_CACHE).mtimeMs;
+    if (ageMs > 24 * 3600 * 1000) return null;
+    return JSON.parse(readFileSync(CPV_P95_CACHE, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+function _computeCpvP95(db, minSample = 50) {
+  const cached = _loadCpvP95Cache();
+  if (cached) return cached;
+
+  const rows = db.prepare(`
+    WITH first_award AS (
+      SELECT n.ocid, n.published_date,
+             MIN(COALESCE(a.award_date, a.date_signed,
+                          a.contract_start_date)) AS first_aw
+      FROM notices n JOIN awards a ON a.ocid = n.ocid
+      WHERE a.status IN ('active','pending') AND n.published_date IS NOT NULL
+      GROUP BY n.ocid
+    )
+    SELECT SUBSTR(c.code, 1, 2)  AS div,
+           CAST(julianday(fa.first_aw) - julianday(fa.published_date) AS INTEGER) AS days
+    FROM first_award fa
+    JOIN cpv_codes c ON c.ocid = fa.ocid
+    WHERE fa.first_aw IS NOT NULL AND fa.first_aw > fa.published_date
+  `).all();
+
+  const buckets = {};
+  const overall = [];
+  for (const r of rows) {
+    if (r.days == null || r.days < 0 || r.days > 2000) continue;
+    (buckets[r.div] ||= []).push(r.days);
+    overall.push(r.days);
+  }
+  const p95 = vals => {
+    if (!vals.length) return null;
+    const s = [...vals].sort((a, b) => a - b);
+    return s[Math.floor(0.95 * (s.length - 1))];
+  };
+  const overallP95 = p95(overall) || 365;
+  const out = { _overall: overallP95 };
+  for (const [div, vals] of Object.entries(buckets)) {
+    out[div] = vals.length >= minSample ? p95(vals) : overallP95;
+  }
+  try { writeFileSync(CPV_P95_CACHE, JSON.stringify(out)); } catch {}
+  return out;
+}
+
+function _classifyOutcomes(db, years, catP95) {
+  const rows = db.prepare(`
+    WITH buyer_notices AS (
+      SELECT n.ocid, n.published_date, n.tender_status, n.latest_tag,
+             COALESCE(n.data_source, 'fts') AS src,
+             CAST(julianday('now') - julianday(n.published_date) AS INTEGER) AS age_days
+      FROM notices n
+      JOIN _bb_ids b ON n.buyer_id = b.id
+      WHERE n.published_date >= datetime('now', '-${years} years')
+        AND n.published_date IS NOT NULL
+    ),
+    award_agg AS (
+      SELECT a.ocid,
+             SUM(CASE WHEN a.status IN ('active','pending') THEN 1 ELSE 0 END) AS awarded_n,
+             SUM(CASE WHEN a.status = 'unsuccessful' THEN 1 ELSE 0 END) AS unsucc_n,
+             COUNT(*) AS total_aw
+      FROM awards a WHERE a.ocid IN (SELECT ocid FROM buyer_notices)
+      GROUP BY a.ocid
+    ),
+    cpv_first AS (
+      SELECT c.ocid, MIN(SUBSTR(c.code, 1, 2)) AS cpv_div
+      FROM cpv_codes c WHERE c.ocid IN (SELECT ocid FROM buyer_notices)
+      GROUP BY c.ocid
+    )
+    SELECT bn.ocid, bn.src, bn.published_date, bn.tender_status, bn.latest_tag,
+           bn.age_days, cf.cpv_div,
+           COALESCE(aa.awarded_n, 0) AS awarded_n,
+           COALESCE(aa.unsucc_n, 0)  AS unsucc_n,
+           COALESCE(aa.total_aw, 0)  AS total_aw
+    FROM buyer_notices bn
+    LEFT JOIN award_agg aa ON aa.ocid = bn.ocid
+    LEFT JOIN cpv_first cf ON cf.ocid = bn.ocid
+  `).all();
+
+  const overall = catP95?._overall || 365;
+  const out = [];
+  for (const r of rows) {
+    let bucket;
+    if (r.awarded_n > 0) {
+      bucket = 'awarded';
+    } else if (r.src === 'fts' && (
+      r.tender_status === 'cancelled' ||
+      r.tender_status === 'withdrawn' ||
+      r.latest_tag === 'tenderCancellation'
+    )) {
+      bucket = 'cancelled';
+    } else if (r.tender_status === 'unsuccessful' ||
+               (r.total_aw > 0 && r.unsucc_n === r.total_aw)) {
+      bucket = 'noCompliantBid';
+    } else {
+      const threshold = (catP95?.[r.cpv_div] ?? overall) + 90;
+      bucket = (r.age_days != null && r.age_days > threshold) ? 'dormant' : 'inFlight';
+    }
+    out.push({ ocid: r.ocid, src: r.src, bucket, cpvDiv: r.cpv_div, ageDays: r.age_days });
+  }
+  return out;
+}
+
+function _sectionVolume(db, years) {
+  const rows = db.prepare(`
+    SELECT CAST(STRFTIME('%Y', n.published_date) AS INTEGER) AS yr,
+           COALESCE(n.data_source, 'fts')                    AS src,
+           COUNT(*)                                          AS notices
+    FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE n.published_date >= datetime('now', '-${years} years')
+    GROUP BY yr, src ORDER BY yr ASC, src ASC
+  `).all();
+  const awardRows = db.prepare(`
+    SELECT CAST(STRFTIME('%Y', a.award_date) AS INTEGER) AS yr,
+           COUNT(DISTINCT a.id) AS awards
+    FROM awards a
+    JOIN notices n ON a.ocid = n.ocid
+    JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE a.award_date >= datetime('now', '-${years} years')
+      AND a.status IN ('active','pending')
+    GROUP BY yr ORDER BY yr ASC
+  `).all();
+  const awardsByYr = {};
+  for (const r of awardRows) if (r.yr) awardsByYr[r.yr] = r.awards;
+  const byYrSrc = {}, byYr = {};
+  for (const r of rows) {
+    if (!r.yr) continue;
+    byYr[r.yr] = (byYr[r.yr] || 0) + r.notices;
+    byYrSrc[`${r.yr}|${r.src}`] = r.notices;
+  }
+  const yrs = Object.keys(byYr).map(Number).sort((a, b) => a - b);
+  let totalNotices = 0, ftsTotal = 0, cfTotal = 0, awTotal = 0;
+  const byYear = yrs.map(y => {
+    const fts = byYrSrc[`${y}|fts`] || 0;
+    const cf  = byYrSrc[`${y}|cf`]  || 0;
+    const aw  = awardsByYr[y] || 0;
+    totalNotices += byYr[y]; ftsTotal += fts; cfTotal += cf; awTotal += aw;
+    return { year: y, notices: byYr[y], fts, cf, awards: aw };
+  });
+  let trendDirection = null, trendDeltaPct = null;
+  if (yrs.length >= 3) {
+    const recent = byYr[yrs[yrs.length - 2]];
+    const prior  = byYr[yrs[yrs.length - 3]];
+    if (prior) {
+      const d = ((recent - prior) * 100.0) / prior;
+      trendDeltaPct = Number(d.toFixed(0));
+      trendDirection = d > 10 ? 'growing' : d < -10 ? 'shrinking' : 'steady';
+    }
+  }
+  return {
+    totalNotices, ftsNotices: ftsTotal, cfNotices: cfTotal,
+    totalAwards: awTotal, byYear, trendDirection, trendDeltaPct,
+  };
+}
+
+function _sectionMethodMix(db, years) {
+  const rows = db.prepare(`
+    SELECT n.procurement_method AS method,
+           n.procurement_method_detail AS detail,
+           COUNT(*) AS n
+    FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE COALESCE(n.data_source, 'fts') = 'fts'
+      AND n.published_date >= datetime('now', '-${years} years')
+    GROUP BY method, detail
+  `).all();
+  const ftsTotal = rows.reduce((s, r) => s + r.n, 0);
+  const byMethod = {};
+  let frameworkCalloff = 0;
+  for (const r of rows) {
+    const d = (r.detail || '').toLowerCase();
+    if (d.includes('framework') || d.includes('call-off') || d.includes('call off')) {
+      frameworkCalloff += r.n;
+    } else {
+      const m = r.method || 'unknown';
+      byMethod[m] = (byMethod[m] || 0) + r.n;
+    }
+  }
+  if (frameworkCalloff) byMethod['framework_call_off'] = frameworkCalloff;
+
+  const methods = Object.entries(byMethod)
+    .map(([method, count]) => ({ method, count, sharePct: _safePct(count, ftsTotal) }))
+    .sort((a, b) => b.count - a.count);
+
+  const cfNoMethod = db.prepare(`
+    SELECT COUNT(*) AS n FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE n.data_source = 'cf'
+      AND n.published_date >= datetime('now', '-${years} years')
+  `).get().n;
+
+  return { ftsTotal, cfNoMethodCount: cfNoMethod, methods };
+}
+
+function _sectionCompetition(db, years) {
+  const overall = db.prepare(`
+    SELECT AVG(n.total_bids) AS avg_bids, COUNT(n.total_bids) AS n
+    FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE n.published_date >= datetime('now', '-${years} years')
+      AND n.total_bids IS NOT NULL AND n.total_bids > 0
+  `).get();
+  if (!overall.n) return { avgBidders: null, bidRecordedN: 0, byYear: [] };
+
+  const yearly = db.prepare(`
+    SELECT CAST(STRFTIME('%Y', n.published_date) AS INTEGER) AS yr,
+           AVG(n.total_bids) AS avg_bids, COUNT(*) AS n
+    FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE n.published_date >= datetime('now', '-${years} years')
+      AND n.total_bids > 0
+    GROUP BY yr ORDER BY yr ASC
+  `).all().filter(r => r.yr);
+
+  const lowComp = db.prepare(`
+    SELECT COUNT(*) AS n FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+    WHERE n.published_date >= datetime('now', '-${years} years')
+      AND n.total_bids IS NOT NULL AND n.total_bids < 3 AND n.total_bids > 0
+  `).get().n;
+
+  let trendDirection = null;
+  if (yearly.length >= 3) {
+    const first = yearly[0].avg_bids, last = yearly[yearly.length - 1].avg_bids;
+    if (first) {
+      const d = (last - first) / first;
+      trendDirection = d > 0.15 ? 'rising' : d < -0.15 ? 'falling' : 'flat';
+    }
+  }
+
+  return {
+    avgBidders: Number(overall.avg_bids.toFixed(2)),
+    bidRecordedN: overall.n,
+    byYear: yearly.map(r => ({
+      year: r.yr,
+      avgBidders: Number(r.avg_bids.toFixed(2)),
+      noticesWithBidCount: r.n,
+    })),
+    lowCompetitionCount: lowComp,
+    lowCompetitionSharePct: _safePct(lowComp, overall.n),
+    trendDirection,
+  };
+}
+
+function _sectionOutcomeMix(classified) {
+  const total = classified.length;
+  const ftsTotal = classified.filter(c => c.src === 'fts').length;
+  const counts = { awarded: 0, cancelled: 0, noCompliantBid: 0, dormant: 0, inFlight: 0 };
+  for (const c of classified) counts[c.bucket]++;
+
+  let sampleQuality;
+  if (total < 10) sampleQuality = 'too_small';
+  else if (total < 25) sampleQuality = 'indicative';
+  else sampleQuality = 'reliable';
+
+  const closed = counts.awarded + counts.cancelled + counts.noCompliantBid + counts.dormant;
+
+  return {
+    sampleSize: total, sampleQuality, ftsTotal,
+    buckets: counts,
+    sharesPct: {
+      awarded:        _safePct(counts.awarded, total),
+      cancelled:      _safePct(counts.cancelled, ftsTotal),
+      noCompliantBid: _safePct(counts.noCompliantBid, total),
+      dormant:        _safePct(counts.dormant, total),
+      inFlight:       _safePct(counts.inFlight, total),
+    },
+    closedTotal: closed,
+    awardedOfClosedPct: _safePct(counts.awarded, closed),
+  };
+}
+
+function _sectionTimeline(db, years) {
+  const rows = db.prepare(`
+    WITH first_aw AS (
+      SELECT n.ocid, n.published_date,
+             MIN(COALESCE(a.award_date, a.date_signed, a.contract_start_date)) AS first_aw_date
+      FROM notices n JOIN _bb_ids b ON n.buyer_id = b.id
+      JOIN awards a ON a.ocid = n.ocid
+      WHERE n.published_date >= datetime('now', '-${years} years')
+        AND a.status IN ('active','pending')
+      GROUP BY n.ocid
+    )
+    SELECT CAST(julianday(first_aw_date) - julianday(published_date) AS INTEGER) AS days
+    FROM first_aw
+    WHERE first_aw_date IS NOT NULL AND first_aw_date > published_date
+  `).all();
+  const days = rows.map(r => r.days)
+    .filter(d => d != null && d >= 0 && d < 1500)
+    .sort((a, b) => a - b);
+  const n = days.length;
+  if (n < 25) {
+    return {
+      pairedN: n,
+      suppressedReason: n === 0
+        ? 'No paired publication and award dates in window.'
+        : `Only ${n} notices have paired dates — too few for percentile analysis.`,
+    };
+  }
+  const pct = p => days[Math.max(0, Math.min(n - 1, Math.floor(p * (n - 1))))];
+  return {
+    pairedN: n,
+    medianDays: pct(0.5),
+    p25Days: pct(0.25),
+    p75Days: pct(0.75),
+    p90Days: pct(0.9),
+    p95Days: pct(0.95),
+  };
+}
+
+function _sectionCategoryFootprint(classified) {
+  const byDiv = {};
+  for (const c of classified) {
+    const d = c.cpvDiv || '??';
+    (byDiv[d] ||= { total: 0, awarded: 0, cancelled: 0, ncb: 0, dormant: 0, inFlight: 0 });
+    byDiv[d].total++;
+    const k = c.bucket === 'noCompliantBid' ? 'ncb'
+            : c.bucket === 'inFlight' ? 'inFlight'
+            : c.bucket;
+    byDiv[d][k]++;
+  }
+  return Object.entries(byDiv)
+    .filter(([, v]) => v.total >= 5)
+    .sort((a, b) => b[1].total - a[1].total)
+    .slice(0, 10)
+    .map(([div, v]) => ({
+      cpvDivision: div === '??' ? null : div,
+      label: _cpvDivisionLabel(div === '??' ? null : div),
+      total: v.total,
+      awardedPct:    _safePct(v.awarded, v.total),
+      cancelledPct:  _safePct(v.cancelled, v.total),
+      ncbPct:        _safePct(v.ncb, v.total),
+      dormantPct:    _safePct(v.dormant, v.total),
+      inFlightPct:   _safePct(v.inFlight, v.total),
+    }));
+}
+
+function _sectionCancellation(db, years, classified, canonicalType) {
+  const fts = classified.filter(c => c.src === 'fts');
+  if (!fts.length) {
+    return { ftsTotal: 0, cancelledN: 0, suppressed: 'No FTS notices in window.' };
+  }
+  const cancelled = fts.filter(c => c.bucket === 'cancelled');
+  const thisBuyerPct = _safePct(cancelled.length, fts.length);
+
+  let peer = null;
+  if (canonicalType) {
+    const peerRows = db.prepare(`
+      SELECT cb.canonical_id,
+             COUNT(*) AS fts_n,
+             SUM(CASE WHEN n.tender_status IN ('cancelled','withdrawn')
+                        OR n.latest_tag = 'tenderCancellation'
+                      THEN 1 ELSE 0 END) AS cancelled_n
+      FROM canonical_buyers cb
+      JOIN canonical_buyer_aliases a ON a.canonical_id = cb.canonical_id
+      JOIN buyers br ON LOWER(TRIM(br.name)) = a.alias_lower
+      JOIN notices n ON n.buyer_id = br.id
+      WHERE cb.type = ?
+        AND COALESCE(n.data_source, 'fts') = 'fts'
+        AND n.published_date >= datetime('now', '-${years} years')
+      GROUP BY cb.canonical_id
+      HAVING fts_n >= 25
+    `).all(canonicalType);
+    if (peerRows.length) {
+      const rates = peerRows.map(r => (r.cancelled_n * 100) / r.fts_n).sort((a, b) => a - b);
+      const median = rates[Math.floor(rates.length / 2)];
+      const p75 = rates[Math.floor(0.75 * (rates.length - 1))];
+      let positionLabel = 'within peer range';
+      if (thisBuyerPct > p75) positionLabel = 'above peer P75 — high canceller';
+      else if (thisBuyerPct < median) positionLabel = 'below peer median — low canceller';
+      peer = {
+        peerType: canonicalType,
+        peerCount: peerRows.length,
+        peerMedianPct: Number(median.toFixed(1)),
+        peerP75Pct: Number(p75.toFixed(1)),
+        positionLabel,
+      };
+    } else {
+      peer = { peerType: canonicalType, peerCount: 0,
+               note: `No peer set with ≥25 FTS notices for type '${canonicalType}'.` };
+    }
+  }
+
+  // Top cancelled categories
+  const byDiv = {};
+  for (const c of cancelled) {
+    const d = c.cpvDiv || '??';
+    byDiv[d] = (byDiv[d] || 0) + 1;
+  }
+  const topCancelled = Object.entries(byDiv)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([div, n]) => ({
+      cpvDivision: div === '??' ? null : div,
+      label: _cpvDivisionLabel(div === '??' ? null : div),
+      n,
+    }));
+
+  // Time-to-cancellation proxy
+  let timeToCancel = null;
+  if (cancelled.length) {
+    const placeholders = cancelled.map(() => '?').join(',');
+    const rows = db.prepare(`
+      SELECT CAST(julianday(last_updated) - julianday(published_date) AS INTEGER) AS d
+      FROM notices WHERE ocid IN (${placeholders})
+        AND last_updated > published_date
+    `).all(...cancelled.map(c => c.ocid));
+    const ttd = rows.map(r => r.d).filter(d => d != null && d >= 0).sort((a, b) => a - b);
+    if (ttd.length) {
+      const pct = p => ttd[Math.max(0, Math.min(ttd.length - 1, Math.floor(p * (ttd.length - 1))))];
+      timeToCancel = { n: ttd.length, medianDays: pct(0.5),
+                       p75Days: pct(0.75), p90Days: pct(0.9) };
+    }
+  }
+
+  return {
+    ftsTotal: fts.length,
+    cancelledN: cancelled.length,
+    thisBuyerPct,
+    peer,
+    topCancelledCategories: topCancelled,
+    timeToCancel,
+  };
+}
+
+function _sectionDistress(db) {
+  const rows = db.prepare(`
+    SELECT n.title, b.name AS buyer_name,
+           s.name AS supplier_name, s.ch_status,
+           a.value_amount_gross, a.contract_end_date
+    FROM awards a
+    JOIN notices n        ON n.ocid = a.ocid
+    JOIN _bb_ids bb       ON bb.id = n.buyer_id
+    JOIN buyers b         ON b.id = n.buyer_id
+    JOIN award_suppliers asup ON asup.award_id = a.id
+    JOIN suppliers s      ON s.id = asup.supplier_id
+    WHERE a.status IN ('active', 'pending')
+      AND a.contract_end_date > datetime('now')
+      AND s.ch_status IN ('dissolved', 'liquidation', 'administration',
+                          'receivership', 'in-administration',
+                          'voluntary-arrangement', 'compulsory-strike-off',
+                          'cessation', 'closed')
+    ORDER BY a.contract_end_date ASC LIMIT 20
+  `).all();
+  return {
+    count: rows.length,
+    coverageNote: 'Only ~27% of suppliers carry a Companies House number; this flag fires only on enriched suppliers. ch_status \'dissolved\' is currently the only distress value populated in the data.',
+    contracts: rows.map(r => ({
+      title: r.title,
+      supplierName: r.supplier_name,
+      chStatus: r.ch_status,
+      contractValue: r.value_amount_gross,
+      contractEndDate: r.contract_end_date,
+    })),
+  };
+}
+
+function _composeSummary(buyerName, years, outcomeMix, timeline, distress) {
+  if (!outcomeMix || !outcomeMix.closedTotal || outcomeMix.closedTotal < 25) {
+    return null;
+  }
+  const closed = outcomeMix.closedTotal;
+  const c = outcomeMix.buckets;
+  const award = (c.awarded * 100 / closed).toFixed(0);
+  const cancel = (c.cancelled * 100 / closed).toFixed(0);
+  const ncb = (c.noCompliantBid * 100 / closed).toFixed(0);
+  const dorm = (c.dormant * 100 / closed).toFixed(0);
+  let timelineClause = '';
+  if (timeline?.medianDays != null) {
+    timelineClause = ` Median time from publication to award was ${timeline.medianDays} days, with the slowest 10% taking over ${timeline.p90Days} days.`;
+  }
+  let distressClause = '';
+  if (distress?.count) {
+    distressClause = ` ${distress.count} live contract${distress.count !== 1 ? 's' : ''} in this buyer's portfolio currently has an incumbent in financial distress.`;
+  }
+  return `Over the last ${years} years, ${buyerName} published ${outcomeMix.sampleSize.toLocaleString()} tenders (${closed.toLocaleString()} now closed). ${award}% reached award, ${cancel}% were cancelled (FTS-tracked), ${ncb}% received no compliant bid, ${dorm}% went dormant.${timelineClause}${distressClause} PGO benchmark for tenders from this buyer: ${award}% historical award rate.`;
+}
+
+function buyerBehaviourProfile(nameQuery, { years = 5 } = {}) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found. Run pwin-competitive-intel/agent/ingest.py first.' };
+  try {
+    const resolved = _resolveBuyerCanonical(db, nameQuery);
+    if (!resolved) return { error: `No buyer found matching '${nameQuery}'.` };
+    if (resolved.ambiguous) {
+      return {
+        error: 'Ambiguous buyer name — please be more specific.',
+        candidates: resolved.candidates,
+      };
+    }
+    if (!resolved.rawBuyerIds.length) {
+      return { error: `Buyer '${resolved.canonicalName}' has no rows in the database.` };
+    }
+
+    _stageBuyerIdTempTable(db, resolved.rawBuyerIds);
+    const catP95 = _computeCpvP95(db);
+
+    const volume       = _sectionVolume(db, years);
+    const methodMix    = _sectionMethodMix(db, years);
+    const competition  = _sectionCompetition(db, years);
+    const classified   = _classifyOutcomes(db, years, catP95);
+    const outcomeMix   = _sectionOutcomeMix(classified);
+    const timeline     = _sectionTimeline(db, years);
+    const categoryFootprint = _sectionCategoryFootprint(classified);
+    const cancellation = _sectionCancellation(db, years, classified, resolved.canonicalType);
+    const distress     = _sectionDistress(db);
+    const summary      = _composeSummary(resolved.canonicalName, years,
+                                         outcomeMix, timeline, distress);
+
+    return {
+      meta: {
+        canonicalId:      resolved.canonicalId,
+        canonicalName:    resolved.canonicalName,
+        canonicalType:    resolved.canonicalType,
+        rawBuyerIdCount:  resolved.rawBuyerIds.length,
+        fragmented:       resolved.fragmented,
+        yearsWindow:      years,
+        generatedAt:      new Date().toISOString(),
+      },
+      volume,
+      methodMix,
+      competition,
+      outcomeMix,
+      timeline,
+      categoryFootprint,
+      cancellation,
+      distress,
+      summary,
+      caveats: [
+        'Cancellation analysis is FTS-only — Contracts Finder rows have no cancellation marker.',
+        'Procurement-method mix is FTS-only — both method columns are unpopulated for Contracts Finder rows.',
+        'Amendment behaviour deferred to Phase 2 (no usable amendment trail in current schema).',
+        'Distress flag fires only on enriched suppliers (~27% coverage) and only on ch_status=\'dissolved\'.',
+        'Peer comparison uses canonical_buyers.type only (region is unpopulated for Contracts Finder).',
+      ],
+    };
+  } finally {
+    db.close();
+  }
+}
+
 export {
   dbSummary,
   buyerProfile,
@@ -498,4 +1350,7 @@ export {
   forwardPipeline,
   pwinSignals,
   cpvSearch,
+  pipelineRecentNotices,
+  pipelineRecentAwardsForBuyers,
+  buyerBehaviourProfile,
 };
