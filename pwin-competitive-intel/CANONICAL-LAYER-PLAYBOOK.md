@@ -707,6 +707,58 @@ canonical with its own parent). The "rise" is a correction.
   DHSC) which were under-aggregated by 50%+ before — so the dossier-quality
   impact is much larger than the raw-row count implies.
 
+## §18 — Alias gap closures, UK7 capture fix, and the publish-at-parent finding (2026-04-28)
+
+Three things landed this day, building on §17.
+
+### Alias gap closures
+
+Five small alias gaps closed for sub-organisations that publish on Find a Tender in their own name but had spelling variants we weren't catching (`patch_alias_gaps.py`):
+
+- "The Legal Aid Agency" (8 raw rows) → `legal-aid-agency`
+- "D S T L" spaced variants (2 rows) → `defence-science-and-technology-laboratory`
+- "DIO : DIO" colon-doubled variant (1 row) → `defence-infrastructure-organisation`
+- "DE&S Deca" + "DGM PT, DE&S" (6 rows) → `defence-equipment-and-support`
+- Five "Department of Justice — Youth Justice Agency" variants (5 rows) → `youth-justice-agency-of-northern-ireland`
+
+Total: 14 new aliases registered, persisted in the glossary file so they survive future reloads.
+
+### Procurement Act 2023 UK7 notice capture
+
+The ingest parser was reading the OCDS `noticeType` field from `tender.documents` and `awards[].documents` only. The Procurement Act 2023 introduced UK7 (contract details, mandatory within 30 days of contract signature) which attaches its document to `contracts[].documents`. The parser was silently dropping the UK7 marker — verified against a real OCDS release for notice 038645-2026 (Bank of England UPS maintenance, £41k).
+
+Fix extends the document scan to include `contracts[].documents`, `contracts[].implementation.documents`, and `contracts[].amendments[].documents`. For compiled releases that carry UK4 + UK6 + UK7 together, candidate HTML documents are sorted by `datePublished` descending so the most recent notice type wins. The same fix recovers UK9 (performance), UK10 (change), and UK11 (contract end) notices — none of which were being captured before.
+
+Effect from the next nightly ingest: every contract above threshold will carry a UK7 marker with confirmed contract period (start/end), supplier, value, and procurement method. Through-life signals (KPI performance, change events, contract terminations) flow correctly. No retroactive backfill applied — that's a separate workstream.
+
+### The publish-at-parent finding
+
+The structural finding that frames future work: **about 5% of contract awards (22,057 of 447,201) are dark at sub-organisation level because four ministerial departments publish under the parent name with no breakout for executive agencies.**
+
+| Department | Family awards | Parent's share | Buried sub-organisations |
+|---|---:|---:|---|
+| Ministry of Justice | 4,413 | 95% | HMPPS, HMCTS, Office of the Public Guardian |
+| Home Office | 2,258 | 91% | UKVI, Border Force, HM Passport Office, Immigration Enforcement |
+| Department for Education | 4,528 | 88% | ESFA, Ofsted, Ofqual, Office for Students |
+| Ministry of Defence | 9,854 | 79% | Defence Digital, Strategic Command, the service commands. DE&S, Dstl, DIO, SDA correctly attributed. |
+
+The Procurement Act 2023 does not fix this — the buyer field is still freeform and inherits departmental publishing practice. Closing the gap requires an overlay layer (£25k spend transparency, NISTA major projects, NAO/PAC reports, framework call-offs, departmental annual reports), not a contract-feed change.
+
+The remaining 93% of the contract universe names sub-organisations correctly. Local authorities, NHS bodies, devolved administrations, universities, police forces, and most ministerial departments (DHSC, DfT, Cabinet Office, DSIT, HMT, Defra, etc.) all publish at sub-organisation level.
+
+### Lessons
+
+- **The canonical layer is sound for 93% of the universe.** Today's alias gaps and the UK7 fix close most of what was fixable in the data layer. The 5% residual is a publisher-data limitation, not a canonical-layer flaw, and requires an overlay strategy rather than further canonicalisation work.
+- **UK7 ≠ sub-organisation breakout.** The Procurement Act 2023 makes contract data richer per notice but does not change which departments publish at parent level. Future planning should treat the overlay layer as a permanent component, not a temporary scaffold.
+- **The OCDS structural-where for notice documents is not consistent across notice types.** UK4/UK5/UK6 attach to tender.documents or awards[].documents; UK7 and UK11 attach to contracts[].documents; UK9 attaches to contracts[].implementation.documents; UK10 attaches to contracts[].amendments[].documents. Any future parser work should scan all five locations and prefer the latest by datePublished.
+
+### See also
+
+- `wiki/platform/sub-org-data-coverage.md` — executive summary with hard numbers and the overlay-strategy plan
+- `docs/research/2026-04-28-sub-org-intel-sources.md` — full catalogue of overlay-layer source candidates
+- `docs/research/2026-04-28-sub-org-contract-registers.md` — contract-register-specific deep dive plus Procurement Act 2023 transparency regime analysis
+- `wiki/actions/pwin-sub-org-overlay-layer.md` — the new action note for the next workstream
+
 ## Change log
 
 | Version | Date | Summary |
@@ -718,3 +770,4 @@ canonical with its own parent). The "rise" is a correction.
 | 1.4 | 2026-04-28 | Added §16: Buyer alias backfill — `buyerProfile()` rewritten, 371 aliases registered, 126 raw rows back-filled. FCDO/DHSC/Justice now under target orphan rate; Cabinet Office and Treasury residual is sub-org work (deferred). |
 | 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |
 | 1.5 | 2026-04-28 | Added §17: Sub-organisation pass. 9 new canonicals (Defence Digital, UK Strategic Command, IPA, NIC, etc.), multi-part candidate splitting, hierarchy-aware ambiguity resolution. 667 new aliases, 1,427 rows back-filled. Sub-org dossiers operational. |
+| 1.6 | 2026-04-28 | Added §18: Five additional alias gaps closed (LAA, Dstl spaced, DIO doubled, DE&S Deca, NI Youth Justice). Procurement Act 2023 UK7 / UK9 / UK10 / UK11 notice capture fixed in `agent/ingest.py` — parser was reading `noticeType` from the wrong OCDS location. Publish-at-parent finding documented: 5% of contract awards (22k of 447k) dark at sub-organisation level across MoJ, Home Office, DfE, MoD; UK7 doesn't fix this; overlay strategy required. |
