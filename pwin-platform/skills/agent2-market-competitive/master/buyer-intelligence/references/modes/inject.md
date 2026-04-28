@@ -35,12 +35,30 @@ calls.
    - Whether a dedicated extraction template exists in
      `references/extraction-templates/`
 
-4. **Apply extraction template if available.** If the document type has a
-   dedicated template (rightmost column of `source-classification.md`),
-   load the template and run the structured extraction before applying
-   updates. The template's `dossierMappings` block tells you exactly
-   which dossier fields to update with which operation. Record the
-   application in `meta.extractionTemplatesApplied`.
+   **Before finalising classification, list `references/extraction-templates/`
+   and use the Read tool on the template file matching the document type
+   if one exists** (e.g. `annual-report.md`, `digital-strategy.md`,
+   `nao-pac-report.md`). If the directory is empty or no template matches
+   the document type, record the absence explicitly in your working notes
+   rather than inferring "no template exists" from absence in context.
+   Hard Rule 17 applies: explicit enumeration prevents silent skipping.
+
+4. **Apply the extraction template (mandatory if one exists).** If the
+   document type has a dedicated template per the rightmost column of
+   `source-classification.md`, you MUST run the structured extraction
+   against the template's schema before applying any dossier updates.
+   - Use the Read tool on the template file (not memory).
+   - Follow the template's `extractionQualityCheck` rules (e.g. minimum
+     word counts, required quantified targets).
+   - Use the template's `dossierMappings` block to populate the dossier
+     with the right operations (extend / replace / upgrade).
+   - Append the application to `meta.extractionTemplatesApplied` with
+     the source ID, template name, and document type. This array is
+     append-only across modes — preserve every prior entry.
+   Skipping the template when one exists is not acceptable. If you
+   genuinely cannot apply it (e.g. the source content is too thin),
+   record the reason in `meta.degradedReason` and add a follow-up action
+   to `actionRegister.actions`.
 
 5. **Report classification to user.** Before making changes, briefly state:
    - What the document is
@@ -102,11 +120,42 @@ calls.
     - Do NOT change `refreshDue` — inject does not reset the refresh
       schedule
 
-14. **Re-render HTML** using the same renderer script as BUILD mode.
+14. **Verify the template gate before delivering.** If the source's
+    document type has a dedicated template per
+    `references/source-classification.md`, confirm
+    `meta.extractionTemplatesApplied` was extended in this inject run.
+    Run programmatically:
 
-15. **Save both files** to the intel cache and workspace folder.
+    ```bash
+    python3 -c "
+    import json
+    with open('<json-path>') as f:
+        d = json.load(f)
+    applied = d.get('meta', {}).get('extractionTemplatesApplied', [])
+    this_run_template = '<template-name-or-NONE>'   # set per the source classified above
+    this_run_source = '<SRC-nnn>'
+    if this_run_template == 'NONE':
+        print('Template gate: not applicable (no template for this document type)')
+    else:
+        match = [a for a in applied if a.get('templateName') == this_run_template and a.get('sourceId') == this_run_source]
+        if not match:
+            print(f'INJECT TEMPLATE GATE FAIL: classified document type expects {this_run_template} but extractionTemplatesApplied was not extended for {this_run_source}')
+            print('REMEDY: re-run the extraction with the template Read into context, or honestly record meta.degradedReason and a follow-up action.')
+        else:
+            print(f'Inject template gate: {this_run_template} applied to {this_run_source} (OK)')
+    "
+    ```
 
-16. **Report to user:** Summarise what changed, which actions closed,
+    If the gate fails, do not deliver. Either re-run the extraction with
+    the template loaded, or honestly record `meta.degradedReason` and
+    open a follow-up action in `actionRegister.actions`. Silent skipping
+    is not acceptable.
+
+15. **Re-render HTML** using the same renderer script as BUILD mode.
+
+16. **Save both files** to the intel cache and workspace folder.
+
+17. **Report to user:** Summarise what changed, which actions closed,
     which gaps were cleared, and what remains unknown. Provide
     `computer://` links to both files.
 

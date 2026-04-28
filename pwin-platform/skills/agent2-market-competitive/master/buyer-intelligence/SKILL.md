@@ -274,18 +274,22 @@ These apply across every mode.
     postures to expect, anxieties to neutralise. See
     `references/output-schema.md` for the implication categories. This
     section is mandatory in standard and deep modes.
-15. **Apply extraction templates in deep mode.** Before compiling the
-    dossier JSON in deep mode, identify the top 3–5 highest-substance
-    documents in your source register. For each, check
-    `references/source-classification.md` for a matching extraction
-    template. **Use the Read tool to open the template file** (e.g.
-    `references/extraction-templates/digital-strategy.md`) and follow
-    its schema and `extractionQualityCheck` rules. Apply the template's
-    `dossierMappings` to populate the dossier. Record every application
-    in `meta.extractionTemplatesApplied`. The Step 5 verification gate
-    enforces a minimum of 3 applied templates in deep mode — if you
-    cannot meet that, downgrade `meta.depthMode` to `standard` and
-    record why in `meta.degradedReason` rather than skipping silently.
+15. **Apply extraction templates in deep mode and inject mode.**
+    Whenever a source has a matching template in
+    `references/source-classification.md`, **use the Read tool to open
+    the template file** (e.g. `references/extraction-templates/digital-strategy.md`)
+    and follow its schema and `extractionQualityCheck` rules. Apply the
+    template's `dossierMappings` to populate the dossier. Record every
+    application in `meta.extractionTemplatesApplied` (append-only
+    across modes).
+    - **Deep build:** identify the top 3–5 highest-substance documents
+      and apply each matching template. The Step 5 verification gate
+      enforces a minimum of 3 applied templates — if you cannot meet
+      that, downgrade `meta.depthMode` to `standard` and record why in
+      `meta.degradedReason` rather than skipping silently.
+    - **Inject:** if the injected document's classified type has a
+      template, applying it is mandatory. The inject Step 14 verification
+      gate enforces this. See `references/modes/inject.md`.
 16. **Read the consumer contract before delivering.** Before saving the
     final dossier, read `references/consumer-contract.md` and verify
     that each decision question has at least one populated path in the
