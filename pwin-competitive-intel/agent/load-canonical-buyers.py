@@ -48,6 +48,8 @@ PREFIX_RULES = [
 ]
 
 
+# NOTE: any change here must be mirrored byte-for-byte in
+# backfill-buyer-aliases.py::_norm. test_normaliser.py enforces this.
 def norm(s: str) -> str:
     """Normalise a name for matching.
 

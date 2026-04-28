@@ -52,7 +52,28 @@ def test_normalisers_are_mirrored():
         for s in (a, b):
             assert LOAD.norm(s) == BACK._norm(s), f"DIVERGENCE on {s!r}: load={LOAD.norm(s)!r} back={BACK._norm(s)!r}"
 
+NON_EQUIVALENT = [
+    # 'The' inside a real name vs adjacent entity — the leading-article strip must not collide
+    ("The Crown Estate", "Crown Estate Commissioners"),
+    # 'Ltd' as a substring of a word must not match the \bltd\b rule
+    ("Ltdshire Council", "Limitedshire Council"),
+    # Different councils with similar names must remain distinct
+    ("Buckinghamshire Council", "Birmingham Council"),
+    # eTendering inside a name (not a trailing publisher decoration) must survive
+    ("Acme eTendering Solutions Ltd", "Acme Solutions Limited"),
+]
+
+def test_normaliser_preserves_distinctions():
+    failures = []
+    for a, b in NON_EQUIVALENT:
+        if LOAD.norm(a) == LOAD.norm(b):
+            failures.append(f"  load.norm over-collapses: {a!r} and {b!r} both -> {LOAD.norm(a)!r}")
+        if BACK._norm(a) == BACK._norm(b):
+            failures.append(f"  back._norm over-collapses: {a!r} and {b!r} both -> {BACK._norm(a)!r}")
+    assert not failures, "\n" + "\n".join(failures)
+
 if __name__ == "__main__":
     test_normalisers_are_mirrored()
     test_normaliser_collapses_equivalents()
+    test_normaliser_preserves_distinctions()
     print("OK")
