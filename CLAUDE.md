@@ -496,8 +496,8 @@ Internal-only intelligence database of UK public sector procurement, built on th
 ### Technical Constraints
 
 - Python 3.9+ stdlib only for ingest, enrichment, dashboard, and query layer — zero external deps. The canonical layer (Splink supplier dedup) is scoped into `.venv/` with its own `requirements-splink.txt`; nightly cron unaffected.
-- SQLite for local persistence — currently ~570 MB at 175k notices, scales comfortably
-- Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day) — **deploy descoped from immediate priority** since public Qualify is shipping intel-stripped; D1 becomes relevant again when paid Qualify or another internal product needs production access. The current 570 MB DB has not been validated against `wrangler d1 execute` load limits — verify before any deploy attempt.
+- SQLite for local persistence — currently ~1.3 GB at ~175k notices plus the 82,637-row supplier canonical layer (verified 2026-04-28), scales comfortably
+- Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day) — **deploy descoped from immediate priority** since public Qualify is shipping intel-stripped; D1 becomes relevant again when paid Qualify or another internal product needs production access. The current 1.3 GB DB has not been validated against `wrangler d1 execute` load limits — verify before any deploy attempt.
 - FTS API rate limits: 1s between pages, 429 retries with exponential backoff, 60s read timeout with retries
 - Companies House API: 600ms between calls, free key required
 - Database not committed to repo (`.gitignore`); the OCP bulk JSONL file (`data/`) is also gitignored — built from a single download, not from git
@@ -556,7 +556,7 @@ python queries/queries.py supplier "Serco"
 python queries/queries.py expiring --days 180 --value 500000
 python queries/queries.py pwin --category services
 
-# Deploy to Cloudflare D1 (descoped — verify load mechanism for ~570 MB DB first)
+# Deploy to Cloudflare D1 (descoped — verify load mechanism for ~1.3 GB DB first)
 cd workers
 npx wrangler d1 create pwin-competitive-intel       # paste ID into wrangler.toml
 npx wrangler d1 execute pwin-competitive-intel --file=../db/schema.sql
