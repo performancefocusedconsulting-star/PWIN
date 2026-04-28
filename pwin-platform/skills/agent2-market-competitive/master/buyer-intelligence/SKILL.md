@@ -48,6 +48,10 @@ Load these as needed:
 | Digital / transformation strategy extraction template | `references/extraction-templates/digital-strategy.md` |
 | Annual Report and Accounts extraction template | `references/extraction-templates/annual-report.md` |
 | NAO / PAC / select committee report extraction template | `references/extraction-templates/nao-pac-report.md` |
+| Spending Review settlement extraction template | `references/extraction-templates/spending-review-settlement.md` |
+| Senior leadership announcement extraction template | `references/extraction-templates/leadership-announcement.md` |
+| Departmental Plan / ODP / Corporate Plan extraction template | `references/extraction-templates/departmental-plan.md` |
+| GMPP (IPA Major Projects) entry extraction template | `references/extraction-templates/gmpp-entry.md` |
 
 ---
 

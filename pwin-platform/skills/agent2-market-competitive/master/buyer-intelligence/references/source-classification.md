@@ -14,8 +14,8 @@ This reference maps common document types to:
 | Document type | Primary sections | Secondary sections | Primary lenses | Tier | Extraction template |
 |---|---|---|---|---|---|
 | Annual Report and Accounts | organisationContext, strategicPriorities, procurementBehaviour, risksAndSensitivities | commercialAndRiskPosture, buyerSnapshot | money, pressure, risk-posture | Tier 1 | `annual-report.md` |
-| Outcome Delivery Plan / Single Departmental Plan | strategicPriorities, commissioningContextHypotheses | buyerSnapshot, cultureAndPreferences | mandate, pressure | Tier 1 | (planned: `outcome-delivery-plan.md`) |
-| Departmental Strategy / Corporate Plan | strategicPriorities, commissioningContextHypotheses | cultureAndPreferences, buyerSnapshot | pressure, mandate | Tier 1 | (planned: `corporate-plan.md`) |
+| Outcome Delivery Plan / Single Departmental Plan | strategicPriorities, commissioningContextHypotheses | buyerSnapshot, cultureAndPreferences | mandate, pressure | Tier 1 | `departmental-plan.md` |
+| Departmental Strategy / Corporate Plan | strategicPriorities, commissioningContextHypotheses | cultureAndPreferences, buyerSnapshot | pressure, mandate | Tier 1 | `departmental-plan.md` |
 | Digital / transformation strategy | strategicPriorities, cultureAndPreferences (changeMaturity), commissioningContextHypotheses | procurementBehaviour, pursuitImplications | pressure, money, buying-behaviour, pursuit-implications | Tier 1 | `digital-strategy.md` |
 | Data strategy or data roadmap | strategicPriorities, cultureAndPreferences | commissioningContextHypotheses, supplierEcosystem | pressure, buying-behaviour | Tier 1 | (covered by `digital-strategy.md`) |
 | AI strategy / AI Action Plan / AI ethics framework | strategicPriorities, cultureAndPreferences, commercialAndRiskPosture | commissioningContextHypotheses | pressure, risk-posture | Tier 1 | (covered by `digital-strategy.md`) |
@@ -28,14 +28,14 @@ This reference maps common document types to:
 | Procurement page (`doing business with us`) | procurementBehaviour | commercialAndRiskPosture | buying-behaviour | Tier 1 | — |
 | Organogram / organisational chart | organisationContext, decisionUnitAssumptions | buyerSnapshot | mandate | Tier 1 | — |
 | Board papers / minutes | organisationContext, strategicPriorities, decisionUnitAssumptions | cultureAndPreferences, risksAndSensitivities | mandate, pressure | Tier 1 | — |
-| Senior leadership announcement / press release | organisationContext (seniorLeadership, recentChanges), decisionUnitAssumptions | strategicPriorities | mandate, pressure | Tier 1 | (planned: `leadership-announcement.md`) |
-| Spending Review settlement | commercialAndRiskPosture, commissioningContextHypotheses, organisationContext (fundingModel) | strategicPriorities | money, pressure | Tier 2 | (planned: `spending-review-settlement.md`) |
+| Senior leadership announcement / press release | organisationContext (seniorLeadership, recentChanges), decisionUnitAssumptions | strategicPriorities | mandate, pressure | Tier 1 | `leadership-announcement.md` |
+| Spending Review settlement | commercialAndRiskPosture, commissioningContextHypotheses, organisationContext (fundingModel) | strategicPriorities | money, pressure | Tier 2 | `spending-review-settlement.md` |
 | Main / Supplementary Estimates | commercialAndRiskPosture, organisationContext (fundingModel) | strategicPriorities | money | Tier 2 | — |
 | HMT Green Book / Managing Public Money guidance | commercialAndRiskPosture, decisionUnitAssumptions | cultureAndPreferences | money, risk-posture | Tier 2 | — |
 | DDaT Playbook / AI Playbook | cultureAndPreferences, commercialAndRiskPosture | commissioningContextHypotheses | risk-posture, buying-behaviour | Tier 2 | — |
 | Cabinet Office commercial guidance | procurementBehaviour, cultureAndPreferences, commercialAndRiskPosture | — | buying-behaviour, money | Tier 2 | — |
 | Government Functional Standards | cultureAndPreferences, commercialAndRiskPosture | decisionUnitAssumptions | risk-posture | Tier 2 | — |
-| Major Projects Portfolio (IPA / GMPP) data | strategicPriorities (majorProgrammes), risksAndSensitivities, supplierEcosystem | commissioningContextHypotheses | pressure, supplier-landscape, risk-posture | Tier 2 | (planned: `gmpp-entry.md`) |
+| Major Projects Portfolio (IPA / GMPP) data | strategicPriorities (majorProgrammes), risksAndSensitivities, supplierEcosystem | commissioningContextHypotheses | pressure, supplier-landscape, risk-posture | Tier 2 | `gmpp-entry.md` |
 | NAO value-for-money report | risksAndSensitivities, commercialAndRiskPosture, supplierEcosystem (vulnerabilitySignals), pursuitImplications | strategicPriorities, procurementBehaviour, cultureAndPreferences | risk-posture, pressure, supplier-landscape, pursuit-implications | Tier 3 | `nao-pac-report.md` |
 | PAC report | risksAndSensitivities, strategicPriorities, supplierEcosystem (vulnerabilitySignals), pursuitImplications | cultureAndPreferences, commercialAndRiskPosture | risk-posture, pressure, pursuit-implications | Tier 3 | (covered by `nao-pac-report.md`) |
 | Select committee report | risksAndSensitivities, strategicPriorities | cultureAndPreferences | pressure, risk-posture | Tier 3 | (covered by `nao-pac-report.md`) |
