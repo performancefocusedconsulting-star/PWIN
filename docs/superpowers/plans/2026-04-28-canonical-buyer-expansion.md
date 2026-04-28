@@ -1168,6 +1168,35 @@ Captured 2026-04-28 before any changes:
 
 Note: notice value is heavily inflated by framework ceiling values (OCDS records framework *maximum* values, not realised spend). The notice-count figure is the more honest coverage measure.
 
+## Progress checkpoint — 2026-04-28 end of session
+
+**Tasks 0–3 complete.** Tasks 4–8 pending.
+
+| Stage | Coverage | Entity count | Commits |
+|---|---|---|---|
+| Baseline | 55.59% (282,997 / 509,048) | 1,939 | `acae60e` (plan + baseline) |
+| After Task 1 (normaliser) | 63.69% | 1,939 | `ee041ae`, `931990c` |
+| After Task 2 (police) | 65.21% | 2,029 | `9960333` (parallel work), `f6da1dd` (SPA fix) |
+| After Task 3 (universities) | **70.36%** | **2,083** | `abd34a7` |
+
+**Net progress this session:** 55.59% → 70.36% notice coverage (+14.77pp), 1,939 → 2,083 canonical entities. Police-named notices now 97.7% mapped (was ~2%). University-named notices now 98% mapped (was 0%).
+
+### How to resume
+
+Next session should pick up **Task 4 (fire & rescue authorities)** by re-reading the Task 4 section above, then continuing through Tasks 5–8. The pattern is now well-established by Tasks 2 and 3:
+
+1. Pre-flight: check `pwin-platform/knowledge/<file>.json` doesn't already exist (parallel work has been landing on this branch — Task 2's bulk was done by a parallel commit `9960333` while this session was running).
+2. Generate alias seed list from DB.
+3. Hand-curate the knowledge JSON.
+4. Wire merge into `pwin-platform/scripts/seed-canonical-buyers.py`.
+5. Regenerate (`--skip-fetch`), reload, backfill, verify, commit.
+
+### Open notes
+
+- The 24 trailing-whitespace aliases in `police-forces.json` are stripped at load time so functionally fine; cosmetic cleanup only.
+- Tasks 6 & 7 still need URL/format confirmation for DfE GIAS and Regulator of Social Housing data sources at execution time.
+- Acceptance bar for the whole programme is ≥90% notice coverage. We are at 70.36% with four tasks still to run (fire ~3,000 notices, Whitehall top-up ~10,000+, MAT ~5,000, housing ~10,000). The remaining four tasks should comfortably clear the 90% bar.
+
 ## Final
 
 (To be populated by Task 8, Step 5.)
