@@ -1,0 +1,1660 @@
+{
+  "_comment": "UK police forces, Police & Crime Commissioners (and PFCC variants), and joint procurement bodies. Hand-curated 2026-04-28 because none of these appear in the GOV.UK organisations API. Sources: Home Office list of police forces (England & Wales), Police Scotland and PSNI corporate registers. Aliases captured from real FTS publisher name variants observed in pwin-competitive-intel/db/bid_intel.db. Where bodies already exist on the master list (BTP, CNC, MoD Police, PSNI, IOPC, HMICFRS, Scottish Police Authority, GMCA, WYCA, SYMCA), this file appends new aliases via canonical_id merge rather than creating duplicates. Variants combining multiple forces (e.g. 'Kent Police; Essex Police') are intentionally NOT listed as aliases — they are ambiguous joint-procurement strings that cannot be assigned to a single canonical force without corrupting downstream analysis.",
+  "version": "1.0",
+  "source": "hand_curated_police",
+  "last_updated": "2026-04-28",
+  "entities": [
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-avon-and-somerset",
+      "canonical_name": "Office of the Police and Crime Commissioner for Avon and Somerset",
+      "abbreviation": "OPCC Avon and Somerset",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["avon-and-somerset-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Avon and Somerset",
+        "Police and Crime Commissioner for Avon and Somerset",
+        "The Police and Crime Commissioner for Avon & Somerse",
+        "Police and Crime Commissioner Avon and Somerset",
+        "Police and Crime Commissioner for Avon & Somerset"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "avon-and-somerset-constabulary",
+      "canonical_name": "Avon and Somerset Constabulary",
+      "abbreviation": "ASC",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-avon-and-somerset"],
+      "child_ids": [],
+      "aliases": [
+        "Avon and Somerset Constabulary",
+        "AVON AND SOMERSET CONSTABULARY",
+        "Avon & Somerset Constabulary",
+        "Avon and Somerset Police",
+        "Avon & Somerset Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-bedfordshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Bedfordshire",
+      "abbreviation": "OPCC Bedfordshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["bedfordshire-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Bedfordshire",
+        "Police and Crime Commissioner for Bedfordshire",
+        "The Police and Crime Commissioner for Bedfordshire",
+        "The Police and Crime Commissioner for Bedfordshire,",
+        "The Police and Crime Commissioners for Bedfordshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "bedfordshire-police",
+      "canonical_name": "Bedfordshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-bedfordshire"],
+      "child_ids": [],
+      "aliases": [
+        "Bedfordshire Police",
+        "BEDFORDSHIRE POLICE",
+        "Bedfordshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-cambridgeshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Cambridgeshire",
+      "abbreviation": "OPCC Cambridgeshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["cambridgeshire-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Cambridgeshire",
+        "Police and Crime Commissioner for Cambridgeshire",
+        "The Police and Crime Commissioner for Cambridgeshire",
+        "The Police and Crime Commissioner for Cambridgeshire and Peterborough"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "cambridgeshire-constabulary",
+      "canonical_name": "Cambridgeshire Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-cambridgeshire"],
+      "child_ids": [],
+      "aliases": [
+        "Cambridgeshire Constabulary",
+        "Cambridgeshire Police",
+        "Cambridge Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-cheshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Cheshire",
+      "abbreviation": "OPCC Cheshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["cheshire-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Cheshire",
+        "Police and Crime Commissioner for Cheshire",
+        "The Police and Crime Commissioner for Cheshire",
+        "Police and Crime Commissioner for Cheshire "
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "cheshire-constabulary",
+      "canonical_name": "Cheshire Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-cheshire"],
+      "child_ids": [],
+      "aliases": [
+        "Cheshire Constabulary",
+        "CHESHIRE CONSTABULARY",
+        "Cheshire Police",
+        "Cheshire Constabulary on behalf of the Police and Crime Commissioner for Cheshire",
+        "Cheshire Constabulary on behalf of the PCC",
+        "Cheshire Constabulary/Police and Crime Commissioner for Cheshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-cleveland",
+      "canonical_name": "Office of the Police and Crime Commissioner for Cleveland",
+      "abbreviation": "OPCC Cleveland",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["cleveland-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Cleveland",
+        "The Office of the Police and Crime Commissioner for Cleveland",
+        "Police and Crime Commissioner for Cleveland",
+        "Police And Crime Commissioner for Cleveland",
+        "POLICE & CRIME COMMISSIONER FOR CLEVELAND",
+        "The Police and Crime Commissioner for Cleveland"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "cleveland-police",
+      "canonical_name": "Cleveland Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-cleveland"],
+      "child_ids": [],
+      "aliases": [
+        "Cleveland Police",
+        "CLEVELAND POLICE",
+        "Cleveland Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-fire-and-crime-commissioner-for-cumbria",
+      "canonical_name": "Office of the Police, Fire and Crime Commissioner for Cumbria",
+      "abbreviation": "OPFCC Cumbria",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police, Fire and Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["cumbria-constabulary"],
+      "aliases": [
+        "Office of the Police, Fire and Crime Commissioner for Cumbria",
+        "The Police & Crime Commissioner for Cumbria",
+        "The Police, Fire and Crime Commissioner for Cumbria",
+        "The Police, Fire & Crime Commissioner for Cumbria"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "cumbria-constabulary",
+      "canonical_name": "Cumbria Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-fire-and-crime-commissioner-for-cumbria"],
+      "child_ids": [],
+      "aliases": [
+        "Cumbria Constabulary",
+        "CUMBRIA CONSTABULARY",
+        "Cumbria Police",
+        "Cumbria Constabulary - Office of the Police & Crime Commissioner"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-derbyshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Derbyshire",
+      "abbreviation": "OPCC Derbyshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["derbyshire-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Derbyshire",
+        "The Police and Crime Commissioner for Derbyshire",
+        "Police and Crime Commissioner for Derbyshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "derbyshire-constabulary",
+      "canonical_name": "Derbyshire Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-derbyshire"],
+      "child_ids": [],
+      "aliases": [
+        "Derbyshire Constabulary",
+        "DERBYSHIRE CONSTABULARY",
+        "Derbyshire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-devon-and-cornwall",
+      "canonical_name": "Office of the Police and Crime Commissioner for Devon and Cornwall",
+      "abbreviation": "OPCC Devon and Cornwall",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["devon-and-cornwall-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Devon and Cornwall",
+        "OPCC for Devon and Cornwall Police",
+        "Police and Crime Commissioner for Devon and Cornwall",
+        "Police & Crime Commissioner for Devon & Cornwall"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "devon-and-cornwall-police",
+      "canonical_name": "Devon and Cornwall Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-devon-and-cornwall"],
+      "child_ids": [],
+      "aliases": [
+        "Devon and Cornwall Police",
+        "DEVON AND CORNWALL POLICE",
+        "Chief Constable for Devon and Cornwall Police",
+        "The Chief Constable for Devon and Cornwall Police",
+        "Chief Constable of Devon and Cornwall Police",
+        "The Chief Constable of Devon and Cornwall Police",
+        "Chief Constable of Devon and Cornwall Police ",
+        "Chief Constable for Devon and Cornwall Police ",
+        "Devon & Cornwall Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-dorset",
+      "canonical_name": "Office of the Police and Crime Commissioner for Dorset",
+      "abbreviation": "OPCC Dorset",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["dorset-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Dorset",
+        "The Office of the Police and Crime Commissioner for Dorset",
+        "Police and Crime Commissioner for Dorset",
+        "Police & Crime Commissioner for Dorset",
+        "Police & Crime Commissioner for Dorset Police",
+        "The Police and Crime Commissioner for Dorset",
+        "The Police and Crime Commissioner for Dorset Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "dorset-police",
+      "canonical_name": "Dorset Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-dorset"],
+      "child_ids": [],
+      "aliases": [
+        "Dorset Police",
+        "DORSET POLICE"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-durham",
+      "canonical_name": "Office of the Police and Crime Commissioner for Durham",
+      "abbreviation": "OPCC Durham",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["durham-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Durham",
+        "Police And Crime Commissioner For Durham",
+        "Police and Crime Commissioner for Durham"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "durham-constabulary",
+      "canonical_name": "Durham Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-durham"],
+      "child_ids": [],
+      "aliases": [
+        "Durham Constabulary",
+        "DURHAM CONSTABULARY",
+        "Durham Police",
+        "Durham Police Procurement Team"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-dyfed-powys",
+      "canonical_name": "Office of the Police and Crime Commissioner for Dyfed-Powys",
+      "abbreviation": "OPCC Dyfed-Powys",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (Wales)",
+      "parent_ids": [],
+      "child_ids": ["dyfed-powys-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Dyfed-Powys",
+        "Police and Crime Commissioner for Dyfed Powys",
+        "Police and Crime Commissioner for Dyfed-Powys"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "dyfed-powys-police",
+      "canonical_name": "Dyfed-Powys Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (Wales)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-dyfed-powys"],
+      "child_ids": [],
+      "aliases": [
+        "Dyfed-Powys Police",
+        "Dyfed Powys Police",
+        "DYFED POWYS POLICE"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "police-fire-and-crime-commissioner-for-essex",
+      "canonical_name": "Police, Fire and Crime Commissioner for Essex",
+      "abbreviation": "PFCC Essex",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police, Fire and Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["essex-police"],
+      "aliases": [
+        "Police, Fire and Crime Commissioner for Essex",
+        "The Police, Fire and Crime Commissioner for Essex",
+        "The Police, Fire & Crime Commissioner for Essex",
+        "The Police, Fire and Crime Commissioner for Essex.",
+        "The Police Fire and Crime Commissioner for Essex",
+        "Police, Fire and Crime Commissioner for Essex",
+        "Essex Police, Fire and Crime Commissioner Fire and Rescue Authority",
+        "Essex Police, Fire & Crime Commissioner Fire & Rescue Authority",
+        "Essex Police,Fire and Crime Commissioner Fire and Rescue Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "essex-police",
+      "canonical_name": "Essex Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["police-fire-and-crime-commissioner-for-essex"],
+      "child_ids": [],
+      "aliases": [
+        "Essex Police",
+        "ESSEX POLICE",
+        "Essex Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-gloucestershire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Gloucestershire",
+      "abbreviation": "OPCC Gloucestershire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["gloucestershire-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Gloucestershire",
+        "Office of the Police and Crime Commissioner for Gloucestershire ",
+        "The Police and Crime Commissioner for Gloucestershire",
+        "Police & Crime Commissioner for Gloucestershire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "gloucestershire-constabulary",
+      "canonical_name": "Gloucestershire Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-gloucestershire"],
+      "child_ids": [],
+      "aliases": [
+        "Gloucestershire Constabulary",
+        "Gloucestershire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "greater-manchester-police",
+      "canonical_name": "Greater Manchester Police",
+      "abbreviation": "GMP",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["greater-manchester-combined-authority"],
+      "child_ids": [],
+      "aliases": [
+        "Greater Manchester Police",
+        "GMP",
+        "GMCA Greater Manchester Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Greater Manchester has no separate PCC — the GM Mayor (via GMCA) holds the PCC role. Parent is greater-manchester-combined-authority (already on master list)."
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-gwent",
+      "canonical_name": "Office of the Police and Crime Commissioner for Gwent",
+      "abbreviation": "OPCC Gwent",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (Wales)",
+      "parent_ids": [],
+      "child_ids": ["gwent-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Gwent",
+        "Police and Crime Commissioner for Gwent",
+        "GWENT POLICE AND CRIME COMMISSIONER",
+        "The Police and Crime Commissioner for Gwent",
+        "Police and Crime Commissioner for Gwent Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "gwent-police",
+      "canonical_name": "Gwent Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (Wales)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-gwent"],
+      "child_ids": [],
+      "aliases": [
+        "Gwent Police",
+        "Gwent Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-hampshire-and-the-isle-of-wight",
+      "canonical_name": "Office of the Police and Crime Commissioner for Hampshire and the Isle of Wight",
+      "abbreviation": "OPCC Hampshire and IoW",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["hampshire-and-isle-of-wight-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Hampshire and the Isle of Wight",
+        "Office of the Police and Crime Commissioner for Hampshire and The Isle of Wight",
+        "OFFICE OF THE POLICE AND CRIME COMMISSIONER FOR HAMPSHIRE AND THE ISLE OF WIGHT",
+        "THE OFFICE OF THE POLICE AND CRIME COMMISSIONER FOR HAMPSHIRE AND THE ISLE OF WIGHT",
+        "THE OFFICE OF THE POLICE ANE CRIME COMMISSIONER FOR HAMPSHIRE AND THE ISLE OF WIGHT",
+        "The Office of the Police and Crime Commissioner for Hampshire and the Isle of Wight",
+        "Office of the Police & Commissioner for Hampshire & Isle of Wight",
+        "Office of the Police & Commissioner  for Hampshire & Isle of Wight (OPCC)",
+        "The Police and Crime Commissioner for Hampshire and Isle of Wight",
+        "THE POLICE AND CRIME COMMISSIONER FOR HAMPSHIRE AND THE ISLE OF WIGHT",
+        "Hampshire Police & Crime Commissioner",
+        "The Police and Crime Commissioner for Hampshire and The Chief Constable for Hampshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "hampshire-and-isle-of-wight-constabulary",
+      "canonical_name": "Hampshire and Isle of Wight Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-hampshire-and-the-isle-of-wight"],
+      "child_ids": [],
+      "aliases": [
+        "Hampshire and Isle of Wight Constabulary",
+        "HAMPSHIRE AND ISLE OF WIGHT CONSTABULARY",
+        "Hampshire & Isle of Wight Constabulary",
+        "Hampshire Constabulary",
+        "HAMPSHIRE CONSTABULARY",
+        "The Chief Constable of Hampshire Constabulary",
+        "The Chief Constable of Hampshire and Isle of Wight Constabulary",
+        "Hampshire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-hertfordshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Hertfordshire",
+      "abbreviation": "OPCC Hertfordshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["hertfordshire-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Hertfordshire",
+        "The Police and Crime Commissioner for Hertfordshire",
+        "The Police and Crime Commissioner for Hertfordshire.",
+        "Police and Crime Commissioner for Hertfordshire",
+        "Hertfordshire Police and Crime Commissioners Office"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "hertfordshire-constabulary",
+      "canonical_name": "Hertfordshire Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-hertfordshire"],
+      "child_ids": [],
+      "aliases": [
+        "Hertfordshire Constabulary",
+        "HERTFORDSHIRE CONSTABULARY",
+        "Hertfordshire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-humberside",
+      "canonical_name": "Office of the Police and Crime Commissioner for Humberside",
+      "abbreviation": "OPCC Humberside",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["humberside-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Humberside",
+        "The Police and Crime Commissioner for Humberside",
+        "The Police and Crime Commissioner for Humberside "
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "humberside-police",
+      "canonical_name": "Humberside Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-humberside"],
+      "child_ids": [],
+      "aliases": [
+        "Humberside Police",
+        "Humberside Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-kent",
+      "canonical_name": "Office of the Police and Crime Commissioner for Kent",
+      "abbreviation": "OPCC Kent",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["kent-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Kent",
+        "The Police and Crime Commissioner for Kent",
+        "The Police & Crime Commissioner for Kent",
+        "Police and Crime Commissioner for Kent",
+        "Kent Police and Crime Commissioner"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "kent-police",
+      "canonical_name": "Kent Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-kent"],
+      "child_ids": [],
+      "aliases": [
+        "Kent Police",
+        "Kent Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-lancashire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Lancashire",
+      "abbreviation": "OPCC Lancashire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["lancashire-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Lancashire",
+        "Police and Crime Commissioner for Lancashire",
+        "Police and Crime Commissioner for Lancashire ",
+        "Police and  Crime Commissioner for Lancashire",
+        "Police & Crime Commissioner for Lancashire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "lancashire-constabulary",
+      "canonical_name": "Lancashire Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-lancashire"],
+      "child_ids": [],
+      "aliases": [
+        "Lancashire Constabulary",
+        "LANCASHIRE CONSTABULARY",
+        "Lancashire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-leicestershire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Leicestershire",
+      "abbreviation": "OPCC Leicestershire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["leicestershire-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Leicestershire",
+        "Office of the Police and Crime Commissioner for Leicester, Leicestershire and Rutland",
+        "The Police and Crime Commissioner for Leicestershire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "leicestershire-police",
+      "canonical_name": "Leicestershire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-leicestershire"],
+      "child_ids": [],
+      "aliases": [
+        "Leicestershire Police",
+        "Leicestershire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-lincolnshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Lincolnshire",
+      "abbreviation": "OPCC Lincolnshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["lincolnshire-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Lincolnshire",
+        "THE POLICE AND CRIME COMMISSIONER FOR LINCOLNSHIRE",
+        "The Police and Crime Commissioner for Lincolnshire",
+        "The Police & Crime Commissioner for Lincolnshire",
+        "Police and Crime Commissioner for Lincolnshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "lincolnshire-police",
+      "canonical_name": "Lincolnshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-lincolnshire"],
+      "child_ids": [],
+      "aliases": [
+        "Lincolnshire Police",
+        "Lincolnshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-merseyside",
+      "canonical_name": "Office of the Police and Crime Commissioner for Merseyside",
+      "abbreviation": "OPCC Merseyside",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["merseyside-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Merseyside",
+        "The Police and Crime Commissioner for Merseyside",
+        "Police & Crime Commissioner for Merseyside & Chief Constable for Merseyside"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "merseyside-police",
+      "canonical_name": "Merseyside Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-merseyside"],
+      "child_ids": [],
+      "aliases": [
+        "Merseyside Police",
+        "Merseyside Police - Procurement Department",
+        "Provision of Laundry Service for Merseyside Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "mayors-office-for-policing-and-crime",
+      "canonical_name": "Mayor's Office for Policing and Crime",
+      "abbreviation": "MOPAC",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Mayoral PCC equivalent (London)",
+      "parent_ids": ["greater-london-authority"],
+      "child_ids": ["metropolitan-police-service"],
+      "aliases": [
+        "Mayor's Office for Policing and Crime",
+        "MAYOR'S OFFICE FOR POLICE AND CRIME",
+        "The Mayor's Office of Police and Crime",
+        "The Mayor's Office for Policing and Crime (MOPAC) for and on behalf of the Metropolitan Police Service (MPS)",
+        "The Mayor's Office for Policing and Crime c/o The Metropolitan Police Service",
+        "Mayor's Office for Policing & Crime (Metropolitan Police Service)",
+        "Mayor's Office for Policing & Crime c/o Metropolitan Police Service",
+        "Mayor's Office for Policing & Crime c/o Metropolitan Police Service. Fleet Services",
+        "Mayors Office For Policing and Crime care of Metropolitan Police Service",
+        "Mayors Office for Policing and Crime c/o Metropolitan Police Service",
+        "Mayors Office for Police and Crime on behalf of Counter Terrorism Police",
+        "MOPAC"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "London has no separate PCC — the Mayor of London via MOPAC holds the PCC role for the Metropolitan Police Service. The City of London is a separate jurisdiction with its own Police Authority (the Court of Common Council of the City of London Corporation)."
+    },
+    {
+      "canonical_id": "metropolitan-police-service",
+      "canonical_name": "Metropolitan Police Service",
+      "abbreviation": "MPS",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["mayors-office-for-policing-and-crime"],
+      "child_ids": [],
+      "aliases": [
+        "Metropolitan Police Service",
+        "METROPOLITAN POLICE SERVICE",
+        "The Metropolitan Police Service",
+        "Metropolitan Police Service - Commercial Services",
+        "Metropolitan Police",
+        "The Metropolitan Police",
+        "Met Police",
+        "MPS"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "city-of-london-police",
+      "canonical_name": "City of London Police",
+      "abbreviation": "CoLP",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["city-of-london-corporation"],
+      "child_ids": [],
+      "aliases": [
+        "City of London Police",
+        "CITY OF LONDON POLICE",
+        "City of London Corporation (City of London Police)",
+        "The Mayor and Commonalty and Citizens of the City of London (\"the City of London\") and the City of London Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "City of London is a separate police jurisdiction; the City of London Corporation is its police authority (no PCC). Parent canonical_id 'city-of-london-corporation' may not exist on master list — listed for hierarchy completeness if it lands later."
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-norfolk",
+      "canonical_name": "Office of the Police and Crime Commissioner for Norfolk",
+      "abbreviation": "OPCC Norfolk",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["norfolk-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Norfolk",
+        "Office of the Police & Crime Commissioner for Norfolk",
+        "The Office of the Police and Crime Commissioner for Norfolk",
+        "Police and Crime Commissioner for Norfolk",
+        "The Police and Crime Commissioner for Norfolk"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "norfolk-constabulary",
+      "canonical_name": "Norfolk Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-norfolk"],
+      "child_ids": [],
+      "aliases": [
+        "Norfolk Constabulary",
+        "Norfolk Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-north-wales",
+      "canonical_name": "Office of the Police and Crime Commissioner for North Wales",
+      "abbreviation": "OPCC North Wales",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (Wales)",
+      "parent_ids": [],
+      "child_ids": ["north-wales-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for North Wales",
+        "Police and Crime Commissioner for North Wales Police & North Wales Police",
+        "Police and Crime Commissioner for North Wales Police & North Wales Police ",
+        "Police and Crime Commissioner for North Wales",
+        "Police and Crime Commissioner for North Wales ",
+        "PCC for North Wales Police & North Wales Police ",
+        "PCC for North Wales Police",
+        "PCC North Wales Police",
+        "Police and Crime Commissioner for North Wales & North Wales Police ",
+        "Police & Crime Commissioner for North Wales Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "north-wales-police",
+      "canonical_name": "North Wales Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (Wales)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-north-wales"],
+      "child_ids": [],
+      "aliases": [
+        "North Wales Police",
+        "North Wales Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-fire-and-crime-commissioner-for-north-yorkshire",
+      "canonical_name": "Office of the Police, Fire and Crime Commissioner for North Yorkshire",
+      "abbreviation": "OPFCC North Yorkshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police, Fire and Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["north-yorkshire-police"],
+      "aliases": [
+        "Office of the Police, Fire and Crime Commissioner for North Yorkshire",
+        "The Police, Fire and Crime Commissioner for North Yorkshire",
+        "The Police, Fire and Crime Commissioner for North Yorkshire and York",
+        "The Police, Fire & Crime Commissioner for NY",
+        "The Police and Crime Commissioner for North Yorkshire",
+        "York and North Yorkshire Combined Authority acting on behalf of itself and the Chief Constable of North Yorkshire Police",
+        "York and North Yorkshire Combined Authority acting as police and crime commissioner",
+        "North Yorkshire Police, Fire & Crime Commissioner ",
+        "North Yorkshire Police, Fire and Crime Commissioner Fire and Rescue Authority",
+        "North Yorkshire Police, Fire and Crime Commissioner, Fire and Rescue Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Following 2024 mayoral devolution, the North Yorkshire Mayor (via the York and North Yorkshire Combined Authority) holds the PFCC role. Older 'North Yorkshire PFCC' aliases remain valid for historical notices."
+    },
+    {
+      "canonical_id": "north-yorkshire-police",
+      "canonical_name": "North Yorkshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-fire-and-crime-commissioner-for-north-yorkshire"],
+      "child_ids": [],
+      "aliases": [
+        "North Yorkshire Police",
+        "NORTH YORKSHIRE POLICE",
+        "North Yorkshire Police Headquarters",
+        "North Yorkshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-fire-and-crime-commissioner-for-northamptonshire",
+      "canonical_name": "Office of the Police, Fire and Crime Commissioner for Northamptonshire",
+      "abbreviation": "OPFCC Northamptonshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police, Fire and Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["northamptonshire-police"],
+      "aliases": [
+        "Office of the Police, Fire and Crime Commissioner for Northamptonshire",
+        "Police, Fire and Crime Commissioner for Northamptonshire",
+        "The Police, Fire and Crime Commissioner for Northamptonshire",
+        "The Police, Fire and Crime Commissioner for Northamptonshire ",
+        "NORTHAMPTONSHIRE POLICE, FIRE AND CRIME COMMISSIONER"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "northamptonshire-police",
+      "canonical_name": "Northamptonshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-fire-and-crime-commissioner-for-northamptonshire"],
+      "child_ids": [],
+      "aliases": [
+        "Northamptonshire Police",
+        "Northamptonshire Constabulary",
+        "Northamptonshire Police on behalf of Northamptonshire Fire and Rescue"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-northumbria",
+      "canonical_name": "Office of the Police and Crime Commissioner for Northumbria",
+      "abbreviation": "OPCC Northumbria",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["northumbria-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Northumbria",
+        "The Police and Crime Commissioner for Northumbria",
+        "Police and Crime Commissioner for Northumbria",
+        " Police and Crime Commissioner for Northumbria"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "northumbria-police",
+      "canonical_name": "Northumbria Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-northumbria"],
+      "child_ids": [],
+      "aliases": [
+        "Northumbria Police",
+        "Northumbria Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-fire-and-crime-commissioner-for-nottinghamshire",
+      "canonical_name": "Office of the Police, Fire and Crime Commissioner for Nottinghamshire",
+      "abbreviation": "OPFCC Nottinghamshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police, Fire and Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["nottinghamshire-police"],
+      "aliases": [
+        "Office of the Police, Fire and Crime Commissioner for Nottinghamshire",
+        "The Police and Crime Commissioner for Nottinghamshire",
+        "The Police and Crime Commissioner for Nottinghamshire of Joint Police and Fire Headquarters",
+        "Police and Crime Commissioner for Nottinghamshire",
+        "Police, Fire and Crime Commissioner for Nottinghamshire",
+        "Police, Fire and Crime Commissioner for Nottinghamshire ",
+        "Nottinghamshire Police and Crime Commissioner"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "nottinghamshire-police",
+      "canonical_name": "Nottinghamshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-fire-and-crime-commissioner-for-nottinghamshire"],
+      "child_ids": [],
+      "aliases": [
+        "Nottinghamshire Police",
+        "NOTTINGHAMSHIRE POLICE",
+        "Nottinghamshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-south-wales",
+      "canonical_name": "Office of the Police and Crime Commissioner for South Wales",
+      "abbreviation": "OPCC South Wales",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (Wales)",
+      "parent_ids": [],
+      "child_ids": ["south-wales-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for South Wales",
+        "Police and Crime Commissioner for South Wales",
+        "Police & Crime Commissioner for South Wales"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "south-wales-police",
+      "canonical_name": "South Wales Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (Wales)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-south-wales"],
+      "child_ids": [],
+      "aliases": [
+        "South Wales Police",
+        "South Wales Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "south-yorkshire-police",
+      "canonical_name": "South Yorkshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["south-yorkshire-combined-authority"],
+      "child_ids": [],
+      "aliases": [
+        "South Yorkshire Police",
+        "South Yorkshire Police Headquarters",
+        "Police and Crime Commissioner for South Yorkshire",
+        "The Police and Crime Commissioner for South Yorkshire",
+        "South Yorkshire Police and Crime Commissioner",
+        "SOUTH YORKSHIRE POLICE AND CRIME COMMISSIONER"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "South Yorkshire Mayoral Combined Authority Mayor holds the PCC role. Historical 'PCC for South Yorkshire' aliases pre-mayoral devolution remain valid and route to this entry."
+    },
+
+    {
+      "canonical_id": "office-of-the-police-fire-and-crime-commissioner-for-staffordshire",
+      "canonical_name": "Office of the Police, Fire and Crime Commissioner for Staffordshire",
+      "abbreviation": "OPFCC Staffordshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police, Fire and Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["staffordshire-police"],
+      "aliases": [
+        "Office of the Police, Fire and Crime Commissioner for Staffordshire",
+        "Police, Fire & Crime Commissioner for Staffordshire",
+        "Police, Fire and Crime Commissioner for Staffordshire",
+        "Police, Fire and Crime Commissioner for Staffordshire ",
+        "Police, Fire & Crime Commissioner for Staffordshire ",
+        "Police, Fire &Crime Commissioner for Staffordshire",
+        "Police,Fire & Crime Commissioner for Staffordshire",
+        "Police & Crime Commissioner for Staffordshire",
+        "Police Fire and Crime Commissioner for Staffordshire",
+        "Police, Fire& Crime Commissioner for Staffordshire",
+        "Police, Fire&Crime Commissioner for Staffordshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "staffordshire-police",
+      "canonical_name": "Staffordshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-fire-and-crime-commissioner-for-staffordshire"],
+      "child_ids": [],
+      "aliases": [
+        "Staffordshire Police",
+        "Staffordshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-suffolk",
+      "canonical_name": "Office of the Police and Crime Commissioner for Suffolk",
+      "abbreviation": "OPCC Suffolk",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["suffolk-constabulary"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Suffolk",
+        "The Police and Crime Commissioner for Suffolk",
+        "Police and Crime Commissioner for Suffolk"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "suffolk-constabulary",
+      "canonical_name": "Suffolk Constabulary",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-suffolk"],
+      "child_ids": [],
+      "aliases": [
+        "Suffolk Constabulary",
+        "Suffolk Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-surrey",
+      "canonical_name": "Office of the Police and Crime Commissioner for Surrey",
+      "abbreviation": "OPCC Surrey",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["surrey-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Surrey",
+        "Office of the Police and Crime Commissioner for Surrey ",
+        "Office of the Surrey Police and Crime Commissioner",
+        "Office of the Surrey Police and Crime Commissioner for Surrey Police",
+        "Office of the Surrey Police & Crime Commissioner",
+        "Office of the Police & Crime Commissioner for Surrey",
+        "The Police and Crime Commissioner for Surrey",
+        "The Police and Crime Commissioner for Surrey ",
+        "The Surrey Police and Crime Commissioner",
+        "Police and Crime Commissioner for Surrey",
+        "Surrey Police and Crime Commissioner"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "surrey-police",
+      "canonical_name": "Surrey Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-surrey"],
+      "child_ids": [],
+      "aliases": [
+        "Surrey Police",
+        "Surrey Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-sussex",
+      "canonical_name": "Office of the Police and Crime Commissioner for Sussex",
+      "abbreviation": "OPCC Sussex",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["sussex-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Sussex",
+        "Office of the Sussex Police & Crime Commissioner",
+        "Office of the Police & Crime Commissioner for Sussex",
+        "The Police & Crime Commissioner for Sussex",
+        "The Police and Crime Commissioner for Sussex",
+        "The Sussex Police & Crime Commissioner",
+        "Police & Crime Commissioner for Sussex",
+        "Police and Crime Commissioner for Sussex",
+        "Police and crime commissioner for Sussex"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "sussex-police",
+      "canonical_name": "Sussex Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-sussex"],
+      "child_ids": [],
+      "aliases": [
+        "Sussex Police",
+        "Sussex Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-thames-valley",
+      "canonical_name": "Office of the Police and Crime Commissioner for Thames Valley",
+      "abbreviation": "OPCC Thames Valley",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["thames-valley-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Thames Valley",
+        "Police and Crime Commissioner Thames Valley Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "thames-valley-police",
+      "canonical_name": "Thames Valley Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-thames-valley"],
+      "child_ids": [],
+      "aliases": [
+        "Thames Valley Police",
+        "Thames Valley Police ",
+        "THAMES VALLEY POLICE",
+        "Thames valley Police ",
+        "Thames Valley Police England UK",
+        "The Chief Constable of Thames Valley Police",
+        "Thames Valley Police on behalf of Police and Crime Commissioner Thames Valley Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-warwickshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Warwickshire",
+      "abbreviation": "OPCC Warwickshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["warwickshire-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Warwickshire",
+        "The Police and Crime Commissioner for Warwickshire",
+        "The Police and Crime Commissioner for Warwickshire ",
+        "The Police & Crime Commissioner for Warwickshire",
+        "Police and Crime Commissioner for Warwickshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "warwickshire-police",
+      "canonical_name": "Warwickshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-warwickshire"],
+      "child_ids": [],
+      "aliases": [
+        "Warwickshire Police",
+        "WARWICKSHIRE POLICE",
+        "Warwickshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-west-mercia",
+      "canonical_name": "Office of the Police and Crime Commissioner for West Mercia",
+      "abbreviation": "OPCC West Mercia",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["west-mercia-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for West Mercia",
+        "Police and Crime Commissioner for West Mercia",
+        "Police and Crime Commissioner for West Mercia ",
+        "West Mercia Police and Crime Commissioner"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "west-mercia-police",
+      "canonical_name": "West Mercia Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-west-mercia"],
+      "child_ids": [],
+      "aliases": [
+        "West Mercia Police",
+        "WEST MERCIA POLICE",
+        "West Mercia Constabulary",
+        "West Mercia Police Procurement Department",
+        "West Mercia Police Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "west-midlands-police",
+      "canonical_name": "West Midlands Police",
+      "abbreviation": "WMP",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-west-midlands"],
+      "child_ids": [],
+      "aliases": [
+        "West Midlands Police",
+        "West Midlands Constabulary",
+        "West Midlands Police Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-west-midlands",
+      "canonical_name": "Office of the Police and Crime Commissioner for the West Midlands",
+      "abbreviation": "OPCC West Midlands",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["west-midlands-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for the West Midlands",
+        "Police and Crime Commissioner for West Midlands",
+        "Police and Crime Commissioner for the West Midlands",
+        "The Police and Crime Commissioner for West Midlands"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Historically a directly-elected PCC; the West Midlands Mayor's office has begun assuming this role under devolution arrangements but the OPCC remains the published procurement entity."
+    },
+
+    {
+      "canonical_id": "west-yorkshire-police",
+      "canonical_name": "West Yorkshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["west-yorkshire-combined-authority"],
+      "child_ids": [],
+      "aliases": [
+        "West Yorkshire Police",
+        "WEST YORKSHIRE POLICE",
+        "The Police and Crime Commissioner West Yorkshire",
+        "The Police and Crime Commissioner for West Yorkshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "West Yorkshire has no separate PCC since 2021 — the West Yorkshire Mayor (via the West Yorkshire Combined Authority) holds the PCC role. Historical 'PCC for West Yorkshire' aliases pre-mayoral devolution remain valid and route to this entry."
+    },
+
+    {
+      "canonical_id": "office-of-the-police-and-crime-commissioner-for-wiltshire",
+      "canonical_name": "Office of the Police and Crime Commissioner for Wiltshire",
+      "abbreviation": "OPCC Wiltshire",
+      "type": "Police & Crime Commissioner",
+      "subtype": "Police & Crime Commissioner (England)",
+      "parent_ids": [],
+      "child_ids": ["wiltshire-police"],
+      "aliases": [
+        "Office of the Police and Crime Commissioner for Wiltshire",
+        "The Police and Crime Commissioner for Wiltshire",
+        "The Police and Crime Commissioner for Wiltshire ",
+        "The Police and Crime Commissioner for Wiltshire & Swindon",
+        "Police and Crime Commissioner for Wiltshire",
+        "Police & Crime Commissioner for Wiltshire",
+        "Police & Crime Commissioner for Wiltshire Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+    {
+      "canonical_id": "wiltshire-police",
+      "canonical_name": "Wiltshire Police",
+      "type": "Police force",
+      "subtype": "Territorial police force (England)",
+      "parent_ids": ["office-of-the-police-and-crime-commissioner-for-wiltshire"],
+      "child_ids": [],
+      "aliases": [
+        "Wiltshire Police",
+        "Wiltshire Constabulary"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "police-scotland",
+      "canonical_name": "Police Scotland",
+      "type": "Police force",
+      "subtype": "National police service (Scotland)",
+      "parent_ids": ["scottish-police-authority"],
+      "child_ids": [],
+      "aliases": [
+        "Police Scotland",
+        "POLICE SCOTLAND"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Police Scotland is the national police service of Scotland, governed by the Scottish Police Authority (already on master list). No PCCs in Scotland."
+    },
+
+    {
+      "canonical_id": "police-service-of-northern-ireland",
+      "canonical_name": "Police Service of Northern Ireland",
+      "abbreviation": "PSNI",
+      "type": "Police force",
+      "subtype": "National police service (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Police Service of Northern Ireland PSNI",
+        "Police Service of Northern Ireland PSNI ICS",
+        "Police Service For Northern Ireland",
+        "Police Service for Northern Ireland",
+        "Police Service Of Norther Ireland",
+        "Police Service of NI",
+        "Police Service NI"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "PSNI canonical entry already exists on the master list (slug police-service-of-northern-ireland). This entry adds new alias variants observed in FTS."
+    },
+
+    {
+      "canonical_id": "british-transport-police-authority",
+      "canonical_name": "British Transport Police Authority",
+      "abbreviation": "BTPA",
+      "type": "Public corporation",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "British Transport Police",
+        "BRITISH TRANSPORT POLICE",
+        "British Transport Police Authority",
+        "BTP",
+        "BTPA"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "BTP Authority canonical entry already exists on the master list. This entry adds the operational force-name aliases ('British Transport Police' etc.) so notices published by the operational force route to the same canonical entity."
+    },
+
+    {
+      "canonical_id": "civil-nuclear-constabulary",
+      "canonical_name": "Civil Nuclear Constabulary",
+      "abbreviation": "CNC",
+      "type": "Police force",
+      "subtype": "Specialist UK police force",
+      "parent_ids": ["civil-nuclear-police-authority"],
+      "child_ids": [],
+      "aliases": [
+        "Civil Nuclear Constabulary",
+        "CIVIL NUCLEAR CONSTABULARY",
+        "Civil Nuclear Police Authority (CNPA)  / Civil Nuclear Constabulary (CNC)",
+        "Civil Nuclear Police Authority (CNPA) / Civil Nuclear Constabulary (CNC)",
+        "CNC",
+        "CNPA"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "CNC canonical entry already exists on master list. Adds the joint CNPA/CNC publisher-name variants."
+    },
+
+    {
+      "canonical_id": "ministry-of-defence-police-and-guarding-agency",
+      "canonical_name": "Ministry of Defence Police and Guarding Agency",
+      "abbreviation": "MDP",
+      "type": "Executive agency",
+      "parent_ids": ["ministry-of-defence"],
+      "child_ids": [],
+      "aliases": [
+        "Ministry of Defence Police",
+        "MoD Police",
+        "MOD Police",
+        "MDP"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "MoD Police canonical entry already exists on master list. Adds operational name aliases."
+    },
+
+    {
+      "canonical_id": "yorkshire-and-humber-police-procurement",
+      "canonical_name": "Yorkshire and Humber Police Procurement",
+      "abbreviation": "Y&HPP",
+      "type": "Central buying agency",
+      "subtype": "Police procurement consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Yorkshire and Humber Police Procurement (Y&HPP)",
+        "Yorkshire and Humber Police Procurement",
+        "Yorkshire & Humber Police Procurement",
+        "Y&HPP"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Joint procurement body covering Yorkshire and Humber forces (West, South, North Yorkshire, Humberside)."
+    },
+
+    {
+      "canonical_id": "south-west-police-procurement-service",
+      "canonical_name": "South West Police Procurement Service",
+      "abbreviation": "SWPPS",
+      "type": "Central buying agency",
+      "subtype": "Police procurement consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "South West Police Procurement Service",
+        "South West Police Procurement Services",
+        "South West Police Procurement Service (SWPPS)",
+        "South West Police Procurement Department (SWPPD)",
+        "SWPPS",
+        "SWPPD"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Joint procurement body covering South West forces (Avon and Somerset, Devon and Cornwall, Dorset, Gloucestershire, Wiltshire)."
+    },
+
+    {
+      "canonical_id": "joint-procurement-service-for-surrey-and-sussex-police",
+      "canonical_name": "Joint Procurement Service for Surrey and Sussex Police",
+      "type": "Central buying agency",
+      "subtype": "Police procurement consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Joint Procurement Service for Surrey and Sussex Police",
+        "Surrey Police and Sussex Police"
+      ],
+      "status": "active",
+      "source": "hand_curated_police"
+    },
+
+    {
+      "canonical_id": "police-digital-service",
+      "canonical_name": "Police Digital Service",
+      "abbreviation": "PDS",
+      "type": "Central buying agency",
+      "subtype": "Police digital and ICT body",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Police Digital Service",
+        "POLICE DIGITAL SERVICE",
+        "Police Digital Service  ",
+        "The Police ICT Company",
+        "THE POLICE ICT COMPANY",
+        "PDS"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "PDS was previously the Police ICT Company; both names are used in FTS notices."
+    },
+
+    {
+      "canonical_id": "bluelight-commercial",
+      "canonical_name": "BlueLight Commercial",
+      "type": "Central buying agency",
+      "subtype": "Emergency services procurement body",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BlueLight Commercial",
+        "Blue Light Commercial",
+        "BLUELIGHT COMMERCIAL"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "National procurement body for UK emergency services (police, fire, ambulance). Alias list deliberately conservative — add observed publisher variants in future iterations."
+    },
+
+    {
+      "canonical_id": "national-police-air-service",
+      "canonical_name": "National Police Air Service",
+      "abbreviation": "NPAS",
+      "type": "Central buying agency",
+      "subtype": "Police shared service",
+      "parent_ids": ["west-yorkshire-combined-authority"],
+      "child_ids": [],
+      "aliases": [
+        "National Police Air Service",
+        "NATIONAL POLICE AIR SERVICE",
+        "NPAS"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Hosted by West Yorkshire Combined Authority on behalf of all UK forces."
+    }
+
+  ]
+}

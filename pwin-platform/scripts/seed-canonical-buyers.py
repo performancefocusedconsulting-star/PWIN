@@ -48,6 +48,7 @@ HAND_CURATED = os.path.join(KNOWLEDGE_DIR, "central-buying-agencies.json")
 NHS_ODS = os.path.join(KNOWLEDGE_DIR, "nhs-organisations.json")
 LOCAL_AUTH = os.path.join(KNOWLEDGE_DIR, "local-authorities.json")
 DEVOLVED = os.path.join(KNOWLEDGE_DIR, "devolved-and-combined.json")
+POLICE = os.path.join(KNOWLEDGE_DIR, "police-forces.json")
 
 
 def fetch_page(page: int) -> dict:
@@ -179,7 +180,6 @@ def transform(orgs: list, include_closed: bool) -> dict:
         "not_covered_yet": [
             "NHS organisations (trusts, ICBs)",
             "Local authorities (councils)",
-            "Police forces",
             "Universities (excluding HE buying consortia)",
             "Schools and academy trusts",
         ],
@@ -356,6 +356,10 @@ def main():
     print(f"\nMerging devolved/combined authorities from {DEVOLVED}...")
     dev_added, dev_merged = merge_hand_curated(glossary, DEVOLVED)
     print(f"  +{dev_added} new entities, {dev_merged} alias merges")
+
+    print(f"\nMerging police forces and PCCs from {POLICE}...")
+    police_added, police_merged = merge_hand_curated(glossary, POLICE)
+    print(f"  +{police_added} new entities, {police_merged} alias merges")
 
     write_output(glossary, args.output)
     print_stats(glossary)
