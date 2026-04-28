@@ -19,10 +19,10 @@ This reference maps common document types to:
 | Digital / transformation strategy | strategicPriorities, cultureAndPreferences (changeMaturity), commissioningContextHypotheses | procurementBehaviour, pursuitImplications | pressure, money, buying-behaviour, pursuit-implications | Tier 1 | `digital-strategy.md` |
 | Data strategy or data roadmap | strategicPriorities, cultureAndPreferences | commissioningContextHypotheses, supplierEcosystem | pressure, buying-behaviour | Tier 1 | (covered by `digital-strategy.md`) |
 | AI strategy / AI Action Plan / AI ethics framework | strategicPriorities, cultureAndPreferences, commercialAndRiskPosture | commissioningContextHypotheses | pressure, risk-posture | Tier 1 | (covered by `digital-strategy.md`) |
-| Cyber security strategy | strategicPriorities, commercialAndRiskPosture, cultureAndPreferences | supplierEcosystem (barriersToEntry) | risk-posture, pressure | Tier 1 | (planned: `cyber-strategy.md`) |
-| Workforce / People plan | strategicPriorities, commissioningContextHypotheses, cultureAndPreferences | commercialAndRiskPosture | mandate, pressure | Tier 1 | (planned: `workforce-strategy.md`) |
+| Cyber security strategy | strategicPriorities, commercialAndRiskPosture, cultureAndPreferences | supplierEcosystem (barriersToEntry) | risk-posture, pressure | Tier 1 | `cyber-strategy.md` |
+| Workforce / People plan | strategicPriorities, commissioningContextHypotheses, cultureAndPreferences | commercialAndRiskPosture | mandate, pressure | Tier 1 | `workforce-strategy.md` |
 | Estate / sustainability strategy | strategicPriorities | commercialAndRiskPosture | pressure, risk-posture | Tier 1 | — |
-| Commercial / procurement strategy | procurementBehaviour, cultureAndPreferences, commercialAndRiskPosture | commissioningContextHypotheses, decisionUnitAssumptions | buying-behaviour, money | Tier 1 | (planned: `commercial-strategy.md`) |
+| Commercial / procurement strategy | procurementBehaviour, cultureAndPreferences, commercialAndRiskPosture | commissioningContextHypotheses, decisionUnitAssumptions | buying-behaviour, money | Tier 1 | `commercial-strategy.md` |
 | Efficiency / productivity plan | commissioningContextHypotheses, commercialAndRiskPosture | strategicPriorities | money, pressure | Tier 1 | — |
 | Commercial pipeline / pipeline notices | commissioningContextHypotheses, procurementBehaviour | supplierEcosystem | buying-behaviour, pressure | Tier 1 | — |
 | Procurement page (`doing business with us`) | procurementBehaviour | commercialAndRiskPosture | buying-behaviour | Tier 1 | — |

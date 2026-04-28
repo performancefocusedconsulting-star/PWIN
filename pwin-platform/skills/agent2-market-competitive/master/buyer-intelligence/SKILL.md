@@ -52,6 +52,9 @@ Load these as needed:
 | Senior leadership announcement extraction template | `references/extraction-templates/leadership-announcement.md` |
 | Departmental Plan / ODP / Corporate Plan extraction template | `references/extraction-templates/departmental-plan.md` |
 | GMPP (IPA Major Projects) entry extraction template | `references/extraction-templates/gmpp-entry.md` |
+| Cyber security strategy extraction template | `references/extraction-templates/cyber-strategy.md` |
+| Workforce / People plan extraction template | `references/extraction-templates/workforce-strategy.md` |
+| Commercial / procurement strategy extraction template | `references/extraction-templates/commercial-strategy.md` |
 
 ---
 
