@@ -1450,6 +1450,23 @@
     },
 
     {
+      "canonical_id": "scottish-police-authority",
+      "canonical_name": "Scottish Police Authority",
+      "abbreviation": "SPA",
+      "type": "Police & Crime Commissioner",
+      "subtype": "National police authority (Scotland)",
+      "parent_ids": ["scottish-government"],
+      "child_ids": ["police-scotland"],
+      "aliases": [
+        "Scottish Police Authority",
+        "SCOTTISH POLICE AUTHORITY",
+        "SPA"
+      ],
+      "status": "active",
+      "source": "hand_curated_police",
+      "notes": "Scottish Police Authority is the corporate body and oversight authority for Police Scotland. No PCCs in Scotland — SPA holds the equivalent role."
+    },
+    {
       "canonical_id": "police-scotland",
       "canonical_name": "Police Scotland",
       "type": "Police force",
@@ -1462,7 +1479,7 @@
       ],
       "status": "active",
       "source": "hand_curated_police",
-      "notes": "Police Scotland is the national police service of Scotland, governed by the Scottish Police Authority (already on master list). No PCCs in Scotland."
+      "notes": "Police Scotland is the national police service of Scotland, governed by the Scottish Police Authority. No PCCs in Scotland."
     },
 
     {
