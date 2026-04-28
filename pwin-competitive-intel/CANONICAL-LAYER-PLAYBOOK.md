@@ -607,6 +607,88 @@ Defence Intelligence")**. The design spec explicitly deferred sub-org
 handling to a separate design call. This is the next canonical-layer task
 when a downstream product needs sub-org-level resolution.
 
+## §17 — Sub-organisation pass (2026-04-28)
+
+The deferred sub-org work landed on 2026-04-28. Three pieces:
+
+1. **Nine missing major sub-orgs added to the glossary** via
+   `agent/add_missing_sub_orgs.py`: Defence Digital, UK Strategic Command,
+   British Army, Royal Navy, Royal Air Force, Defence Business Services,
+   Royal Fleet Auxiliary (all under `ministry-of-defence`); Infrastructure
+   and Projects Authority (under `cabinet-office`); National Infrastructure
+   Commission (under `hm-treasury`). Each entry carries the common name
+   variants the raw data uses ("Strategic Command, Defence Digital",
+   "Ministry of Defence - Defence Digital", etc.) so the glossary alone
+   resolves the bulk of orphan rows after `load-canonical-buyers.py`
+   re-runs.
+
+2. **Multi-part candidate splitting added to `backfill-buyer-aliases.py`.**
+   Real raw names chain entities together using `,`, ` : `, and ` - ` —
+   "Government Property Agency : Cabinet Office", "Strategic Command,
+   Defence Digital, Ministry of Defence". The new rule splits on these
+   separators, strips trailing parenthesised abbreviations from each piece,
+   and offers each piece as its own candidate alias.
+
+3. **Hierarchy-aware ambiguity resolution.** When the same raw name matches
+   multiple canonicals (e.g. "Defence Equipment & Support, Ministry of
+   Defence" matches both DE&S and MoD), the new resolver checks whether
+   the matches are all on the same hierarchy line. If they are, it picks
+   the most-specific descendant (DE&S in this example). Genuinely
+   unrelated multi-matches still go to the ambiguous bucket.
+
+### Result
+
+- 9 new canonical entities; 1,938 canonical entities total.
+- 667 new aliases registered, 1,427 raw buyer rows newly back-filled.
+- Sub-org dossiers now consolidate end-to-end:
+
+| Sub-org | Members | Awards | Total spend |
+|---|---:|---:|---:|
+| Defence Digital | 10 | 48 | £37m |
+| UK Strategic Command | 11 | 10 | £19m |
+| Government Property Agency | 10 | 167 | £1,116m |
+| Crown Commercial Service | 36 | 818 | £580bn (frameworks) |
+| Infrastructure and Projects Authority | 1 | 5 | £2m |
+| National Infrastructure Commission | 2 | 7 | £0.5m |
+| British Army | 2 | 4 | £4m |
+| Royal Air Force | 2 | 1 | <£1m |
+
+- Department-family orphan rates (parent + descendants):
+
+| Dept | After §16 | After §17 |
+|---|---:|---:|
+| Foreign Office | 11% | 0% |
+| Cabinet Office | 26% | 16% |
+| Treasury | 30% | 0% |
+| Health | 12% | 12% |
+| Justice | <1% | 10% (note 1) |
+| Defence | 7% | 2% |
+
+Note 1: MoJ rose to 10% because the new multi-part rule re-routed some
+"Department of Justice (NI)" rows that were previously linked to MoJ as a
+mis-match (Department of Justice for Northern Ireland is a separate
+canonical with its own parent). The "rise" is a correction.
+
+### Lessons (additional)
+
+- **Glossary is the source of truth, not the database tables.** The morning
+  pass (§16) added 371 aliases directly into the database. The §17 pass
+  re-ran `load-canonical-buyers.py` (which wipes and reloads from glossary)
+  and lost those 371 morning-only aliases. New rules in the backfill
+  recovered most of them, but the lesson is: durable changes belong in the
+  glossary file (`~/.pwin/platform/buyer-canonical-glossary.json`), not
+  just in the database.
+- **Hierarchy is more useful than alias coverage past a point.** The §16
+  pass tried to teach more aliases. The §17 pass teaches the matcher to
+  reason about sub-org → parent relationships. The latter scales — every
+  new sub-org you add automatically picks up multi-part raw rows that name
+  it alongside the parent — without any new alias rules.
+- **One commit per major data layer change.** The two passes (§16 + §17)
+  produced different snapshots of `buyers.canonical_id` because of how
+  `load-canonical-buyers.py` wipes and rebuilds. Future passes should
+  always be: edit glossary → reload → run backfill → measure → commit, in
+  that order, with no intermediate database-only edits.
+
 ### Lessons
 
 - **Mirror the supplier pattern when adding new resolution paths.** The
@@ -635,3 +717,4 @@ when a downstream product needs sub-org-level resolution.
 | 1.3 | 2026-04-14 | Added §15: Supplier entity resolution Splink v1 build. 161k → 82,637 canonical (48.7% compression). |
 | 1.4 | 2026-04-28 | Added §16: Buyer alias backfill — `buyerProfile()` rewritten, 371 aliases registered, 126 raw rows back-filled. FCDO/DHSC/Justice now under target orphan rate; Cabinet Office and Treasury residual is sub-org work (deferred). |
 | 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |
+| 1.5 | 2026-04-28 | Added §17: Sub-organisation pass. 9 new canonicals (Defence Digital, UK Strategic Command, IPA, NIC, etc.), multi-part candidate splitting, hierarchy-aware ambiguity resolution. 667 new aliases, 1,427 rows back-filled. Sub-org dossiers operational. |

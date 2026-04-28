@@ -169,6 +169,26 @@ def candidates_for(raw_name: str) -> list:
     if m:
         add(m.group(1))
 
+    # Multi-part splits: real raw names frequently chain entities together
+    # using ":", ",", or " - " — e.g. "Government Property Agency : Cabinet Office",
+    # "Strategic Command, Defence Digital", "Ministry of Defence - Defence Digital".
+    # Each part gets added as a candidate (after a "(ABBR)" suffix strip) so the
+    # downstream lookup can match any of them. Ambiguity between matched parts
+    # is resolved hierarchically by the main loop (most-specific descendant wins).
+    parts = re.split(r"\s*[:,]\s*|\s+-\s+", base)
+    if len(parts) > 1:
+        for p in parts:
+            p = p.strip(' .,;:"\'()[]')
+            if not p:
+                continue
+            # Strip a trailing parenthesised abbreviation: "X (ABBR)" → "X"
+            p_stripped = re.sub(r"\s*\([^)]*\)\s*$", "", p).strip()
+            add(p_stripped or p)
+            # Also consider the abbreviation alone if there was one
+            mp = re.search(r"\(([^()]+?)\)\s*$", p)
+            if mp:
+                add(mp.group(1))
+
     return out
 
 
@@ -191,6 +211,46 @@ def load_canonical_lookups(conn: sqlite3.Connection):
             norm_to_ids[_norm(abbr)].add(cid)
 
     return name_to_ids, abbr_to_ids, norm_to_ids, canonical_names_by_id
+
+
+def load_hierarchy(conn: sqlite3.Connection):
+    """Build child_id -> parent_id dict from the canonical_buyers table."""
+    h = {}
+    for cid, pid in conn.execute(
+        "SELECT canonical_id, parent_canonical_id FROM canonical_buyers WHERE parent_canonical_id IS NOT NULL"
+    ):
+        h[cid] = pid
+    return h
+
+
+def is_descendant(child, ancestor, hierarchy):
+    """True iff `child` is a descendant of `ancestor` in the canonical hierarchy."""
+    cur = child
+    seen = set()
+    while cur in hierarchy:
+        cur = hierarchy[cur]
+        if cur in seen:  # cycle protection
+            return False
+        seen.add(cur)
+        if cur == ancestor:
+            return True
+    return False
+
+
+def resolve_most_specific(matched_ids, hierarchy):
+    """
+    From a set of canonical IDs that all matched the same raw name, return the
+    most-specific one if all the others are its ancestors. Returns None if the
+    matches are unrelated (genuinely ambiguous).
+    """
+    if len(matched_ids) <= 1:
+        return next(iter(matched_ids), None)
+    ids = list(matched_ids)
+    for candidate in ids:
+        # candidate is most-specific if every other id is its ancestor
+        if all(other == candidate or is_descendant(candidate, other, hierarchy) for other in ids):
+            return candidate
+    return None  # unrelated → ambiguous
 
 
 def existing_aliases(conn: sqlite3.Connection):
@@ -218,7 +278,9 @@ def main():
     conn = sqlite3.connect(args.db)
     try:
         name_to_ids, abbr_to_ids, norm_to_ids, canonical_names_by_id = load_canonical_lookups(conn)
+        hierarchy = load_hierarchy(conn)
         print(f"Canonical entities loaded: {len(canonical_names_by_id):,}")
+        print(f"Hierarchy edges loaded: {len(hierarchy):,}")
 
         already = existing_aliases(conn)
         print(f"Existing alias rows: {len(already):,}")
@@ -261,12 +323,18 @@ def main():
                 continue
 
             if len(matched_ids) > 1:
-                names = sorted(canonical_names_by_id[i] for i in matched_ids)
-                ambiguous_rows.append((raw_name, names))
-                continue
-
-            # Exactly one canonical match.
-            cid = next(iter(matched_ids))
+                # If the matches are all in the same hierarchy line, prefer the
+                # most-specific descendant (e.g. "Defence Equipment & Support,
+                # Ministry of Defence" → DE&S, not ambiguous). Genuinely
+                # unrelated matches stay in the ambiguous bucket.
+                resolved = resolve_most_specific(matched_ids, hierarchy)
+                if resolved is None:
+                    names = sorted(canonical_names_by_id[i] for i in matched_ids)
+                    ambiguous_rows.append((raw_name, names))
+                    continue
+                cid = resolved
+            else:
+                cid = next(iter(matched_ids))
 
             # Register the raw name itself as an alias (lowercased + trimmed).
             alias_lower = raw_name.lower().strip()
