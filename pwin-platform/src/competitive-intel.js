@@ -893,10 +893,7 @@ function _resolveBuyerCanonical(db, nameQuery) {
       'SELECT canonical_id, canonical_name, type FROM canonical_buyers WHERE canonical_id = ?'
     ).get(canonicalId);
     const ids = db.prepare(`
-      SELECT DISTINCT b.id
-      FROM buyers b
-      JOIN canonical_buyer_aliases a ON LOWER(TRIM(b.name)) = a.alias_lower
-      WHERE a.canonical_id = ?
+      SELECT DISTINCT id FROM buyers WHERE canonical_id = ?
     `).all(canonicalId).map(r => r.id);
     return {
       canonicalId: canon.canonical_id,
