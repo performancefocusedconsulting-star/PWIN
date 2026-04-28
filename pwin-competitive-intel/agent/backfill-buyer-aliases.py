@@ -51,8 +51,14 @@ DEFAULT_DB = os.path.join(
 # normalised-match path used by run_matching().
 def _norm(s: str) -> str:
     s = (s or "").lower().strip()
-    s = re.sub(r"[\&]", " and ", s)
+    s = re.sub(r"\s*[\&]\s*", " and ", s)
+    s = re.sub(r"\bplc\b\.?", "limited", s)
     s = re.sub(r"\bltd\b\.?", "limited", s)
+    s = re.sub(r"^the\s+", "", s)
+    s = re.sub(r"\s+company\s+limited\s*$", "", s)
+    s = re.sub(r"\s+[-–—]\s+(e[- ]?tendering(?:\s+system)?|tendering\s+system|portal|esourcing|procurement\s+department|procurement\s+services?).*$", "", s)
+    s = re.sub(r"\s+e[- ]?tendering(?:\s+system|\s+portal)?\s*$", "", s)
+    s = re.sub(r"\s+network\s+e[- ]?tendering(?:\s+portal)?\s*$", "", s)
     s = re.sub(r"[,\.\(\)\-\'\"]", " ", s)
     return re.sub(r"\s+", " ", s).strip()
 
