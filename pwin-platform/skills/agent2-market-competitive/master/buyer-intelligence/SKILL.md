@@ -55,6 +55,10 @@ Load these as needed:
 | Cyber security strategy extraction template | `references/extraction-templates/cyber-strategy.md` |
 | Workforce / People plan extraction template | `references/extraction-templates/workforce-strategy.md` |
 | Commercial / procurement strategy extraction template | `references/extraction-templates/commercial-strategy.md` |
+| Acquisition pipeline extraction template (MOD pipeline Excel, DSP pipeline, equivalent) | `references/extraction-templates/acquisition-pipeline.md` |
+| Parliamentary questions and written answers extraction template | `references/extraction-templates/parliamentary-answers.md` |
+| Industry engagement deck extraction template (supplier day, forum, market-engagement briefing) | `references/extraction-templates/industry-engagement-deck.md` |
+| Named must-check document inventory (per organisation type — consulted before BUILD / REFRESH synthesis) | `references/source-inventory.md` |
 
 ---
 
@@ -310,3 +314,12 @@ These apply across every mode.
     explanations from a faint memory of the instructions. The skill
     package may include resources you have not yet loaded — explicit
     enumeration prevents silent skipping.
+18. **Traverse the source inventory before synthesis in build and refresh
+    modes.** Before writing any dossier section, read
+    `references/source-inventory.md`, identify the buyer's organisation
+    type, and attempt every named document check for Tiers 1–4. Record
+    the traversal in `meta.sourceInventoryTrace`. Gaps must name the
+    specific document that was sought and not found — "search yielded
+    nothing" is not a gap entry. A dossier that skips the inventory
+    traversal and begins from web-search results alone is a failed output
+    regardless of how complete the narrative appears.

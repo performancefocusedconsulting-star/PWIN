@@ -25,6 +25,8 @@ This reference maps common document types to:
 | Commercial / procurement strategy | procurementBehaviour, cultureAndPreferences, commercialAndRiskPosture | commissioningContextHypotheses, decisionUnitAssumptions | buying-behaviour, money | Tier 1 | `commercial-strategy.md` |
 | Efficiency / productivity plan | commissioningContextHypotheses, commercialAndRiskPosture | strategicPriorities | money, pressure | Tier 1 | — |
 | Commercial pipeline / pipeline notices | commissioningContextHypotheses, procurementBehaviour | supplierEcosystem | buying-behaviour, pressure | Tier 1 | — |
+| Acquisition pipeline document (Excel / published pipeline file) | commissioningContextHypotheses, strategicPriorities, supplierEcosystem | procurementBehaviour, decisionUnitAssumptions | pressure, buying-behaviour, supplier-landscape | Tier 1 | `acquisition-pipeline.md` |
+| Industry engagement deck (supplier day, forum, market-engagement briefing) | procurementBehaviour, decisionUnitAssumptions, strategicPriorities | supplierEcosystem, commissioningContextHypotheses, cultureAndPreferences | buying-behaviour, money, supplier-landscape, pursuit-implications | Tier 1 | `industry-engagement-deck.md` |
 | Procurement page (`doing business with us`) | procurementBehaviour | commercialAndRiskPosture | buying-behaviour | Tier 1 | — |
 | Organogram / organisational chart | organisationContext, decisionUnitAssumptions | buyerSnapshot | mandate | Tier 1 | — |
 | Board papers / minutes | organisationContext, strategicPriorities, decisionUnitAssumptions | cultureAndPreferences, risksAndSensitivities | mandate, pressure | Tier 1 | — |
@@ -39,6 +41,8 @@ This reference maps common document types to:
 | NAO value-for-money report | risksAndSensitivities, commercialAndRiskPosture, supplierEcosystem (vulnerabilitySignals), pursuitImplications | strategicPriorities, procurementBehaviour, cultureAndPreferences | risk-posture, pressure, supplier-landscape, pursuit-implications | Tier 3 | `nao-pac-report.md` |
 | PAC report | risksAndSensitivities, strategicPriorities, supplierEcosystem (vulnerabilitySignals), pursuitImplications | cultureAndPreferences, commercialAndRiskPosture | risk-posture, pressure, pursuit-implications | Tier 3 | (covered by `nao-pac-report.md`) |
 | Select committee report | risksAndSensitivities, strategicPriorities | cultureAndPreferences | pressure, risk-posture | Tier 3 | (covered by `nao-pac-report.md`) |
+| Hansard written / oral answers | strategicPriorities, commissioningContextHypotheses, decisionUnitAssumptions | risksAndSensitivities, organisationContext | pressure, money, mandate | Tier 3 | `parliamentary-answers.md` |
+| Written ministerial statement (WMS) | strategicPriorities, organisationContext | commissioningContextHypotheses | pressure, mandate | Tier 3 | (covered by `parliamentary-answers.md`) |
 | Inspectorate / regulator report | risksAndSensitivities, supplierEcosystem (vulnerabilitySignals) | commercialAndRiskPosture | risk-posture, supplier-landscape | Tier 3 | — |
 | Ombudsman report | risksAndSensitivities | cultureAndPreferences | risk-posture | Tier 3 | — |
 | Independent review / commission | strategicPriorities, risksAndSensitivities | cultureAndPreferences, organisationContext | pressure, risk-posture | Tier 3 | — |
