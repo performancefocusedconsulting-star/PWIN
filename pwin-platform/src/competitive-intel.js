@@ -50,87 +50,219 @@ function buyerProfile(nameQuery, limit = 20) {
   const db = getDb();
   if (!db) return { error: 'Database not found' };
   try {
-    const buyers = db.prepare(`
-      SELECT id, name, org_type, region_code FROM buyers
-      WHERE LOWER(name) LIKE LOWER(?)
-      ORDER BY name LIMIT 10
-    `).all(`%${nameQuery}%`);
+    const resolved = _resolveBuyerCanonical(db, nameQuery);
 
-    if (!buyers.length) return { buyers: [], message: `No buyers matching '${nameQuery}'` };
+    if (!resolved) {
+      return { buyers: [], message: `No buyers matching '${nameQuery}'` };
+    }
 
-    return {
-      buyers: buyers.map(buyer => {
-        const stats = db.prepare(`
-          SELECT
-            COUNT(DISTINCT a.id) AS total_awards,
-            COUNT(DISTINCT n.ocid) AS total_notices,
-            SUM(a.value_amount_gross) AS total_spend,
-            AVG(a.value_amount_gross) AS avg_value,
-            MAX(a.value_amount_gross) AS max_value,
-            AVG(n.total_bids) AS avg_bids
-          FROM awards a
-          JOIN notices n ON a.ocid = n.ocid
-          WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
-        `).get(buyer.id);
+    if (resolved.ambiguous) {
+      return {
+        buyers: [],
+        ambiguous: true,
+        candidates: resolved.candidates,
+        message: `Multiple canonical matches for '${nameQuery}' — please be more specific`,
+      };
+    }
 
-        const methods = db.prepare(`
-          SELECT n.procurement_method, COUNT(DISTINCT a.id) AS cnt
-          FROM awards a JOIN notices n ON a.ocid = n.ocid
-          WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
-          GROUP BY n.procurement_method ORDER BY cnt DESC
-        `).all(buyer.id);
+    if (resolved.fragmented) {
+      // No canonical match — fall back to raw rows the resolver already pulled.
+      // Surface the gap so coverage problems are visible.
+      console.warn(`[buyerProfile] No canonical match for '${nameQuery}' — falling back to raw LIKE (fragmented)`);
+      return _buildRawProfile(db, resolved.rawBuyerIds, limit);
+    }
 
-        // Rolled up by canonical supplier so Serco + Serco Ltd + Serco Group
-        // collapse into one row rather than appearing as fragmented variants.
-        const topSuppliers = db.prepare(`
-          SELECT canonical_name AS name,
-                 COUNT(DISTINCT award_id) AS wins,
-                 SUM(value_amount_gross)  AS total_value
-          FROM v_canonical_supplier_wins
-          WHERE buyer_id = ? AND value_quality IS NULL
-          GROUP BY canonical_id
-          ORDER BY wins DESC, total_value DESC LIMIT 15
-        `).all(buyer.id);
+    // Resolved cleanly — return one consolidated profile aggregated across all
+    // raw buyer rows that map to this canonical entity. Use buyers.canonical_id
+    // as the source of truth (catches rows matched via normalised/prefix rules
+    // in addition to exact-alias rows).
+    const memberIds = db.prepare(
+      'SELECT id, name, org_type, region_code FROM buyers WHERE canonical_id = ?'
+    ).all(resolved.canonicalId);
 
-        const recentAwards = db.prepare(`
-          SELECT n.title, a.value_amount_gross, n.procurement_method,
-                 GROUP_CONCAT(DISTINCT s.name) AS suppliers,
-                 a.contract_end_date, a.award_date
-          FROM awards a
-          JOIN notices n ON a.ocid = n.ocid
-          LEFT JOIN award_suppliers asup ON a.id = asup.award_id
-          LEFT JOIN suppliers s ON asup.supplier_id = s.id
-          WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
-          GROUP BY a.id
-          ORDER BY a.award_date DESC NULLS LAST LIMIT ?
-        `).all(buyer.id, limit);
+    if (!memberIds.length) {
+      // Canonical exists but no raw rows back-ref it. Use whatever the
+      // resolver's alias-join produced as a last resort.
+      if (!resolved.rawBuyerIds.length) {
+        return { buyers: [], message: `Canonical buyer '${resolved.canonicalName}' has no raw rows in the database` };
+      }
+      return _buildConsolidatedProfile(db, resolved, resolved.rawBuyerIds, [], limit);
+    }
 
-        return {
-          ...buyer,
-          stats: {
-            totalAwards: stats.total_awards,
-            totalNotices: stats.total_notices,
-            totalSpend: stats.total_spend,
-            avgValue: stats.avg_value,
-            maxValue: stats.max_value,
-            avgBidsPerTender: stats.avg_bids,
-          },
-          procurementMethods: methods.map(m => ({ method: m.procurement_method, count: m.cnt })),
-          topSuppliers: topSuppliers.map(s => ({ name: s.name, wins: s.wins, totalValue: s.total_value })),
-          recentAwards: recentAwards.map(r => ({
-            title: r.title,
-            value: r.value_amount_gross,
-            method: r.procurement_method,
-            suppliers: r.suppliers,
-            contractEndDate: r.contract_end_date,
-            awardDate: r.award_date,
-          })),
-        };
-      }),
-    };
+    const ids = memberIds.map(m => m.id);
+    return _buildConsolidatedProfile(db, resolved, ids, memberIds, limit);
   } finally {
     db.close();
   }
+}
+
+function _placeholders(n) {
+  return new Array(n).fill('?').join(',');
+}
+
+function _buildConsolidatedProfile(db, resolved, ids, memberRows, limit) {
+  const ph = _placeholders(ids.length);
+
+  const stats = db.prepare(`
+    SELECT
+      COUNT(DISTINCT a.id) AS total_awards,
+      COUNT(DISTINCT n.ocid) AS total_notices,
+      SUM(a.value_amount_gross) AS total_spend,
+      AVG(a.value_amount_gross) AS avg_value,
+      MAX(a.value_amount_gross) AS max_value,
+      AVG(n.total_bids) AS avg_bids
+    FROM awards a
+    JOIN notices n ON a.ocid = n.ocid
+    WHERE n.buyer_id IN (${ph}) AND a.status IN ('active', 'pending')
+  `).get(...ids);
+
+  const methods = db.prepare(`
+    SELECT n.procurement_method, COUNT(DISTINCT a.id) AS cnt
+    FROM awards a JOIN notices n ON a.ocid = n.ocid
+    WHERE n.buyer_id IN (${ph}) AND a.status IN ('active', 'pending')
+    GROUP BY n.procurement_method ORDER BY cnt DESC
+  `).all(...ids);
+
+  const topSuppliers = db.prepare(`
+    SELECT canonical_name AS name,
+           COUNT(DISTINCT award_id) AS wins,
+           SUM(value_amount_gross)  AS total_value
+    FROM v_canonical_supplier_wins
+    WHERE buyer_id IN (${ph}) AND value_quality IS NULL
+    GROUP BY canonical_id
+    ORDER BY wins DESC, total_value DESC LIMIT 15
+  `).all(...ids);
+
+  const recentAwards = db.prepare(`
+    SELECT n.title, a.value_amount_gross, n.procurement_method,
+           GROUP_CONCAT(DISTINCT s.name) AS suppliers,
+           a.contract_end_date, a.award_date
+    FROM awards a
+    JOIN notices n ON a.ocid = n.ocid
+    LEFT JOIN award_suppliers asup ON a.id = asup.award_id
+    LEFT JOIN suppliers s ON asup.supplier_id = s.id
+    WHERE n.buyer_id IN (${ph}) AND a.status IN ('active', 'pending')
+    GROUP BY a.id
+    ORDER BY a.award_date DESC NULLS LAST LIMIT ?
+  `).all(...ids, limit);
+
+  const memberNames = memberRows.map(m => m.name).filter(Boolean);
+
+  return {
+    buyers: [{
+      id: resolved.canonicalId,
+      name: resolved.canonicalName,
+      org_type: resolved.canonicalType,
+      region_code: null,
+      canonical: {
+        canonicalId: resolved.canonicalId,
+        canonicalName: resolved.canonicalName,
+        canonicalType: resolved.canonicalType,
+        memberCount: ids.length,
+        memberNames: memberNames.slice(0, 25),
+      },
+      stats: {
+        totalAwards: stats.total_awards,
+        totalNotices: stats.total_notices,
+        totalSpend: stats.total_spend,
+        avgValue: stats.avg_value,
+        maxValue: stats.max_value,
+        avgBidsPerTender: stats.avg_bids,
+      },
+      procurementMethods: methods.map(m => ({ method: m.procurement_method, count: m.cnt })),
+      topSuppliers: topSuppliers.map(s => ({ name: s.name, wins: s.wins, totalValue: s.total_value })),
+      recentAwards: recentAwards.map(r => ({
+        title: r.title,
+        value: r.value_amount_gross,
+        method: r.procurement_method,
+        suppliers: r.suppliers,
+        contractEndDate: r.contract_end_date,
+        awardDate: r.award_date,
+      })),
+    }],
+  };
+}
+
+function _buildRawProfile(db, rawBuyerIds, limit) {
+  if (!rawBuyerIds || !rawBuyerIds.length) {
+    return { buyers: [], message: 'No matching raw buyers' };
+  }
+  const ids = rawBuyerIds.slice(0, 10);
+  const buyers = db.prepare(
+    `SELECT id, name, org_type, region_code FROM buyers WHERE id IN (${_placeholders(ids.length)}) ORDER BY name`
+  ).all(...ids);
+
+  return {
+    buyers: buyers.map(buyer => {
+      const stats = db.prepare(`
+        SELECT
+          COUNT(DISTINCT a.id) AS total_awards,
+          COUNT(DISTINCT n.ocid) AS total_notices,
+          SUM(a.value_amount_gross) AS total_spend,
+          AVG(a.value_amount_gross) AS avg_value,
+          MAX(a.value_amount_gross) AS max_value,
+          AVG(n.total_bids) AS avg_bids
+        FROM awards a
+        JOIN notices n ON a.ocid = n.ocid
+        WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
+      `).get(buyer.id);
+
+      const methods = db.prepare(`
+        SELECT n.procurement_method, COUNT(DISTINCT a.id) AS cnt
+        FROM awards a JOIN notices n ON a.ocid = n.ocid
+        WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
+        GROUP BY n.procurement_method ORDER BY cnt DESC
+      `).all(buyer.id);
+
+      const topSuppliers = db.prepare(`
+        SELECT canonical_name AS name,
+               COUNT(DISTINCT award_id) AS wins,
+               SUM(value_amount_gross)  AS total_value
+        FROM v_canonical_supplier_wins
+        WHERE buyer_id = ? AND value_quality IS NULL
+        GROUP BY canonical_id
+        ORDER BY wins DESC, total_value DESC LIMIT 15
+      `).all(buyer.id);
+
+      const recentAwards = db.prepare(`
+        SELECT n.title, a.value_amount_gross, n.procurement_method,
+               GROUP_CONCAT(DISTINCT s.name) AS suppliers,
+               a.contract_end_date, a.award_date
+        FROM awards a
+        JOIN notices n ON a.ocid = n.ocid
+        LEFT JOIN award_suppliers asup ON a.id = asup.award_id
+        LEFT JOIN suppliers s ON asup.supplier_id = s.id
+        WHERE n.buyer_id = ? AND a.status IN ('active', 'pending')
+        GROUP BY a.id
+        ORDER BY a.award_date DESC NULLS LAST LIMIT ?
+      `).all(buyer.id, limit);
+
+      return {
+        ...buyer,
+        canonical: null,
+        stats: {
+          totalAwards: stats.total_awards,
+          totalNotices: stats.total_notices,
+          totalSpend: stats.total_spend,
+          avgValue: stats.avg_value,
+          maxValue: stats.max_value,
+          avgBidsPerTender: stats.avg_bids,
+        },
+        procurementMethods: methods.map(m => ({ method: m.procurement_method, count: m.cnt })),
+        topSuppliers: topSuppliers.map(s => ({ name: s.name, wins: s.wins, totalValue: s.total_value })),
+        recentAwards: recentAwards.map(r => ({
+          title: r.title,
+          value: r.value_amount_gross,
+          method: r.procurement_method,
+          suppliers: r.suppliers,
+          contractEndDate: r.contract_end_date,
+          awardDate: r.award_date,
+        })),
+      };
+    }),
+    fragmented: true,
+    message: 'Buyer name did not resolve to canonical — results are raw rows only',
+  };
 }
 
 // ── Supplier Profile ─────────────────────────────────────────────────────

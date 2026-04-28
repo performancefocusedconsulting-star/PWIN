@@ -546,6 +546,85 @@ This flag only catches unambiguous data errors. It does **not** solve the broade
 - If FTS publisher behaviour changes (e.g. more errors start appearing below £10bn), lower the threshold
 - If genuine >£10bn single awards start appearing (HS2 mega-lots, nuclear decommissioning), raise the threshold or move to a heuristic flag (e.g. flag only when value > N × buyer's 95th percentile)
 
+## §16 — Buyer alias backfill (2026-04-28)
+
+The canonical layer correctly identified the right entities (1,929 of them) but
+the alias table was too thin: each canonical had ~2 spellings registered
+(canonical name + abbreviation). Real raw data uses many more variants. Two
+gaps surfaced live on 2026-04-27 when a buyer dossier was produced and
+spot-checks showed orphan rates of 60–88% on FCDO, Cabinet Office, Treasury,
+and DHSC.
+
+### What the fix did
+
+Two pieces of work, both implemented per design spec
+[`docs/superpowers/specs/2026-04-27-buyer-alias-resolution-design.md`](../docs/superpowers/specs/2026-04-27-buyer-alias-resolution-design.md):
+
+1. **`pwin-platform/src/competitive-intel.js` — `buyerProfile()` rewritten.**
+   Now resolves through `_resolveBuyerCanonical()` first (the helper that was
+   already being used by `buyerBehaviourProfile`). If the lookup resolves
+   cleanly, all raw buyer rows are aggregated into one consolidated profile
+   via `buyers.canonical_id` join. If ambiguous, candidates are returned. If
+   no canonical match, falls back to raw LIKE with a `fragmented: true` flag
+   so consumers can detect the degraded case. The supplier half of this
+   pattern was already wired via `v_canonical_supplier_wins`; this brings
+   the buyer half to parity.
+
+2. **`agent/backfill-buyer-aliases.py` — new script.** Walks every raw buyer
+   name, applies tidying rules (trailing punctuation, HM/His Majesty's
+   preamble, dept-prefix-then-dash, brand-in-parentheses, "Secretary of State
+   for X acting through Y", "more commonly known as Z", "on behalf of X"),
+   and where a tidied name **exactly** matches a canonical name or
+   abbreviation, registers a new alias and back-fills `buyers.canonical_id`
+   if it was NULL. Exact-match-only — never fuzzy. Idempotent. `--dry-run`
+   mode for safe review.
+
+### Result
+
+371 new aliases registered. 126 raw buyer rows that previously had
+`canonical_id = NULL` are now linked to the right canonical entity. Orphan
+rates by department, before vs after:
+
+| Dept | Before | After | Spec target |
+|---|---:|---:|---:|
+| Foreign Office | 88% | 11% | <20% ✅ |
+| Cabinet Office | 84% | 26% | <20% — close, sub-org work needed |
+| Treasury | 60% | 30% | <20% — only 3 raw rows remain (sub-orgs) |
+| Health | 47% | 12% | <20% ✅ |
+| Justice | 19% | <1% | <10% ✅ |
+| Defence | 7% | 7% | <5% — sub-unit names dominate residual |
+| Home Office | 5% | 3% | <5% ✅ |
+| Work and Pensions | 2% | 2% | <5% ✅ |
+| Education | 1% | 5% | <5% — within target band |
+
+### What's left
+
+The residual orphans are all the same shape: **sub-organisations that are
+either separate canonical entities (Government Property Agency, IPA,
+National Infrastructure Commission) or naming variants that hang detail
+off the parent ("Ministry of Defence, Strategic Command Commercial,
+Defence Intelligence")**. The design spec explicitly deferred sub-org
+handling to a separate design call. This is the next canonical-layer task
+when a downstream product needs sub-org-level resolution.
+
+### Lessons
+
+- **Mirror the supplier pattern when adding new resolution paths.** The
+  `_resolveBuyerCanonical` + `v_canonical_supplier_wins` pattern was already
+  there — `buyerProfile()` just hadn't been wired through it. Half-finished
+  work on a foundational layer compounds quickly when downstream skills
+  rely on the data.
+- **Exact-match-only after tidying is the right default.** The dry-run
+  flagged 315 ambiguous matches that, if fuzzy-resolved, would have
+  silently corrupted the alias table. Examples: SPA (Scottish Procurement
+  Alliance vs Service Prosecuting Authority), DCMS (the pre-2023 vs the
+  current Department for Culture, Media...). Conservative wins.
+- **The improvement isn't where you'd expect it on a raw count.** Of 55,342
+  raw buyer rows scanned, only 126 ended up newly back-filled. But those
+  126 sit on the heaviest-traffic departments (FCDO, Cabinet Office, HMT,
+  DHSC) which were under-aggregated by 50%+ before — so the dossier-quality
+  impact is much larger than the raw-row count implies.
+
 ## Change log
 
 | Version | Date | Summary |
@@ -554,4 +633,5 @@ This flag only catches unambiguous data errors. It does **not** solve the broade
 | 1.1 | 2026-04-12 | Added §13: NHS ODS lessons learned — England-only gap, naming conventions, deferred hierarchy. |
 | 1.2 | 2026-04-12 | Added §14: Next steps for the residual 29.7%. Token matching vs Splink analysis. Five-source coverage at 70.3%. |
 | 1.3 | 2026-04-14 | Added §15: Supplier entity resolution Splink v1 build. 161k → 82,637 canonical (48.7% compression). |
+| 1.4 | 2026-04-28 | Added §16: Buyer alias backfill — `buyerProfile()` rewritten, 371 aliases registered, 126 raw rows back-filled. FCDO/DHSC/Justice now under target orphan rate; Cabinet Office and Treasury residual is sub-org work (deferred). |
 | 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |
