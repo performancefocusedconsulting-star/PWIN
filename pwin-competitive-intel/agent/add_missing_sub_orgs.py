@@ -180,6 +180,26 @@ NEW_ENTITIES = [
             "National Infrastructure Commission, HM Treasury",
         ],
     },
+    {
+        "canonical_id": "education-and-skills-funding-agency",
+        "canonical_name": "Education and Skills Funding Agency",
+        "abbreviation": "ESFA",
+        "parent_id": "department-for-education",
+        "type": "Sub-organisation",
+        "aliases": [
+            "Education and Skills Funding Agency",
+            "education and skills funding agency",
+            "EDUCATION AND SKILLS FUNDING AGENCY",
+            "ESFA",
+            "Education and Skills Funding Agency (ESFA)",
+            "Skills Funding Agency",
+            "skills funding agency",
+            "SKILLS FUNDING AGENCY",
+            "Department for Education acting through the Education and Skills Funding Agency",
+            "Department for Education - Education and Skills Funding Agency",
+            "Department for Education, Education and Skills Funding Agency",
+        ],
+    },
 ]
 
 
