@@ -86,5 +86,12 @@ if __name__ == "__main__":
     run_step("Buyer fuzzy matching (threshold 95)",
              [str(AGENT_DIR / "fuzzy-match-buyers.py"), "--threshold", "95", "--apply"])
 
+    # Daily pipeline scan: triage last 24h of new notices into BOOK / QUALIFY /
+    # INTEL / WATCH, write Obsidian pursuit files for actionable items, upsert
+    # crm.db, save digest. Email send is a separate step (Gmail token).
+    # Non-fatal — a failed scan must not stop the data pipeline.
+    run_step("Daily pipeline scan (Agent 2 triage)",
+             [str(AGENT_DIR / "run-pipeline-scan.py"), "--hours", "24"])
+
     log.info("Nightly pipeline complete")
     sys.exit(0 if fts_rc == 0 else fts_rc)

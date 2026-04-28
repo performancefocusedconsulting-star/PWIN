@@ -246,6 +246,31 @@ async function gatherContext(skill, input) {
         }
         break;
       }
+      case 'fts_pipeline_data': {
+        const hoursLookback = input?.lookbackHours || 24;
+        // Use the lowest scan floor so we don't drop notices the skill might
+        // still pick up (BOOK floor defaults to £2m, INTEL to £2m). NULL
+        // values are always included regardless of floor.
+        const valueFloor = input?.valueFloorIntel || input?.valueFloorBook || 1_000_000;
+        const data = intel.pipelineRecentNotices({ hoursLookback, valueFloor });
+        context.fts_pipeline_data = data;
+        break;
+      }
+      case 'fts_awards_data': {
+        // Depends on fts_pipeline_data being computed first (skill YAML must
+        // list them in order). Fetches recent awards for the buyers that
+        // appear in the pipeline batch — gives the LLM a focused
+        // competitive-field reference rather than a generic blob.
+        const hoursLookback = input?.lookbackHours || 24;
+        const pipeline = context.fts_pipeline_data || intel.pipelineRecentNotices({ hoursLookback });
+        const buyerIds = [...new Set([
+          ...((pipeline.notices || []).map(n => n.buyerId)),
+          ...((pipeline.planningNotices || []).map(n => n.buyerId)),
+        ].filter(Boolean))];
+        const data = intel.pipelineRecentAwardsForBuyers({ buyerIds });
+        context.fts_awards_data = data;
+        break;
+      }
       default:
         break;
     }
@@ -826,8 +851,9 @@ async function executeToolCall(toolName, pursuitId, input) {
 async function executeSkill(skillId, input) {
   const skill = await loadSkill(skillId);
 
-  // Validate required input
-  for (const req of skill.input?.required || []) {
+  // Validate required input. Filter out null/empty entries that the YAML
+  // parser may emit for `required: []` (parses as [null]).
+  for (const req of (skill.input?.required || []).filter(r => r != null && r !== '')) {
     if (input[req] === undefined) {
       throw new Error(`Missing required input: ${req}`);
     }
