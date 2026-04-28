@@ -719,6 +719,12 @@ section h3 {{
 
 
 if __name__ == "__main__":
+    # Force UTF-8 on stdout so any path containing non-ASCII characters
+    # does not crash on Windows cp1252 consoles. Documented gotcha in
+    # the project CLAUDE.md.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     if len(sys.argv) != 3:
         print("Usage: python3 render_dossier.py <input.json> <output.html>")
         sys.exit(1)
@@ -726,12 +732,18 @@ if __name__ == "__main__":
     input_path = sys.argv[1]
     output_path = sys.argv[2]
 
-    with open(input_path) as f:
+    # Explicit UTF-8 encoding on both ends — Python's default text-mode
+    # encoding follows the system locale (cp1252 on Windows), which
+    # silently mangles or crashes on UTF-8 dossiers containing curly
+    # quotes (U+201D), em-dashes, or other characters whose UTF-8
+    # continuation bytes fall in cp1252's undefined range (0x81, 0x8D,
+    # 0x8F, 0x90, 0x9D).
+    with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
 
     html_content = render(data)
 
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 
     print(f"BidEquity dossier rendered: {output_path}")

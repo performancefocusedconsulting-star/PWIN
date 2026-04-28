@@ -277,7 +277,7 @@ Before delivering, verify programmatically:
 ```bash
 python3 -c "
 import json
-with open('<json-path>') as f:
+with open('<json-path>', encoding='utf-8') as f:
     d = json.load(f)
 sections = ['meta','buyerSnapshot','organisationContext','strategicPriorities',
   'commissioningContextHypotheses','procurementBehaviour','procurementBehaviourSnapshot',
