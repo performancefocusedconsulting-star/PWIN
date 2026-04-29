@@ -759,6 +759,80 @@ The remaining 93% of the contract universe names sub-organisations correctly. Lo
 - `docs/research/2026-04-28-sub-org-contract-registers.md` — contract-register-specific deep dive plus Procurement Act 2023 transparency regime analysis
 - `wiki/actions/pwin-sub-org-overlay-layer.md` — the new action note for the next workstream
 
+## §19 — £25k spend transparency ingest: Wave 1 pipeline built (2026-04-29)
+
+This section documents the first concrete step in closing the publish-at-parent gap identified in §18. The approach is an overlay layer that enriches the contract database with payment-level data from the UK government's monthly transparency publication.
+
+### What was built
+
+Eight implementation tasks delivered in one session. Everything is Python stdlib only — no new external dependencies.
+
+**New data tables** (`spend_files_state`, `spend_transactions`) in the existing `bid_intel.db`:
+
+- `spend_files_state`: one row per spend file in the catalogue. Tracks download status (`pending → downloaded → loaded → error`), file checksum, row count, and the local path on disk.
+- `spend_transactions`: one row per payment line. Stores raw text (`raw_entity`, `raw_supplier_name`) plus canonicalised IDs (`canonical_sub_org_id`, `canonical_supplier_id`). Amount, date, expense type, and expense area captured for filtering.
+
+**New scripts (all in `agent/`):**
+
+| Script | What it does |
+|---|---|
+| `spend-catalogue.json` | Static list of 48 verified gov.uk download URLs for 2025 data (Home Office 12, MoJ HQ 6, HMCTS 6, LAA 2, DfE 10, MoD 12). Not a scraper — a curated config file updated once a year. |
+| `fetch_spend.py` | Downloads pending files from the catalogue, 1s polite delay between requests, writes to `data/spend/<dept>/`, marks status in `spend_files_state`. |
+| `parse_spend.py` | Four format handlers — one per department family. Yields normalised rows for each payment line. |
+| `canonicalise_spend.py` | Matches `raw_entity` → `canonical_sub_org_id` via `canonical_buyer_aliases`; `raw_supplier_name` → `canonical_supplier_id` via `canonical_suppliers`. Normaliser is a copy of `load-canonical-buyers.py::norm` (same rules, same result). Unmatched rows stay NULL — never rejected. |
+| `ingest_spend.py` | Orchestrator: calls fetch → parse → canonicalise in order. Idempotent. |
+| `generate_spend_health.py` | Produces a Markdown health section (file counts, row counts, canonicalisation %, any download errors) for the nightly digest. |
+
+**MCP surface change** (`pwin-platform/src/competitive-intel.js`): `_buildConsolidatedProfile` now calls `_buildSpendSignal(db, canonicalId)` and adds a `spendSignal` property to every buyer profile returned. Null when no data yet or when the table doesn't exist (graceful degradation).
+
+**Nightly pipeline**: `scheduler.py` gains a non-fatal spend step after the daily pipeline scan. `save_digest` in `run-pipeline-scan.py` appends the health section to the nightly digest markdown.
+
+### MoD publishes ODS, not CSV
+
+Every other department publishes a plain comma-separated file. MoD publishes an OpenDocument Spreadsheet (`.ods`). The parser handles this using Python's built-in `zipfile` + `xml.etree.ElementTree` — the ODS format is a ZIP archive containing `content.xml`. No external packages added.
+
+Rule: always inspect the first URL in any new department's catalogue entry before writing the parser. Assume nothing about file format.
+
+### The entity_override pattern for MoJ
+
+MoJ publishes three separate files per month — one for MoJ HQ, one for HMCTS, one for LAA (and historically HMPPS). Each file covers one sub-organisation but the file itself contains no entity column (it's all one entity's payments). The catalogue carries an `entity_override` field per entry (`"ministry-of-justice"`, `"hm-courts-and-tribunals-service"`, `"legal-aid-agency"`). `ingest_spend.py` reads this from the catalogue and writes it as `raw_entity` for all rows from that file, bypassing the file-level parser which returns `""`.
+
+This pattern is general: any department that uses per-sub-org separate files (rather than a single multi-sub-org file with an entity column) uses `entity_override`. The schema is department-agnostic — adding a new family is a catalogue edit, not a code change.
+
+### Permissive ingest, strict render
+
+All rows are stored regardless of whether the entity or supplier matched a canonical ID. The `canonical_sub_org_id` and `canonical_supplier_id` columns are nullable. Unmatched rows are not visible in client output — `_buildSpendSignal` only surfaces totals and top suppliers, which are computed from all rows.
+
+The rule: never reject a row because a name didn't match. The canonical IDs are enrichment, not a gate. Rejecting unmatched rows would silently shrink the spend picture and bias it toward suppliers already in the canonical layer.
+
+### What to run next
+
+```bash
+cd pwin-competitive-intel
+python agent/ingest_spend.py   # downloads 48 files, parses, canonicalises
+```
+
+Expect approximately 3–5 minutes for the downloads (1s delay between requests), then a few seconds for parsing and canonicalisation.
+
+After the first run, check:
+
+```bash
+python agent/generate_spend_health.py
+```
+
+### What this does not yet cover
+
+- **HMPPS 2025 data** — not yet found and confirmed. Try `https://www.gov.uk/government/publications/hm-prison-and-probation-service-spending-over-25000-2025` and add to the catalogue if it exists.
+- **Prior years (2020–2024)** — the catalogue seeds 2025 only. Add earlier entries to `spend-catalogue.json` following the same pattern; the pipeline will pick them up on the next run.
+- **NISTA major projects portfolio** — Wave 1 Item 2. The only open-data source that explicitly tags Defence Digital programmes as Defence Digital. Planned but not yet built.
+- **Organograms** — Wave 1 Item 3. For stakeholder mapping. Planned but not yet built.
+
+### Coverage numbers as of 2026-04-29
+
+Canonical buyer layer: 2,247 entities, 75.73% of all notices mapped (385,909 of 509,553). The spend ingest adds a second intelligence dimension — payment-level supplier data — that the contract-notice layer alone cannot provide for the four publish-at-parent departments.
+
+---
+
 ## Change log
 
 | Version | Date | Summary |
@@ -771,3 +845,4 @@ The remaining 93% of the contract universe names sub-organisations correctly. Lo
 | 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |
 | 1.5 | 2026-04-28 | Added §17: Sub-organisation pass. 9 new canonicals (Defence Digital, UK Strategic Command, IPA, NIC, etc.), multi-part candidate splitting, hierarchy-aware ambiguity resolution. 667 new aliases, 1,427 rows back-filled. Sub-org dossiers operational. |
 | 1.6 | 2026-04-28 | Added §18: Five additional alias gaps closed (LAA, Dstl spaced, DIO doubled, DE&S Deca, NI Youth Justice). Procurement Act 2023 UK7 / UK9 / UK10 / UK11 notice capture fixed in `agent/ingest.py` — parser was reading `noticeType` from the wrong OCDS location. Publish-at-parent finding documented: 5% of contract awards (22k of 447k) dark at sub-organisation level across MoJ, Home Office, DfE, MoD; UK7 doesn't fix this; overlay strategy required. |
+| 1.7 | 2026-04-29 | Added §19: £25k spend transparency ingest Wave 1 pipeline (8 tasks). 48 verified URLs in catalogue. ODS reader for MoD. entity_override pattern for MoJ streams. spendSignal added to buyer profile. Nightly digest integration. 23 tests. |
