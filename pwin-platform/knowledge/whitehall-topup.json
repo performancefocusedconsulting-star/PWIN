@@ -584,6 +584,22 @@
       ],
       "status": "active",
       "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "post-office",
+      "canonical_name": "Post Office",
+      "abbreviation": null,
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Post Office Limited",
+        "POST OFFICE LIMITED",
+        "Post Office Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
     }
   ]
 }

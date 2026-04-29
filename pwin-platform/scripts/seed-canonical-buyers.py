@@ -337,8 +337,14 @@ def main():
         print(f"Loading existing glossary from {args.output} (skipping GOV.UK fetch)")
         with open(args.output) as f:
             glossary = json.load(f)
-        # Strip any prior hand-curated entries before re-merging
-        glossary["entities"] = [e for e in glossary["entities"] if e.get("source") != "hand_curated"]
+        # Strip any prior hand-curated entries before re-merging.
+        # Match the "hand_curated" prefix so that all hand-curated sources
+        # (hand_curated, hand_curated_fire, hand_curated_whitehall_topup, etc.)
+        # are stripped and cleanly re-merged from source files.
+        glossary["entities"] = [
+            e for e in glossary["entities"]
+            if not str(e.get("source", "")).startswith("hand_curated")
+        ]
     else:
         orgs = fetch_all()
         glossary = transform(orgs, include_closed=args.include_closed)
