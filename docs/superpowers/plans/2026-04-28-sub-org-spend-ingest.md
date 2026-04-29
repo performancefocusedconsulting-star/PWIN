@@ -1952,3 +1952,37 @@ Spec requirements cross-checked against plan tasks:
 | Success criterion 4 (digest red flag on failure) | Task 8 — `error_files` surfaces in digest line |
 
 All spec sections accounted for. No placeholders remain.
+
+---
+
+## Post-implementation findings (2026-04-29)
+
+First end-to-end run loaded all 48 catalogued files (322,689 rows, £124.3bn). Eight bugs surfaced and were fixed in two follow-up commits. Future runs of this plan should bake these in from the start:
+
+### Parser robustness
+
+1. **CSV encoding** — UK government CSVs are typically Windows-1252 (cp1252), not UTF-8. The `£` sign (`0xa3`), `é` (`0xe9`), and curly quotes all break a UTF-8-only reader. `_read_csv` must try `utf-8-sig` first, then fall back to `cp1252`.
+2. **MoD ODS amount column** — MoD uses `Total`, not `Amount`, for the payment value. The MoD format handler must include `Total` / `total` in its `_find()` lookup.
+3. **Date normalisation** — three formats appear across publishers and **must be normalised to ISO `YYYY-MM-DD` at parse time**:
+   - Home Office, DfE: `DD/MM/YYYY`
+   - MoJ family (MoJ HQ, HMCTS, LAA): **Excel serial integers** like `45672` — these need conversion via `date(1899, 12, 30) + timedelta(days=int)`
+   - MoD: `DD-MMM-YY`, `DD.MM.YYYY`
+   
+   Skipping this leaves all MoJ family rows with unusable dates — date-windowed queries break entirely for one of the largest central government departments.
+
+### Canonicalisation
+
+4. **`_norm()` over-aggression** — do not blindly strip ` company limited` from name endings. It collides genuine entities like "Student Loans Company Limited" against unrelated canonicals.
+5. **Buyer prefix-strip fallback** — Home Office `raw_entity` values use internal cost-centre prefixes (e.g. `"UKBF - UK Border Force"`). After punctuation stripping these become `"ukbf uk border force"` and miss canonical aliases. Add a `^[A-Z][A-Za-z0-9]+ - ` strip fallback in `_match_buyer`.
+6. **Alias-aware supplier index** — build the supplier lookup by joining `suppliers.name → supplier_to_canonical.canonical_id` (287k name variations), not just `canonical_suppliers.canonical_name` (139k canonical-only names). Trading-name and legal-form variants only resolve via the alias table.
+7. **Recipient classification** — add a `recipient_type` column (`'supplier'` vs `'public_body'`). Roughly **half the spend value is public-body transfers** (Student Loans Company alone is £21bn; 18 London/Metro borough councils account for billions more in DfE pass-through funding). These are not procurement and never will match a supplier table. Without classification the headline match rate is meaningless.
+8. **Procurement-only digest match rate** — the spend health digest must split rows by `recipient_type` and report the supplier match rate against procurement rows only.
+
+### Realistic match rates (post-fix)
+
+- Sub-org buyer: **12% of all rows** — most non-matches are internal directorate labels, not fixable without bespoke per-department mapping
+- Supplier (procurement only): **26%** — the remaining gap is genuine name variation that needs fuzzy matching (next milestone, not in scope here)
+
+### Source data quality
+
+A small number of rows (≈4 per 322,000) have garbage dates from publisher typos (e.g. "year 205"). The `_normalise_date()` helper leaves them as-is. The digest's date-range display uses a GLOB filter against plausible ISO dates so these don't dominate the headline.
