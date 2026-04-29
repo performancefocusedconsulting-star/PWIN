@@ -1181,21 +1181,40 @@ Note: notice value is heavily inflated by framework ceiling values (OCDS records
 
 **Net progress this session:** 55.59% → 70.36% notice coverage (+14.77pp), 1,939 → 2,083 canonical entities. Police-named notices now 97.7% mapped (was ~2%). University-named notices now 98% mapped (was 0%).
 
+## Progress checkpoint — 2026-04-29 end of session
+
+**Tasks 0–4 complete.** Tasks 5–8 pending.
+
+| Stage | Coverage | Entity count | Commits |
+|---|---|---|---|
+| After Task 4 (fire & rescue) | **71.01%** | **2,236** | `02752bc`, `4b3d75b` (cleanup) |
+
+**Net progress this session:** 70.36% → 71.01% (+0.65pp), 2,083 → 2,236 canonical entities. Fire & rescue notices: 3,174 mapped (106% of fire-named notices — captures aliases the raw query missed). `fire-and-rescue.json` cleaned: duplicates and trailing-whitespace aliases removed, IoW marked `status: historical`.
+
 ### How to resume
 
-Next session should pick up **Task 4 (fire & rescue authorities)** by re-reading the Task 4 section above, then continuing through Tasks 5–8. The pattern is now well-established by Tasks 2 and 3:
+Next session should pick up **Task 5 (Whitehall top-up)** then continue through Tasks 6–8. The pattern is established:
 
-1. Pre-flight: check `pwin-platform/knowledge/<file>.json` doesn't already exist (parallel work has been landing on this branch — Task 2's bulk was done by a parallel commit `9960333` while this session was running).
-2. Generate alias seed list from DB.
-3. Hand-curate the knowledge JSON.
-4. Wire merge into `pwin-platform/scripts/seed-canonical-buyers.py`.
-5. Regenerate (`--skip-fetch`), reload, backfill, verify, commit.
+1. Run the top-100-unmapped audit query to see what's left.
+2. Build the knowledge JSON hand-curated from the unmapped list.
+3. Wire merge into `seed-canonical-buyers.py` (add constant + call in `main()` before `write_output`).
+4. Regenerate (`--skip-fetch`), reload (`load-canonical-buyers.py`), backfill, verify, commit.
+
+**`seed-canonical-buyers.py` current state of `main()`** ends with:
+```python
+    print(f"\nMerging fire and rescue authorities from {FIRE_RESCUE}...")
+    fire_added, fire_merged = merge_hand_curated(glossary, FIRE_RESCUE)
+    print(f"  +{fire_added} new entities, {fire_merged} alias merges")
+
+    write_output(glossary, args.output)
+    print_stats(glossary)
+```
+New merges (WHITEHALL_TOPUP, MAT, HOUSING) go between the fire block and `write_output`.
 
 ### Open notes
 
-- The 24 trailing-whitespace aliases in `police-forces.json` are stripped at load time so functionally fine; cosmetic cleanup only.
 - Tasks 6 & 7 still need URL/format confirmation for DfE GIAS and Regulator of Social Housing data sources at execution time.
-- Acceptance bar for the whole programme is ≥90% notice coverage. We are at 70.36% with four tasks still to run (fire ~3,000 notices, Whitehall top-up ~10,000+, MAT ~5,000, housing ~10,000). The remaining four tasks should comfortably clear the 90% bar.
+- Acceptance bar for the whole programme is ≥90% notice coverage. At 71.01% with three tasks still to run (Whitehall top-up ~10,000+, MAT ~5,000, housing ~10,000). Remaining tasks should clear 90%.
 
 ## Final
 
