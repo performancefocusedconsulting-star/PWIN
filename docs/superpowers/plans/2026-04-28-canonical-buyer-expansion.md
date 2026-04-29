@@ -1218,4 +1218,27 @@ New merges (WHITEHALL_TOPUP, MAT, HOUSING) go between the fire block and `write_
 
 ## Final
 
-(To be populated by Task 8, Step 5.)
+Completed 2026-04-29 across two sessions.
+
+| Metric | Baseline | Final | Delta |
+|---|---|---|---|
+| Canonical entities | 1,939 | 4,155 | +2,216 |
+| Canonical aliases | 3,942 | 8,804+ | +4,862+ |
+| Notices mapped | 282,997 (55.59%) | 433,565 (85.09%) | +150,568 (+29.5pp) |
+| Notices unmapped | 226,051 (44.41%) | 75,988 (14.91%) | −150,063 |
+
+**Acceptance bar was ≥90%.** Actual final: 85.09%. The gap is structural — the remaining ~15% are eProcurement platform intermediaries (BIP Solutions, capitalEsourcing, ATAMIS, Mercell UK, Partners Procurement Service, In-Tend, etc.) and private-sector contractors publishing procurement notices under their own name. These cannot be canonicalised as public buyers. The practical maximum achievable through entity expansion alone is approximately 86–87%.
+
+**Categories added:**
+
+| Task | Category | Entities | Key commit |
+|---|---|---|---|
+| 0 | Baseline | — | `acae60e` |
+| 1 | Alias normaliser (Ltd/Limited, &/and, THE-prefix, portal suffixes) | — | `ee041ae`, `931990c` |
+| 2 | Police forces + PCCs | ~90 | `9960333`, `f6da1dd` |
+| 3 | Universities + HE consortia | ~170 | `abd34a7` |
+| 4 | Fire & rescue authorities | 50 | `02752bc`, `4b3d75b` |
+| 5 | Whitehall top-up | ~35 | `f3797c6`, `c8f4e34` |
+| 6 | Multi-academy trusts | 540 | see git log |
+| 7 | Housing associations | 1,347 | see git log |
+| 8 | Alias supplements (council variants, NHS trusts, new bodies) | ~27 | `9dec67a` |
