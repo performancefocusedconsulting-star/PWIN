@@ -95,6 +95,13 @@ def _migrate_schema(conn: sqlite3.Connection):
             )""")
         log.info("Migrated: created spend_transactions")
 
+    # ── spend_transactions: recipient_type column (2026-04-29) ──
+    if "spend_transactions" in tables:
+        spend_cols = {r[1] for r in conn.execute("PRAGMA table_info(spend_transactions)").fetchall()}
+        if "recipient_type" not in spend_cols:
+            conn.execute("ALTER TABLE spend_transactions ADD COLUMN recipient_type TEXT")
+            log.info("Migrated spend_transactions: added column recipient_type")
+
     conn.commit()
 
 
