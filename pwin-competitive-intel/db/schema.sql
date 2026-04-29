@@ -479,3 +479,36 @@ LEFT JOIN canonical_suppliers cs    ON s2c.canonical_id = cs.canonical_id
 JOIN awards a               ON asup.award_id = a.id
 JOIN notices n              ON a.ocid = n.ocid
 JOIN buyers b               ON n.buyer_id = b.id;
+
+-- ── £25k spend transparency tables (Wave 1 sub-org overlay) ─────────────────
+
+CREATE TABLE IF NOT EXISTS spend_files_state (
+    id              TEXT PRIMARY KEY,   -- first 16 hex chars of SHA-256(url)
+    department      TEXT NOT NULL,
+    year            INTEGER NOT NULL,
+    month           INTEGER NOT NULL,
+    entity_override TEXT,
+    source_url      TEXT NOT NULL,
+    format_id       TEXT NOT NULL,
+    local_path      TEXT,
+    file_checksum   TEXT,
+    row_count       INTEGER,
+    status          TEXT NOT NULL DEFAULT 'pending',
+    error_message   TEXT,
+    loaded_at       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS spend_transactions (
+    id                  TEXT PRIMARY KEY,   -- '{file_id}-{row_idx:06d}'
+    source_file_id      TEXT NOT NULL REFERENCES spend_files_state(id),
+    department_family   TEXT NOT NULL,
+    raw_entity          TEXT,
+    raw_supplier_name   TEXT NOT NULL,
+    amount              REAL NOT NULL,
+    payment_date        TEXT,
+    expense_type        TEXT,
+    expense_area        TEXT,
+    canonical_sub_org_id   TEXT,
+    canonical_supplier_id  TEXT,
+    ingested_at         TEXT NOT NULL DEFAULT (datetime('now'))
+);
