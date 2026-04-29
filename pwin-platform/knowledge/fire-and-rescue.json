@@ -4,7 +4,6 @@
   "source": "hand_curated_fire",
   "last_updated": "2026-04-29",
   "entities": [
-
     {
       "canonical_id": "avon-fire-and-rescue-service",
       "canonical_name": "Avon Fire & Rescue Service",
@@ -15,7 +14,6 @@
       "child_ids": [],
       "aliases": [
         "Avon Fire & Rescue Service",
-        "AVON FIRE & RESCUE SERVICE",
         "Avon Fire and Rescue Service",
         "Avon Fire Rescue Service",
         "Avon Fire and  Rescue Service",
@@ -24,7 +22,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "bedfordshire-fire-and-rescue-service",
       "canonical_name": "Bedfordshire Fire and Rescue Service",
@@ -42,7 +39,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "buckinghamshire-fire-and-rescue-service",
       "canonical_name": "Buckinghamshire Fire & Rescue Service",
@@ -60,7 +56,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "cambridgeshire-fire-and-rescue-service",
       "canonical_name": "Cambridgeshire Fire and Rescue Service",
@@ -78,7 +73,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "cheshire-fire-and-rescue-service",
       "canonical_name": "Cheshire Fire and Rescue Service",
@@ -95,7 +89,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "cleveland-fire-brigade",
       "canonical_name": "Cleveland Fire Brigade",
@@ -111,7 +104,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "cumbria-fire-and-rescue-service",
       "canonical_name": "Cumbria Fire and Rescue Service",
@@ -127,7 +119,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "derbyshire-fire-and-rescue-service",
       "canonical_name": "Derbyshire Fire and Rescue Service",
@@ -145,7 +136,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "devon-and-somerset-fire-and-rescue-service",
       "canonical_name": "Devon and Somerset Fire and Rescue Service",
@@ -166,7 +156,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "dorset-and-wiltshire-fire-and-rescue-service",
       "canonical_name": "Dorset and Wiltshire Fire and Rescue Service",
@@ -178,10 +167,8 @@
       "aliases": [
         "Dorset and Wiltshire Fire and Rescue Service",
         "Dorset & Wiltshire Fire and Rescue Service",
-        "DORSET & WILTSHIRE FIRE AND RESCUE SERVICE",
         "Dorset & Wiltshire Fire and Rescue Authority",
         "Dorset and Wiltshire Fire and Rescue Authority",
-        "Dorset and Wiltshire Fire and Rescue Authority ",
         "Dorset and Wiltshire Fire and Rescue Services",
         "Dorset & Wiltshire Fire and Rescue",
         "Wiltshire Fire And Rescue Service"
@@ -189,7 +176,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "durham-and-darlington-fire-and-rescue-service",
       "canonical_name": "Durham and Darlington Fire and Rescue Service",
@@ -208,7 +194,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "east-sussex-fire-and-rescue-service",
       "canonical_name": "East Sussex Fire and Rescue Service",
@@ -224,7 +209,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "essex-county-fire-and-rescue-service",
       "canonical_name": "Essex County Fire and Rescue Service",
@@ -240,7 +224,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "gloucestershire-fire-and-rescue-service",
       "canonical_name": "Gloucestershire Fire and Rescue Service",
@@ -257,7 +240,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "greater-manchester-fire-and-rescue-service",
       "canonical_name": "Greater Manchester Fire and Rescue Service",
@@ -273,7 +255,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "hampshire-and-isle-of-wight-fire-and-rescue-service",
       "canonical_name": "Hampshire and Isle of Wight Fire and Rescue Service",
@@ -287,18 +268,15 @@
         "Hampshire Fire and Rescue Service",
         "Hampshire Fire & Rescue Service",
         "Hampshire Fire and Rescue Services Headquarters",
-        "Hampshire and Isle Of Wight Fire and Rescue Service",
         "Hampshire and Isle of Wight Fire Rescue Service",
         "Hampshire and Isle of Wight Fire Rescue Authority",
         "Hampshire and Isle of Wight Fire and Rescue Authority",
-        "HAMPSHIRE AND ISLE OF WIGHT FIRE RESCUE AUTHORITY",
         "HAMPSHIRE & ISLE OF WIGHT FIRE AND RESCUE SERVICE",
         "Hampshire & Isle of Wight Fire & Rescue Service and Office of the Police & Commissioner for Hampshire & Isle of Wight"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "hereford-and-worcester-fire-and-rescue-service",
       "canonical_name": "Hereford and Worcester Fire and Rescue Service",
@@ -311,16 +289,11 @@
         "Hereford and Worcester Fire and Rescue Service",
         "Hereford & Worcester Fire and Rescue Service",
         "Hereford & Worcester Fire & Rescue Service",
-        "HEREFORD & WORCESTER FIRE & RESCUE SERVICE",
-        "Hereford and Worcester Fire Authority",
-        "Hereford and Worcester Fire Authority ",
-        "Hereford & Worcester Fire & Rescue Service",
-        "Hereford and Worcester Fire and Rescue Service"
+        "Hereford and Worcester Fire Authority"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "hertfordshire-fire-and-rescue-service",
       "canonical_name": "Hertfordshire Fire and Rescue Service",
@@ -335,7 +308,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "humberside-fire-and-rescue-service",
       "canonical_name": "Humberside Fire and Rescue Service",
@@ -353,7 +325,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "isle-of-wight-fire-and-rescue-service",
       "canonical_name": "Isle of Wight Fire and Rescue Service",
@@ -365,10 +336,10 @@
       "aliases": [
         "Isle of Wight Fire and Rescue Service"
       ],
-      "status": "active",
-      "source": "hand_curated_fire"
+      "status": "historical",
+      "source": "hand_curated_fire",
+      "_note": "Pre-2021 service, now covered by Hampshire and Isle of Wight FRS. Retained for matching pre-merger FTS tender records."
     },
-
     {
       "canonical_id": "kent-fire-and-rescue-service",
       "canonical_name": "Kent Fire and Rescue Service",
@@ -388,7 +359,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "lancashire-fire-and-rescue-service",
       "canonical_name": "Lancashire Fire and Rescue Service",
@@ -405,7 +375,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "leicestershire-fire-and-rescue-service",
       "canonical_name": "Leicestershire Fire and Rescue Service",
@@ -421,7 +390,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "lincolnshire-fire-and-rescue-service",
       "canonical_name": "Lincolnshire Fire and Rescue Service",
@@ -437,7 +405,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "london-fire-brigade",
       "canonical_name": "London Fire Brigade",
@@ -448,7 +415,6 @@
       "child_ids": [],
       "aliases": [
         "London Fire Brigade",
-        "LONDON FIRE BRIGADE",
         "LFB",
         "London Fire Commissioner",
         "London Fire Commission"
@@ -456,7 +422,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "merseyside-fire-and-rescue-service",
       "canonical_name": "Merseyside Fire and Rescue Service",
@@ -470,14 +435,12 @@
         "Merseyside Fire & Rescue Service",
         "Merseyside Fire and Rescue Authority",
         "Merseyside Fire & Rescue Authority",
-        "MERSEYSIDE FIRE AND RESCUE AUTHORITY",
         "Merseyside Fire Authority",
         "Merseyside Fire and Resscue Authority"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "norfolk-fire-and-rescue-service",
       "canonical_name": "Norfolk Fire and Rescue Service",
@@ -493,7 +456,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "north-yorkshire-fire-and-rescue-service",
       "canonical_name": "North Yorkshire Fire and Rescue Service",
@@ -512,7 +474,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "northamptonshire-fire-and-rescue-service",
       "canonical_name": "Northamptonshire Fire and Rescue Service",
@@ -527,7 +488,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "northumberland-fire-and-rescue-service",
       "canonical_name": "Northumberland Fire and Rescue Service",
@@ -542,7 +502,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "nottinghamshire-fire-and-rescue-service",
       "canonical_name": "Nottinghamshire Fire and Rescue Service",
@@ -553,14 +512,12 @@
       "child_ids": [],
       "aliases": [
         "Nottinghamshire Fire and Rescue Service",
-        "NOTTINGHAMSHIRE FIRE AND RESCUE SERVICE",
         "Nottinghamshire Fire & Rescue Service",
         "Nottinghamshire and City of Nottingham Fire Authority"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "oxfordshire-fire-and-rescue-service",
       "canonical_name": "Oxfordshire Fire and Rescue Service",
@@ -576,7 +533,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "royal-berkshire-fire-and-rescue-service",
       "canonical_name": "Royal Berkshire Fire and Rescue Service",
@@ -594,7 +550,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "shropshire-fire-and-rescue-service",
       "canonical_name": "Shropshire Fire and Rescue Service",
@@ -609,7 +564,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "south-yorkshire-fire-and-rescue-service",
       "canonical_name": "South Yorkshire Fire and Rescue Service",
@@ -628,7 +582,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "staffordshire-fire-and-rescue-service",
       "canonical_name": "Staffordshire Fire and Rescue Service",
@@ -645,7 +598,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "suffolk-fire-and-rescue-service",
       "canonical_name": "Suffolk Fire and Rescue Service",
@@ -661,7 +613,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "surrey-fire-and-rescue-service",
       "canonical_name": "Surrey Fire and Rescue Service",
@@ -677,7 +628,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "tyne-and-wear-fire-and-rescue-service",
       "canonical_name": "Tyne and Wear Fire and Rescue Service",
@@ -699,7 +649,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "warwickshire-fire-and-rescue-service",
       "canonical_name": "Warwickshire Fire and Rescue Service",
@@ -715,7 +664,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "west-midlands-fire-service",
       "canonical_name": "West Midlands Fire Service",
@@ -728,13 +676,11 @@
         "West Midlands Fire Service",
         "West Midlands Fire and Rescue Authority",
         "West Midlands Fire & Rescue Authority",
-        "West Midlands Fire And Rescue Authority",
         "West Midlands Fire & Rescue"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "west-sussex-fire-and-rescue-service",
       "canonical_name": "West Sussex Fire and Rescue Service",
@@ -750,7 +696,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "west-yorkshire-fire-and-rescue-service",
       "canonical_name": "West Yorkshire Fire and Rescue Service",
@@ -763,13 +708,11 @@
         "West Yorkshire Fire and Rescue Service",
         "West Yorkshire Fire & Rescue",
         "West Yorkshire Fire & Rescue Service",
-        "West Yorkshire Fire and Rescue Authority",
-        "West Yorkshire Fire and Rescue Service "
+        "West Yorkshire Fire and Rescue Authority"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "cornwall-fire-and-rescue-service",
       "canonical_name": "Cornwall Fire and Rescue Service",
@@ -785,7 +728,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "scottish-fire-and-rescue-service",
       "canonical_name": "Scottish Fire and Rescue Service",
@@ -796,14 +738,12 @@
       "child_ids": [],
       "aliases": [
         "Scottish Fire and Rescue Service",
-        "SCOTTISH FIRE AND RESCUE SERVICE",
         "Scottish Fire & Rescue Service",
         "SFRS"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "mid-and-west-wales-fire-and-rescue-service",
       "canonical_name": "Mid and West Wales Fire and Rescue Service",
@@ -815,13 +755,11 @@
       "aliases": [
         "Mid and West Wales Fire and Rescue Service",
         "Mid and West Wales Fire and Rescue Authority",
-        "Mid & West Wales Fire & Rescue Service",
-        "MID AND WEST WALES FIRE AND RESCUE SERVICE"
+        "Mid & West Wales Fire & Rescue Service"
       ],
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "north-wales-fire-and-rescue-service",
       "canonical_name": "North Wales Fire and Rescue Service",
@@ -837,7 +775,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "south-wales-fire-and-rescue-service",
       "canonical_name": "South Wales Fire and Rescue Service",
@@ -853,7 +790,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "northern-ireland-fire-and-rescue-service",
       "canonical_name": "Northern Ireland Fire and Rescue Service",
@@ -874,7 +810,6 @@
       "status": "active",
       "source": "hand_curated_fire"
     },
-
     {
       "canonical_id": "national-fire-chiefs-council",
       "canonical_name": "National Fire Chiefs Council",
@@ -886,7 +821,6 @@
       "aliases": [
         "National Fire Chiefs Council",
         "National Fire Chiefs Council Limited",
-        "NATIONAL FIRE CHIEFS COUNCIL LIMITED",
         "NFCC",
         "Chief Fire Officers Association",
         "THE CHIEF FIRE OFFICERS' ASSOCIATION",
@@ -895,6 +829,5 @@
       "status": "active",
       "source": "hand_curated_fire"
     }
-
   ]
 }
