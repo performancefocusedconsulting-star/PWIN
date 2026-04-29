@@ -1,0 +1,776 @@
+{
+  "_comment": "Alias supplements and new canonical entities for the top unmapped buyer names remaining after Tasks 1-7. Two categories: (1) 'Alias supplement' entries add missing name variants to existing canonical entities whose canonical_id already exists in the glossary; (2) genuinely new entities not present elsewhere. Hand-curated 2026-04-29 from the top-100 unmapped buyer audit.",
+  "version": "1.0",
+  "source": "hand_curated_alias_supplements",
+  "last_updated": "2026-04-29",
+  "entities": [
+
+    {
+      "canonical_id": "la-city-of-london",
+      "canonical_name": "City of London Corporation",
+      "type": "Alias supplement",
+      "aliases": [
+        "The Mayor and Commonalty and Citizens of the City of London",
+        "THE MAYOR AND COMMONALTY AND CITIZENS OF THE CITY OF LONDON",
+        "Corporation of London",
+        "CORPORATION OF LONDON",
+        "City of London Corporation",
+        "CITY OF LONDON CORPORATION"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "department-for-environment-food-rural-affairs",
+      "canonical_name": "Department for Environment, Food & Rural Affairs",
+      "type": "Alias supplement",
+      "aliases": [
+        "Defra Commercial",
+        "DEFRA COMMERCIAL",
+        "Defra (Department for Environment, Food and Rural Affairs)"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-coventry",
+      "canonical_name": "Coventry Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Coventry City Council (COV)",
+        "COVENTRY CITY COUNCIL (COV)"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "hywel-dda-university-health-board",
+      "canonical_name": "Hywel Dda University Health Board",
+      "abbreviation": "HDUHB",
+      "type": "NHS Health Board",
+      "subtype": "Wales",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Hywel Dda University Health Board",
+        "HYWEL DDA UNIVERSITY HEALTH BOARD",
+        "Hywel Dda Health Board",
+        "HDUHB"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "betsi-cadwaladr-university-health-board",
+      "canonical_name": "Betsi Cadwaladr University Health Board",
+      "abbreviation": "BCUHB",
+      "type": "NHS Health Board",
+      "subtype": "Wales",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Betsi Cadwaladr University Health Board",
+        "BETSI CADWALADR UNIVERSITY HEALTH BOARD",
+        "Betsi Cadwaladr UHB",
+        "BCUHB"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "united-lincolnshire-hospitals-nhs-trust",
+      "canonical_name": "United Lincolnshire Hospitals NHS Trust",
+      "abbreviation": "ULHT",
+      "type": "NHS Trust",
+      "subtype": "England",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "United Lincolnshire Hospitals NHS Trust",
+        "UNITED LINCOLNSHIRE HOSPITALS NHS TRUST",
+        "ULHT"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "west-hertfordshire-hospitals-nhs-trust",
+      "canonical_name": "West Hertfordshire Hospitals NHS Trust",
+      "abbreviation": "WHHT",
+      "type": "NHS Trust",
+      "subtype": "England",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "West Hertfordshire Hospitals NHS Trust",
+        "WEST HERTFORDSHIRE HOSPITALS NHS TRUST",
+        "West Herts Hospitals NHS Trust",
+        "WHHT"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "east-and-north-hertfordshire-nhs-trust",
+      "canonical_name": "East and North Hertfordshire NHS Trust",
+      "abbreviation": "ENHT",
+      "type": "NHS Trust",
+      "subtype": "England",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "East and North Hertfordshire NHS Trust",
+        "EAST AND NORTH HERTFORDSHIRE NHS TRUST",
+        "East & North Hertfordshire NHS Trust",
+        "ENHT"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "east-suffolk-and-north-essex-nhs-ft",
+      "canonical_name": "East Suffolk and North Essex NHS Foundation Trust",
+      "abbreviation": "ESNEFT",
+      "type": "NHS Foundation Trust",
+      "subtype": "England",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "East Suffolk and North Essex NHS Foundation Trust",
+        "East Suffolk and North Essex NHS FT",
+        "EAST SUFFOLK AND NORTH ESSEX NHS FT",
+        "ESNEFT"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "nottingham-university-hospitals-nhs-trust",
+      "canonical_name": "Nottingham University Hospitals NHS Trust",
+      "abbreviation": "NUH",
+      "type": "NHS Trust",
+      "subtype": "England",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Nottingham University Hospitals NHS Trust",
+        "NOTTINGHAM UNIVERSITY HOSPITALS NHS TRUST",
+        "Nottingham University Hospital NHS Trust",
+        "NUH"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-bristol-city-of",
+      "canonical_name": "Bristol, City of Council",
+      "type": "Alias supplement",
+      "aliases": ["Bristol City Council", "BRISTOL CITY COUNCIL", "Bristol City Council Ltd", "City of Bristol"],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-kingston-upon-hull-city-of",
+      "canonical_name": "Kingston upon Hull, City of Council",
+      "type": "Alias supplement",
+      "aliases": ["Hull City Council", "HULL CITY COUNCIL", "Kingston upon Hull City Council", "Hull City Council (KUH)", "City of Kingston upon Hull"],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-herefordshire-county-of",
+      "canonical_name": "Herefordshire, County of Council",
+      "type": "Alias supplement",
+      "aliases": ["Herefordshire Council", "HEREFORDSHIRE COUNCIL", "Herefordshire County Council"],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-cardiff",
+      "canonical_name": "Cardiff Council",
+      "type": "Alias supplement",
+      "aliases": ["Cardiff City Council", "CARDIFF CITY COUNCIL", "City of Cardiff Council", "CITY OF CARDIFF COUNCIL"],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-swansea",
+      "canonical_name": "Swansea Council",
+      "type": "Alias supplement",
+      "aliases": ["City & County of Swansea", "CITY & COUNTY OF SWANSEA", "City and County of Swansea", "CITY AND COUNTY OF SWANSEA"],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-haringey",
+      "canonical_name": "Haringey Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "London Borough of Haringey - Passenger Transport Services",
+        "London Borough of Haringey - Parks and Leisure",
+        "London Borough of Haringey",
+        "LONDON BOROUGH OF HARINGEY",
+        "Haringey",
+        "HARINGEY",
+        "Haringey Borough Council",
+        "LB Haringey"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-greenwich",
+      "canonical_name": "Greenwich Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Royal Borough of Greenwich",
+        "ROYAL BOROUGH OF GREENWICH",
+        "Royal Borough of Greenwich - managed by GS Plus Ltd",
+        "London Borough of Greenwich",
+        "LONDON BOROUGH OF GREENWICH",
+        "RBG"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-newcastle-upon-tyne",
+      "canonical_name": "Newcastle upon Tyne Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Newcastle City Council",
+        "NEWCASTLE CITY COUNCIL",
+        "Newcastle upon Tyne City Council",
+        "Newcastle upon Tyne",
+        "NEWCASTLE UPON TYNE"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-tower-hamlets",
+      "canonical_name": "Tower Hamlets Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Tower Hamlets",
+        "TOWER HAMLETS",
+        "Tower Hamlets Borough Council",
+        "LBTH"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-suffolk",
+      "canonical_name": "Suffolk Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Suffolk County Council Passenger Transport",
+        "Suffolk County Council - Passenger Transport",
+        "Suffolk County Council Procurement"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-stockton-on-tees",
+      "canonical_name": "Stockton-on-Tees Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Stockton Borough Council",
+        "STOCKTON BOROUGH COUNCIL",
+        "Stockton-on-Tees Borough Council",
+        "STOCKTON ON TEES COUNCIL",
+        "Stockton on Tees"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-hertfordshire",
+      "canonical_name": "Hertfordshire Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Hertfordshire County Council",
+        "HERTFORDSHIRE COUNTY COUNCIL",
+        "Hertfordshire County Council ",
+        "HCC"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-east-riding-of-yorkshire",
+      "canonical_name": "East Riding of Yorkshire Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "East Riding of Yorkshire",
+        "EAST RIDING OF YORKSHIRE",
+        "East Riding of Yorkshire Council",
+        "East Riding Council",
+        "ERY Council"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-blackburn-with-darwen",
+      "canonical_name": "Blackburn with Darwen Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Blackburn with Darwen",
+        "BLACKBURN WITH DARWEN",
+        "Blackburn with Darwen Borough Council",
+        "BLACKBURN WITH DARWEN BOROUGH COUNCIL"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-southend-on-sea",
+      "canonical_name": "Southend-on-Sea Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Southend City Council",
+        "SOUTHEND CITY COUNCIL",
+        "Southend-on-Sea City Council",
+        "Southend Borough Council"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "la-rhondda-cynon-taf",
+      "canonical_name": "Rhondda Cynon Taf Council",
+      "type": "Alias supplement",
+      "aliases": [
+        "Rhondda Cynon Taf CBC",
+        "RHONDDA CYNON TAF CBC",
+        "Rhondda Cynon Taff County Borough Council",
+        "RCT Council",
+        "Cyngor Rhondda Cynon Taf"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "welsh-government",
+      "canonical_name": "Welsh Government",
+      "type": "Alias supplement",
+      "aliases": [
+        "Llywodraeth Cymru / Welsh Government",
+        "WELSH GOVERNMENT",
+        "Llywodraeth Cymru",
+        "LLYWODRAETH CYMRU"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "arts-council-england",
+      "canonical_name": "Arts Council England",
+      "type": "Alias supplement",
+      "aliases": [
+        "The Arts Council of England",
+        "THE ARTS COUNCIL OF ENGLAND",
+        "Arts Council of England"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "imperial-war-museum",
+      "canonical_name": "Imperial War Museum",
+      "type": "Alias supplement",
+      "aliases": [
+        "Imperial War Museums",
+        "IMPERIAL WAR MUSEUMS",
+        "Imperial War Museum (IWM)",
+        "IWM"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "education-authority-northern-ireland",
+      "canonical_name": "Education Authority Northern Ireland",
+      "type": "Alias supplement",
+      "aliases": [
+        "the Education Authority",
+        "THE EDUCATION AUTHORITY",
+        "Education Authority",
+        "EDUCATION AUTHORITY",
+        "EA Northern Ireland"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "historic-england",
+      "canonical_name": "Historic England",
+      "type": "Alias supplement",
+      "aliases": [
+        "HISTORIC ENGLAND LIMITED",
+        "Historic England Limited",
+        "Historic England (HEAN)"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "vivid-housing-limited",
+      "canonical_name": "Vivid Housing Limited",
+      "type": "Alias supplement",
+      "aliases": [
+        "VIVID",
+        "Vivid",
+        "VIVID HOUSING",
+        "Vivid Housing"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "the-water-services-regulation-authority",
+      "canonical_name": "The Water Services Regulation Authority",
+      "type": "Alias supplement",
+      "aliases": [
+        "O F W A T",
+        "OFWAT",
+        "Ofwat",
+        "Water Services Regulation Authority",
+        "OFFICE OF WATER SERVICES"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "uk-atomic-energy-authority",
+      "canonical_name": "UK Atomic Energy Authority",
+      "type": "Alias supplement",
+      "aliases": [
+        "United Kingdom Atomic Energy Authority",
+        "UNITED KINGDOM ATOMIC ENERGY AUTHORITY",
+        "UK Atomic Energy Authority",
+        "UKAEA",
+        "UK AEA"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "nuclear-restoration-services",
+      "canonical_name": "Nuclear Restoration Services",
+      "type": "Alias supplement",
+      "aliases": [
+        "Nuclear Restoration Services Limited (Dounreay)",
+        "Nuclear Restoration Services Limited",
+        "NUCLEAR RESTORATION SERVICES LIMITED",
+        "NRS"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "royal-parks",
+      "canonical_name": "Royal Parks",
+      "type": "Alias supplement",
+      "aliases": [
+        "The Royal Parks Ltd",
+        "THE ROYAL PARKS LTD",
+        "The Royal Parks Limited",
+        "Royal Parks Limited"
+      ],
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "cumbria-county-council",
+      "canonical_name": "Cumbria County Council",
+      "abbreviation": "CCC",
+      "type": "County council",
+      "subtype": "Historical — abolished April 2023, replaced by Cumberland Council and Westmorland and Furness Council",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cumbria County Council",
+        "CUMBRIA COUNTY COUNCIL",
+        "Cumbria Council",
+        "CCC"
+      ],
+      "status": "historical",
+      "_note": "Abolished April 2023. Replaced by Cumberland Council and Westmorland and Furness Council. Retained as canonical entity to match pre-abolition FTS tender records (3,000+ notices).",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "northern-housing-consortium",
+      "canonical_name": "Northern Housing Consortium",
+      "abbreviation": "NHC",
+      "type": "Central buying agency",
+      "subtype": "Housing sector buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Northern Housing Consortium",
+        "NORTHERN HOUSING CONSORTIUM",
+        "Northern Housing Consortium Limited",
+        "NORTHERN HOUSING CONSORTIUM LIMITED",
+        "NHC"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "scottish-water",
+      "canonical_name": "Scottish Water",
+      "abbreviation": "SW",
+      "type": "Public corporation",
+      "subtype": "Water and sewerage (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Scottish Water",
+        "SCOTTISH WATER",
+        "Scottish Water Business Stream"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "merseytravel",
+      "canonical_name": "Merseytravel",
+      "abbreviation": null,
+      "type": "Other",
+      "subtype": "Passenger transport executive (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Merseytravel",
+        "MERSEYTRAVEL",
+        "Merseyside Passenger Transport Executive",
+        "MERSEYSIDE PASSENGER TRANSPORT EXECUTIVE",
+        "Mersey Travel"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "translink-ni",
+      "canonical_name": "Translink",
+      "abbreviation": null,
+      "type": "Public corporation",
+      "subtype": "Public transport operator (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Translink",
+        "TRANSLINK",
+        "Northern Ireland Transport Holding Company",
+        "Translink (NI)"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "local-government-association",
+      "canonical_name": "Local Government Association",
+      "abbreviation": "LGA",
+      "type": "Other",
+      "subtype": "Local government membership body",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Local Government Association",
+        "LOCAL GOVERNMENT ASSOCIATION",
+        "LGA",
+        "Improvement and Development Agency for Local Government",
+        "IMPROVEMENT AND DEVELOPMENT AGENCY FOR LOCAL GOVERNMENT",
+        "IDeA"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "financial-ombudsman-service",
+      "canonical_name": "Financial Ombudsman Service",
+      "abbreviation": "FOS",
+      "type": "Other",
+      "subtype": "Financial services dispute resolution body",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Financial Ombudsman Service",
+        "FINANCIAL OMBUDSMAN SERVICE",
+        "FOS"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "nursing-and-midwifery-council",
+      "canonical_name": "Nursing and Midwifery Council",
+      "abbreviation": "NMC",
+      "type": "Other",
+      "subtype": "Healthcare professional regulator",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Nursing and Midwifery Council",
+        "NURSING AND MIDWIFERY COUNCIL",
+        "Nursing And Midwifery Council",
+        "NMC"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "valuation-office-agency",
+      "canonical_name": "Valuation Office Agency",
+      "abbreviation": "VOA",
+      "type": "Executive agency",
+      "subtype": "Central government",
+      "parent_ids": ["hm-revenue-customs"],
+      "child_ids": [],
+      "aliases": [
+        "Valuation Office Agency",
+        "VALUATION OFFICE AGENCY",
+        "Valuation Office",
+        "VOA"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "waste-and-resources-action-programme",
+      "canonical_name": "Waste and Resources Action Programme",
+      "abbreviation": "WRAP",
+      "type": "Other",
+      "subtype": "Government-funded sustainability body",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Waste and Resources Action Programme",
+        "WASTE AND RESOURCES ACTION PROGRAMME",
+        "Waste & Resources Action Programme",
+        "WRAP",
+        "WRAP UK"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "offshore-renewable-energy-catapult",
+      "canonical_name": "Offshore Renewable Energy Catapult",
+      "abbreviation": "OREC",
+      "type": "Other",
+      "subtype": "Innovate UK catapult centre",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Offshore Renewable Energy Catapult",
+        "OFFSHORE RENEWABLE ENERGY CATAPULT",
+        "ORE Catapult",
+        "OREC"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "sutton-achieving-for-children-and-kingston",
+      "canonical_name": "Achieving for Children",
+      "abbreviation": "AfC",
+      "type": "Other",
+      "subtype": "Community interest company — children's services (Kingston and Sutton)",
+      "parent_ids": ["la-sutton", "la-kingston-upon-thames"],
+      "child_ids": [],
+      "aliases": [
+        "Achieving for Children",
+        "Sutton, Achieving for Children and Kingston",
+        "SUTTON, ACHIEVING FOR CHILDREN AND KINGSTON",
+        "AfC",
+        "Achieving for Children CIC"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "ni-water",
+      "canonical_name": "NI Water",
+      "abbreviation": null,
+      "type": "Public corporation",
+      "subtype": "Water and sewerage (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NI Water",
+        "NI WATER",
+        "Northern Ireland Water",
+        "NORTHERN IRELAND WATER",
+        "NI Water and its subsidiaries",
+        "Northern Ireland Water Limited",
+        "NIW"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "office-of-rail-and-road",
+      "canonical_name": "Office of Rail and Road",
+      "abbreviation": "ORR",
+      "type": "Other",
+      "subtype": "Transport safety and economic regulator",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Office of Rail and Road",
+        "OFFICE OF RAIL AND ROAD",
+        "Office of Rail Regulation",
+        "OFFICE OF RAIL REGULATION",
+        "ORR"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    },
+
+    {
+      "canonical_id": "centre-for-process-innovation",
+      "canonical_name": "Centre for Process Innovation",
+      "abbreviation": "CPI",
+      "type": "Other",
+      "subtype": "Innovate UK catapult centre",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Centre for Process Innovation",
+        "CENTRE FOR PROCESS INNOVATION",
+        "Centre for Process Innovation Limited",
+        "CENTRE FOR PROCESS INNOVATION LIMITED",
+        "CPI",
+        "CPI (Centre for Process Innovation)"
+      ],
+      "status": "active",
+      "source": "hand_curated_alias_supplements"
+    }
+
+  ]
+}

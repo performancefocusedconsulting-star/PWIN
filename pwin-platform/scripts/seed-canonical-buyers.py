@@ -54,6 +54,7 @@ FIRE_RESCUE = os.path.join(KNOWLEDGE_DIR, "fire-and-rescue.json")
 WHITEHALL_TOPUP = os.path.join(KNOWLEDGE_DIR, "whitehall-topup.json")
 MAT = os.path.join(KNOWLEDGE_DIR, "multi-academy-trusts.json")
 HOUSING = os.path.join(KNOWLEDGE_DIR, "housing-associations.json")
+ALIAS_SUPPLEMENTS = os.path.join(KNOWLEDGE_DIR, "alias-supplements.json")
 
 
 def fetch_page(page: int) -> dict:
@@ -390,6 +391,10 @@ def main():
     print(f"\nMerging housing associations from {HOUSING}...")
     h_added, h_merged = merge_hand_curated(glossary, HOUSING)
     print(f"  +{h_added} new entities, {h_merged} alias merges")
+
+    print(f"\nMerging alias supplements from {ALIAS_SUPPLEMENTS}...")
+    as_added, as_merged = merge_hand_curated(glossary, ALIAS_SUPPLEMENTS)
+    print(f"  +{as_added} new entities, {as_merged} alias merges")
 
     write_output(glossary, args.output)
     print_stats(glossary)
