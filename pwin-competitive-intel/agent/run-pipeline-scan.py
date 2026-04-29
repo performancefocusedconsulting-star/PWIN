@@ -405,6 +405,17 @@ def upsert_crm_opportunity(item: dict, bucket: str, pursuit_path: Path | None, d
 
 def save_digest(triage: dict, dry_run: bool) -> Path | None:
     digest = triage.get("digest") or "(no digest produced)"
+
+    # Append spend transparency health section (non-fatal — missing tables → empty string)
+    try:
+        sys.path.insert(0, str(Path(__file__).parent))
+        import generate_spend_health
+        health = generate_spend_health.generate()
+        if health:
+            digest = digest + "\n" + health
+    except Exception as exc:
+        log.warning("spend health section skipped: %s", exc)
+
     today = datetime.now().strftime("%Y-%m-%d")
     DIGESTS_DIR.mkdir(parents=True, exist_ok=True)
     path = DIGESTS_DIR / f"{today}.md"
