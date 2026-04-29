@@ -33,6 +33,7 @@ pwin-competitive-intel/canonical-buyer-aliases-review*.csv
 
 # Built skill archives — derived from the master source folders, not source
 pwin-platform/skills/agent2-market-competitive/master/*.skill
+pwin-platform/skills/agent2-market-competitive/master/*.zip
 
 # Temp download files from seed scripts (e.g. GIAS academy trust spreadsheet)
 pwin-platform/knowledge/.tmp_*.xlsx
