@@ -93,5 +93,11 @@ if __name__ == "__main__":
     run_step("Daily pipeline scan (Agent 2 triage)",
              [str(AGENT_DIR / "run-pipeline-scan.py"), "--hours", "24"])
 
+    # £25k spend transparency: download any new files from the catalogue,
+    # parse into spend_transactions, canonicalise entity + supplier names.
+    # Non-fatal — a failure here must not stop the core data pipeline.
+    run_step("Spend transparency: parse downloaded files + canonicalise",
+             [str(AGENT_DIR / "ingest_spend.py")])
+
     log.info("Nightly pipeline complete")
     sys.exit(0 if fts_rc == 0 else fts_rc)
