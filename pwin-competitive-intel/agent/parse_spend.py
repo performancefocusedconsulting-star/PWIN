@@ -11,6 +11,7 @@ import io
 import logging
 import zipfile
 import xml.etree.ElementTree as ET
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -54,11 +55,16 @@ def _read_ods(path: Path):
 # ── CSV reader (BOM-tolerant) ────────────────────────────────────────────────
 
 def _read_csv(path: Path):
-    """Yield header-keyed dicts from a CSV file (UTF-8 with optional BOM)."""
-    with open(path, encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            yield row
+    """Yield header-keyed dicts from a CSV file (UTF-8 with cp1252 fallback)."""
+    for enc in ("utf-8-sig", "cp1252"):
+        try:
+            with open(path, encoding=enc, newline="") as f:
+                rows = list(csv.DictReader(f))
+            yield from rows
+            return
+        except UnicodeDecodeError:
+            continue
+    raise ValueError(f"Could not decode {path} as UTF-8 or cp1252")
 
 
 # ── Column normaliser helpers ────────────────────────────────────────────────
@@ -78,6 +84,37 @@ def _amount(s: str) -> str:
     return s.replace("£", "").replace(",", "").strip()
 
 
+# Excel serial 1 = 1900-01-01 in Excel's (buggy) calendar; days are counted
+# from 1899-12-30 in Python to compensate for Excel's mistaken leap-year-1900.
+_EXCEL_EPOCH = date(1899, 12, 30)
+
+
+def _normalise_date(s: str) -> str:
+    """
+    Return an ISO date string (YYYY-MM-DD) given any of the formats publishers
+    use: DD/MM/YYYY (Home Office, DfE), DD-MMM-YY (MoD), or Excel serial number
+    (MoJ family). Returns the original string unchanged if it can't be parsed.
+    """
+    if not s:
+        return ""
+    s = s.strip()
+    # Excel serial number — pure digits, plausible range (~25,000 = 1968 to ~73,000 = 2099)
+    if s.isdigit() and 20000 <= int(s) <= 80000:
+        try:
+            return (_EXCEL_EPOCH + timedelta(days=int(s))).isoformat()
+        except (ValueError, OverflowError):
+            pass
+    # Try common formats
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%b-%y", "%d-%b-%Y",
+                "%d/%m/%y", "%d %b %Y", "%d %B %Y",
+                "%d.%m.%Y", "%d.%m.%y"):
+        try:
+            return datetime.strptime(s, fmt).date().isoformat()
+        except ValueError:
+            continue
+    return s
+
+
 # ── Format handlers ──────────────────────────────────────────────────────────
 
 def _parse_home_office(path: Path):
@@ -91,7 +128,7 @@ def _parse_home_office(path: Path):
         raw_entity       = _find(row, "Expense Area", "ExpenseArea", "expense area")
         raw_supplier     = _find(row, "Supplier", "Supplier Name", "supplier name")
         amount           = _amount(_find(row, "Amount", "amount"))
-        payment_date     = _find(row, "Date", "Payment Date", "date")
+        payment_date     = _normalise_date(_find(row, "Date", "Payment Date", "date"))
         expense_type     = _find(row, "Expense Type", "ExpenseType", "expense type")
         expense_area     = raw_entity
 
@@ -118,7 +155,7 @@ def _parse_moj(path: Path):
         raw_supplier = _find(row, "Vendor Name", "Supplier", "Supplier Name",
                               "vendor name", "supplier")
         amount       = _amount(_find(row, "Amount", "Net Amount", "amount"))
-        payment_date = _find(row, "Payment Date", "Date", "payment date", "date")
+        payment_date = _normalise_date(_find(row, "Payment Date", "Date", "payment date", "date"))
         expense_type = _find(row, "Expenditure Type", "Expense Type",
                               "expenditure type", "expense type", "Category",
                               "category")
@@ -148,7 +185,7 @@ def _parse_dfe(path: Path):
         raw_supplier = _find(row, "Beneficiary", "Supplier", "supplier",
                               "beneficiary")
         amount       = _amount(_find(row, "Amount", "amount"))
-        payment_date = _find(row, "Date", "Payment Date", "date")
+        payment_date = _normalise_date(_find(row, "Date", "Payment Date", "date"))
         expense_type = _find(row, "Expenditure Type", "Expense Type",
                               "expenditure type", "expense type")
         expense_area = raw_entity
@@ -177,8 +214,8 @@ def _parse_mod(path: Path):
                               "TLB", "Top Level Budget", "tlb")
         raw_supplier = _find(row, "Supplier Name", "Supplier", "supplier name",
                               "supplier", "Vendor Name", "vendor name")
-        amount       = _amount(_find(row, "Amount", "amount", "Net Amount"))
-        payment_date = _find(row, "Date", "Payment Date", "date")
+        amount       = _amount(_find(row, "Amount", "amount", "Net Amount", "Total", "total"))
+        payment_date = _normalise_date(_find(row, "Date", "Payment Date", "date"))
         expense_type = _find(row, "Expense Type", "expenditure type",
                               "expense type", "Category", "category")
         expense_area = raw_entity
