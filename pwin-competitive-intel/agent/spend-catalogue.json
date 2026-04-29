@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "generated_at": "2026-04-29",
+    "annual_refresh_scheduled": "2027-03-01",
+    "description": "Static catalogue of UK government £25k spend transparency files. Four publish-at-parent families only (schema is department-agnostic — adding more families is a configuration change, not a code change).",
+    "coverage_note": "Seeded 2026-04-29 with 2025 calendar-year data for all four families. MoJ streams covered: HQ, HMCTS, LAA (2025 Jan-Jun). Home Office and DfE full 2025. MoD full 2025 in ODS format. Backfill to 2020 is a separate task — add earlier entries here following the same pattern.",
+    "format_ids": {
+      "home-office-v1": "Single file per month. Entity column names UKVI, Border Force, HMPO, Immigration Enforcement, and others. CSV.",
+      "ministry-of-justice-v1": "Separate file per MoJ body. Sub-org identity from entity_override in this catalogue (no Entity column in file). CSV.",
+      "department-for-education-v1": "Single file per month. Entity column names ESFA and other DfE sub-orgs. CSV.",
+      "ministry-of-defence-v1": "Single file per month. ODS format (OpenDocument Spreadsheet — not CSV). Top Level Budget and Entity columns. IMPORTANT: parser must use the ODS reader, not csv.DictReader."
+    }
+  },
+  "entries": [
+
+    {"department": "home-office", "year": 2025, "month": 1, "url": "https://assets.publishing.service.gov.uk/media/683d77ca8e9bdf1409b90b48/Home+Office+Spending+Over+25000+January+2025-1.1.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 2, "url": "https://assets.publishing.service.gov.uk/media/680749cd90dd6a0497e28842/Home+Office+Spending+Over+25000+February+2025.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 3, "url": "https://assets.publishing.service.gov.uk/media/683d7c2ca9b2749a8095e02b/Home+Office+Spending+Over+25000+March+2025.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 4, "url": "https://assets.publishing.service.gov.uk/media/685d6969e44db4975be00af0/Home-Office-Spending-Over-25000-Apr-2025.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 5, "url": "https://assets.publishing.service.gov.uk/media/68837732cec9ccd515ae0954/Home+Office+Spending+Over+25000+May+2025.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 6, "url": "https://assets.publishing.service.gov.uk/media/68ad85512f18566482155813/Home+Office+Spending+Over+25000+Jun+2025.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 7, "url": "https://assets.publishing.service.gov.uk/media/68d54b869ce370a7e0a0fcde/Home_Office_Spending_Over_25000_Jul_2025-AL3_.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 8, "url": "https://assets.publishing.service.gov.uk/media/68ff4ccc49d08dd781b4834f/Home+Office+Spending+Over+25000+Aug+2025.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 9, "url": "https://assets.publishing.service.gov.uk/media/69bab278bfd6895605dad7fc/Home_Office_Spending_Over_25000_Sep_2025-AL1_-Reload.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 10, "url": "https://assets.publishing.service.gov.uk/media/69aed680671a8a924c83eeb9/Home_Office_Spending_Over_25000_Oct_2025-AL1_-_Reload_.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 11, "url": "https://assets.publishing.service.gov.uk/media/69aed676671a8a924c83eeb8/Home_Office_Spending_Over_25000_Nov_2025-AL1_-_Reload_.csv", "format_id": "home-office-v1", "entity_override": null},
+    {"department": "home-office", "year": 2025, "month": 12, "url": "https://assets.publishing.service.gov.uk/media/69cd2d4e837d4b59e502d0bb/Home_Office_Spending_Over_25000_Dec_2025.csv", "format_id": "home-office-v1", "entity_override": null},
+
+    {"department": "ministry-of-justice", "year": 2025, "month": 1, "url": "https://assets.publishing.service.gov.uk/media/69a5b32ca56a5482312c7193/MOJHQ_-_spend_Jan_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "ministry-of-justice"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 2, "url": "https://assets.publishing.service.gov.uk/media/69a5b349bc86a487b52c719a/MOJHQ_-_spend_Feb_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "ministry-of-justice"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 3, "url": "https://assets.publishing.service.gov.uk/media/69df4ca6961ff0ba6bff8e83/MOJHQ_-_spend_Mar_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "ministry-of-justice"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 4, "url": "https://assets.publishing.service.gov.uk/media/69df4cc3b0b0b93055e04fcf/MOJHQ_-_spend_Apr_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "ministry-of-justice"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 5, "url": "https://assets.publishing.service.gov.uk/media/69df4cdc3e81003ae0422577/MOJHQ_-_spend_May_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "ministry-of-justice"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 6, "url": "https://assets.publishing.service.gov.uk/media/69df4cf5642d5aaff4e04fc0/MOJHQ_-_Jun_spend_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "ministry-of-justice"},
+
+    {"department": "ministry-of-justice", "year": 2025, "month": 1, "url": "https://assets.publishing.service.gov.uk/media/69a5b3b8a56a5482312c7195/HMCTS_-_spend_Jan_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "hm-courts-and-tribunals-service"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 2, "url": "https://assets.publishing.service.gov.uk/media/69a5b3d1bdca0a628ece181e/HMCTS_-_spend_Feb_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "hm-courts-and-tribunals-service"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 3, "url": "https://assets.publishing.service.gov.uk/media/69df4eebb0b0b93055e04fd1/HMCTS_-_spend_Mar_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "hm-courts-and-tribunals-service"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 4, "url": "https://assets.publishing.service.gov.uk/media/69df4f02b0b0b93055e04fd2/HMCTS_-_spend_Apr_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "hm-courts-and-tribunals-service"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 5, "url": "https://assets.publishing.service.gov.uk/media/69df4f172b60817d99ff8e80/HMCTS_-_spend_May_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "hm-courts-and-tribunals-service"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 6, "url": "https://assets.publishing.service.gov.uk/media/69df4f31961ff0ba6bff8e84/HMCTS_-_spend_Jun_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "hm-courts-and-tribunals-service"},
+
+    {"department": "ministry-of-justice", "year": 2025, "month": 1, "url": "https://assets.publishing.service.gov.uk/media/69a5b402a56a5482312c7196/LAA_-_spend_Jan_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "legal-aid-agency"},
+    {"department": "ministry-of-justice", "year": 2025, "month": 2, "url": "https://assets.publishing.service.gov.uk/media/69a5b41b238e02a088ce1816/LAA_-_spend_Feb_2025.csv", "format_id": "ministry-of-justice-v1", "entity_override": "legal-aid-agency"},
+
+    {"department": "department-for-education", "year": 2025, "month": 4, "url": "https://assets.publishing.service.gov.uk/media/68f0ff941c9076042263ef7c/DfE_Transparency__25k_April_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 5, "url": "https://assets.publishing.service.gov.uk/media/68f100e0f5d433238a14c6ca/DfE_Transparency__25k_May_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 6, "url": "https://assets.publishing.service.gov.uk/media/68f79c390cef4b4e32f12e06/DFE_Spend_Transparency__25k_June_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 7, "url": "https://assets.publishing.service.gov.uk/media/68f79c73f038caddfad11aa0/DFE_Spend_Transparency__25k_July_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 8, "url": "https://assets.publishing.service.gov.uk/media/6915d8bfdb01ecfcf96fc919/DfE_Transparency__25k_Aug_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 9, "url": "https://assets.publishing.service.gov.uk/media/6915d4fc9d50fc2fe8161777/DfE_Transparency__25k_Sept_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 10, "url": "https://assets.publishing.service.gov.uk/media/6970b7712b64f0e8c32e33f3/DfE_Transapency_Spend__25k_Oct25_.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 11, "url": "https://assets.publishing.service.gov.uk/media/6970bafb7e827090d02d4297/DfE_Transparency__25k_Nov_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2025, "month": 12, "url": "https://assets.publishing.service.gov.uk/media/699831acb33a4db7ff889ea2/DfE_Transparency_Spend_Dec_2025.csv", "format_id": "department-for-education-v1", "entity_override": null},
+    {"department": "department-for-education", "year": 2026, "month": 1, "url": "https://assets.publishing.service.gov.uk/media/69ba7c2b530e305110e7f5aa/DfE_Transparency__25k_JAN26.csv", "format_id": "department-for-education-v1", "entity_override": null},
+
+    {"_note": "MoD publishes ODS (spreadsheet) format, not CSV. The fetch script saves as .ods and the parser uses the ODS reader. See format_ids.ministry-of-defence-v1 above.", "department": "ministry-of-defence", "year": 2025, "month": 1, "url": "https://assets.publishing.service.gov.uk/media/67c81e268247839c255ae2bf/MOD_s_spending_over__25_000_for_January_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 2, "url": "https://assets.publishing.service.gov.uk/media/67ed40a2199d1cd55b48c68e/MOD_s_spending_over__25_000_for_February_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 3, "url": "https://assets.publishing.service.gov.uk/media/681b3c5943d6699b3c1d298a/MOD_s_spending_over__25_000_for_March_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 4, "url": "https://assets.publishing.service.gov.uk/media/685d0f07f85b4b993fd75271/MOD_s_spending_over__25_000_for_April_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 5, "url": "https://assets.publishing.service.gov.uk/media/68766bae352c290d20dcaecb/MOD_s_spending_over__25_000_for_May_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 6, "url": "https://assets.publishing.service.gov.uk/media/6895d37ea6eb81a3f9b2e2a2/MOD_s_spending_over__25_000_for_June_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 7, "url": "https://assets.publishing.service.gov.uk/media/68c2d77ceeb238b20672a9f5/MOD_s_spending_over__25_000_for_July_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 8, "url": "https://assets.publishing.service.gov.uk/media/68e661d4ef1c2f72bc1e4f13/MOD_s_spending_over__25_000_for_August_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 9, "url": "https://assets.publishing.service.gov.uk/media/690cc001276dd02bc451ab52/MOD_s_spending_over__25_000_for_September_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 10, "url": "https://assets.publishing.service.gov.uk/media/693ab1756a12691d48491dfd/MODs_spending_over__25_000_for_October_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 11, "url": "https://assets.publishing.service.gov.uk/media/6968d1f43f43dfed1544b099/MODs_spending_over__25_000_for_November_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null},
+    {"department": "ministry-of-defence", "year": 2025, "month": 12, "url": "https://assets.publishing.service.gov.uk/media/6981c834e8900d4c455f372e/MOD_s_spending_over__25_000_for_December_2025.ods", "format_id": "ministry-of-defence-v1", "entity_override": null}
+
+  ]
+}
