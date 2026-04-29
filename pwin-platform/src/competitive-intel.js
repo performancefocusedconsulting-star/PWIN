@@ -148,6 +148,8 @@ function _buildConsolidatedProfile(db, resolved, ids, memberRows, limit) {
 
   const memberNames = memberRows.map(m => m.name).filter(Boolean);
 
+  const spendSignal = _buildSpendSignal(db, resolved.canonicalId);
+
   return {
     buyers: [{
       id: resolved.canonicalId,
@@ -179,8 +181,55 @@ function _buildConsolidatedProfile(db, resolved, ids, memberRows, limit) {
         contractEndDate: r.contract_end_date,
         awardDate: r.award_date,
       })),
+      spendSignal,
     }],
   };
+}
+
+function _buildSpendSignal(db, canonicalId) {
+  try {
+    const tables = db.prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='spend_transactions'"
+    ).get();
+    if (!tables) return null;
+
+    const summary = db.prepare(`
+      SELECT
+        COUNT(*) AS row_count,
+        SUM(amount) AS total_amount,
+        MIN(payment_date) AS earliest,
+        MAX(payment_date) AS latest,
+        COUNT(DISTINCT raw_entity) AS entity_variants
+      FROM spend_transactions
+      WHERE canonical_sub_org_id = ?
+    `).get(canonicalId);
+
+    if (!summary || !summary.row_count) return null;
+
+    const topSuppliers = db.prepare(`
+      SELECT raw_supplier_name, canonical_supplier_id,
+             COUNT(*) AS transactions, SUM(amount) AS total
+      FROM spend_transactions
+      WHERE canonical_sub_org_id = ?
+      GROUP BY COALESCE(canonical_supplier_id, raw_supplier_name)
+      ORDER BY total DESC LIMIT 10
+    `).all(canonicalId);
+
+    return {
+      rowCount: summary.row_count,
+      totalAmount: summary.total_amount,
+      dateRange: { from: summary.earliest, to: summary.latest },
+      entityVariants: summary.entity_variants,
+      topSuppliers: topSuppliers.map(s => ({
+        name: s.raw_supplier_name,
+        canonicalId: s.canonical_supplier_id,
+        transactions: s.transactions,
+        total: s.total,
+      })),
+    };
+  } catch (err) {
+    return null;
+  }
 }
 
 function _buildRawProfile(db, rawBuyerIds, limit) {
