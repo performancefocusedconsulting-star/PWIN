@@ -833,6 +833,121 @@ Canonical buyer layer: 2,247 entities, 75.73% of all notices mapped (385,909 of 
 
 ---
 
+## §20 — Canonical buyer expansion programme: 55.6% → 85.1% (2026-04-29)
+
+This was the first full-programme canonical-layer expansion since the initial Phase 0 + Phase 1 build. It executed the plan at `docs/superpowers/plans/2026-04-28-canonical-buyer-expansion.md` end-to-end, lifting buyer-side coverage from 55.59% to 85.09% of all contract notices in two sessions.
+
+### Headline numbers
+
+| Metric | Baseline (2026-04-28) | Final (2026-04-29) | Delta |
+|---|---:|---:|---:|
+| Canonical entities | 1,939 | 4,155 | +2,216 (+114%) |
+| Canonical aliases | 3,942 | 8,804 | +4,862 (+123%) |
+| Notices mapped | 282,997 (55.59%) | 433,565 (85.09%) | +150,568 (+29.5pp) |
+| Notices unmapped | 226,051 | 75,988 | −150,063 |
+
+### The eight-stage programme
+
+Each stage was a self-contained iteration of the §5 curation workflow. Tasks were sequenced so each one's output unblocked the next, and the alias backfill ran after every stage so the database stayed in sync with the glossary.
+
+| Task | Category | Entities added | Coverage gain | Approach |
+|---|---|---:|---:|---|
+| 1 | Strengthen the alias normaliser | — | +8.10pp | Code change to `norm()` and `_norm()` (Ltd↔Limited, &↔and, THE-prefix, portal/eTendering suffix stripping). One pass through the existing canonical layer reclaimed tens of thousands of orphaned notices without adding any entities. |
+| 2 | Police forces, PCCs, joint procurement bodies | ~90 | +1.52pp | Hand-curated from the Home Office published list of forces. |
+| 3 | Universities + HE buying consortia | ~170 | +5.15pp | Hand-curated from Office for Students Register + SFC/HEFCW/DfE NI lists, plus six HE buying consortia (SUPC, TUCO, HEPCW, APUC, NEUPC, LUPC). |
+| 4 | Fire & rescue authorities | 50 | +0.65pp | Hand-curated from NFCC member list — 44 England + 1 Scotland (SFRS) + 3 Wales + 1 NI + NFCC. Note: the plan originally said England 45; the authoritative ONS dataset confirms 44 (Hampshire and IoW merged in 2021). |
+| 5 | Whitehall top-up | ~35 | +4.72pp | Audit of top-100 unmapped buyers identified ~35 central-government and arm's-length bodies missing from the GOV.UK API or under different aliases. Half were genuinely new entities; half were alias supplements to existing GOV.UK entries. Includes the discovery that `--skip-fetch` was stripping only entries with exactly `source = "hand_curated"` — fixed to strip everything starting with `hand_curated`. |
+| 6 | Multi-academy trusts | 540 | +0.37pp | Originally planned to fetch DfE GIAS group CSV but the published URL pattern returned 404. Workaround: combined the DfE Open Academies spreadsheet (112 trusts) with the DfE Financial Benchmarking Insight Tool suggest API queried for every MAT-like unmapped buyer name (469 trusts). 540 unique. |
+| 7 | Housing associations | 1,347 | +2.53pp | Fetched the Regulator of Social Housing register from GOV.UK as Excel, parsed in stdlib using `zipfile` + `xml.etree.ElementTree` (no openpyxl dependency). Filtered to private registered providers only — local-authority RPs are already canonicalised. |
+| 8 | Alias supplements pass + final docs | 14 + 27 alias merges | +6.46pp | A targeted cleanup file (`alias-supplements.json`) covering top-40 remaining unmapped: council name variants ("Bristol City Council" → `la-bristol-city-of`), sub-department suffixes ("London Borough of Haringey - Passenger Transport"), 9 missing NHS trusts including 2 Welsh health boards, plus genuinely new bodies (UKAEA, Scottish Water, Translink NI, NI Water, Merseytravel, Local Government Association, Financial Ombudsman Service, NMC, VOA, WRAP, Cumbria County Council as historical, etc.). |
+
+### What worked (and should be reused next time)
+
+**The expansion plan structure itself.** Each task was self-contained: one knowledge JSON, one merge call into the seed script, one regenerate/reload/backfill cycle, one verify query, one commit. This made it safe to checkpoint and resume across sessions and easy to delegate stages to subagents.
+
+**Generating alias seeds from the database before hand-curating.** Each task started with a query that returned the unmapped buyer names matching the category's keyword pattern. That output was the input for the alias arrays — every variant the publishers actually use, captured first time. Without this step the hand-curated aliases miss the strings the data actually contains.
+
+**The `Alias supplement` pattern as a first-class construct.** Most of Task 8's wins were not new entities — they were alias-supplement entries with `type: "Alias supplement"` and a `canonical_id` matching an existing entity. `merge_hand_curated()` already supported this (see lines 219–226 of `seed-canonical-buyers.py`): if the canonical_id exists, the supplement's aliases are merged into the existing entity. The pattern lets a single JSON file fix dozens of name-variant gaps without bloating the entity count or duplicating canonical metadata.
+
+**The 90% acceptance bar was aspirational.** The plan estimated four tasks would add ~28,000 notices and clear 90%. Actual: ~50,000 notices but the category-by-category gains were uneven. Tasks 5 and 8 (Whitehall top-up and alias supplements) over-delivered; Tasks 4, 6, 7 (fire, MAT, housing) delivered less than estimated because the publishers in those categories tend to publish at parent or under abbreviations the seed list didn't catch. For future programmes, **estimate per-task gain by querying the category's unmapped notice count first**, not by entity count — entity count and notice count diverge sharply for the long tail.
+
+### Lessons learned
+
+**The fundamental insight: the practical ceiling is ~86–87%, not 100% or 90%.** The remaining ~15% of unmapped notices break into three structural buckets:
+
+1. **eProcurement platform intermediaries** publishing under their own name (BIP Solutions, capitalEsourcing, ATAMIS, Mercell UK, In-Tend, Partners Procurement Service, WESTWORKS, Procurement Assist, PROSPER). These are tender-portal companies, not public buyers. Canonicalising them would mis-attribute the underlying buyer's procurement to a software vendor. Total: ~3,500 notices.
+2. **Private-sector contractors** publishing notices under their own legal-entity name (Leidos Supply, Corserv Limited, Amey Defence Services, Kier Transportation, Advance Northumberland Limited, etc.). These are companies bidding for or sub-letting public contracts — they're suppliers, not buyers. Total: a few thousand notices.
+3. **One-off and rare buyers** — small charities, joint-venture special-purpose vehicles, foreign organisations placing UK-side procurement, defunct bodies. Each appears in 1–10 notices. Total: tens of thousands of notices but no concentration.
+
+**Rule:** for future expansions, compute a "structural ceiling" estimate before setting an acceptance bar. The structural ceiling is `1 − (eProcurement-platform notices + private-contractor notices + one-off notices) / total notices`. For UK FTS data the ceiling sits around 86–88%. Anything more requires a fundamentally different approach (e.g. resolving the underlying buyer behind each platform notice via the title or contract description).
+
+**Strengthening the normaliser was the highest-leverage single task.** Task 1's +8.1pp gain on a single code change beat any of the data-curation tasks on a per-effort basis. Adding rules for `Ltd↔Limited`, `&↔and`, `THE` prefix, and portal/eTendering suffix stripping reclaimed notices that had matching canonical entities all along but were missed by exact-string matching. **Always strengthen the normaliser before adding new categories** — every new alias added afterwards benefits from the cleaner normalisation.
+
+**Sub-department suffix patterns are an under-appreciated source of orphans.** "Suffolk County Council Passenger Transport", "London Borough of Haringey - Parks and Leisure", "Royal Borough of Greenwich - managed by GS Plus Ltd" — all of these are the same canonical entity publishing under a sub-team or operating-partner annotation. The current normaliser strips parenthesised suffixes but not " - " or " Passenger Transport"–style trailing decorations. A future enhancement could add a rule that strips trailing " - <text>" and " <DepartmentSuffixWord>" patterns when the leading prefix matches a canonical alias. For now, these are handled with explicit alias-supplement entries.
+
+**Historical entities matter for backfill.** Cumbria County Council was abolished in April 2023 (replaced by Cumberland and Westmorland and Furness). It still has 3,000+ pre-2023 notices in the database. The right pattern is to add it as a canonical entity with `status: "historical"` and a `_note` field explaining the timeline. Don't try to redirect historical notices to the successor entities — that would lose the procurement history of the abolished body.
+
+**Glossary fields are not enforced beyond the schema.** When adding new entities, the seed script accepts arbitrary fields (`subtype`, `_note`, anything new). This is liberating but means the layer's quality depends on author discipline. Always include `canonical_id`, `canonical_name`, `type`, `aliases`, `status`, and `source` at minimum. Use `subtype` for filterable categorisation. Use `_note` for free-text explanations a future operator will need.
+
+**Spec compliance review found bugs the implementer's self-report missed.** During Task 4, the implementer reported 50 entities and 174 aliases. Spec review caught the actual file contents: 50 entities, 191 aliases, 18 duplicate or trailing-whitespace aliases. Five of those duplicates collapsed silently at load time (so functionally fine) but cleaner data is easier to maintain. Always verify counts against the file, not the report.
+
+**Re-running `--skip-fetch` is the right way to iterate.** The seed script's `--skip-fetch` flag loads the cached GOV.UK fetch (which takes 2+ minutes), strips hand-curated entries, and re-merges. This makes the iteration loop fast (~10 seconds end-to-end). Every task in the programme used it. Without it, each iteration would have hit the GOV.UK API 1,251 times.
+
+**The `--skip-fetch` strip filter had a bug for sources prefixed with `hand_curated_`.** Original code stripped only entries where `source == "hand_curated"` (exact match). New entities had sources like `hand_curated_police`, `hand_curated_universities`, `hand_curated_fire` — these were not stripped, which meant on every re-run the same entities were duplicated as ghosts. Fixed in Task 5 to strip anything starting with `hand_curated`. **Anyone adding a new hand-curated category must use a `hand_curated_<category>` source value** for this to work.
+
+### The operational sequence to repeat next time
+
+This is the rhythm that worked for every task in the programme. Memorise it.
+
+```
+1. Audit:    Generate alias seed list from DB. Filter unmapped, group by name, sort by notice count.
+2. Decide:   For each top-N name, decide: alias supplement to existing entity, or new entity?
+             Use the existing-glossary lookup to confirm before creating new entities.
+3. Curate:   Hand-craft the JSON. Always include all observed name variants from the seed list.
+4. Wire:     Add the constant + merge call to seed-canonical-buyers.py before write_output.
+5. Generate: python scripts/seed-canonical-buyers.py --skip-fetch (from pwin-platform/)
+6. Reload:   python agent/load-canonical-buyers.py (from pwin-competitive-intel/)
+7. Backfill: python agent/backfill-buyer-aliases.py (from pwin-competitive-intel/)
+8. Verify:   Coverage delta, plus zero-match audit per new entity.
+9. Commit:   feat(intel): add <category> to canonical layer + coverage delta in message
+```
+
+**Steps 5–8 should run together in one shell loop** because they always run together and any individual step's output without the others is misleading. Treat them as a single atomic operation in your mental model.
+
+### Anti-patterns observed during this programme
+
+- **Don't try to canonicalise eProcurement platforms.** BIP Solutions / capitalEsourcing / ATAMIS / Mercell UK are not buyers — they're tender-portal companies that publish on behalf of buyers. Resolving them to "platform X" would mis-attribute every notice to the platform. They should remain unmapped, or eventually be flagged with a separate `is_intermediary: true` field if the data layer ever needs to distinguish them.
+- **Don't try to canonicalise private contractors publishing as buyers.** Leidos, Corserv, Amey, Kier — these are suppliers/contractors that occasionally publish a procurement notice (typically for sub-tier supply chain). They should be in the canonical-supplier layer, not the canonical-buyer layer. If the data eventually needs to support both directions of resolution, add the contractor's company entity to `canonical_suppliers`, not `canonical_buyers`.
+- **Don't add an entity without confirming it doesn't already exist under a different canonical ID.** Task 5 caught two collisions (`hs2-limited` colliding with `high-speed-two-limited`, `sellafield` colliding with `sellafield-ltd`) that would have polluted the layer. The pre-flight check is one Python snippet; always run it.
+- **Don't trust the implementer's row count or entity count without verifying the file.** Read the file, count entities yourself, count aliases yourself. Reports are written from memory at the end of a session and accumulate small inaccuracies.
+
+### Files added and modified across the programme
+
+**New knowledge files (all in `pwin-platform/knowledge/`):**
+
+- `police-forces.json` — 90 entities (43 territorial forces + Met + COL + 4 specialist + Police Scotland + PSNI + 41 PCCs + ~8 joint procurement bodies)
+- `universities.json` — ~170 entities (UK degree-awarding bodies + 6 HE buying consortia)
+- `fire-and-rescue.json` — 50 entities (45 territorial including IoW historical + Scotland + 3 Wales + NI + NFCC)
+- `whitehall-topup.json` — ~35 entities (genuinely new bodies + alias supplements to existing GOV.UK entries)
+- `multi-academy-trusts.json` — 540 entities (auto-generated)
+- `housing-associations.json` — 1,347 entities (auto-generated)
+- `alias-supplements.json` — ~40 entries mostly alias supplements + 14 new entities
+
+**New scripts (all in `pwin-platform/scripts/`):**
+
+- `seed-mat-from-gias.py` — DfE Open Academies + FBIT API fetcher
+- `seed-housing-from-rsh.py` — Regulator of Social Housing register fetcher (handles xlsx via stdlib zipfile)
+
+**Modified scripts:**
+
+- `pwin-platform/scripts/seed-canonical-buyers.py` — six new constants + six new merge calls + `--skip-fetch` strip-filter fix
+- `pwin-competitive-intel/agent/load-canonical-buyers.py` — strengthened `norm()`
+- `pwin-competitive-intel/agent/backfill-buyer-aliases.py` — strengthened `_norm()` to mirror
+
+**Tests:**
+
+- `pwin-competitive-intel/agent/test_normaliser.py` — pins the load↔backfill normaliser parity. Run after any change to either function.
+
 ## Change log
 
 | Version | Date | Summary |
@@ -845,4 +960,6 @@ Canonical buyer layer: 2,247 entities, 75.73% of all notices mapped (385,909 of 
 | 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |
 | 1.5 | 2026-04-28 | Added §17: Sub-organisation pass. 9 new canonicals (Defence Digital, UK Strategic Command, IPA, NIC, etc.), multi-part candidate splitting, hierarchy-aware ambiguity resolution. 667 new aliases, 1,427 rows back-filled. Sub-org dossiers operational. |
 | 1.6 | 2026-04-28 | Added §18: Five additional alias gaps closed (LAA, Dstl spaced, DIO doubled, DE&S Deca, NI Youth Justice). Procurement Act 2023 UK7 / UK9 / UK10 / UK11 notice capture fixed in `agent/ingest.py` — parser was reading `noticeType` from the wrong OCDS location. Publish-at-parent finding documented: 5% of contract awards (22k of 447k) dark at sub-organisation level across MoJ, Home Office, DfE, MoD; UK7 doesn't fix this; overlay strategy required. |
+| 1.7 | 2026-04-29 | Added §19: £25k spend transparency ingest Wave 1 — 8 implementation tasks, spend_transactions/spend_files_state schema, 48 verified URLs, four department format handlers, spend signal on buyer profiles. |
+| 1.8 | 2026-04-29 | Added §20: Canonical buyer expansion programme — 55.6% → 85.1% notice coverage, 1,939 → 4,155 entities, eight-stage plan. Lessons: normaliser-strengthening is highest-leverage, 86–87% is the structural ceiling (eProcurement platforms + private contractors + one-off buyers), `Alias supplement` pattern formalised, operational sequence locked. |
 | 1.7 | 2026-04-29 | Added §19: £25k spend transparency ingest Wave 1 pipeline (8 tasks). 48 verified URLs in catalogue. ODS reader for MoD. entity_override pattern for MoJ streams. spendSignal added to buyer profile. Nightly digest integration. 23 tests. |
