@@ -50,6 +50,7 @@ LOCAL_AUTH = os.path.join(KNOWLEDGE_DIR, "local-authorities.json")
 DEVOLVED = os.path.join(KNOWLEDGE_DIR, "devolved-and-combined.json")
 POLICE = os.path.join(KNOWLEDGE_DIR, "police-forces.json")
 UNIVERSITIES = os.path.join(KNOWLEDGE_DIR, "universities.json")
+FIRE_RESCUE = os.path.join(KNOWLEDGE_DIR, "fire-and-rescue.json")
 
 
 def fetch_page(page: int) -> dict:
@@ -364,6 +365,10 @@ def main():
     print(f"\nMerging universities and HE consortia from {UNIVERSITIES}...")
     uni_added, uni_merged = merge_hand_curated(glossary, UNIVERSITIES)
     print(f"  +{uni_added} new entities, {uni_merged} alias merges")
+
+    print(f"\nMerging fire and rescue authorities from {FIRE_RESCUE}...")
+    fire_added, fire_merged = merge_hand_curated(glossary, FIRE_RESCUE)
+    print(f"  +{fire_added} new entities, {fire_merged} alias merges")
 
     write_output(glossary, args.output)
     print_stats(glossary)
