@@ -127,8 +127,8 @@ These are concrete and important but they are refinements on the architectural s
 - **Pursuit state** — where it lives, who reads it, who writes it, version semantics
 - **Invocation surface** — slash command, conversational interface, both, with what arguments
 - **Engagement-scope override** — how a consultant extends scope mid-engagement
-- **MCP read tools** — `get_buyer_intelligence_dossier`, `get_supplier_dossier`, `get_sector_brief`, `get_incumbency_analysis`, `get_stakeholder_map` — needed before the orchestrator can run end-to-end. These are also called for separately by the [Agent 2 → downstream pipeline gap](wiki/platform/agent2-to-downstream-pipeline-gap.md) note.
-- **Skill-side context provider** in the skill-runner so each Agent 3 skill can request `buyer_dossier`, `supplier_dossier` etc. as part of its declared context.
+- **MCP read tools** — `get_buyer_intelligence_dossier`, `get_supplier_dossier`, `get_sector_brief`, `get_incumbency_analysis` are **delivered by Plan A** ([docs/superpowers/plans/2026-04-30-orchestrator-plan-a-platform-foundations.md](../plans/2026-04-30-orchestrator-plan-a-platform-foundations.md)). `get_stakeholder_map` is deferred until the stakeholder canonical layer is built (`wiki/actions/pwin-stakeholder-canonical-layer.md`).
+- **Skill-side context provider in the skill-runner** — **delivered by Plan A.** `buyer_dossier`, `supplier_dossier`, `sector_brief`, `incumbency_analysis` are now available context items for any skill.
 
 ## 6. What is deliberately out of scope
 
