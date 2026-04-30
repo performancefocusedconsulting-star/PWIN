@@ -330,4 +330,5 @@ These apply across every mode.
     `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier`. Cite
     claims inline using `[CLM-id]` markers. A material claim with no `claimId`
     citation in the narrative is a contract violation. See
-    `../CLAIMS-BLOCK-SCHEMA.md` and §13 of the Universal Skill Spec.
+    `../CLAIMS-BLOCK-SCHEMA.md`, §13 of the Universal Skill Spec, and
+    `../scripts/validate_claims_block.py` (the platform compliance validator).
