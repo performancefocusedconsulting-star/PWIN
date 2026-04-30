@@ -95,5 +95,15 @@ class ValidStructureTests(unittest.TestCase):
         )
 
 
+class PerSkillFixtureTests(unittest.TestCase):
+    def test_buyer_defence_digital_fixture_passes_validator(self):
+        result = validate(_load("buyer_defence_digital_v1.json"))
+        self.assertEqual(
+            result.errors,
+            [],
+            f"Defence Digital fixture failed validator: {result.errors}",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
