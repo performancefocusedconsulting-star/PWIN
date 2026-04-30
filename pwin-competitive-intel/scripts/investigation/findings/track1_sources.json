@@ -1,0 +1,72 @@
+{
+  "hmt": {
+    "dept_id": "hmt",
+    "name": "HM Treasury",
+    "query_used": "HM Treasury organogram senior staff salaries",
+    "dataset_found": "Organogram of Staff Roles & Salaries",
+    "dataset_url": "https://data.gov.uk/dataset/organogram-hm-treasury",
+    "resource_name": "2025-12-31 Organogram (Senior)",
+    "resource_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/organogram-hm-treasury/resources/2026-01-15T16-07-06Z-2025-12-31-organogram-senior.csv",
+    "resource_format": "CSV",
+    "resource_last_modified": null,
+    "local_path": "C:\\Users\\User\\Documents\\GitHub\\PWIN\\pwin-competitive-intel\\scripts\\investigation\\findings\\raw_organograms\\hmt_senior_staff.csv",
+    "download_ok": true,
+    "absence_note": null
+  },
+  "mod": {
+    "dept_id": "mod",
+    "name": "Ministry of Defence",
+    "query_used": "Ministry of Defence organogram senior staff salaries",
+    "dataset_found": "MOD-Organogram of Staff Roles & Salaries-HO",
+    "dataset_url": "https://data.gov.uk/dataset/organogram-head-office-and-corporate-services-mod",
+    "resource_name": "2026-03-31 Organogram (Senior)",
+    "resource_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/organogram-head-office-and-corporate-services-mod/resources/2026-04-30T15-12-14Z-2026-03-31-organogram-senior.csv",
+    "resource_format": "CSV",
+    "resource_last_modified": null,
+    "local_path": "C:\\Users\\User\\Documents\\GitHub\\PWIN\\pwin-competitive-intel\\scripts\\investigation\\findings\\raw_organograms\\mod_senior_staff.csv",
+    "download_ok": true,
+    "absence_note": null
+  },
+  "dfe": {
+    "dept_id": "dfe",
+    "name": "Department for Education",
+    "query_used": "Department for Education organogram senior staff salaries",
+    "dataset_found": "Organogram of Staff Roles & Salaries",
+    "dataset_url": "https://data.gov.uk/dataset/organogram-department-for-education",
+    "resource_name": "2026-03-31 Organogram (Senior)",
+    "resource_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/organogram-department-for-education/resources/2026-04-30T06-55-58Z-2026-03-31-organogram-senior.csv",
+    "resource_format": "CSV",
+    "resource_last_modified": null,
+    "local_path": "C:\\Users\\User\\Documents\\GitHub\\PWIN\\pwin-competitive-intel\\scripts\\investigation\\findings\\raw_organograms\\dfe_senior_staff.csv",
+    "download_ok": true,
+    "absence_note": null
+  },
+  "nhse": {
+    "dept_id": "nhse",
+    "name": "NHS England",
+    "query_used": "NHS England organogram senior staff",
+    "dataset_found": "Organogram of Staff Roles & Salaries",
+    "dataset_url": "https://data.gov.uk/dataset/organogram-nhs-england",
+    "resource_name": null,
+    "resource_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/legacy/organogram/nhs-england/30/9/2016/300916_NHSEngland_Organogram_Final-senior.csv",
+    "resource_format": "CSV",
+    "resource_last_modified": null,
+    "local_path": "C:\\Users\\User\\Documents\\GitHub\\PWIN\\pwin-competitive-intel\\scripts\\investigation\\findings\\raw_organograms\\nhse_senior_staff.csv",
+    "download_ok": true,
+    "absence_note": "Dataset found but most recent senior-staff file dates from 2016. NHS England stopped publishing organograms in the Cabinet Office standard format after its 2013-2016 publication run. The downloaded file is historical only -- not suitable for current stakeholder identification."
+  },
+  "bcc": {
+    "dept_id": "bcc",
+    "name": "Birmingham City Council",
+    "query_used": "Birmingham City Council organogram senior staff",
+    "dataset_found": null,
+    "dataset_url": null,
+    "resource_name": null,
+    "resource_url": null,
+    "resource_format": null,
+    "resource_last_modified": null,
+    "local_path": null,
+    "download_ok": false,
+    "absence_note": "No organogram dataset found on data.gov.uk. Local authorities have no organogram publishing requirement under the Cabinet Office transparency mandate (which covers central government departments and arm's-length bodies only). Birmingham City Council does not appear to publish a senior-staff organogram in the standard Cabinet Office CSV format."
+  }
+}
