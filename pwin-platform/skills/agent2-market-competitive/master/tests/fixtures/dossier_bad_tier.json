@@ -1,0 +1,16 @@
+{
+  "meta": {"version": "1.0.0", "buyer": "Test Buyer", "buildDate": "2026-04-30"},
+  "claims": [
+    {
+      "claimId": "CLM-001",
+      "claimText": "Test Buyer published a digital strategy in March 2026.",
+      "claimDate": "2026-04-30",
+      "source": "https://random-blog.example.com/post",
+      "sourceDate": "2026-03-15",
+      "sourceTier": 5
+    }
+  ],
+  "buyerSnapshot": {
+    "narrative": "Test Buyer published a digital strategy [CLM-001]."
+  }
+}

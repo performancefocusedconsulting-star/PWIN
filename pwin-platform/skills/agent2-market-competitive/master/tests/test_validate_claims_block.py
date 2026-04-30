@@ -40,6 +40,14 @@ class ValidStructureTests(unittest.TestCase):
             f"Expected an error mentioning orphan 'CLM-002', got: {result.errors}",
         )
 
+    def test_bad_source_tier_fails(self):
+        result = validate(_load("dossier_bad_tier.json"))
+        self.assertFalse(result.ok)
+        self.assertTrue(
+            any("sourceTier" in err and "5" in err for err in result.errors),
+            f"Expected an error mentioning bad sourceTier '5', got: {result.errors}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
