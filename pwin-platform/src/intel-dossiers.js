@@ -31,6 +31,12 @@ function slugify(name) {
     .replace(/(^-|-$)/g, '');
 }
 
+// Returns the canonical (un-versioned) path for a dossier — useful for
+// constructing user-facing messages like "expected at <path>".
+// IMPORTANT: do NOT use this to read files. The producing skills may emit
+// versioned siblings (e.g. *-dossier-v2.json), and only `getDossier` does
+// the mtime-based latest-version resolution. Reading via this path
+// directly will silently miss newer versions.
 function dossierPath(type, slug) {
   const artefact = TYPE_TO_ARTEFACT[type];
   if (!artefact) throw new Error(`Unknown type: "${type}" — expected one of: ${Object.keys(TYPE_TO_ARTEFACT).join(', ')}`);
