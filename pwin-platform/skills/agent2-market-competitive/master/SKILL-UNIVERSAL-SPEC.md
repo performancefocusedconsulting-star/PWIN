@@ -362,6 +362,8 @@ Every skill's `SKILL.md` must contain, at minimum:
 - [ ] HTML render step
 - [ ] Hard rules (numbered)
 - [ ] Source register specification
+- [ ] Claims block (`claims[]` array) present and conforming to `CLAIMS-BLOCK-SCHEMA.md`
+      (see §13). Validate with `scripts/validate_claims_block.py` before committing.
 
 ---
 
@@ -389,6 +391,7 @@ These fields appear at the top of every artefact JSON, regardless of skill:
     "versionLog": [ /* see section 4 */ ]
   },
   "changeSummary": [ /* see section 5, empty on build */ ],
+  "claims": [ /* see section 13 */ ],
   "sourceRegister": { /* see section 6 */ },
   /* skill-specific sections follow */
 }
