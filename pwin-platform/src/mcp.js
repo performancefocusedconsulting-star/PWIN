@@ -1733,7 +1733,7 @@ function createMcpServer() {
     'get_supplier_dossier',
     'Load the Agent 2 supplier-intelligence dossier (rich narrative + structured claims). Distinct from get_supplier_profile which returns the lighter procurement-database summary. Returns the most recently modified version on disk.',
     {
-      name: z.string().describe('Supplier name; will be slugified to find the dossier file'),
+      name: z.string().describe('Supplier name; will be slugified to find the dossier file (e.g. "Serco" → serco-dossier.json)'),
     },
     async ({ name }) => {
       const slug = intelDossiers.slugify(name);
@@ -1747,7 +1747,7 @@ function createMcpServer() {
 
   server.tool(
     'get_sector_brief',
-    'Load the Agent 2 sector-intelligence brief. Returns the most recently modified version on disk.',
+    'Load the Agent 2 sector-intelligence brief (rich narrative, competitive landscape, buyer patterns). Distinct from get_sector_knowledge which returns the platform seed knowledge base. Returns the most recently modified version on disk.',
     {
       sector: z.string().describe('Sector name; will be slugified to find the brief file'),
     },
@@ -1772,7 +1772,7 @@ function createMcpServer() {
       const slug = `${intelDossiers.slugify(supplierName)}-${intelDossiers.slugify(buyerName)}`;
       const data = await intelDossiers.getDossier('incumbency', slug);
       if (!data) {
-        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No incumbency analysis found for "${supplierName}" at "${buyerName}" at ~/.pwin/intel/incumbency/${slug}-analysis.json` }, null, 2) }] };
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No incumbency analysis found for "${supplierName}" / "${buyerName}" — expected at ~/.pwin/intel/incumbency/${slug}-analysis.json` }, null, 2) }] };
       }
       return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
     }
