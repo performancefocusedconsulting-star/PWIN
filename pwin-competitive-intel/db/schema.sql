@@ -577,6 +577,8 @@ CREATE TABLE IF NOT EXISTS framework_suppliers (
 
 CREATE INDEX IF NOT EXISTS idx_fw_sup_fw  ON framework_suppliers(framework_id);
 CREATE INDEX IF NOT EXISTS idx_fw_sup_can ON framework_suppliers(supplier_canonical_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_sup_unique
+    ON framework_suppliers(framework_id, COALESCE(lot_id, 0), COALESCE(supplier_canonical_id, ''));
 
 CREATE TABLE IF NOT EXISTS framework_call_offs (
     id                    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -597,3 +599,6 @@ CREATE INDEX IF NOT EXISTS idx_fw_co_fw       ON framework_call_offs(framework_i
 CREATE INDEX IF NOT EXISTS idx_fw_co_notice   ON framework_call_offs(notice_ocid);
 CREATE INDEX IF NOT EXISTS idx_fw_co_buyer    ON framework_call_offs(buyer_canonical_id);
 CREATE INDEX IF NOT EXISTS idx_fw_co_supplier ON framework_call_offs(supplier_canonical_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_co_unique
+    ON framework_call_offs(framework_id, notice_ocid)
+    WHERE notice_ocid IS NOT NULL;

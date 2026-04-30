@@ -7,7 +7,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "agent"))
 import db_utils
 
 SCHEMA_PATH = Path(__file__).parent.parent / "db" / "schema.sql"
-DB_PATH = Path(__file__).parent.parent / "db" / "bid_intel.db"
 
 
 def _make_db() -> sqlite3.Connection:
@@ -69,10 +68,17 @@ def test_framework_call_offs_columns():
 
 
 def test_migration_idempotent():
-    """Running init_schema twice must not raise."""
+    """Running init_schema twice must not raise or drop tables."""
     conn = _make_db()
     db_utils.init_schema(conn, SCHEMA_PATH)
     db_utils.init_schema(conn, SCHEMA_PATH)  # second call must be safe
+    tables = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    ).fetchall()}
+    assert "frameworks" in tables
+    assert "framework_lots" in tables
+    assert "framework_suppliers" in tables
+    assert "framework_call_offs" in tables
 
 
 if __name__ == "__main__":
