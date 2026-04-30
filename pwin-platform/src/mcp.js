@@ -13,6 +13,7 @@ import { randomUUID } from 'node:crypto';
 import * as store from './store.js';
 import { validateAIWrite } from './permissions.js';
 import * as compIntel from './competitive-intel.js';
+import * as intelDossiers from './intel-dossiers.js';
 
 function createMcpServer() {
   const server = new McpServer({
@@ -1702,6 +1703,78 @@ function createMcpServer() {
     async ({ name, limit }) => {
       const result = compIntel.supplierProfile(name, limit);
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  // ==========================================================================
+  // Agent 2 INTELLIGENCE DOSSIERS — read-only loaders for the rich dossiers
+  // produced by the four Agent 2 skills. These are distinct from
+  // get_buyer_profile / get_supplier_profile, which return the lighter
+  // procurement-database summary from competitive-intel.js.
+  // ==========================================================================
+
+  server.tool(
+    'get_buyer_intelligence_dossier',
+    'Load the Agent 2 buyer-intelligence dossier (rich narrative + structured claims). Distinct from get_buyer_profile which returns the lighter procurement-database summary. Returns the most recently modified version on disk.',
+    {
+      name: z.string().describe('Buyer name; will be slugified to find the dossier file (e.g. "Home Office" → home-office-dossier.json)'),
+    },
+    async ({ name }) => {
+      const slug = intelDossiers.slugify(name);
+      const data = await intelDossiers.getDossier('buyers', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No buyer dossier found for "${name}" at ~/.pwin/intel/buyers/${slug}-dossier.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_supplier_dossier',
+    'Load the Agent 2 supplier-intelligence dossier (rich narrative + structured claims). Distinct from get_supplier_profile which returns the lighter procurement-database summary. Returns the most recently modified version on disk.',
+    {
+      name: z.string().describe('Supplier name; will be slugified to find the dossier file'),
+    },
+    async ({ name }) => {
+      const slug = intelDossiers.slugify(name);
+      const data = await intelDossiers.getDossier('suppliers', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No supplier dossier found for "${name}" at ~/.pwin/intel/suppliers/${slug}-dossier.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_sector_brief',
+    'Load the Agent 2 sector-intelligence brief. Returns the most recently modified version on disk.',
+    {
+      sector: z.string().describe('Sector name; will be slugified to find the brief file'),
+    },
+    async ({ sector }) => {
+      const slug = intelDossiers.slugify(sector);
+      const data = await intelDossiers.getDossier('sectors', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No sector brief found for "${sector}" at ~/.pwin/intel/sectors/${slug}-brief.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_incumbency_analysis',
+    'Load the Agent 2 incumbency advantage / displacement strategy analysis. Keyed by a (supplier, buyer) pair slug. Returns the most recently modified version on disk.',
+    {
+      supplierName: z.string().describe('Incumbent supplier name (e.g. "Serco")'),
+      buyerName: z.string().describe('Buyer name (e.g. "Ministry of Defence")'),
+    },
+    async ({ supplierName, buyerName }) => {
+      const slug = `${intelDossiers.slugify(supplierName)}-${intelDossiers.slugify(buyerName)}`;
+      const data = await intelDossiers.getDossier('incumbency', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No incumbency analysis found for "${supplierName}" at "${buyerName}" at ~/.pwin/intel/incumbency/${slug}-analysis.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
     }
   );
 
