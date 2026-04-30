@@ -69,6 +69,12 @@ def run_step(label: str, args: list[str], fatal: bool = False) -> int:
 
 
 if __name__ == "__main__":
+    import argparse as _ap
+    _parser = _ap.ArgumentParser()
+    _parser.add_argument("--with-frameworks-catalogue", action="store_true",
+                         help="Also run the monthly CCS catalogue ingest")
+    _args, _ = _parser.parse_known_args()
+
     log.info("Nightly pipeline starting")
 
     fts_rc = run_step("Find a Tender ingest",
@@ -98,6 +104,18 @@ if __name__ == "__main__":
     # Non-fatal — a failure here must not stop the core data pipeline.
     run_step("Spend transparency: parse downloaded files + canonicalise",
              [str(AGENT_DIR / "ingest_spend.py")])
+
+    # Framework call-off mining: links newly ingested contracts to the frameworks
+    # canonical layer. Non-fatal — a failure here must not stop the core pipeline.
+    run_step("Framework call-off mining",
+             [str(AGENT_DIR / "mine_framework_calloffs.py")])
+
+    # Monthly: CCS catalogue ingest (run with --with-frameworks-catalogue)
+    if _args.with_frameworks_catalogue:
+        run_step("CCS framework catalogue ingest",
+                 [str(AGENT_DIR / "ingest_frameworks_catalogue.py")])
+        run_step("Framework consolidation",
+                 [str(AGENT_DIR / "consolidate_frameworks.py")])
 
     log.info("Nightly pipeline complete")
     sys.exit(0 if fts_rc == 0 else fts_rc)
