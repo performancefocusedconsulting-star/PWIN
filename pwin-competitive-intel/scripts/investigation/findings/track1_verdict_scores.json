@@ -1,0 +1,105 @@
+{
+  "coverage": {
+    "per_department": {
+      "hmt": {
+        "status": "parsed",
+        "named": 44,
+        "total_rows": 165,
+        "expected_scs_approx": 60,
+        "coverage_of_expected_pct": 73.3,
+        "naming_rate_pct": 26.7,
+        "notes": [
+          "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2025-12-31",
+          "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
+        ],
+        "verdict": "build_narrower"
+      },
+      "mod": {
+        "status": "parsed",
+        "named": 43,
+        "total_rows": 213,
+        "expected_scs_approx": 500,
+        "coverage_of_expected_pct": 8.6,
+        "naming_rate_pct": 20.2,
+        "notes": [
+          "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31",
+          "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
+        ],
+        "verdict": "dont_build"
+      },
+      "dfe": {
+        "status": "parsed",
+        "named": 56,
+        "total_rows": 267,
+        "expected_scs_approx": 200,
+        "coverage_of_expected_pct": 28.0,
+        "naming_rate_pct": 21.0,
+        "notes": [
+          "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31",
+          "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
+        ],
+        "verdict": "dont_build"
+      },
+      "nhse": {
+        "status": "parsed",
+        "named": 258,
+        "total_rows": 258,
+        "expected_scs_approx": null,
+        "coverage_of_expected_pct": null,
+        "naming_rate_pct": 100.0,
+        "notes": [
+          "Data from September 2016 — NHS England stopped publishing organograms in Cabinet Office CSV format. Not suitable for current stakeholder identification."
+        ]
+      },
+      "bcc": {
+        "status": "absent",
+        "named": 0,
+        "total_rows": 0,
+        "expected_scs_approx": null,
+        "coverage_of_expected_pct": null,
+        "naming_rate_pct": null
+      }
+    },
+    "avg_central_gov_naming_rate_pct": 22.6,
+    "note": "naming_rate_pct = named staff / total SCS posts in organogram. Only ~20-27% of SCS posts are named; the rest are redacted under Cabinet Office disclosure policy. Named posts are primarily Director (SCS2) and above. Deputy Director and Grade 6 commercial leads (SCS1) are largely redacted.",
+    "verdict": "dont_build"
+  },
+  "currency": {
+    "per_department": {
+      "hmt": {
+        "date_source": "url_embedded",
+        "snapshot_date": "2025-12-31",
+        "lag_days": 120
+      },
+      "mod": {
+        "date_source": "url_embedded",
+        "snapshot_date": "2026-03-31",
+        "lag_days": 30
+      },
+      "dfe": {
+        "date_source": "url_embedded",
+        "snapshot_date": "2026-03-31",
+        "lag_days": 30
+      },
+      "nhse": {
+        "date_source": "none",
+        "lag_days": null
+      }
+    },
+    "max_publication_lag_days": 120,
+    "verdict": "build_as_scoped"
+  },
+  "consistency": {
+    "distinct_column_fingerprints": 2,
+    "note": "All three current central gov departments share the same column set. NHSE 2016 file differs (no Office Region column). Effective distinct_formats for current data = 1.",
+    "verdict": "build_as_scoped"
+  },
+  "crosscheck_churn": {
+    "individuals_checked": 19,
+    "still_in_post": 3,
+    "moved_on": 0,
+    "unknown": 16,
+    "churn_pct": 0.0,
+    "note": "3 HMT Director General-level individuals confirmed still in post from Dec 2025 organogram. MoD and DfE governance pages name no individuals below DG level. GOV.UK governance pages only useful for top ~10-15 people per department (DG and above). 16 of 19 checked are 'unknown' — not moved on, but unverifiable from public governance pages alone."
+  }
+}
