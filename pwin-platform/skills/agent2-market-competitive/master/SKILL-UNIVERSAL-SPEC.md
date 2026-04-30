@@ -422,7 +422,43 @@ spec:
 
 ---
 
-## 13. Open question — orchestrator role
+## 13. Claims block (producer skills)
+
+Every producer skill (buyer-intelligence, supplier-intelligence,
+sector-intelligence) and every integrator skill
+(incumbency-advantage-displacement-strategy) emits a top-level `claims[]`
+array on its dossier JSON. Each claim is a structured object with six
+required fields documented in
+[`CLAIMS-BLOCK-SCHEMA.md`](CLAIMS-BLOCK-SCHEMA.md).
+
+The narrative cites claims inline using `[CLM-id]` markers. Every material
+claim — anything that bears on a downstream decision (go/no-go, win theme,
+stakeholder targeting, route to market) — must appear in `claims[]` with a
+stable `claimId`.
+
+**Why this exists.** Downstream agents — Win Strategy synthesis, the
+Forensic Intelligence Auditor, and any future consumer — cannot reliably
+parse claims out of prose. The structured block makes claims first-class,
+machine-readable, and audit-trailable.
+
+**Validation.** The platform ships a stdlib validator at
+`scripts/validate_claims_block.py`. Any consumer can call it on a dossier
+to confirm contract compliance. The Forensic Intelligence Auditor's
+degraded-mode gate is precisely this validator's failure path — a dossier
+that fails validation gets a degraded audit.
+
+**Integrator addendum.** Integrator skills may carry an optional seventh
+field per claim — `derivedFrom`, an array of upstream claim ids
+(`["BUYER:CLM-014"]`) — to record which upstream evidence the integrator
+synthesised the claim from. See `CLAIMS-BLOCK-SCHEMA.md` for the format.
+
+**V1.1 forward note.** A `volatility` field per claim is reserved for V1.1.
+V1.0 dossiers do not emit it; the auditor derives volatility from the
+asset profile.
+
+---
+
+## 14. Open question — orchestrator role
 
 This spec defines the contract each skill exposes. It does **not** define
 the agent that reads those contracts and decides what to run when. That
