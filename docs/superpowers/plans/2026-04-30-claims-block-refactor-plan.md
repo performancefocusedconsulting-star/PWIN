@@ -16,14 +16,14 @@
 
 **Create:**
 - `pwin-platform/skills/agent2-market-competitive/master/CLAIMS-BLOCK-SCHEMA.md` — the canonical contract document. Plain English + JSON shape + citation rules + integrator addendum.
-- `pwin-platform/skills/agent2-market-competitive/master/scripts/validate_claims_block.py` — stdlib Python validator. Single file. Reads a dossier JSON, runs both structural checks (six required fields, types, source_tier in 1–4) and citation-integrity checks (every `claim_id` cited in the narrative exists in `claims[]`; no orphans).
+- `pwin-platform/skills/agent2-market-competitive/master/scripts/validate_claims_block.py` — stdlib Python validator. Single file. Reads a dossier JSON, runs both structural checks (six required fields, types, sourceTier in 1–4) and citation-integrity checks (every `claimId` cited in the narrative exists in `claims[]`; no orphans).
 - `pwin-platform/skills/agent2-market-competitive/master/scripts/__init__.py` — empty marker, makes the directory importable.
 - `pwin-platform/skills/agent2-market-competitive/master/tests/__init__.py` — empty marker.
 - `pwin-platform/skills/agent2-market-competitive/master/tests/test_validate_claims_block.py` — Python `unittest` tests against the validator.
 - `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_valid.json` — minimal valid dossier (one claim, narrative cites it).
-- `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_missing_field.json` — invalid: claim missing `source_tier`.
-- `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_orphan_citation.json` — invalid: narrative cites a `claim_id` not in `claims[]`.
-- `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_bad_tier.json` — invalid: `source_tier: 5` (out of 1–4 range).
+- `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_missing_field.json` — invalid: claim missing `sourceTier`.
+- `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_orphan_citation.json` — invalid: narrative cites a `claimId` not in `claims[]`.
+- `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_bad_tier.json` — invalid: `sourceTier: 5` (out of 1–4 range).
 - `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/buyer_defence_digital_v1.json` — hand-crafted Defence Digital dossier showing the new contract end-to-end. Becomes the anchor fixture for the rest of the platform (the Forensic Intelligence Auditor's pilot in Plan B will audit this fixture).
 - `wiki/actions/intelligence-skills-claims-block-refactor.md` — wiki action note tracking this work.
 
@@ -34,7 +34,7 @@
 - `pwin-platform/skills/agent2-market-competitive/master/buyer-intelligence/scripts/render_dossier.py` — read `claims[]`; render citation markers `[CLM-id]` in the rendered narrative.
 - `pwin-platform/skills/agent2-market-competitive/master/supplier-intelligence/{SKILL.md, references/output-schema.md, scripts/render_dossier.py}` — same three changes.
 - `pwin-platform/skills/agent2-market-competitive/master/sector-intelligence/{SKILL.md, references/output-schema.md, scripts/render_dossier.py}` — same three changes.
-- `pwin-platform/skills/agent2-market-competitive/master/incumbency-advantage-displacement-strategy/{SKILL.md, references/output-schema.md, scripts/render_dossier.py}` — same three changes plus the integrator addendum (claims may carry `derivedFrom: [upstream_claim_id]`).
+- `pwin-platform/skills/agent2-market-competitive/master/incumbency-advantage-displacement-strategy/{SKILL.md, references/output-schema.md, scripts/render_dossier.py}` — same three changes plus the integrator addendum (claims may carry `derivedFrom: [upstream_claimId]`).
 - `CLAUDE.md` (repo root) — note the new contract in the pwin-platform section and the Agent 2 intelligence-skills section.
 
 ---
@@ -83,24 +83,24 @@ Every entry in `claims[]` is an object with **six required fields**:
 
 | Field | Type | Meaning |
 |---|---|---|
-| `claim_id` | string | Stable, unique identifier for the claim. Format: `CLM-` followed by zero-padded sequence (e.g. `CLM-001`). For integrators, prefix with the originating context (e.g. `INC-CLM-001`). |
-| `claim_text` | string | The assertion in plain prose, self-contained and readable on its own. |
-| `claim_date` | string (`YYYY-MM-DD`) | When the producing skill asserted this claim — typically the dossier build/refresh date for that claim's section. |
+| `claimId` | string | Stable, unique identifier for the claim. Format: `CLM-` followed by zero-padded sequence (e.g. `CLM-001`). For integrators, prefix with the originating context (e.g. `INC-CLM-001`). |
+| `claimText` | string | The assertion in plain prose, self-contained and readable on its own. |
+| `claimDate` | string (`YYYY-MM-DD`) | When the producing skill asserted this claim — typically the dossier build/refresh date for that claim's section. |
 | `source` | string | Where the claim comes from. One of: a URL; a structured `sourceRegister` reference (e.g. `SRC-001`); an upstream dossier reference for integrators (e.g. `Buyer dossier: HMRC, claim BUY-CLM-007`). |
-| `source_date` | string (`YYYY-MM-DD`) or null | When the source itself was published or last updated. Null only when the source genuinely has no publication date (rare; document why in `claim_text` if so). |
-| `source_tier` | integer | 1, 2, 3, or 4 — from the platform source tier table (see §9 of the FIA spec). |
+| `sourceDate` | string (`YYYY-MM-DD`) or null | When the source itself was published or last updated. Null only when the source genuinely has no publication date (rare; document why in `claimText` if so). |
+| `sourceTier` | integer | 1, 2, 3, or 4 — from the platform source tier table (see §9 of the FIA spec). |
 
 ## Citation rule
 
 Every material claim in the narrative must appear in `claims[]` with a
-stable `claim_id`, and the narrative must cite by `[CLM-id]` inline at the
+stable `claimId`, and the narrative must cite by `[CLM-id]` inline at the
 point of assertion. Example:
 
 > Defence Digital reports into the National Armaments Director group [CLM-014],
 > following the 2024 reorganisation [CLM-015].
 
 The auditor and other consumers walk the citation markers to trace claims
-back to evidence. **A material claim with no `claim_id` citation is a
+back to evidence. **A material claim with no `claimId` citation is a
 contract violation.** "Material" means any claim that bears on a downstream
 decision — go/no-go, win theme, stakeholder targeting, route to market.
 Background colour ("Defence Digital is a UK government function") does not
@@ -113,9 +113,9 @@ example) may carry an optional **seventh field** on each claim:
 
 | Field | Type | Meaning |
 |---|---|---|
-| `derivedFrom` | array of strings | Upstream claim IDs this integrator claim was synthesised from. Format: `[upstream_skill_prefix]:[claim_id]` (e.g. `["BUYER:CLM-014", "SUPPLIER:CLM-022"]`). |
+| `derivedFrom` | array of strings | Upstream claim IDs this integrator claim was synthesised from. Format: `[upstream_skill_prefix]:[claimId]` (e.g. `["BUYER:CLM-014", "SUPPLIER:CLM-022"]`). |
 
-The integrator's own `claim_id` remains in its local namespace
+The integrator's own `claimId` remains in its local namespace
 (`INC-CLM-001`), and the `derivedFrom` array names the upstream evidence.
 This lets the auditor follow the chain back to source-level evidence
 through multiple skill boundaries.
@@ -134,13 +134,13 @@ A V1.0 conforming dossier must satisfy all of:
    dossiers in degraded mode, but degraded mode is documented separately —
    see §11.3 of the FIA spec).
 2. Every entry in `claims[]` has all six required fields, present and
-   non-null (except `source_date`, which may be null).
-3. `claim_id` matches `^[A-Z][A-Z-]*[0-9]+$` and is unique within the
+   non-null (except `sourceDate`, which may be null).
+3. `claimId` matches `^[A-Z][A-Z-]*[0-9]+$` and is unique within the
    dossier.
-4. `claim_date` and `source_date` (if non-null) match `YYYY-MM-DD`.
-5. `source_tier` is an integer in `{1, 2, 3, 4}`.
+4. `claimDate` and `sourceDate` (if non-null) match `YYYY-MM-DD`.
+5. `sourceTier` is an integer in `{1, 2, 3, 4}`.
 6. Every `[CLM-...]`-shaped citation marker that appears in the narrative
-   prose corresponds to an existing `claim_id` in `claims[]`.
+   prose corresponds to an existing `claimId` in `claims[]`.
 
 The validator implements these six checks. Future versions may add
 volatility-tag validation (V1.1) and integrator `derivedFrom` resolution
@@ -200,12 +200,12 @@ git commit -m "chore(skills): scaffold scripts/ and tests/ directories"
   },
   "claims": [
     {
-      "claim_id": "CLM-001",
-      "claim_text": "Test Buyer published a digital strategy in March 2026.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-001",
+      "claimText": "Test Buyer published a digital strategy in March 2026.",
+      "claimDate": "2026-04-30",
       "source": "https://example.gov.uk/digital-strategy-2026",
-      "source_date": "2026-03-15",
-      "source_tier": 1
+      "sourceDate": "2026-03-15",
+      "sourceTier": 1
     }
   ],
   "sourceRegister": {
@@ -304,14 +304,14 @@ from dataclasses import dataclass, field
 from typing import Any
 
 REQUIRED_FIELDS = (
-    "claim_id",
-    "claim_text",
-    "claim_date",
+    "claimId",
+    "claimText",
+    "claimDate",
     "source",
-    "source_date",
-    "source_tier",
+    "sourceDate",
+    "sourceTier",
 )
-NULLABLE_FIELDS = ("source_date",)
+NULLABLE_FIELDS = ("sourceDate",)
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 CLAIM_ID_RE = re.compile(r"^[A-Z][A-Z-]*[0-9]+$")
 CITATION_RE = re.compile(r"\[(CLM-[0-9A-Z-]+|[A-Z]+-CLM-[0-9A-Z-]+)\]")
@@ -356,16 +356,16 @@ def validate(dossier: dict[str, Any]) -> Result:
             value = claim[fld]
             if value is None and fld not in NULLABLE_FIELDS:
                 result.errors.append(f"claims[{i}].{fld} is null but is not nullable.")
-        if "claim_id" in claim and isinstance(claim["claim_id"], str):
-            cid = claim["claim_id"]
+        if "claimId" in claim and isinstance(claim["claimId"], str):
+            cid = claim["claimId"]
             if not CLAIM_ID_RE.match(cid):
                 result.errors.append(
-                    f"claims[{i}].claim_id '{cid}' does not match required format."
+                    f"claims[{i}].claimId '{cid}' does not match required format."
                 )
             if cid in seen_ids:
-                result.errors.append(f"claims[{i}].claim_id '{cid}' is duplicated.")
+                result.errors.append(f"claims[{i}].claimId '{cid}' is duplicated.")
             seen_ids.add(cid)
-        for date_fld in ("claim_date", "source_date"):
+        for date_fld in ("claimDate", "sourceDate"):
             if date_fld in claim and claim[date_fld] is not None:
                 if not isinstance(claim[date_fld], str) or not DATE_RE.match(
                     claim[date_fld]
@@ -373,11 +373,11 @@ def validate(dossier: dict[str, Any]) -> Result:
                     result.errors.append(
                         f"claims[{i}].{date_fld} must be YYYY-MM-DD."
                     )
-        if "source_tier" in claim:
-            tier = claim["source_tier"]
+        if "sourceTier" in claim:
+            tier = claim["sourceTier"]
             if tier not in VALID_TIERS:
                 result.errors.append(
-                    f"claims[{i}].source_tier '{tier}' is not in {{1,2,3,4}}."
+                    f"claims[{i}].sourceTier '{tier}' is not in {{1,2,3,4}}."
                 )
 
     cited_ids = _extract_citations(dossier)
@@ -432,18 +432,18 @@ git commit -m "feat(skills): claims-block validator + minimal valid-shape test"
 - Create: `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_missing_field.json`
 - Modify: `pwin-platform/skills/agent2-market-competitive/master/tests/test_validate_claims_block.py`
 
-- [ ] **Step 1: Write the missing-field fixture.** Drop `source_tier` from the only claim.
+- [ ] **Step 1: Write the missing-field fixture.** Drop `sourceTier` from the only claim.
 
 ```json
 {
   "meta": {"version": "1.0.0", "buyer": "Test Buyer", "buildDate": "2026-04-30"},
   "claims": [
     {
-      "claim_id": "CLM-001",
-      "claim_text": "Test Buyer published a digital strategy in March 2026.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-001",
+      "claimText": "Test Buyer published a digital strategy in March 2026.",
+      "claimDate": "2026-04-30",
       "source": "https://example.gov.uk/digital-strategy-2026",
-      "source_date": "2026-03-15"
+      "sourceDate": "2026-03-15"
     }
   ],
   "buyerSnapshot": {
@@ -459,8 +459,8 @@ git commit -m "feat(skills): claims-block validator + minimal valid-shape test"
         result = validate(_load("dossier_missing_field.json"))
         self.assertFalse(result.ok)
         self.assertTrue(
-            any("source_tier" in err for err in result.errors),
-            f"Expected an error mentioning 'source_tier', got: {result.errors}",
+            any("sourceTier" in err for err in result.errors),
+            f"Expected an error mentioning 'sourceTier', got: {result.errors}",
         )
 ```
 
@@ -496,12 +496,12 @@ git commit -m "test(skills): claims-block validator catches missing required fie
   "meta": {"version": "1.0.0", "buyer": "Test Buyer", "buildDate": "2026-04-30"},
   "claims": [
     {
-      "claim_id": "CLM-001",
-      "claim_text": "Test Buyer published a digital strategy in March 2026.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-001",
+      "claimText": "Test Buyer published a digital strategy in March 2026.",
+      "claimDate": "2026-04-30",
       "source": "https://example.gov.uk/digital-strategy-2026",
-      "source_date": "2026-03-15",
-      "source_tier": 1
+      "sourceDate": "2026-03-15",
+      "sourceTier": 1
     }
   ],
   "buyerSnapshot": {
@@ -547,19 +547,19 @@ git commit -m "test(skills): claims-block validator catches orphan citations"
 - Create: `pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_bad_tier.json`
 - Modify: `pwin-platform/skills/agent2-market-competitive/master/tests/test_validate_claims_block.py`
 
-- [ ] **Step 1: Write the bad-tier fixture.** `source_tier: 5` is out of the 1–4 range.
+- [ ] **Step 1: Write the bad-tier fixture.** `sourceTier: 5` is out of the 1–4 range.
 
 ```json
 {
   "meta": {"version": "1.0.0", "buyer": "Test Buyer", "buildDate": "2026-04-30"},
   "claims": [
     {
-      "claim_id": "CLM-001",
-      "claim_text": "Test Buyer published a digital strategy in March 2026.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-001",
+      "claimText": "Test Buyer published a digital strategy in March 2026.",
+      "claimDate": "2026-04-30",
       "source": "https://random-blog.example.com/post",
-      "source_date": "2026-03-15",
-      "source_tier": 5
+      "sourceDate": "2026-03-15",
+      "sourceTier": 5
     }
   ],
   "buyerSnapshot": {
@@ -571,12 +571,12 @@ git commit -m "test(skills): claims-block validator catches orphan citations"
 - [ ] **Step 2: Write the failing test.** Append to `ValidStructureTests`.
 
 ```python
-    def test_bad_source_tier_fails(self):
+    def test_bad_sourceTier_fails(self):
         result = validate(_load("dossier_bad_tier.json"))
         self.assertFalse(result.ok)
         self.assertTrue(
-            any("source_tier" in err and "5" in err for err in result.errors),
-            f"Expected an error mentioning bad source_tier '5', got: {result.errors}",
+            any("sourceTier" in err and "5" in err for err in result.errors),
+            f"Expected an error mentioning bad sourceTier '5', got: {result.errors}",
         )
 ```
 
@@ -594,7 +594,7 @@ Expected: 4 tests, all pass.
 ```bash
 git add pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/dossier_bad_tier.json \
         pwin-platform/skills/agent2-market-competitive/master/tests/test_validate_claims_block.py
-git commit -m "test(skills): claims-block validator rejects out-of-range source_tier"
+git commit -m "test(skills): claims-block validator rejects out-of-range sourceTier"
 ```
 
 ---
@@ -607,24 +607,24 @@ git commit -m "test(skills): claims-block validator rejects out-of-range source_
 - [ ] **Step 1: Add tests for the two remaining structural checks.** Both build their fixtures inline (no JSON files) because the cases are about programmatic shape.
 
 ```python
-    def test_duplicate_claim_id_fails(self):
+    def test_duplicate_claimId_fails(self):
         dossier = {
             "claims": [
                 {
-                    "claim_id": "CLM-001",
-                    "claim_text": "First.",
-                    "claim_date": "2026-04-30",
+                    "claimId": "CLM-001",
+                    "claimText": "First.",
+                    "claimDate": "2026-04-30",
                     "source": "url",
-                    "source_date": "2026-03-15",
-                    "source_tier": 1,
+                    "sourceDate": "2026-03-15",
+                    "sourceTier": 1,
                 },
                 {
-                    "claim_id": "CLM-001",
-                    "claim_text": "Duplicate.",
-                    "claim_date": "2026-04-30",
+                    "claimId": "CLM-001",
+                    "claimText": "Duplicate.",
+                    "claimDate": "2026-04-30",
                     "source": "url",
-                    "source_date": "2026-03-15",
-                    "source_tier": 1,
+                    "sourceDate": "2026-03-15",
+                    "sourceTier": 1,
                 },
             ],
             "narrative": "Test [CLM-001].",
@@ -633,16 +633,16 @@ git commit -m "test(skills): claims-block validator rejects out-of-range source_
         self.assertFalse(result.ok)
         self.assertTrue(any("duplicated" in err for err in result.errors))
 
-    def test_bad_claim_id_format_fails(self):
+    def test_bad_claimId_format_fails(self):
         dossier = {
             "claims": [
                 {
-                    "claim_id": "claim-1",  # lowercase, no required prefix
-                    "claim_text": "Bad id.",
-                    "claim_date": "2026-04-30",
+                    "claimId": "claim-1",  # lowercase, no required prefix
+                    "claimText": "Bad id.",
+                    "claimDate": "2026-04-30",
                     "source": "url",
-                    "source_date": "2026-03-15",
-                    "source_tier": 1,
+                    "sourceDate": "2026-03-15",
+                    "sourceTier": 1,
                 }
             ],
             "narrative": "[CLM-001]",
@@ -705,7 +705,7 @@ required fields documented in
 The narrative cites claims inline using `[CLM-id]` markers. Every material
 claim — anything that bears on a downstream decision (go/no-go, win theme,
 stakeholder targeting, route to market) — must appear in `claims[]` with a
-stable `claim_id`.
+stable `claimId`.
 
 **Why this exists.** Downstream agents — Win Strategy synthesis, the
 Forensic Intelligence Auditor, and any future consumer — cannot reliably
@@ -771,19 +771,19 @@ Insert this block:
 ### `claims` (array, required)
 
 Top-level array of structured claim objects. Every material assertion in
-the narrative below must appear here with a stable `claim_id`. The narrative
+the narrative below must appear here with a stable `claimId`. The narrative
 cites claims inline using `[CLM-id]` markers.
 
 ```json
 {
   "claims": [
     {
-      "claim_id": "CLM-001",
-      "claim_text": "Defence Digital reports into the National Armaments Director group.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-001",
+      "claimText": "Defence Digital reports into the National Armaments Director group.",
+      "claimDate": "2026-04-30",
       "source": "SRC-014",
-      "source_date": "2024-09-12",
-      "source_tier": 1
+      "sourceDate": "2024-09-12",
+      "sourceTier": 1
     }
   ]
 }
@@ -823,9 +823,9 @@ grep -n "Hard rules\|Hard Rules\|hard rules\|## Rules\|persona" pwin-platform/sk
 ```markdown
 - **Emit a structured `claims[]` block.** Every dossier you produce must
   include a top-level `claims[]` array containing every material assertion
-  in the narrative. Each claim has six required fields: `claim_id`,
-  `claim_text`, `claim_date`, `source`, `source_date`, `source_tier`. Cite
-  claims inline using `[CLM-id]` markers. A material claim with no `claim_id`
+  in the narrative. Each claim has six required fields: `claimId`,
+  `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier`. Cite
+  claims inline using `[CLM-id]` markers. A material claim with no `claimId`
   citation in the narrative is a contract violation. See
   `CLAIMS-BLOCK-SCHEMA.md` and §13 of the Universal Skill Spec.
 ```
@@ -841,7 +841,7 @@ Insert immediately after that heading's existing first paragraph:
 ```markdown
 The dossier carries a top-level `claims[]` block alongside `meta`,
 `sourceRegister`, and the section objects. Every material assertion in
-the narrative cites a claim by its `claim_id`. The contract is documented
+the narrative cites a claim by its `claimId`. The contract is documented
 in [`../CLAIMS-BLOCK-SCHEMA.md`](../CLAIMS-BLOCK-SCHEMA.md) and the
 platform validator at `scripts/validate_claims_block.py` enforces it.
 ```
@@ -898,16 +898,16 @@ def _render_claims_block(claims: list) -> str:
         return ""
     rows = []
     for c in claims:
-        cid = c.get("claim_id", "?")
+        cid = c.get("claimId", "?")
         rows.append(
             f'<dt id="claim-{cid}">[{cid}] '
-            f'(tier {c.get("source_tier", "?")} '
-            f'— {c.get("source_date") or "undated"})</dt>'
-            f'<dd><p>{c.get("claim_text", "")}</p>'
+            f'(tier {c.get("sourceTier", "?")} '
+            f'— {c.get("sourceDate") or "undated"})</dt>'
+            f'<dd><p>{c.get("claimText", "")}</p>'
             f'<p class="claim-source"><strong>Source:</strong> '
             f'{c.get("source", "?")}</p>'
             f'<p class="claim-meta">Asserted '
-            f'{c.get("claim_date", "?")}.</p></dd>'
+            f'{c.get("claimDate", "?")}.</p></dd>'
         )
     return (
         '<section class="claims-block"><h2>Claims and evidence</h2>'
@@ -963,28 +963,28 @@ git commit -m "feat(buyer-intel): renderer handles claims[] block + citation lin
   },
   "claims": [
     {
-      "claim_id": "CLM-001",
-      "claim_text": "Defence Digital is the digital function of the UK Ministry of Defence.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-001",
+      "claimText": "Defence Digital is the digital function of the UK Ministry of Defence.",
+      "claimDate": "2026-04-30",
       "source": "https://www.gov.uk/government/organisations/defence-digital",
-      "source_date": "2025-11-04",
-      "source_tier": 1
+      "sourceDate": "2025-11-04",
+      "sourceTier": 1
     },
     {
-      "claim_id": "CLM-002",
-      "claim_text": "Charlie Forte leads Defence Digital as Chief Information Officer.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-002",
+      "claimText": "Charlie Forte leads Defence Digital as Chief Information Officer.",
+      "claimDate": "2026-04-30",
       "source": "https://www.linkedin.com/in/charlie-forte/",
-      "source_date": "2024-06-15",
-      "source_tier": 4
+      "sourceDate": "2024-06-15",
+      "sourceTier": 4
     },
     {
-      "claim_id": "CLM-003",
-      "claim_text": "Defence Digital reports into the National Armaments Director group following the 2024 reorganisation.",
-      "claim_date": "2026-04-30",
+      "claimId": "CLM-003",
+      "claimText": "Defence Digital reports into the National Armaments Director group following the 2024 reorganisation.",
+      "claimDate": "2026-04-30",
       "source": "https://www.gov.uk/government/news/mod-restructure-2024",
-      "source_date": "2024-09-12",
-      "source_tier": 1
+      "sourceDate": "2024-09-12",
+      "sourceTier": 1
     }
   ],
   "sourceRegister": {
@@ -1099,7 +1099,7 @@ print('OK' if r.ok else 'FAIL: ' + str(r.errors))
 "
 ```
 
-- [ ] **Step 5: If FAIL, edit `SKILL.md` to tighten the instruction** that produced the failure (e.g. claim_id format, missing source_tier, narrative not citing claims). Re-package, re-upload, re-test. Iterate until OK.
+- [ ] **Step 5: If FAIL, edit `SKILL.md` to tighten the instruction** that produced the failure (e.g. claimId format, missing sourceTier, narrative not citing claims). Re-package, re-upload, re-test. Iterate until OK.
 
 - [ ] **Step 6: Run the renderer on the skill's output** to confirm the citations linkify correctly.
 
@@ -1350,12 +1350,12 @@ Incumbency is the integrator skill. The contract is the same six fields per clai
         dossier = {
             "claims": [
                 {
-                    "claim_id": "INC-CLM-001",
-                    "claim_text": "Integrator claim.",
-                    "claim_date": "2026-04-30",
+                    "claimId": "INC-CLM-001",
+                    "claimText": "Integrator claim.",
+                    "claimDate": "2026-04-30",
                     "source": "Buyer dossier: HMRC",
-                    "source_date": "2026-04-15",
-                    "source_tier": 1,
+                    "sourceDate": "2026-04-15",
+                    "sourceTier": 1,
                     "derivedFrom": "BUYER:CLM-014",  # bug: should be array
                 }
             ],
@@ -1421,7 +1421,7 @@ from upstream buyer and supplier dossier claims. Each integrator claim
 may carry an optional seventh field — `derivedFrom`, an array of upstream
 claim ids — recording the chain back to source-level evidence.
 
-The integrator's own `claim_id` uses the prefix `INC-CLM-` (e.g. `INC-CLM-001`).
+The integrator's own `claimId` uses the prefix `INC-CLM-` (e.g. `INC-CLM-001`).
 Upstream references use the upstream skill prefix:
 `["BUYER:CLM-014", "SUPPLIER:CLM-022"]`.
 
@@ -1429,12 +1429,12 @@ Upstream references use the upstream skill prefix:
 {
   "claims": [
     {
-      "claim_id": "INC-CLM-001",
-      "claim_text": "Capita's defence-IT incumbency at the MoD is structurally weak.",
-      "claim_date": "2026-04-30",
+      "claimId": "INC-CLM-001",
+      "claimText": "Capita's defence-IT incumbency at the MoD is structurally weak.",
+      "claimDate": "2026-04-30",
       "source": "Synthesised from buyer + supplier dossiers",
-      "source_date": "2026-04-30",
-      "source_tier": 2,
+      "sourceDate": "2026-04-30",
+      "sourceTier": 2,
       "derivedFrom": ["BUYER:CLM-014", "SUPPLIER:CLM-022"]
     }
   ]
@@ -1703,6 +1703,6 @@ completed: <fill at completion>
 
 **Placeholder scan.** The plan does not use TBD / TODO / "implement later" / "fill in details" / "appropriate error handling" / "similar to Task N" / "write tests for the above" anywhere. Each step contains the actual content the engineer needs.
 
-**Type consistency.** `validate()` returns `Result` everywhere it appears. `_linkify_citations()` and `_render_claims_block()` keep the same names from Task 13 onward. `claim_id`, `claim_text`, `claim_date`, `source`, `source_date`, `source_tier` are the field names in every fixture, every test, every documentation reference.
+**Type consistency.** `validate()` returns `Result` everywhere it appears. `_linkify_citations()` and `_render_claims_block()` keep the same names from Task 13 onward. `claimId`, `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier` are the field names in every fixture, every test, every documentation reference.
 
 **One known acceptable gap.** Tasks 16, 21, 26, and 32 (the manual Claude.ai end-to-end validations) cannot be reduced to local automated tests because the producing skills run on Claude.ai. The plan treats those as manual checkpoints with explicit run-and-validate steps.
