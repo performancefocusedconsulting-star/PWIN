@@ -41,16 +41,17 @@ until the next refresh re-derives them from existing sources or new ones.
 
 1. [The seven intelligence lenses](#the-seven-intelligence-lenses)
 2. [Full schema structure](#full-schema-structure)
-3. [Organisational archetype taxonomy](#organisational-archetype-taxonomy)
-4. [Schema rules](#schema-rules)
-5. [Organisation type enum](#organisation-type-enum)
-6. [Buying readiness enum](#buying-readiness-enum)
-7. [Spend classification enum](#spend-classification-enum)
-8. [Dominant decision lens enum](#dominant-decision-lens-enum)
-9. [Change maturity sub-fields](#change-maturity-sub-fields)
-10. [Action register field reference](#action-register-field-reference)
-11. [Pursuit implications field reference](#pursuit-implications-field-reference)
-12. [Linked assets structure](#linked-assets-structure)
+3. [`claims` (array, required)](#claims-array-required)
+4. [Organisational archetype taxonomy](#organisational-archetype-taxonomy)
+5. [Schema rules](#schema-rules)
+6. [Organisation type enum](#organisation-type-enum)
+7. [Buying readiness enum](#buying-readiness-enum)
+8. [Spend classification enum](#spend-classification-enum)
+9. [Dominant decision lens enum](#dominant-decision-lens-enum)
+10. [Change maturity sub-fields](#change-maturity-sub-fields)
+11. [Action register field reference](#action-register-field-reference)
+12. [Pursuit implications field reference](#pursuit-implications-field-reference)
+13. [Linked assets structure](#linked-assets-structure)
 
 ---
 
@@ -579,10 +580,10 @@ Produce a single JSON object with these top-level keys:
 **Note:** `changeSummary` is populated ONLY on refresh, inject, and amend runs.
 Set to null on first-build runs.
 
-### `claims` (array, required)
+## `claims` (array, required)
 
 Top-level array of structured claim objects. Every material assertion in
-the narrative below must appear here with a stable `claimId`. The narrative
+the narrative must appear here with a stable `claimId`. The narrative
 cites claims inline using `[CLM-id]` markers.
 
 ```json
