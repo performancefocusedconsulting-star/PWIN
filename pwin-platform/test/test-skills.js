@@ -15,6 +15,9 @@ import { loadSkill, listSkills, gatherContext, assemblePrompt } from '../src/ski
 import * as store from '../src/store.js';
 import { validateAIWrite } from '../src/permissions.js';
 import { randomUUID } from 'node:crypto';
+import { writeFile as _wf, mkdir as _mk, rm as _rm } from 'node:fs/promises';
+import { join as _join } from 'node:path';
+import { homedir as _hd } from 'node:os';
 
 let passed = 0;
 let failed = 0;
@@ -380,6 +383,68 @@ async function testPlatformKnowledge() {
 }
 
 // ---------------------------------------------------------------------------
+// Test 8: Agent 2 dossier context-providers
+// ---------------------------------------------------------------------------
+
+async function testDossierContextProviders() {
+  console.log('=== TEST 8: Agent 2 dossier context-providers ===\n');
+
+  // Build a synthetic skill that requests all four dossier context items.
+  // Use the real Home Office dossier on disk for buyer; suppliers/sectors/
+  // incumbency are tested via fixtures written into the user's ~/.pwin/intel
+  // directory by this test, then cleaned up.
+
+  const _intelRoot = _join(_hd(), '.pwin', 'intel');
+  const _fix = {
+    supplier: _join(_intelRoot, 'suppliers', 'plan-a-test-supplier-dossier.json'),
+    sector: _join(_intelRoot, 'sectors', 'plan-a-test-sector-brief.json'),
+    incumbency: _join(_intelRoot, 'incumbency', 'plan-a-test-supplier-plan-a-test-buyer-analysis.json'),
+  };
+
+  await _mk(_join(_intelRoot, 'suppliers'), { recursive: true });
+  await _mk(_join(_intelRoot, 'sectors'), { recursive: true });
+  await _mk(_join(_intelRoot, 'incumbency'), { recursive: true });
+  await _wf(_fix.supplier, JSON.stringify({ meta: { supplierName: 'Plan A Test Supplier', version: '1.0' } }));
+  await _wf(_fix.sector, JSON.stringify({ meta: { sector: 'Plan A Test Sector', version: '1.0' } }));
+  await _wf(_fix.incumbency, JSON.stringify({ meta: { incumbent: 'Plan A Test Supplier', buyer: 'Plan A Test Buyer', version: '1.0' } }));
+
+  const _dossierSkill = {
+    id: 'plan-a-dossier-context-test',
+    context: ['buyer_dossier', 'supplier_dossier', 'sector_brief', 'incumbency_analysis'],
+  };
+  const _dossierInput = {
+    pursuitId,
+    buyerName: 'Home Office',
+    supplierName: 'Plan A Test Supplier',
+    sector: 'Plan A Test Sector',
+    incumbentBuyerName: 'Plan A Test Buyer',
+  };
+
+  const _ctx = await gatherContext(_dossierSkill, _dossierInput);
+
+  assert(_ctx.buyerDossier?.meta?.buyerName === 'Home Office',
+    `buyer_dossier loads Home Office (got ${_ctx.buyerDossier?.meta?.buyerName})`);
+  assert(_ctx.supplierDossier?.meta?.supplierName === 'Plan A Test Supplier',
+    `supplier_dossier loads from intel path (got ${_ctx.supplierDossier?.meta?.supplierName})`);
+  assert(_ctx.sectorBrief?.meta?.sector === 'Plan A Test Sector',
+    `sector_brief loads (got ${_ctx.sectorBrief?.meta?.sector})`);
+  assert(_ctx.incumbencyAnalysis?.meta?.incumbent === 'Plan A Test Supplier',
+    `incumbency_analysis loads keyed by supplier+buyer slug (got ${_ctx.incumbencyAnalysis?.meta?.incumbent})`);
+
+  // Missing-file behaviour: each context item is null, not undefined, when not found
+  const _missingSkill = { id: 'plan-a-dossier-missing-test', context: ['buyer_dossier'] };
+  const _missingCtx = await gatherContext(_missingSkill, { pursuitId, buyerName: 'Nonexistent Buyer 999' });
+  assert(_missingCtx.buyerDossier === null, 'buyer_dossier returns null for missing dossier');
+
+  // Cleanup fixtures
+  await _rm(_fix.supplier, { force: true });
+  await _rm(_fix.sector, { force: true });
+  await _rm(_fix.incumbency, { force: true });
+
+  console.log('');
+}
+
+// ---------------------------------------------------------------------------
 // Run all tests
 // ---------------------------------------------------------------------------
 
@@ -396,6 +461,7 @@ async function run() {
   await testPermissions();
   await testComplianceCoverage();
   await testPlatformKnowledge();
+  await testDossierContextProviders();
 
   console.log('═══════════════════════════════════════════');
   console.log(`  Results: ${passed} passed, ${failed} failed`);
