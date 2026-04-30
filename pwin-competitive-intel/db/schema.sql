@@ -512,3 +512,88 @@ CREATE TABLE IF NOT EXISTS spend_transactions (
     canonical_supplier_id  TEXT,
     ingested_at         TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- ============================================================
+-- FRAMEWORKS CANONICAL LAYER (2026-04-30)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS frameworks (
+    id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+    reference_no             TEXT UNIQUE,
+    name                     TEXT NOT NULL,
+    short_name               TEXT,
+    owner                    TEXT NOT NULL,
+    owner_type               TEXT,
+    category                 TEXT,
+    sub_category             TEXT,
+    description              TEXT,
+    max_value                REAL,
+    start_date               TEXT,
+    expiry_date              TEXT,
+    status                   TEXT NOT NULL DEFAULT 'active',
+    replacement_framework_id INTEGER REFERENCES frameworks(id),
+    eligible_buyer_types     TEXT,
+    route_type               TEXT NOT NULL DEFAULT 'framework_agreement',
+    lot_count                INTEGER NOT NULL DEFAULT 0,
+    supplier_count           INTEGER NOT NULL DEFAULT 0,
+    call_off_count           INTEGER NOT NULL DEFAULT 0,
+    call_off_value_total     REAL NOT NULL DEFAULT 0,
+    first_call_off_date      TEXT,
+    last_call_off_date       TEXT,
+    source                   TEXT NOT NULL DEFAULT 'contracts_only',
+    source_url               TEXT,
+    last_updated             TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_frameworks_ref      ON frameworks(reference_no);
+CREATE INDEX IF NOT EXISTS idx_frameworks_status   ON frameworks(status);
+CREATE INDEX IF NOT EXISTS idx_frameworks_owner    ON frameworks(owner_type);
+CREATE INDEX IF NOT EXISTS idx_frameworks_category ON frameworks(category);
+CREATE INDEX IF NOT EXISTS idx_frameworks_expiry   ON frameworks(expiry_date);
+
+CREATE TABLE IF NOT EXISTS framework_lots (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id   INTEGER NOT NULL REFERENCES frameworks(id),
+    lot_number     TEXT,
+    lot_name       TEXT,
+    scope          TEXT,
+    max_value      REAL,
+    supplier_count INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_fw_lots_fw ON framework_lots(framework_id);
+
+CREATE TABLE IF NOT EXISTS framework_suppliers (
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id          INTEGER NOT NULL REFERENCES frameworks(id),
+    lot_id                INTEGER REFERENCES framework_lots(id),
+    supplier_canonical_id TEXT,
+    supplier_name_raw     TEXT,
+    awarded_date          TEXT,
+    status                TEXT NOT NULL DEFAULT 'active',
+    call_off_count        INTEGER NOT NULL DEFAULT 0,
+    call_off_value        REAL NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_fw_sup_fw  ON framework_suppliers(framework_id);
+CREATE INDEX IF NOT EXISTS idx_fw_sup_can ON framework_suppliers(supplier_canonical_id);
+
+CREATE TABLE IF NOT EXISTS framework_call_offs (
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id          INTEGER NOT NULL REFERENCES frameworks(id),
+    lot_id                INTEGER REFERENCES framework_lots(id),
+    notice_ocid           TEXT REFERENCES notices(ocid),
+    supplier_canonical_id TEXT,
+    buyer_canonical_id    TEXT,
+    sub_org_canonical_id  TEXT,
+    value                 REAL,
+    awarded_date          TEXT,
+    contract_title        TEXT,
+    match_method          TEXT NOT NULL DEFAULT 'reference_no',
+    match_confidence      REAL NOT NULL DEFAULT 1.0
+);
+
+CREATE INDEX IF NOT EXISTS idx_fw_co_fw       ON framework_call_offs(framework_id);
+CREATE INDEX IF NOT EXISTS idx_fw_co_notice   ON framework_call_offs(notice_ocid);
+CREATE INDEX IF NOT EXISTS idx_fw_co_buyer    ON framework_call_offs(buyer_canonical_id);
+CREATE INDEX IF NOT EXISTS idx_fw_co_supplier ON framework_call_offs(supplier_canonical_id);

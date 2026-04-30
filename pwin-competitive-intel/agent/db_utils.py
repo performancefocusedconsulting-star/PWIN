@@ -102,6 +102,11 @@ def _migrate_schema(conn: sqlite3.Connection):
             conn.execute("ALTER TABLE spend_transactions ADD COLUMN recipient_type TEXT")
             log.info("Migrated spend_transactions: added column recipient_type")
 
+    # ── frameworks canonical layer (2026-04-30) ──
+    # New tables: created by CREATE TABLE IF NOT EXISTS in schema.sql.
+    # Only column additions to existing framework tables go here.
+    pass
+
     conn.commit()
 
 
