@@ -24,6 +24,7 @@ import html
 import sys
 import os
 from datetime import datetime
+import re
 
 
 def e(s):
@@ -79,6 +80,48 @@ def ev(field, label=None):
         out += "</div>"
         return out
     return f"<p>{e(str(field))}</p>"
+
+
+CITATION_RE = re.compile(r"\[(CLM-[0-9A-Z-]+|[A-Z]+-CLM-[0-9A-Z-]+)\]")
+
+
+def _linkify_citations(text: str) -> str:
+    """Replace [CLM-id] markers in narrative with anchor links to the
+    rendered claims block. Output is HTML-safe."""
+    if not isinstance(text, str):
+        return text
+    return CITATION_RE.sub(
+        lambda m: (
+            f'<a class="claim-cite" href="#claim-{m.group(1)}">'
+            f'[{m.group(1)}]</a>'
+        ),
+        text,
+    )
+
+
+def _render_claims_block(claims: list) -> str:
+    """Render the claims[] array as a definition-list-style HTML block.
+    Each claim has an anchor (id="claim-CLM-XXX") that the narrative
+    citations link to."""
+    if not claims:
+        return ""
+    rows = []
+    for c in claims:
+        cid = c.get("claimId", "?")
+        rows.append(
+            f'<dt id="claim-{cid}">[{cid}] '
+            f'(tier {c.get("sourceTier", "?")} '
+            f'— {c.get("sourceDate") or "undated"})</dt>'
+            f'<dd><p>{c.get("claimText", "")}</p>'
+            f'<p class="claim-source"><strong>Source:</strong> '
+            f'{c.get("source", "?")}</p>'
+            f'<p class="claim-meta">Asserted '
+            f'{c.get("claimDate", "?")}.</p></dd>'
+        )
+    return (
+        '<section class="claims-block"><h2>Claims and evidence</h2>'
+        '<dl class="claims">' + "".join(rows) + '</dl></section>'
+    )
 
 
 def render(data):
@@ -405,7 +448,7 @@ section h3 {{
 <section>
   <h2>Executive summary</h2>
   <div class="headline">{e(exec_sum.get('headline',''))}</div>
-  {"".join(f'<p style="margin-bottom:12px">{e(p)}</p>' for p in exec_sum.get('narrative','').split(chr(10)+chr(10)) if p.strip())}
+  {"".join(f'<p style="margin-bottom:12px">{_linkify_citations(e(p))}</p>' for p in exec_sum.get('narrative','').split(chr(10)+chr(10)) if p.strip())}
 
   <h3>Organisational archetype</h3>
   <div class="archetype-box">
@@ -460,7 +503,7 @@ section h3 {{
         html_out += f"""
 <section>
   <h2>Strategic priorities {badge(strat.get('sectionConfidence',''))}</h2>
-  <p style="margin-bottom:16px">{e(strat.get('summaryNarrative',''))}</p>
+  <p style="margin-bottom:16px">{_linkify_citations(e(strat.get('summaryNarrative','')))}</p>
   <h3>Published strategy themes</h3>
   {themes_html}
   <h3>Major programmes</h3>
@@ -501,7 +544,7 @@ section h3 {{
         html_out += f"""
 <section>
   <h2>Procurement behaviour {badge(proc.get('sectionConfidence',''))}</h2>
-  <p style="margin-bottom:16px">{e(proc.get('summaryNarrative',''))}</p>
+  <p style="margin-bottom:16px">{_linkify_citations(e(proc.get('summaryNarrative','')))}</p>
   <h3>Preferred routes</h3>
   <p>{routes}</p>
   <h3>Framework usage</h3>
@@ -614,7 +657,7 @@ section h3 {{
         html_out += f"""
 <section>
   <h2>Supplier ecosystem {badge(supp.get('sectionConfidence',''))}</h2>
-  <p style="margin-bottom:16px">{e(supp.get('summaryNarrative',''))}</p>
+  <p style="margin-bottom:16px">{_linkify_citations(e(supp.get('summaryNarrative','')))}</p>
   <h3>Incumbent suppliers</h3>
   {suppliers_html}
   <h3>Adjacent suppliers</h3>
@@ -631,7 +674,7 @@ section h3 {{
         html_out += f"""
 <section>
   <h2>Risks and sensitivities {badge(risks.get('sectionConfidence',''))}</h2>
-  <p style="margin-bottom:16px;font-weight:500">{e(risks.get('summaryNarrative',''))}</p>
+  <p style="margin-bottom:16px;font-weight:500">{_linkify_citations(e(risks.get('summaryNarrative','')))}</p>
   <h3>Procurement controversies</h3>
   {"".join(ev(c) for c in risks.get('procurementControversies',[]))}
   <h3>Programme failures</h3>
@@ -698,6 +741,8 @@ section h3 {{
   <ul class="gap-list">{low_conf}</ul>
 </section>
 """
+
+    html_out += _render_claims_block(data.get("claims", []))
 
     # FOOTER
     html_out += f"""
