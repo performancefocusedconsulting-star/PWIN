@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "buyer": "Defence Digital",
+    "buildDate": "2026-04-30",
+    "skillVersion": "buyer-intelligence v3.0"
+  },
+  "claims": [
+    {
+      "claimId": "CLM-001",
+      "claimText": "Defence Digital is the digital function of the UK Ministry of Defence.",
+      "claimDate": "2026-04-30",
+      "source": "https://www.gov.uk/government/organisations/defence-digital",
+      "sourceDate": "2025-11-04",
+      "sourceTier": 1
+    },
+    {
+      "claimId": "CLM-002",
+      "claimText": "Charlie Forte leads Defence Digital as Chief Information Officer.",
+      "claimDate": "2026-04-30",
+      "source": "https://www.linkedin.com/in/charlie-forte/",
+      "sourceDate": "2024-06-15",
+      "sourceTier": 4
+    },
+    {
+      "claimId": "CLM-003",
+      "claimText": "Defence Digital reports into the National Armaments Director group following the 2024 reorganisation.",
+      "claimDate": "2026-04-30",
+      "source": "https://www.gov.uk/government/news/mod-restructure-2024",
+      "sourceDate": "2024-09-12",
+      "sourceTier": 1
+    }
+  ],
+  "sourceRegister": {
+    "sources": [
+      {
+        "sourceId": "SRC-001",
+        "title": "Defence Digital — gov.uk organisation page",
+        "publicationDate": "2025-11-04"
+      },
+      {
+        "sourceId": "SRC-002",
+        "title": "Charlie Forte LinkedIn profile",
+        "publicationDate": "2024-06-15"
+      },
+      {
+        "sourceId": "SRC-003",
+        "title": "MOD restructure announcement 2024",
+        "publicationDate": "2024-09-12"
+      }
+    ]
+  },
+  "buyerSnapshot": {
+    "narrative": "Defence Digital is the digital function of the UK Ministry of Defence [CLM-001]. The function is led by Charlie Forte as Chief Information Officer [CLM-002]. Defence Digital reports into the National Armaments Director group following the 2024 reorganisation [CLM-003]."
+  }
+}
