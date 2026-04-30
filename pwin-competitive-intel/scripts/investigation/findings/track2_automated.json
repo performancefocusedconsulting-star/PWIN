@@ -1,0 +1,106 @@
+{
+  "govuk_appointments_rss": {
+    "url_used": "https://www.gov.uk/search/news-and-communications.atom?announcement_filter_option=appointments",
+    "total_entries_in_feed": 20,
+    "entries_last_30_days": 20,
+    "sample_3": [
+      {
+        "title": "Threat level increase following antisemitic terror attack",
+        "updated": "2026-04-30T18:11:45+01:00"
+      },
+      {
+        "title": "PM remarks from Downing Street on Golders Green attack: 30 April 2026",
+        "updated": "2026-04-30T16:42:54+01:00"
+      },
+      {
+        "title": "Crawfish consultation 2026",
+        "updated": "2026-04-30T16:38:06+01:00"
+      }
+    ],
+    "notes": "Each entry is an appointment announcement. Check whether they name the individual and give role+department."
+  },
+  "companies_house_alb_officers": [
+    {
+      "name": "UK Health Security Agency",
+      "company_number": "12886087",
+      "total_officers": 1,
+      "active_officers": 1,
+      "sample_3": [
+        {
+          "name": "DAVIES, Haydn James",
+          "role": "director",
+          "appointed_on": "2020-09-17"
+        }
+      ]
+    },
+    {
+      "name": "Homes England",
+      "company_number": "09231073",
+      "total_officers": 2,
+      "active_officers": 1,
+      "sample_3": [
+        {
+          "name": "HUMPHREY, Jermaine Arron",
+          "role": "director",
+          "appointed_on": "2014-09-23"
+        }
+      ]
+    },
+    {
+      "name": "UK Research and Innovation",
+      "company_number": "10612548",
+      "total_officers": 1,
+      "active_officers": 1,
+      "sample_3": [
+        {
+          "name": "WILSON, Warren Neil",
+          "role": "director",
+          "appointed_on": "2017-02-10"
+        }
+      ]
+    }
+  ],
+  "fts_contact_names": {
+    "error": "No contact columns found on notices table",
+    "columns_available": [
+      "ocid",
+      "buyer_id",
+      "latest_release_id",
+      "title",
+      "description",
+      "procurement_method",
+      "procurement_method_detail",
+      "main_category",
+      "legal_basis",
+      "above_threshold",
+      "value_amount",
+      "value_amount_gross",
+      "currency",
+      "tender_end_date",
+      "published_date",
+      "tender_status",
+      "total_bids",
+      "final_stage_bids",
+      "sme_bids",
+      "vcse_bids",
+      "has_renewal",
+      "renewal_description",
+      "notice_type",
+      "notice_url",
+      "latest_tag",
+      "ingested_at",
+      "last_updated",
+      "is_framework",
+      "framework_method",
+      "framework_type",
+      "parent_framework_ocid",
+      "parent_framework_title",
+      "data_source",
+      "suitable_for_sme",
+      "service_category",
+      "service_match_method",
+      "cpv_category",
+      "cpv_category_confidence"
+    ]
+  }
+}
