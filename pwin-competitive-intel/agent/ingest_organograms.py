@@ -27,7 +27,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 from db_utils import get_db, init_schema
 from stakeholder_utils import (
-    normalise_name, slug, person_id, infer_scs_band, resolve_col,
+    normalise_name, person_id, infer_scs_band, resolve_col,
 )
 
 # ── Config ───────────────────────────────────────────────────────────────────
