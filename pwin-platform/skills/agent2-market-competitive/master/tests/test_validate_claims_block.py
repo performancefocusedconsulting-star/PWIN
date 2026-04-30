@@ -32,6 +32,14 @@ class ValidStructureTests(unittest.TestCase):
             f"Expected an error mentioning 'sourceTier', got: {result.errors}",
         )
 
+    def test_orphan_citation_fails(self):
+        result = validate(_load("dossier_orphan_citation.json"))
+        self.assertFalse(result.ok)
+        self.assertTrue(
+            any("CLM-002" in err and "no claim" in err for err in result.errors),
+            f"Expected an error mentioning orphan 'CLM-002', got: {result.errors}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
