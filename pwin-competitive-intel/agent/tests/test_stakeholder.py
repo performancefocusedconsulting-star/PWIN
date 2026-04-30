@@ -139,5 +139,76 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(person_id('Daniel Gallagher', 'hm-treasury'), 'daniel-gallagher--hm-treasury')
 
 
+class TestOrganogramParser(unittest.TestCase):
+    """Tests parse_organogram_csv() in isolation — no network, no database."""
+
+    FIXTURE_CSV_CURRENT = (
+        "Post Unique Reference,Name,Grade (or equivalent),Job Title,"
+        "Parent Department,Organisation,Unit,Contact E-mail,"
+        "Reports to Senior Post,FTE,Actual Pay Floor (£),Actual Pay Ceiling (£),"
+        "Professional/Occupational Group,Notes,Valid?\n"
+        "1001,\"Gallagher, Daniel\",SCS2,Director - Economics,"
+        "HM Treasury,HM Treasury,Economics,d.gallagher@hmt.gov.uk,"
+        "Director General Economic Affairs,1.0,95000,100000,Economics,, Y\n"
+        "1002,N/D,,Grade 6 Policy Adviser,"
+        "HM Treasury,HM Treasury,Economics,,1234,1.0,55000,60000,Policy,,Y\n"
+        "1003,\"Russell, Elizabeth\",,Second Permanent Secretary,"
+        "HM Treasury,HM Treasury,Ministerial & Communications,,1001,1.0,150000,155000,Strategy,,Y\n"
+    )
+
+    FIXTURE_CSV_LEGACY = (
+        "Post Unique Reference,Name,Grade,Job Title,"
+        "Parent Department,Organisation,Unit,Contact Email,"
+        "Reports To Senior Post,FTE,Actual Pay Floor,Actual Pay Ceiling,"
+        "Professional/Occupational Group,Notes,Valid?\n"
+        "2001,\"Smith, Jane\",SCS1,Deputy Director Policy,"
+        "Ministry of Justice,Ministry of Justice,Criminal Policy,j.smith@moj.gov.uk,"
+        "Director Criminal Justice,1.0,75000,80000,Policy,,Y\n"
+    )
+
+    def _parse(self, csv_text, source=None):
+        import io, csv as csv_mod
+        from ingest_organograms import parse_organogram_csv
+        raw = csv_text.encode('utf-8')
+        return parse_organogram_csv(raw, source or {'canonical_id': 'hm-treasury', 'source_url': 'http://example.com', 'snapshot_date': '2025-12-01'})
+
+    def test_named_rows_only(self):
+        records = self._parse(self.FIXTURE_CSV_CURRENT)
+        # Row 2 has 'N/D' name — should be filtered out
+        self.assertEqual(len(records), 2)
+
+    def test_name_normalised(self):
+        records = self._parse(self.FIXTURE_CSV_CURRENT)
+        names = [r['name_normalised'] for r in records]
+        self.assertIn('Daniel Gallagher', names)
+        self.assertIn('Elizabeth Russell', names)
+
+    def test_scs_band_inferred(self):
+        records = self._parse(self.FIXTURE_CSV_CURRENT)
+        by_name = {r['name_normalised']: r for r in records}
+        self.assertEqual(by_name['Daniel Gallagher']['scs_band_inferred'], 'Director')
+        self.assertEqual(by_name['Elizabeth Russell']['scs_band_inferred'], 'PermanentSecretary')
+
+    def test_person_id_format(self):
+        records = self._parse(self.FIXTURE_CSV_CURRENT)
+        by_name = {r['name_normalised']: r for r in records}
+        self.assertEqual(by_name['Daniel Gallagher']['person_id'], 'daniel-gallagher--hm-treasury')
+
+    def test_legacy_column_names(self):
+        records = self._parse(
+            self.FIXTURE_CSV_LEGACY,
+            source={'canonical_id': 'ministry-of-justice', 'source_url': 'http://example.com', 'snapshot_date': '2025-09-01'}
+        )
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]['name_normalised'], 'Jane Smith')
+        self.assertEqual(records[0]['scs_band_inferred'], 'DeputyDirector')
+
+    def test_source_fields_carried_through(self):
+        records = self._parse(self.FIXTURE_CSV_CURRENT)
+        self.assertEqual(records[0]['source'], 'organogram')
+        self.assertEqual(records[0]['snapshot_date'], '2025-12-01')
+        self.assertEqual(records[0]['source_url'], 'http://example.com')
+
+
 if __name__ == '__main__':
     unittest.main()
