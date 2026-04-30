@@ -107,6 +107,11 @@ def _migrate_schema(conn: sqlite3.Connection):
     # Only column additions to existing framework tables go here.
     pass
 
+    # ── stakeholder canonical layer (2026-04-30) ──
+    # Three new tables: stakeholders, stakeholder_history, pac_witnesses.
+    # Created by CREATE TABLE IF NOT EXISTS in schema.sql — no ALTER needed.
+    pass
+
     conn.commit()
 
 

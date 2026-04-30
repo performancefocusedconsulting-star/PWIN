@@ -602,3 +602,61 @@ CREATE INDEX IF NOT EXISTS idx_fw_co_supplier ON framework_call_offs(supplier_ca
 CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_co_unique
     ON framework_call_offs(framework_id, notice_ocid)
     WHERE notice_ocid IS NOT NULL;
+
+-- ============================================================
+-- STAKEHOLDER CANONICAL LAYER (2026-04-30)
+-- Organogram-derived senior civil servants, Director tier and above.
+-- Supplemented by PAC witness lists for event-driven SRO capture.
+-- Feasibility report: docs/research/2026-04-30-stakeholder-database-feasibility.md
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS stakeholders (
+    person_id          TEXT PRIMARY KEY,   -- '{name-slug}--{canonical_buyer_id}'
+    name_raw           TEXT NOT NULL,      -- verbatim from source
+    name_normalised    TEXT NOT NULL,      -- 'First Last' for cross-source matching
+    job_title          TEXT,
+    unit               TEXT,              -- organisational unit within department
+    organisation       TEXT,             -- sub-org (e.g. NISTA within HM Treasury)
+    parent_department  TEXT,             -- raw dept name from source CSV
+    canonical_buyer_id TEXT REFERENCES canonical_buyers(canonical_id),
+    scs_band_inferred  TEXT,             -- PermanentSecretary | DirectorGeneral | Director | DeputyDirector | Unknown
+    reports_to_post    TEXT,             -- 'Reports to Senior Post' value from organogram
+    source             TEXT NOT NULL,   -- 'organogram' | 'pac_witness'
+    source_url         TEXT,
+    snapshot_date      TEXT,             -- YYYY-MM-DD of organogram; NULL for pac_witness rows
+    ingested_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_stakeholders_buyer  ON stakeholders(canonical_buyer_id);
+CREATE INDEX IF NOT EXISTS idx_stakeholders_name   ON stakeholders(name_normalised);
+CREATE INDEX IF NOT EXISTS idx_stakeholders_band   ON stakeholders(scs_band_inferred);
+CREATE INDEX IF NOT EXISTS idx_stakeholders_source ON stakeholders(source);
+
+CREATE TABLE IF NOT EXISTS stakeholder_history (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    person_id          TEXT NOT NULL REFERENCES stakeholders(person_id),
+    snapshot_date      TEXT NOT NULL,
+    job_title          TEXT,
+    unit               TEXT,
+    canonical_buyer_id TEXT,
+    recorded_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_sh_person   ON stakeholder_history(person_id);
+CREATE INDEX IF NOT EXISTS idx_sh_snapshot ON stakeholder_history(snapshot_date);
+
+CREATE TABLE IF NOT EXISTS pac_witnesses (
+    witness_id         TEXT PRIMARY KEY,   -- '{name-slug}--{session-date}'
+    name_raw           TEXT NOT NULL,
+    name_normalised    TEXT NOT NULL,
+    role_title         TEXT,
+    organisation       TEXT,
+    canonical_buyer_id TEXT REFERENCES canonical_buyers(canonical_id),
+    session_date       TEXT,              -- YYYY-MM-DD
+    session_title      TEXT,
+    session_url        TEXT NOT NULL,
+    scraped_at         TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_pac_buyer ON pac_witnesses(canonical_buyer_id);
+CREATE INDEX IF NOT EXISTS idx_pac_name  ON pac_witnesses(name_normalised);
