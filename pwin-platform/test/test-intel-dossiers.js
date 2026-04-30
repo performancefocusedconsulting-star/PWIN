@@ -43,6 +43,14 @@ check('dossierPath uses "brief" for sectors',
 check('dossierPath uses "analysis" for incumbency',
   dossierPath('incumbency', 'serco-mod').endsWith('serco-mod-analysis.json'));
 
+// dossierPath — unknown type should throw
+try {
+  dossierPath('made-up-type', 'whatever');
+  check('dossierPath rejects unknown type', false, 'expected throw');
+} catch (err) {
+  check('dossierPath rejects unknown type', /unknown.*type/i.test(err.message), err.message);
+}
+
 // getDossier — happy path
 await setup();
 const dossier = await getDossier('buyers', 'test-buyer-loader-fixture');
@@ -66,7 +74,7 @@ try {
   await getDossier('made-up-type', 'whatever');
   check('getDossier rejects unknown type', false, 'expected throw');
 } catch (err) {
-  check('getDossier rejects unknown type', /unknown type/i.test(err.message), err.message);
+  check('getDossier rejects unknown type', /unknown.*type/i.test(err.message), err.message);
 }
 
 await teardown();
