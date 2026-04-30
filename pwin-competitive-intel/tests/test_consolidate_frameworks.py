@@ -97,3 +97,16 @@ def test_gap_report_both():
     report = cf.build_gap_report(conn)
     assert report["both_count"] == 1
     assert report["contracts_only_count"] == 0
+
+
+def test_merge_three_records_same_source_keeps_source():
+    """Three contracts_only records for same ref should merge to contracts_only, not 'both'."""
+    conn = _make_db()
+    for _ in range(3):
+        _insert_fw(conn, "Tech Services 3", "RM6100", "contracts_only")
+    cf.consolidate(conn)
+    row = conn.execute("SELECT source FROM frameworks WHERE reference_no='RM6100'").fetchone()
+    assert row is not None
+    assert row["source"] == "contracts_only"
+    count = conn.execute("SELECT COUNT(*) FROM frameworks").fetchone()[0]
+    assert count == 1

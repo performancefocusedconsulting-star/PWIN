@@ -85,15 +85,16 @@ def consolidate(conn):
                 UPDATE framework_lots SET framework_id=? WHERE framework_id=?
             """, (keep["id"], dup["id"]))
             # Update kept record with any enriched fields from dup
+            new_source = "both" if keep["source"] != dup["source"] else keep["source"]
             conn.execute("""
                 UPDATE frameworks SET
                     description = COALESCE(description, ?),
                     expiry_date = COALESCE(expiry_date, ?),
                     source_url  = COALESCE(source_url, ?),
-                    source      = 'both',
+                    source      = ?,
                     last_updated = datetime('now')
                 WHERE id = ?
-            """, (dup["description"], dup["expiry_date"], dup["source_url"], keep["id"]))
+            """, (dup["description"], dup["expiry_date"], dup["source_url"], new_source, keep["id"]))
             conn.execute("DELETE FROM frameworks WHERE id=?", (dup["id"],))
             merged += 1
 
@@ -128,19 +129,34 @@ def consolidate(conn):
             conn.execute("""
                 UPDATE framework_lots SET framework_id=? WHERE framework_id=?
             """, (keep["id"], dup["id"]))
+            new_source = "both" if keep["source"] != dup["source"] else keep["source"]
             conn.execute("""
                 UPDATE frameworks SET
                     description = COALESCE(description, ?),
                     expiry_date = COALESCE(expiry_date, ?),
                     source_url  = COALESCE(source_url, ?),
-                    source      = 'both',
+                    source      = ?,
                     last_updated = datetime('now')
                 WHERE id = ?
-            """, (dup["description"], dup["expiry_date"], dup["source_url"], keep["id"]))
+            """, (dup["description"], dup["expiry_date"], dup["source_url"], new_source, keep["id"]))
             conn.execute("DELETE FROM frameworks WHERE id=?", (dup["id"],))
             merged += 1
 
     conn.commit()
+
+    # Recalculate denormalised counts after all merges
+    conn.execute("""
+        UPDATE frameworks SET
+            call_off_count = (
+                SELECT COUNT(*) FROM framework_call_offs WHERE framework_id = frameworks.id
+            ),
+            call_off_value_total = (
+                SELECT COALESCE(SUM(value), 0) FROM framework_call_offs
+                WHERE framework_id = frameworks.id AND value IS NOT NULL
+            )
+    """)
+    conn.commit()
+
     log.info("Consolidation complete: %d duplicate records merged", merged)
     return merged
 
