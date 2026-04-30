@@ -110,7 +110,8 @@
       }
     ],
     "parse_notes": [
-      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2025-12-31"
+      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2025-12-31",
+      "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
     ],
     "name": "HM Treasury",
     "status": "parsed",
@@ -228,7 +229,8 @@
       }
     ],
     "parse_notes": [
-      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31"
+      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31",
+      "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
     ],
     "name": "Ministry of Defence",
     "status": "parsed",
@@ -346,7 +348,8 @@
       }
     ],
     "parse_notes": [
-      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31"
+      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31",
+      "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
     ],
     "name": "Department for Education",
     "status": "parsed",
