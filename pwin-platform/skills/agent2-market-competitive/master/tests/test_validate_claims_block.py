@@ -24,6 +24,14 @@ class ValidStructureTests(unittest.TestCase):
         self.assertEqual(result.errors, [])
         self.assertTrue(result.ok)
 
+    def test_missing_required_field_fails(self):
+        result = validate(_load("dossier_missing_field.json"))
+        self.assertFalse(result.ok)
+        self.assertTrue(
+            any("sourceTier" in err for err in result.errors),
+            f"Expected an error mentioning 'sourceTier', got: {result.errors}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
