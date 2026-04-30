@@ -40,17 +40,19 @@ Six skills, in two clusters. Quality assessment is *not* a skill of this agent �
 
 Two further candidate skills (decision-gate prompter, cross-pursuit pattern detector) were considered and parked as "value recognised, home unclear" — they may fold into other skills, into Agent 3, or into a future bid-manager piece. Revisit after V1 ships.
 
+### 2.3 The orchestrator is a project manager, not a synthesiser and not an auditor
+
+The orchestration agent does not do strategic synthesis. It plans, tracks, dispatches, escalates risks, drives handoffs, and pushes the workflow forward. Strategic synthesis — the integrative thinking that produces a Win Strategy from a pile of intelligence — is owned by Agent 3 and the human bid team. This boundary is non-negotiable in the design: the orchestrator does not have win-strategy expertise and is never given authority to overrule strategic conclusions.
+
+The orchestrator also does not perform forensic quality audit on the assets it routes. Audit is delegated to a separate agent (see §2.4). The orchestrator's quality role is limited to *triggering* the auditor at the right moments and *acting on* the verdict and actions returned.
+
+This framing maps cleanly to where AI agents are reliably capable today: structured plan execution, dispatch and tracking, escalation. It deliberately keeps strategic judgement under human authority and audit judgement under a specialised agent.
+
 ### 2.4 Quality assessment lives in a separate agent
 
 In an earlier draft a seventh "Quality assessor" skill sat inside the orchestrator. On reflection (2026-04-30 review session) this conflated two different concerns: project-management (which is what the orchestrator does) and forensic intelligence audit (which has its own persona, its own remit, and operates on assets the orchestrator never touches — for example, client-onboarding inputs and the procurement reference layer).
 
 The quality function is therefore extracted into a new agent — the **Forensic Intelligence Auditor** — designed in its own spec. The orchestrator's interaction with it is purely as a caller: at defined moments the orchestrator invokes the auditor on a specific asset and receives back a verdict + actions. The auditor's design (skill catalogue, audit logic, partitioning across asset types) is not in scope here. See `wiki/decisions/forensic-intelligence-auditor-agent.md`.
-
-### 2.3 The orchestrator is a project manager and quality assurer, not a synthesiser
-
-The orchestration agent does not do strategic synthesis. It plans, tracks, runs quality checks, escalates risks, drives handoffs, and pushes the workflow forward. Strategic synthesis — the integrative thinking that produces a Win Strategy from a pile of intelligence — is owned by Agent 3 and the human bid team. This boundary is non-negotiable in the design: the orchestrator does not have win-strategy expertise and is never given authority to overrule strategic conclusions.
-
-This framing maps cleanly to where AI agents are reliably capable today: structured plan execution, dispatch and tracking, criterion-based quality assessment, escalation. It deliberately keeps strategic judgement under human authority.
 
 ## 3. Pursuit-to-gate orchestration — detailed design
 
