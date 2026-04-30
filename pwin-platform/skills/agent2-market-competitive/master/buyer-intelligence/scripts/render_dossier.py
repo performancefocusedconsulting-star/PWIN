@@ -109,14 +109,14 @@ def _render_claims_block(claims: list) -> str:
     for c in claims:
         cid = c.get("claimId", "?")
         rows.append(
-            f'<dt id="claim-{cid}">[{cid}] '
+            f'<dt id="claim-{e(cid)}">[{e(cid)}] '
             f'(tier {c.get("sourceTier", "?")} '
-            f'— {c.get("sourceDate") or "undated"})</dt>'
-            f'<dd><p>{c.get("claimText", "")}</p>'
+            f'— {e(c.get("sourceDate") or "undated")})</dt>'
+            f'<dd><p>{e(c.get("claimText", ""))}</p>'
             f'<p class="claim-source"><strong>Source:</strong> '
-            f'{c.get("source", "?")}</p>'
+            f'{e(c.get("source", "?"))}</p>'
             f'<p class="claim-meta">Asserted '
-            f'{c.get("claimDate", "?")}.</p></dd>'
+            f'{e(c.get("claimDate", "?"))}.</p></dd>'
         )
     return (
         '<section class="claims-block"><h2>Claims and evidence</h2>'
@@ -413,6 +413,34 @@ section h3 {{
   .container {{ max-width: 100%; }}
   section {{ break-inside: avoid; }}
 }}
+
+/* Claims block */
+.claims {{ list-style: none; }}
+.claims dt {{
+  font-family: 'Spline Sans', sans-serif;
+  font-weight: 600;
+  color: #021744;
+  margin-top: 14px;
+  font-size: 0.88em;
+}}
+.claims dd {{
+  border-left: 3px solid #5CA3B6;
+  padding-left: 14px;
+  margin-left: 0;
+  margin-bottom: 8px;
+}}
+.claim-source, .claim-meta {{
+  font-size: 0.78em;
+  color: #94A3B8;
+  margin: 2px 0;
+}}
+a.claim-cite {{
+  color: #5CA3B6;
+  text-decoration: none;
+  font-size: 0.85em;
+  font-weight: 600;
+}}
+a.claim-cite:hover {{ text-decoration: underline; }}
 </style>
 </head>
 <body>
