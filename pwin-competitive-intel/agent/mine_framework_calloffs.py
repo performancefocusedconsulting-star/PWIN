@@ -122,6 +122,7 @@ def mine_structured_references(conn):
             reference_no=row["parent_framework_ocid"],
             source="contracts_only",
         )
+        match_method = "reference_no" if row["parent_framework_ocid"] else "structured_field"
         _upsert_call_off(
             conn,
             framework_id=fw_id,
@@ -129,7 +130,7 @@ def mine_structured_references(conn):
             value=row["value_amount_gross"],
             awarded_date=row["award_date"],
             title=row["title"],
-            match_method="reference_no",
+            match_method=match_method,
             match_confidence=1.0,
         )
         inserted += 1
@@ -151,7 +152,8 @@ def mine_rm_patterns(conn):
         FROM notices n
         LEFT JOIN awards a ON a.ocid = n.ocid
         WHERE (n.parent_framework_title IS NULL OR n.parent_framework_title = '')
-    """).fetchall()
+          AND (n.title LIKE '%RM%' OR n.description LIKE '%RM%')
+    """)
 
     linked = 0
     for row in rows:
@@ -215,8 +217,8 @@ def run(conn, dry_run=False):
         ).fetchone()[0]
         b = conn.execute(
             "SELECT COUNT(*) FROM notices WHERE (parent_framework_title IS NULL"
-            " OR parent_framework_title='') AND (title LIKE '%RM[0-9]%'"
-            " OR description LIKE '%RM[0-9]%')"
+            " OR parent_framework_title='') AND (title LIKE '%RM%'"
+            " OR description LIKE '%RM%')"
         ).fetchone()[0]
         log.info("DRY RUN — Signal A candidates: %d, Signal B candidates: ~%d", a, b)
         return

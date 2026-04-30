@@ -95,7 +95,7 @@ def test_mine_structured_creates_call_off():
         "SELECT * FROM framework_call_offs WHERE notice_ocid='ocid-002'"
     ).fetchone()
     assert co is not None
-    assert co["match_method"] == "reference_no"
+    assert co["match_method"] == "structured_field"
     assert co["match_confidence"] == 1.0
 
 
@@ -108,6 +108,8 @@ def test_mine_structured_idempotent():
     mfc.mine_structured_references(conn)
     count = conn.execute("SELECT COUNT(*) FROM frameworks").fetchone()[0]
     assert count == 1
+    co_count = conn.execute("SELECT COUNT(*) FROM framework_call_offs").fetchone()[0]
+    assert co_count == 1
 
 
 # ── mine_rm_patterns ─────────────────────────────────────────────────────────
@@ -118,7 +120,8 @@ def test_mine_rm_pattern_in_title():
     mfc.mine_rm_patterns(conn)
     fw = conn.execute("SELECT * FROM frameworks WHERE reference_no='RM6116'").fetchone()
     assert fw is not None
-    assert fw["match_confidence"] if hasattr(fw, "match_confidence") else True
+    assert fw["reference_no"] == "RM6116"
+    assert fw["source"] == "contracts_only"
 
 
 def test_mine_rm_pattern_creates_call_off():
