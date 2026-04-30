@@ -37,6 +37,7 @@ Load these as needed:
 | Subject | Reference file |
 |---|---|
 | Full JSON output schema, lens model, enums, archetypes | `references/output-schema.md` |
+| Claims block contract (`claims[]` array, six required fields, citation rule) | `../CLAIMS-BLOCK-SCHEMA.md` |
 | Source tier hierarchy (5-tier), confidence calibration | `references/source-hierarchy.md` |
 | Document type → sections + lenses + extraction template | `references/source-classification.md` |
 | Downstream consumer retrieval map (decision questions, lenses, document → questions) | `references/consumer-contract.md` |
@@ -323,3 +324,10 @@ These apply across every mode.
     nothing" is not a gap entry. A dossier that skips the inventory
     traversal and begins from web-search results alone is a failed output
     regardless of how complete the narrative appears.
+19. **Emit a structured `claims[]` block.** Every dossier you produce must
+    include a top-level `claims[]` array containing every material assertion
+    in the narrative. Each claim has six required fields: `claimId`,
+    `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier`. Cite
+    claims inline using `[CLM-id]` markers. A material claim with no `claimId`
+    citation in the narrative is a contract violation. See
+    `../CLAIMS-BLOCK-SCHEMA.md` and §13 of the Universal Skill Spec.
