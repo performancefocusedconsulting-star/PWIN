@@ -126,6 +126,17 @@ Produce a single JSON object with these top-level keys:
     "degradedReason": "string or null — only set in degraded/partial mode"
   },
 
+  "claims": [
+    {
+      "claimId": "string — CLM-NNN format",
+      "claimText": "string — assertion text, self-contained",
+      "claimDate": "ISO 8601 date",
+      "source": "string — SRC-nnn or URL or upstream dossier reference",
+      "sourceDate": "ISO 8601 date or null",
+      "sourceTier": "integer — 1, 2, 3, or 4"
+    }
+  ],
+
   "buyerSnapshot": {
     "legalName": "string",
     "parentBody": "string or null",
@@ -567,6 +578,35 @@ Produce a single JSON object with these top-level keys:
 
 **Note:** `changeSummary` is populated ONLY on refresh, inject, and amend runs.
 Set to null on first-build runs.
+
+### `claims` (array, required)
+
+Top-level array of structured claim objects. Every material assertion in
+the narrative below must appear here with a stable `claimId`. The narrative
+cites claims inline using `[CLM-id]` markers.
+
+```json
+{
+  "claims": [
+    {
+      "claimId": "CLM-001",
+      "claimText": "Defence Digital reports into the National Armaments Director group.",
+      "claimDate": "2026-04-30",
+      "source": "SRC-014",
+      "sourceDate": "2024-09-12",
+      "sourceTier": 1
+    }
+  ]
+}
+```
+
+The six fields are mandatory on every claim. Schema and validation rules
+live in `pwin-platform/skills/agent2-market-competitive/master/CLAIMS-BLOCK-SCHEMA.md`
+(canonical) and §13 of the Universal Skill Spec.
+
+"Material" means any claim that bears on a downstream decision — go/no-go,
+win theme, stakeholder targeting, route to market. Background colour does
+not need a citation.
 
 ---
 
