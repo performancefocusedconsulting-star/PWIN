@@ -562,6 +562,8 @@ CREATE TABLE IF NOT EXISTS framework_lots (
 );
 
 CREATE INDEX IF NOT EXISTS idx_fw_lots_fw ON framework_lots(framework_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_lots_unique
+    ON framework_lots(framework_id, COALESCE(lot_number, ''));
 
 CREATE TABLE IF NOT EXISTS framework_suppliers (
     id                    INTEGER PRIMARY KEY AUTOINCREMENT,

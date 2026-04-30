@@ -66,7 +66,9 @@ def _parse_date(text):
     # "31 March 2027" format
     parts = text.lower().split()
     if len(parts) == 3:
-        month = _MONTH_MAP.get(parts[1])
+        month = _MONTH_MAP.get(parts[1]) or next(
+            (v for k, v in _MONTH_MAP.items() if k.startswith(parts[1])), None
+        )
         if month:
             try:
                 return f"{parts[2]}-{month}-{int(parts[0]):02d}"
@@ -257,7 +259,7 @@ def _upsert_catalogue_framework(conn, data, source_url):
             (data["name"],)
         ).fetchone()
 
-    new_source = "both" if (existing and existing["source"] == "contracts_only") else "catalogue_only"
+    new_source = "both" if (existing and existing["source"] in ("contracts_only", "both")) else "catalogue_only"
 
     if existing:
         conn.execute("""
@@ -292,6 +294,12 @@ def _upsert_catalogue_framework(conn, data, source_url):
                 (framework_id, lot_number, lot_name, scope)
             VALUES (?, ?, ?, ?)
         """, (fw_id, lot.get("lot_number"), lot.get("lot_name"), lot.get("scope")))
+
+    conn.execute("""
+        UPDATE frameworks SET lot_count = (
+            SELECT COUNT(*) FROM framework_lots WHERE framework_id = ?
+        ) WHERE id = ?
+    """, (fw_id, fw_id))
 
     conn.commit()
     return fw_id

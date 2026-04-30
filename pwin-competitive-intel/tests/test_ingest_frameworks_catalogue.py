@@ -1,9 +1,12 @@
 """Tests: ingest_frameworks_catalogue.py — CCS parser functions."""
 import importlib.util
+import sqlite3
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "agent"))
+
+SCHEMA_PATH_DB = Path(__file__).parent.parent / "db" / "schema.sql"
 
 spec = importlib.util.spec_from_file_location(
     "ingest_frameworks_catalogue",
@@ -46,6 +49,15 @@ DETAIL_FIXTURE_MINIMAL = """
   <h1 class="agreement-title">TEPAS 2</h1>
 </body></html>
 """
+
+
+def _make_db():
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.executescript(SCHEMA_PATH_DB.read_text(encoding="utf-8"))
+    conn.commit()
+    return conn
 
 
 def test_parse_ccs_list_extracts_urls():
@@ -93,3 +105,47 @@ def test_parse_date_iso():
     assert ifc._parse_date("2027-03-31") == "2027-03-31"
     assert ifc._parse_date("") is None
     assert ifc._parse_date(None) is None
+
+
+def test_upsert_catalogue_framework_inserts():
+    assert ifc is not None
+    conn = _make_db()
+    data = {"name": "Network Services 3", "reference_no": "RM6116",
+            "expiry_date": "2027-03-31", "description": "WAN services",
+            "lots": [{"lot_number": "1", "lot_name": "WAN", "scope": None}]}
+    fw_id = ifc._upsert_catalogue_framework(conn, data, source_url="https://example.com/rm6116")
+    fw = conn.execute("SELECT * FROM frameworks WHERE id=?", (fw_id,)).fetchone()
+    assert fw["name"] == "Network Services 3"
+    assert fw["source"] == "catalogue_only"
+    assert fw["lot_count"] == 1
+
+
+def test_upsert_catalogue_framework_idempotent():
+    conn = _make_db()
+    data = {"name": "Tech Services 3", "reference_no": "RM6100",
+            "expiry_date": None, "description": None, "lots": []}
+    ifc._upsert_catalogue_framework(conn, data, source_url="https://example.com/rm6100")
+    ifc._upsert_catalogue_framework(conn, data, source_url="https://example.com/rm6100")
+    count = conn.execute("SELECT COUNT(*) FROM frameworks WHERE reference_no='RM6100'").fetchone()[0]
+    assert count == 1
+
+
+def test_upsert_preserves_both_source():
+    """A 'contracts_only' record should become 'both'; 'both' should stay 'both'."""
+    conn = _make_db()
+    # Seed a contracts_only record
+    conn.execute("""
+        INSERT INTO frameworks (name, reference_no, owner, source, last_updated)
+        VALUES ('Network Services 3', 'RM6116', 'unknown', 'contracts_only', datetime('now'))
+    """)
+    conn.commit()
+    data = {"name": "Network Services 3", "reference_no": "RM6116",
+            "expiry_date": "2027-03-31", "description": None, "lots": []}
+    # First catalogue run: should promote to 'both'
+    ifc._upsert_catalogue_framework(conn, data, source_url="https://example.com/rm6116")
+    fw = conn.execute("SELECT source FROM frameworks WHERE reference_no='RM6116'").fetchone()
+    assert fw["source"] == "both"
+    # Second catalogue run: should preserve 'both', not downgrade to 'catalogue_only'
+    ifc._upsert_catalogue_framework(conn, data, source_url="https://example.com/rm6116")
+    fw = conn.execute("SELECT source FROM frameworks WHERE reference_no='RM6116'").fetchone()
+    assert fw["source"] == "both"
