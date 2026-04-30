@@ -422,24 +422,35 @@ async function testDossierContextProviders() {
 
   const _ctx = await gatherContext(_dossierSkill, _dossierInput);
 
-  assert(_ctx.buyerDossier?.meta?.buyerName === 'Home Office',
-    `buyer_dossier loads Home Office (got ${_ctx.buyerDossier?.meta?.buyerName})`);
-  assert(_ctx.supplierDossier?.meta?.supplierName === 'Plan A Test Supplier',
-    `supplier_dossier loads from intel path (got ${_ctx.supplierDossier?.meta?.supplierName})`);
-  assert(_ctx.sectorBrief?.meta?.sector === 'Plan A Test Sector',
-    `sector_brief loads (got ${_ctx.sectorBrief?.meta?.sector})`);
-  assert(_ctx.incumbencyAnalysis?.meta?.incumbent === 'Plan A Test Supplier',
-    `incumbency_analysis loads keyed by supplier+buyer slug (got ${_ctx.incumbencyAnalysis?.meta?.incumbent})`);
+  try {
+    assert(_ctx.buyerDossier?.meta?.buyerName === 'Home Office',
+      `buyer_dossier loads Home Office (got ${_ctx.buyerDossier?.meta?.buyerName})`);
+    assert(_ctx.supplierDossier?.meta?.supplierName === 'Plan A Test Supplier',
+      `supplier_dossier loads from intel path (got ${_ctx.supplierDossier?.meta?.supplierName})`);
+    assert(_ctx.sectorBrief?.meta?.sector === 'Plan A Test Sector',
+      `sector_brief loads (got ${_ctx.sectorBrief?.meta?.sector})`);
+    assert(_ctx.incumbencyAnalysis?.meta?.incumbent === 'Plan A Test Supplier',
+      `incumbency_analysis loads keyed by supplier+buyer slug (got ${_ctx.incumbencyAnalysis?.meta?.incumbent})`);
 
-  // Missing-file behaviour: each context item is null, not undefined, when not found
-  const _missingSkill = { id: 'plan-a-dossier-missing-test', context: ['buyer_dossier'] };
-  const _missingCtx = await gatherContext(_missingSkill, { pursuitId, buyerName: 'Nonexistent Buyer 999' });
-  assert(_missingCtx.buyerDossier === null, 'buyer_dossier returns null for missing dossier');
+    // Missing-file behaviour: each context item is null, not undefined, when not found
+    const _missingSkill = { id: 'plan-a-dossier-missing-test', context: ['buyer_dossier'] };
+    const _missingCtx = await gatherContext(_missingSkill, { pursuitId, buyerName: 'Nonexistent Buyer 999' });
+    assert(_missingCtx.buyerDossier === null, 'buyer_dossier returns null for missing dossier');
 
-  // Cleanup fixtures
-  await _rm(_fix.supplier, { force: true });
-  await _rm(_fix.sector, { force: true });
-  await _rm(_fix.incumbency, { force: true });
+    // Silent-skip behaviour: when no input field is supplied AND no pursuit fallback applies,
+    // the context property is left absent (undefined). This documents an intentional design:
+    // templates that need to distinguish "absent" from "tried but missing" can rely on
+    // undefined-vs-null. Use a synthetic skill with NO context.pursuit (skip pursuitId).
+    const _absentSkill = { id: 'plan-a-dossier-absent-test', context: ['buyer_dossier'] };
+    const _absentCtx = await gatherContext(_absentSkill, {});
+    assert(_absentCtx.buyerDossier === undefined,
+      `buyer_dossier absent (undefined) when no buyerName and no pursuit (got ${_absentCtx.buyerDossier})`);
+  } finally {
+    // Cleanup fixtures regardless of test outcome
+    await _rm(_fix.supplier, { force: true });
+    await _rm(_fix.sector, { force: true });
+    await _rm(_fix.incumbency, { force: true });
+  }
 
   console.log('');
 }

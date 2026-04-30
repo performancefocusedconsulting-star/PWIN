@@ -192,7 +192,8 @@ async function gatherContext(skill, input) {
       case 'incumbency_analysis': {
         // Load the Agent 2 incumbency analysis from
         // ~/.pwin/intel/incumbency/{supplier-slug}-{buyer-slug}-analysis.json.
-        // Requires both supplierName and incumbentBuyerName in the input.
+        // Requires supplierName in input. Buyer side is resolved from
+        // input.incumbentBuyerName, then input.buyerName, then the pursuit's client.
         const supplierName = input?.supplierName;
         const buyerName = input?.incumbentBuyerName || input?.buyerName || context.pursuit?.client;
         if (supplierName && buyerName) {
