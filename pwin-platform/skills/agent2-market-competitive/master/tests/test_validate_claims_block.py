@@ -48,6 +48,52 @@ class ValidStructureTests(unittest.TestCase):
             f"Expected an error mentioning bad sourceTier '5', got: {result.errors}",
         )
 
+    def test_duplicate_claim_id_fails(self):
+        dossier = {
+            "claims": [
+                {
+                    "claimId": "CLM-001",
+                    "claimText": "First.",
+                    "claimDate": "2026-04-30",
+                    "source": "url",
+                    "sourceDate": "2026-03-15",
+                    "sourceTier": 1,
+                },
+                {
+                    "claimId": "CLM-001",
+                    "claimText": "Duplicate.",
+                    "claimDate": "2026-04-30",
+                    "source": "url",
+                    "sourceDate": "2026-03-15",
+                    "sourceTier": 1,
+                },
+            ],
+            "narrative": "Test [CLM-001].",
+        }
+        result = validate(dossier)
+        self.assertFalse(result.ok)
+        self.assertTrue(any("duplicated" in err for err in result.errors))
+
+    def test_bad_claim_id_format_fails(self):
+        dossier = {
+            "claims": [
+                {
+                    "claimId": "claim-1",
+                    "claimText": "Bad id.",
+                    "claimDate": "2026-04-30",
+                    "source": "url",
+                    "sourceDate": "2026-03-15",
+                    "sourceTier": 1,
+                }
+            ],
+            "narrative": "[CLM-001]",
+        }
+        result = validate(dossier)
+        self.assertFalse(result.ok)
+        self.assertTrue(
+            any("does not match required format" in err for err in result.errors)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
