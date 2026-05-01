@@ -112,6 +112,14 @@ class PerSkillFixtureTests(unittest.TestCase):
             f"Serco supplier anchor fixture failed validator: {result.errors}",
         )
 
+    def test_sector_central_gov_ict_fixture_passes_validator(self):
+        result = validate(_load("sector_central_gov_ict_v1.json"))
+        self.assertEqual(
+            result.errors,
+            [],
+            f"Central Gov ICT sector fixture failed validator: {result.errors}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

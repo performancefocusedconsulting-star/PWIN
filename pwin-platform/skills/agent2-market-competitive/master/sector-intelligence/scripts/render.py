@@ -8,6 +8,7 @@ and writes the rendered HTML to both the intel cache and the workspace folder.
 """
 import json
 import os
+import re
 import sys
 from datetime import date
 
@@ -18,11 +19,48 @@ TEAL = "#5CA3B6"
 PALE = "#E0F4F6"
 TERRA = "#D17A74"
 
+CITATION_RE = re.compile(r"\[(CLM-[0-9A-Z-]+|[A-Z]+-CLM-[0-9A-Z-]+)\]")
+
+
+def _linkify_citations(text: str) -> str:
+    """Replace [CLM-id] markers in narrative with anchor links."""
+    if not isinstance(text, str):
+        return text
+    return CITATION_RE.sub(
+        lambda m: (
+            f'<a class="claim-cite" href="#claim-{m.group(1)}">'
+            f'[{m.group(1)}]</a>'
+        ),
+        text,
+    )
+
+
+def _render_claims_block(claims: list) -> str:
+    if not claims:
+        return ""
+    rows = []
+    for c in claims:
+        cid = c.get("claimId", "?")
+        rows.append(
+            f'<dt id="claim-{cid}">[{cid}] '
+            f'(tier {c.get("sourceTier", "?")} '
+            f'— {c.get("sourceDate") or "undated"})</dt>'
+            f'<dd><p>{c.get("claimText", "")}</p>'
+            f'<p class="claim-source"><strong>Source:</strong> '
+            f'{c.get("source", "?")}</p>'
+            f'<p class="claim-meta">Asserted '
+            f'{c.get("claimDate", "?")}</p></dd>'
+        )
+    return (
+        '<div class="card"><h2>Claims and evidence</h2>'
+        '<dl class="claims">' + "".join(rows) + '</dl></div>'
+    )
+
 
 def ev(w, default="--"):
     if isinstance(w, dict):
-        return str(w.get("value", default))
-    return str(w) if w else default
+        return _linkify_citations(str(w.get("value", default)))
+    return _linkify_citations(str(w)) if w else default
 
 
 def badge(w):
@@ -130,6 +168,12 @@ def render(slug):
         'table{width:100%;border-collapse:collapse} tr:nth-child(even){background:#F7F4EE}'
         f'.lbl{{padding:6px 12px;color:#666;font-size:0.85em;width:220px;font-family:DM Sans,sans-serif}}'
         f'td{{padding:6px 12px;font-family:DM Sans,sans-serif;color:{NAVY}}}'
+        '.claims{list-style:none}'
+        f'.claims dt{{font-family:DM Sans,sans-serif;font-weight:600;color:{NAVY};margin-top:14px;font-size:0.88em}}'
+        f'.claims dd{{border-left:3px solid {TEAL};padding-left:14px;margin-left:0;margin-bottom:8px}}'
+        '.claim-source,.claim-meta{font-size:0.78em;color:#94A3B8;margin:2px 0}'
+        f'a.claim-cite{{color:{TEAL};text-decoration:none;font-size:0.85em;font-weight:600}}'
+        'a.claim-cite:hover{text-decoration:underline}'
         '</style></head><body>'
         '<div class="hdr">'
         f'<h1>{meta.get("sectorName","Sector Intelligence Brief")}</h1>'
@@ -206,8 +250,9 @@ def render(slug):
            f'<tbody>{version_rows}</tbody></table></div>' if version_rows else "")
         + f'<div style="text-align:center;padding:16px;font-family:DM Mono,monospace;font-size:0.72em;color:#999">'
         + f'BidEquity Intelligence Platform &nbsp;|&nbsp; INTERNAL USE ONLY &nbsp;|&nbsp; Generated {date.today().isoformat()}</div>'
-        + '</div></body></html>'
     )
+    html += _render_claims_block(d.get("claims", []))
+    html += '</div></body></html>'
 
     out_paths = [
         fr"C:\Users\User\.pwin\intel\sectors\{slug}-brief.html",

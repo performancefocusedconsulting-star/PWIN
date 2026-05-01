@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "slug": "central-government-ict",
+    "sectorName": "Central Government ICT",
+    "skillName": "sector-intelligence",
+    "version": "1.0.0",
+    "mode": "build",
+    "builtDate": "2026-05-01",
+    "lastModifiedDate": "2026-05-01",
+    "refreshDue": "2026-08-01",
+    "depthMode": "snapshot",
+    "degradedMode": false,
+    "degradedModeReason": null,
+    "sourceCount": 3,
+    "internalSourceCount": 0
+  },
+  "claims": [
+    {
+      "claimId": "CLM-001",
+      "claimText": "UK central government ICT spending reached approximately £9bn in 2024/25, per NAO analysis of departmental accounts.",
+      "claimDate": "2026-05-01",
+      "source": "SRC-001",
+      "sourceDate": "2025-01-15",
+      "sourceTier": 1
+    },
+    {
+      "claimId": "CLM-002",
+      "claimText": "The Crown Commercial Service Technology Products and Services 3 (TPS3) framework has a total ceiling value of £9.8bn over four years.",
+      "claimDate": "2026-05-01",
+      "source": "SRC-002",
+      "sourceDate": "2024-06-01",
+      "sourceTier": 1
+    },
+    {
+      "claimId": "CLM-003",
+      "claimText": "CDDO's 2025 digital and technology spending controls require Cabinet Office approval for ICT contracts above £1m, increasing scrutiny on large programme spend.",
+      "claimDate": "2026-05-01",
+      "source": "SRC-003",
+      "sourceDate": "2025-04-01",
+      "sourceTier": 1
+    }
+  ],
+  "sectorSummary": {
+    "addressableSpendGbpbn": {
+      "value": "Approximately £9bn per annum [CLM-001]",
+      "type": "estimate",
+      "confidence": "medium",
+      "rationale": "NAO analysis; excludes defence and classified programmes.",
+      "sourceRefs": ["SRC-001"]
+    },
+    "spendTrajectory": "stable",
+    "topFrameworks": ["TPS3 [CLM-002]", "G-Cloud 14", "Digital Outcomes and Specialists 6"],
+    "sectorRiskLevel": "medium",
+    "riskRationale": "Spending controls tightened under CDDO [CLM-003]. Fiscal pressure likely to compress discretionary spend while driving efficiency mandates."
+  },
+  "S1": {
+    "policyDirectionSummary": {
+      "value": "Government digital strategy emphasises shared platforms, cloud-first, and AI adoption across departments.",
+      "type": "signal",
+      "confidence": "high",
+      "rationale": "Consistent across multiple Cabinet Office publications.",
+      "sourceRefs": ["SRC-003"]
+    },
+    "policyRisks": [
+      {
+        "value": "Spending controls require Cabinet Office approval above £1m [CLM-003], creating pipeline delays.",
+        "type": "fact",
+        "confidence": "high",
+        "rationale": "CDDO published threshold is confirmed.",
+        "sourceRefs": ["SRC-003"]
+      }
+    ]
+  },
+  "S2": {
+    "totalAddressableSpendGbpbn": {
+      "value": "Approximately £9bn per annum [CLM-001]",
+      "type": "estimate",
+      "confidence": "medium",
+      "rationale": "NAO analysis of departmental accounts.",
+      "sourceRefs": ["SRC-001"]
+    },
+    "topFrameworksByValue": [
+      {
+        "value": "TPS3 — £9.8bn ceiling, 4 years [CLM-002]",
+        "type": "fact",
+        "confidence": "high",
+        "rationale": "Published CCS framework notice.",
+        "sourceRefs": ["SRC-002"]
+      }
+    ]
+  },
+  "sourceRegister": {
+    "sources": [
+      {
+        "sourceId": "SRC-001",
+        "tier": 1,
+        "sourceType": "nao-report",
+        "title": "NAO — Government ICT Spending Analysis 2024/25",
+        "publicationDate": "2025-01-15",
+        "accessDate": "2026-05-01",
+        "url": null,
+        "sectionsSupported": ["S2"],
+        "evidenceAge": "16 months",
+        "notes": "Annual departmental accounts analysis."
+      },
+      {
+        "sourceId": "SRC-002",
+        "tier": 1,
+        "sourceType": "framework-notice",
+        "title": "Crown Commercial Service — Technology Products and Services 3 (TPS3)",
+        "publicationDate": "2024-06-01",
+        "accessDate": "2026-05-01",
+        "url": null,
+        "sectionsSupported": ["S2"],
+        "evidenceAge": "23 months",
+        "notes": "Framework notice confirming ceiling value and duration."
+      },
+      {
+        "sourceId": "SRC-003",
+        "tier": 1,
+        "sourceType": "government-policy",
+        "title": "CDDO Digital and Technology Spending Controls 2025",
+        "publicationDate": "2025-04-01",
+        "accessDate": "2026-05-01",
+        "url": null,
+        "sectionsSupported": ["S1"],
+        "evidenceAge": "13 months",
+        "notes": "Sets £1m approval threshold for central government ICT."
+      }
+    ],
+    "internalSources": [],
+    "gaps": [],
+    "staleFields": [],
+    "lowConfidenceInferences": []
+  }
+}
