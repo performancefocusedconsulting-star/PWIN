@@ -448,6 +448,7 @@ input[type="range"]::-webkit-slider-thumb {
   <div class="tab" data-view="expiry">Expiry Pipeline</div>
   <div class="tab" data-view="pipeline">Forward Pipeline</div>
   <div class="tab" data-view="pwin">PWIN Signals</div>
+  <div class="tab" data-view="frameworks">Frameworks</div>
 </nav>
 
 <!-- ── VIEWS ──────────────────────────────────────────────── -->
@@ -687,6 +688,85 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
   </section>
 
+  <section class="view" id="view-frameworks">
+    <!-- Summary bar -->
+    <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap" id="fw-summary-bar">
+      <div class="card" style="flex:1;min-width:140px;text-align:center">
+        <div class="card-title">Total Frameworks</div>
+        <div style="font-size:2rem;font-family:var(--font-display)" id="fw-total">—</div>
+      </div>
+      <div class="card" style="flex:1;min-width:140px;text-align:center">
+        <div class="card-title">Active</div>
+        <div style="font-size:2rem;font-family:var(--font-display)" id="fw-active">—</div>
+      </div>
+      <div class="card" style="flex:1;min-width:160px;text-align:center">
+        <div class="card-title">Expiring ≤12 months</div>
+        <div style="font-size:2rem;font-family:var(--font-display);color:var(--warning)" id="fw-expiring">—</div>
+      </div>
+      <div class="card" style="flex:1;min-width:160px;text-align:center">
+        <div class="card-title">Total Call-off Value</div>
+        <div style="font-size:2rem;font-family:var(--font-display)" id="fw-total-value">—</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+      <input type="text" id="fw-search" placeholder="Search name or reference…"
+             style="flex:2;min-width:200px;padding:8px 12px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+      <select id="fw-filter-owner" style="flex:1;min-width:140px;padding:8px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+        <option value="">All owners</option>
+        <option value="central_gov">Central Govt (CCS)</option>
+        <option value="nhs">NHS</option>
+        <option value="local_gov">Local Government</option>
+        <option value="departmental">Departmental</option>
+      </select>
+      <select id="fw-filter-status" style="flex:1;min-width:140px;padding:8px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="expiring_soon">Expiring soon</option>
+        <option value="expired">Expired</option>
+      </select>
+      <button id="fw-search-btn" class="btn" style="padding:8px 16px">Search</button>
+    </div>
+
+    <!-- Directory table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Reference</th><th>Name</th><th>Owner</th><th>Category</th>
+            <th>Status</th><th>Suppliers</th><th>Call-offs</th><th>Value (£)</th>
+          </tr>
+        </thead>
+        <tbody id="fw-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Detail panel (hidden until row clicked) -->
+    <div id="fw-detail" style="display:none;margin-top:24px">
+      <h3 id="fw-detail-name" style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:4px"></h3>
+      <div id="fw-detail-meta" style="color:var(--muted);font-size:0.85rem;margin-bottom:16px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" id="fw-detail-grid">
+        <div class="card">
+          <div class="card-title">Lots</div>
+          <div id="fw-detail-lots"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top Suppliers by Call-off Value</div>
+          <div id="fw-detail-suppliers"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top Buyers</div>
+          <div id="fw-detail-buyers"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Call-offs</div>
+          <div id="fw-detail-calloffs"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <script>
@@ -810,6 +890,9 @@ document.getElementById('tabs').addEventListener('click', (e) => {
   }
   if (e.target.dataset.view === 'pwin' && !view.dataset.loaded) {
     loadPwin(); view.dataset.loaded = '1';
+  }
+  if (e.target.dataset.view === 'frameworks' && !view.dataset.loaded) {
+    loadFrameworksSummary(); loadFrameworksList(); view.dataset.loaded = '1';
   }
 });
 
@@ -1533,6 +1616,111 @@ async function loadPwin() {
       '<tr><td colspan="6"><div class="empty-state"><h3>Data Server Unavailable</h3><p><code>python server.py</code></p></div></td></tr>';
   }
 }
+
+/* ── FRAMEWORKS VIEW ────────────────────────────────────────── */
+function fmtVal(v) {
+  if (!v) return '—';
+  if (v >= 1e9) return '£' + (v/1e9).toFixed(1) + 'bn';
+  if (v >= 1e6) return '£' + (v/1e6).toFixed(1) + 'm';
+  if (v >= 1e3) return '£' + (v/1e3).toFixed(0) + 'k';
+  return '£' + v.toFixed(0);
+}
+
+function statusBadge(status) {
+  const colours = {
+    active: 'color:#4caf50',
+    expiring_soon: 'color:#ff9800',
+    expired: 'color:#f44336',
+    replaced: 'color:#9e9e9e',
+  };
+  const style = colours[status] || '';
+  return `<span style="${style}">${status || '—'}</span>`;
+}
+
+async function loadFrameworksSummary() {
+  const data = await fetch('/api/frameworks-summary').then(r => r.json()).catch(() => ({}));
+  document.getElementById('fw-total').textContent = data.total ?? '—';
+  document.getElementById('fw-active').textContent = data.active ?? '—';
+  document.getElementById('fw-expiring').textContent = data.expiring_soon ?? '—';
+  document.getElementById('fw-total-value').textContent = fmtVal(data.total_call_off_value);
+}
+
+async function loadFrameworksList() {
+  const q = document.getElementById('fw-search').value;
+  const owner = document.getElementById('fw-filter-owner').value;
+  const status = document.getElementById('fw-filter-status').value;
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (owner) params.set('owner_type', owner);
+  if (status) params.set('status', status);
+
+  const data = await fetch(`/api/frameworks?${params}`).then(r => r.json()).catch(() => ({frameworks: []}));
+  const tbody = document.getElementById('fw-table-body');
+  tbody.innerHTML = '';
+  for (const fw of (data.frameworks || [])) {
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.innerHTML = `
+      <td style="font-family:var(--font-mono);font-size:0.85rem">${fw.reference_no || '—'}</td>
+      <td>${fw.name}</td>
+      <td style="font-size:0.85rem">${fw.owner || '—'}</td>
+      <td style="font-size:0.85rem">${fw.category || '—'}</td>
+      <td>${statusBadge(fw.status)}</td>
+      <td style="text-align:right">${fw.supplier_count || 0}</td>
+      <td style="text-align:right">${fw.call_off_count || 0}</td>
+      <td style="text-align:right">${fmtVal(fw.call_off_value_total)}</td>
+    `;
+    tr.addEventListener('click', () => loadFrameworkDetail(fw.id));
+    tbody.appendChild(tr);
+  }
+}
+
+async function loadFrameworkDetail(id) {
+  const data = await fetch(`/api/framework?id=${id}`).then(r => r.json()).catch(() => null);
+  if (!data || data.error) return;
+  const fw = data.framework;
+  document.getElementById('fw-detail').style.display = 'block';
+  document.getElementById('fw-detail-name').textContent = fw.name;
+  document.getElementById('fw-detail-meta').textContent =
+    [fw.reference_no, fw.owner, fw.expiry_date ? `Expires ${fw.expiry_date}` : null,
+     fw.source === 'contracts_only' ? '⚑ Enrich from catalogue' : null]
+    .filter(Boolean).join(' · ');
+
+  const lotsEl = document.getElementById('fw-detail-lots');
+  lotsEl.innerHTML = data.lots.length
+    ? '<table>' + data.lots.map(l =>
+        `<tr><td style="font-family:var(--font-mono)">${l.lot_number || ''}</td><td>${l.lot_name || ''}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No lot data</p>';
+
+  const supEl = document.getElementById('fw-detail-suppliers');
+  supEl.innerHTML = data.top_suppliers.length
+    ? '<table>' + data.top_suppliers.map(s =>
+        `<tr><td>${s.supplier_name_raw || '—'}</td><td style="text-align:right">${fmtVal(s.call_off_value)}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No supplier data</p>';
+
+  const buyEl = document.getElementById('fw-detail-buyers');
+  buyEl.innerHTML = data.top_buyers.length
+    ? '<table>' + data.top_buyers.map(b =>
+        `<tr><td>${b.buyer || '—'}</td><td style="text-align:right">${fmtVal(b.total_value)}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No buyer data</p>';
+
+  const coEl = document.getElementById('fw-detail-calloffs');
+  coEl.innerHTML = data.recent_call_offs.length
+    ? '<table>' + data.recent_call_offs.map(c =>
+        `<tr><td style="font-size:0.8rem">${c.awarded_date || ''}</td><td style="font-size:0.8rem">${c.title || '—'}</td><td style="text-align:right;font-size:0.8rem">${fmtVal(c.value)}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No call-off data</p>';
+
+  document.getElementById('fw-detail').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('fw-search-btn').addEventListener('click', loadFrameworksList);
+document.getElementById('fw-search').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadFrameworksList();
+});
 
 /* ── KEYBOARD SHORTCUTS ─────────────────────────────────────── */
 document.getElementById('pipelineBuyer').addEventListener('keydown', (e) => {
