@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "pursuitId": "PUR-2026-TEST-INC",
+    "skillName": "incumbency-advantage-displacement-strategy",
+    "version": "1.0.0",
+    "mode": "build",
+    "builtDate": "2026-05-01",
+    "lastModifiedDate": "2026-05-01",
+    "depthMode": "snapshot",
+    "degradedMode": false,
+    "degradedModeReason": null,
+    "sourceCount": 2,
+    "internalSourceCount": 0
+  },
+  "claims": [
+    {
+      "claimId": "INC-CLM-001",
+      "claimText": "Serco has held the MoJ Electronic Monitoring contract continuously since 2014, giving it deep operational knowledge of tagging hardware, offender compliance workflows, and MoJ governance contacts.",
+      "claimDate": "2026-05-01",
+      "source": "Supplier dossier: serco-group-plc, claim CLM-001",
+      "sourceDate": "2023-11-15",
+      "sourceTier": 1,
+      "derivedFrom": ["SUPPLIER:CLM-001"]
+    },
+    {
+      "claimId": "INC-CLM-002",
+      "claimText": "The MoJ has historically extended Electronic Monitoring contracts rather than re-competing them, indicating high buyer inertia and low appetite for transition risk.",
+      "claimDate": "2026-05-01",
+      "source": "Buyer dossier: ministry-of-justice, claim CLM-003",
+      "sourceDate": "2025-06-01",
+      "sourceTier": 2,
+      "derivedFrom": ["BUYER:CLM-003"]
+    },
+    {
+      "claimId": "INC-CLM-003",
+      "claimText": "Serco's UK public sector revenue is approximately 95% of its UK divisional revenue, making retention of MoJ contracts a high-priority commercial imperative for Serco.",
+      "claimDate": "2026-05-01",
+      "source": "Supplier dossier: serco-group-plc, claim CLM-003",
+      "sourceDate": "2025-03-01",
+      "sourceTier": 2,
+      "derivedFrom": ["SUPPLIER:CLM-003"]
+    }
+  ],
+  "incumbentAssessment": {
+    "executiveJudgement": {
+      "summary": "Serco is a well-entrenched incumbent on the MoJ Electronic Monitoring contract [INC-CLM-001]. Buyer inertia is high [INC-CLM-002] and Serco has a strong commercial incentive to defend [INC-CLM-003].",
+      "headlineRecommendation": "go_with_conditions",
+      "rationale": "Displacement is feasible only with clear transition evidence and a superior commercial offer.",
+      "confidence": "medium"
+    }
+  },
+  "sourceRegister": {
+    "sources": [
+      {
+        "sourceId": "SRC-001",
+        "tier": 1,
+        "sourceType": "upstream_artefact",
+        "title": "Supplier dossier — Serco Group plc v1.0.0",
+        "publicationDate": "2026-05-01",
+        "accessDate": "2026-05-01",
+        "url": null,
+        "sectionsSupported": ["incumbentAssessment"],
+        "evidenceAge": "0 months",
+        "reliability": "high",
+        "notes": "serco-group-plc supplier dossier v1.0.0"
+      },
+      {
+        "sourceId": "SRC-002",
+        "tier": 2,
+        "sourceType": "upstream_artefact",
+        "title": "Buyer dossier — Ministry of Justice v1.0.0",
+        "publicationDate": "2026-05-01",
+        "accessDate": "2026-05-01",
+        "url": null,
+        "sectionsSupported": ["incumbentAssessment"],
+        "evidenceAge": "0 months",
+        "reliability": "medium",
+        "notes": "ministry-of-justice buyer dossier v1.0.0"
+      }
+    ],
+    "internalSources": [],
+    "gaps": [],
+    "staleFields": [],
+    "lowConfidenceInferences": []
+  }
+}

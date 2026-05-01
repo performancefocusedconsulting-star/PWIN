@@ -120,6 +120,14 @@ class PerSkillFixtureTests(unittest.TestCase):
             f"Central Gov ICT sector fixture failed validator: {result.errors}",
         )
 
+    def test_incumbency_moj_em_fixture_passes_validator(self):
+        result = validate(_load("incumbency_moj_em_v1.json"))
+        self.assertEqual(
+            result.errors,
+            [],
+            f"MoJ EM incumbency fixture failed validator: {result.errors}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

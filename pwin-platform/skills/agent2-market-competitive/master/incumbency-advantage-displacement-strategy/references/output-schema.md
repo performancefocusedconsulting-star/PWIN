@@ -90,6 +90,15 @@ changeSummary:
 
 deltaSummary: string | null  # one-line summary of changes since previous version (refresh only)
 
+claims:
+  - claimId: string           # INC-CLM-NNN format (integrator prefix required)
+    claimText: string         # assertion text, self-contained
+    claimDate: YYYY-MM-DD     # when this skill asserted the claim
+    source: string            # SRC-nnn, URL, or upstream dossier reference e.g. "Buyer dossier: HMRC, claim CLM-014"
+    sourceDate: YYYY-MM-DD | null
+    sourceTier: 1 | 2 | 3 | 4
+    derivedFrom: list[string] # optional — upstream claim IDs e.g. ["BUYER:CLM-014", "SUPPLIER:CLM-022"]
+
 incumbentAssessment:
   executiveJudgement:
     summary: string
@@ -517,3 +526,39 @@ capability and evidence.}
 
 - {Question}
 ```
+
+---
+
+## `claims` (array, required)
+
+Top-level array of structured claim objects. Every material assertion in
+the incumbent assessment must appear here with a stable `claimId`. The
+narrative cites claims inline using `[INC-CLM-id]` markers.
+
+As an integrator skill, incumbency-advantage-displacement-strategy uses
+the `INC-CLM-` prefix to distinguish its claims from those in the upstream
+producer dossiers it consumes. The optional `derivedFrom` field records
+which upstream claims the integrator claim was synthesised from, enabling
+the Forensic Intelligence Auditor to trace the full evidence chain.
+
+```json
+{
+  "claims": [
+    {
+      "claimId": "INC-CLM-001",
+      "claimText": "Serco has held the MoJ Electronic Monitoring contract continuously since 2014, giving it deep operational knowledge of tagging hardware, offender compliance workflows, and MoJ governance contacts.",
+      "claimDate": "2026-05-01",
+      "source": "Supplier dossier: serco-group-plc, claim CLM-001",
+      "sourceDate": "2023-11-15",
+      "sourceTier": 1,
+      "derivedFrom": ["SUPPLIER:CLM-001"]
+    }
+  ]
+}
+```
+
+The six base fields are mandatory on every claim. `derivedFrom` is optional
+but expected on every claim that synthesises from an upstream producer
+dossier. Schema and validation rules live in
+`pwin-platform/skills/agent2-market-competitive/master/CLAIMS-BLOCK-SCHEMA.md`
+(canonical) and §13 of the Universal Skill Spec.

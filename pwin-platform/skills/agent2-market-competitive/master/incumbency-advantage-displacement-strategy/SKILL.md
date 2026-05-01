@@ -553,3 +553,17 @@ improves what matters.
 
 Full language playbooks — including messages to use and messages to avoid
 for each scenario — are in `references/action-playbooks.md`.
+
+---
+
+## Output: claims block
+
+The assessment JSON carries a top-level `claims[]` block alongside `meta`,
+`sourceRegister`, and `incumbentAssessment`. As an integrator skill, claim
+IDs use the `INC-CLM-` prefix (e.g. `INC-CLM-001`), and each claim that
+synthesises from an upstream producer dossier carries a `derivedFrom` array
+naming the upstream claim IDs (e.g. `["BUYER:CLM-014", "SUPPLIER:CLM-022"]`).
+The contract is documented in
+[`../CLAIMS-BLOCK-SCHEMA.md`](../CLAIMS-BLOCK-SCHEMA.md); the platform
+validator at `../scripts/validate_claims_block.py` enforces the six base
+fields and citation integrity.
