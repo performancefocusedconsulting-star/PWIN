@@ -4759,78 +4759,166 @@ function getContextBlock() {
 const INTEL_API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
   ? 'http://localhost:3456'
   : 'https://pwin-competitive-intel.performancefocusedconsulting.workers.dev';
-let _intelCache = { org: null, data: null, ts: 0 };
+// ── Intel cache ───────────────────────────────────────────────────────────────
+let _intelCache = { key: null, data: null, ts: 0 };
 
+// ── Buyer procurement profile ─────────────────────────────────────────────────
+async function fetchBuyerProfile(org) {
+  try {
+    const resp = await fetch(`${INTEL_API}/api/intel/buyer?name=${encodeURIComponent(org)}`)
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!resp?.buyers?.length) return '';
+    const b = resp.buyers[0];
+    const s = b.stats || {};
+    if (!s.totalAwards) return '';
+    const lines = ['PROCUREMENT INTELLIGENCE — Buyer Profile:'];
+    lines.push(`Buyer: ${b.name} (${b.org_type || 'unknown type'})`);
+    lines.push(`Awards in database: ${s.totalAwards} | Total spend: £${s.totalSpend ? (s.totalSpend / 1e6).toFixed(1) + 'm' : 'unknown'}`);
+    lines.push(`Average award value: £${s.avgValue ? (s.avgValue / 1e6).toFixed(1) + 'm' : 'unknown'}`);
+    if (s.avgBidsPerTender) lines.push(`Average bidders per tender: ${Number(s.avgBidsPerTender).toFixed(1)}`);
+    if (b.procurementMethods?.length) {
+      const methods = b.procurementMethods.map(m => `${m.method || 'unknown'}: ${m.count}`).join(', ');
+      lines.push(`Procurement methods used: ${methods}`);
+    }
+    if (b.topSuppliers?.length) {
+      lines.push('Top suppliers for this buyer:');
+      b.topSuppliers.slice(0, 5).forEach(sup => {
+        lines.push(`  - ${sup.name}: ${sup.wins} award(s), £${sup.totalValue ? (sup.totalValue / 1e6).toFixed(1) + 'm' : 'unknown'} total`);
+      });
+    }
+    return lines.join('\n');
+  } catch { return ''; }
+}
+
+// ── PWIN competition signals ──────────────────────────────────────────────────
+async function fetchPwinSignals(org) {
+  try {
+    const resp = await fetch(`${INTEL_API}/api/intel/pwin?buyer=${encodeURIComponent(org)}`)
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!resp?.signals?.length) return '';
+    const sig = resp.signals[0];
+    const lines = ['PROCUREMENT INTELLIGENCE — Competition Signals:'];
+    if (sig.awardsCount) lines.push(`Competition level: ${sig.awardsCount} awards tracked`);
+    if (sig.avgBidsPerTender) lines.push(`Average bids per tender: ${Number(sig.avgBidsPerTender).toFixed(1)}`);
+    const total = (sig.openAwards || 0) + (sig.limitedAwards || 0) + (sig.directAwards || 0) + (sig.selectiveAwards || 0);
+    if (total > 0) {
+      lines.push(`Method breakdown: open=${sig.openAwards || 0}, limited=${sig.limitedAwards || 0}, direct=${sig.directAwards || 0}, selective=${sig.selectiveAwards || 0}`);
+    }
+    return lines.join('\n');
+  } catch { return ''; }
+}
+
+// ── Sector context ────────────────────────────────────────────────────────────
+async function fetchSectorContext(sector) {
+  if (!sector) return '';
+  try {
+    const resp = await fetch(`${INTEL_API}/api/intel/sector?name=${encodeURIComponent(sector)}`)
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!resp?.summary) return '';
+    const { summary, topSuppliers } = resp;
+    const lines = [`SECTOR CONTEXT — ${resp.sector}:`];
+    if (summary.awardCount) lines.push(`Contracts in database: ${summary.awardCount.toLocaleString()} | Total sector spend: £${summary.totalSpend ? (summary.totalSpend / 1e9).toFixed(1) + 'bn' : 'unknown'}`);
+    if (summary.avgAwardValue) lines.push(`Typical award value: £${(summary.avgAwardValue / 1e6).toFixed(1)}m`);
+    if (summary.avgBidsPerTender) lines.push(`Average bidders per tender (sector): ${Number(summary.avgBidsPerTender).toFixed(1)}`);
+    if (topSuppliers?.length) {
+      lines.push('Dominant suppliers in this sector:');
+      topSuppliers.slice(0, 3).forEach(s => {
+        lines.push(`  - ${s.name}: ${s.wins} wins, £${s.totalValue ? (s.totalValue / 1e9).toFixed(1) + 'bn' : 'unknown'} total`);
+      });
+    }
+    return lines.join('\n');
+  } catch { return ''; }
+}
+
+// ── Competitor profiles ───────────────────────────────────────────────────────
+async function fetchCompetitorProfiles(competitors, currentBuyer) {
+  if (!competitors) return '';
+  const names = competitors.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+  if (!names.length) return '';
+  try {
+    const responses = await Promise.all(
+      names.map(name =>
+        fetch(`${INTEL_API}/api/intel/supplier?name=${encodeURIComponent(name)}`)
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      )
+    );
+    const lines = [];
+    responses.forEach(resp => {
+      if (!resp?.suppliers?.length) return;
+      const sup = resp.suppliers[0];
+      const s = sup.stats || {};
+      const parts = [`${sup.name}: ${s.totalWins || 0} wins overall, £${s.totalValue ? (s.totalValue / 1e6).toFixed(0) + 'm' : 'unknown'} total`];
+      if (sup.buyerRelationships?.length) {
+        const match = sup.buyerRelationships.find(r => r.buyer.toLowerCase().includes(currentBuyer.toLowerCase()));
+        if (match) {
+          parts.push(`(${match.awards} wins with this buyer, £${match.totalValue ? (match.totalValue / 1e6).toFixed(0) + 'm' : 'unknown'})`);
+        }
+        const top3 = sup.buyerRelationships.slice(0, 3).map(r => `${r.buyer} (${r.awards})`).join(', ');
+        parts.push(`Strongest relationships: ${top3}`);
+      }
+      lines.push(parts.join(' — '));
+    });
+    if (!lines.length) return '';
+    return ['COMPETITOR PROFILES:', ...lines].join('\n');
+  } catch { return ''; }
+}
+
+// ── Forward pipeline ──────────────────────────────────────────────────────────
+async function fetchForwardPipeline(org) {
+  try {
+    const resp = await fetch(`${INTEL_API}/api/intel/pipeline?buyer=${encodeURIComponent(org)}`)
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!resp?.notices?.length) return '';
+    const lines = ['FORWARD PIPELINE — Upcoming tenders for this buyer:'];
+    resp.notices.slice(0, 5).forEach(n => {
+      const date = n.futureNoticeDate || n.engagementDeadline || 'date unknown';
+      const value = n.estimatedValue ? `est. £${(n.estimatedValue / 1e6).toFixed(1)}m` : 'value unknown';
+      lines.push(`  - ${n.title || 'Untitled'}: ${value}, expected ${date}`);
+    });
+    return lines.join('\n');
+  } catch { return ''; }
+}
+
+// ── Expiring contracts ────────────────────────────────────────────────────────
+async function fetchExpiringContracts(org) {
+  try {
+    const resp = await fetch(`${INTEL_API}/api/intel/expiring?buyer=${encodeURIComponent(org)}&days=365`)
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!resp?.contracts?.length) return '';
+    const lines = ['EXPIRING CONTRACTS — Contracts ending within 12 months:'];
+    resp.contracts.slice(0, 5).forEach(c => {
+      const value = c.value ? `£${(c.value / 1e6).toFixed(1)}m` : 'value unknown';
+      lines.push(`  - ${c.title || 'Untitled'} (${c.suppliers || 'supplier unknown'}, ${value}) — expires ${c.contractEndDate || 'unknown'}`);
+    });
+    return lines.join('\n');
+  } catch { return ''; }
+}
+
+// ── Orchestrator ──────────────────────────────────────────────────────────────
 async function fetchCompetitiveIntel() {
   const org = state.context.org;
   if (!org || org.length < 3) return '';
 
-  // Cache for 5 minutes per organisation name
-  if (_intelCache.org === org && Date.now() - _intelCache.ts < 300000) return _intelCache.data;
+  const sector = state.context.sector || '';
+  const competitors = state.context.competitors || '';
+  const cacheKey = `${org}|${sector}|${competitors}`;
 
-  try {
-    const [buyerResp, pwinResp] = await Promise.all([
-      fetch(`${INTEL_API}/api/intel/buyer?name=${encodeURIComponent(org)}`).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(`${INTEL_API}/api/intel/pwin?buyer=${encodeURIComponent(org)}`).then(r => r.ok ? r.json() : null).catch(() => null),
-    ]);
+  if (_intelCache.key === cacheKey && Date.now() - _intelCache.ts < 300000) return _intelCache.data;
 
-    const lines = [];
+  const [buyerBlock, pwinBlock, sectorBlock, competitorBlock, pipelineBlock, expiringBlock] = await Promise.all([
+    fetchBuyerProfile(org),
+    fetchPwinSignals(org),
+    fetchSectorContext(sector),
+    fetchCompetitorProfiles(competitors, org),
+    fetchForwardPipeline(org),
+    fetchExpiringContracts(org),
+  ]);
 
-    // Buyer procurement profile
-    if (buyerResp?.buyers?.length) {
-      const b = buyerResp.buyers[0];
-      const s = b.stats || {};
-      if (s.total_awards > 0) {
-        lines.push('PROCUREMENT INTELLIGENCE (from UK Find a Tender Service data):');
-        lines.push(`Buyer: ${b.name} (${b.org_type || 'unknown type'})`);
-        lines.push(`Awards in database: ${s.total_awards} | Total spend: £${s.total_spend ? (s.total_spend/1e6).toFixed(1) + 'm' : 'unknown'}`);
-        lines.push(`Average award value: £${s.avg_value ? (s.avg_value/1e6).toFixed(1) + 'm' : 'unknown'}`);
-        if (s.avg_bids) lines.push(`Average bidders per tender: ${Number(s.avg_bids).toFixed(1)}`);
+  const sections = [buyerBlock, pwinBlock, sectorBlock, competitorBlock, pipelineBlock, expiringBlock].filter(Boolean);
+  const result = sections.length ? '\n' + sections.join('\n\n') : '';
 
-        // Procurement methods
-        if (b.procurementMethods?.length) {
-          const methods = b.procurementMethods.map(m => `${m.procurement_method || 'unknown'}: ${m.cnt}`).join(', ');
-          lines.push(`Procurement methods used: ${methods}`);
-        }
-
-        // Top suppliers (incumbents to be aware of)
-        if (b.topSuppliers?.length) {
-          lines.push('Top suppliers for this buyer:');
-          b.topSuppliers.slice(0, 5).forEach(sup => {
-            lines.push(`  - ${sup.name}: ${sup.wins} award(s), £${sup.total_value ? (sup.total_value/1e6).toFixed(1) + 'm' : 'unknown'} total`);
-          });
-        }
-      }
-    }
-
-    // PWIN competition signals
-    if (pwinResp?.signals?.length) {
-      const sig = pwinResp.signals[0];
-      if (!lines.length) lines.push('PROCUREMENT INTELLIGENCE (from UK Find a Tender Service data):');
-      lines.push(`Competition level: ${sig.awards_count} awards tracked`);
-      if (sig.avg_bids_per_tender) lines.push(`Average bids per tender: ${Number(sig.avg_bids_per_tender).toFixed(1)}`);
-      const total = (sig.open_awards||0) + (sig.limited_awards||0) + (sig.direct_awards||0) + (sig.selective_awards||0);
-      if (total > 0) {
-        lines.push(`Method breakdown: open=${sig.open_awards||0}, limited=${sig.limited_awards||0}, direct=${sig.direct_awards||0}, selective=${sig.selective_awards||0}`);
-      }
-    }
-
-    // Competitor intelligence (if named competitors match suppliers in the database)
-    if (state.context.competitors && buyerResp?.buyers?.length) {
-      const competitorNames = state.context.competitors.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
-      const topSupNames = (buyerResp.buyers[0].topSuppliers || []).map(s => s.name.toLowerCase());
-      const incumbents = competitorNames.filter(c => topSupNames.some(s => s.includes(c.toLowerCase())));
-      if (incumbents.length) {
-        lines.push(`Competitor incumbency signal: ${incumbents.join(', ')} appear(s) in this buyer's award history`);
-      }
-    }
-
-    const result = lines.length ? '\n' + lines.join('\n') : '';
-    _intelCache = { org, data: result, ts: Date.now() };
-    return result;
-  } catch {
-    return '';
-  }
+  _intelCache = { key: cacheKey, data: result, ts: Date.now() };
+  return result;
 }
 
 // ALEX_PERSONA is hydrated from QUALIFY_CONTENT.persona above (see rebuildBaseContent).
