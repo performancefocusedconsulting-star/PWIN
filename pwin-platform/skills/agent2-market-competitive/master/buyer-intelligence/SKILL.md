@@ -197,6 +197,8 @@ any web research:
 
 **3b.** `find_evaluators(buyerName)` — preferred. Returns Director-level SROs who have appeared as PAC witnesses — the most likely evaluators and governance owners on major procurements. Use to populate `decisionUnitAssumptions.seniorResponsibleOwner` and `decisionUnitAssumptions.likelyEvaluators`. Set `meta.prerequisitesPresentAt.preferred.evaluatorData` to `true` if successful.
 
+**3b (linked assets).** After steps 3a and 3b, write `linkedAssets.stakeholderProfileRefs` using the `person_id`, `name_normalised`, `scs_band_inferred`, and `snapshot_date` values from every record returned by `get_senior_leadership`. If `get_senior_leadership` returned nothing, set `stakeholderProfileRefs` to `[]`. This pointer trail lets Win Strategy and Qualify retrieve the full canonical organogram record without re-reading the dossier.
+
 **3c.** `get_buyer_framework_usage(buyerName)` — preferred. Returns frameworks the buyer routes spend through, ranked by call-off value. Use to populate `procurementBehaviour.frameworkUsage` and `procurementBehaviour.preferredRoutes`. Set `meta.prerequisitesPresentAt.preferred.frameworkUsageData` to `true` if successful.
 
 > **Framework data from DB.** If `get_buyer_framework_usage` returned data, use the top frameworks (by call-off value) as the primary `frameworkUsage` list. Include framework name, lot(s) used, and spend volume where available. DB data is sourced directly from FTS contract awards and is more reliable than press inference.

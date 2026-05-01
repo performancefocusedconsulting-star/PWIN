@@ -562,7 +562,8 @@ Produce a single JSON object with these top-level keys:
   "linkedAssets": {
     "supplierDossiers": [{ "assetId": "string", "assetType": "supplier-dossier", "assetName": "string", "generatedAt": "ISO 8601" }],
     "sectorBriefs": [{ "assetId": "string", "assetType": "sector-brief", "assetName": "string", "generatedAt": "ISO 8601" }],
-    "pipelineScans": [{ "assetId": "string", "assetType": "pipeline-scan", "assetName": "string", "generatedAt": "ISO 8601" }]
+    "pipelineScans": [{ "assetId": "string", "assetType": "pipeline-scan", "assetName": "string", "generatedAt": "ISO 8601" }],
+    "stakeholderProfileRefs": [{ "personId": "string — person_id from organogram DB", "name": "string", "scsBand": "string", "snapshotDate": "string or null" }]
   },
 
   "changeSummary": [
