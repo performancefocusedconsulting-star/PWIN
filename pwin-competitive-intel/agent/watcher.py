@@ -182,10 +182,30 @@ def _get_intel_db() -> sqlite3.Connection | None:
     return conn
 
 
+def _norm_buyer_name(s: str) -> str:
+    """Normalise a buyer name for alias lookup — mirrors load-canonical-buyers.py::norm."""
+    s = (s or "").lower().strip()
+    s = re.sub(r"\s*[&]\s*", " and ", s)
+    s = re.sub(r"\bplc\b\.?", "limited", s)
+    s = re.sub(r"\bltd\b\.?", "limited", s)
+    s = re.sub(r"^the\s+", "", s)
+    s = re.sub(r"\s+company\s+limited\s*$", "", s)
+    s = re.sub(r"[,\.\(\)\-\'\"]", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
 def gather_buyer_context(buyer_name: str, limit: int = 15) -> dict[str, Any]:
     """
     Fetch recent awards and top suppliers for a buyer, best-effort matching
     on name. Returns {} if the DB is missing or there's no match.
+
+    Resolution order per token:
+      1. canonical_buyer_aliases.alias_lower exact match
+      2. canonical_buyer_aliases.alias_norm exact match
+      3. buyers.name LIKE fallback (limited to 5 rows)
+    Canonical matches expand to ALL buyer rows sharing that canonical_id,
+    ensuring compound names like "BlueLight Commercial / NPCC / Home Office"
+    resolve to the full award history of the real buyer (Home Office).
     """
     conn = _get_intel_db()
     if conn is None:
@@ -198,11 +218,36 @@ def gather_buyer_context(buyer_name: str, limit: int = 15) -> dict[str, Any]:
 
     matched_buyers: list[sqlite3.Row] = []
     seen_ids: set = set()
+
     for tok in tokens:
-        rows = conn.execute(
-            "SELECT id, name FROM buyers WHERE name LIKE ? LIMIT 5",
-            (f"%{tok}%",),
-        ).fetchall()
+        tok_lower = tok.lower().strip()
+        tok_norm  = _norm_buyer_name(tok)
+
+        # Try canonical alias resolution first
+        canonical_row = (
+            conn.execute(
+                "SELECT canonical_id FROM canonical_buyer_aliases WHERE alias_lower = ?",
+                (tok_lower,),
+            ).fetchone()
+            or conn.execute(
+                "SELECT canonical_id FROM canonical_buyer_aliases WHERE alias_norm = ?",
+                (tok_norm,),
+            ).fetchone()
+        )
+
+        if canonical_row:
+            # Expand to ALL buyers sharing this canonical entity
+            rows = conn.execute(
+                "SELECT id, name FROM buyers WHERE canonical_id = ?",
+                (canonical_row["canonical_id"],),
+            ).fetchall()
+        else:
+            # Fallback: raw name LIKE (limited — no canonical layer coverage)
+            rows = conn.execute(
+                "SELECT id, name FROM buyers WHERE name LIKE ? LIMIT 5",
+                (f"%{tok}%",),
+            ).fetchall()
+
         for r in rows:
             if r["id"] not in seen_ids:
                 matched_buyers.append(r)
