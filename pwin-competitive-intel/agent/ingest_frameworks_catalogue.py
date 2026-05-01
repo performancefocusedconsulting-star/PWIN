@@ -63,6 +63,10 @@ def _parse_date(text):
     # Already ISO
     if len(text) == 10 and text[4] == "-":
         return text
+    # DD/MM/YYYY (GCA site format)
+    if re.match(r'\d{2}/\d{2}/\d{4}$', text):
+        d, m, y = text.split('/')
+        return f"{y}-{m}-{d}"
     # "31 March 2027" format
     parts = text.lower().split()
     if len(parts) == 3:
@@ -98,7 +102,7 @@ class _LinkCollector(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        cls = attrs.get("class", "")
+        cls = attrs.get("class") or ""
         if self.container_class in cls:
             self._in_container = True
             self._depth = 0
@@ -128,17 +132,23 @@ def parse_ccs_list(html, base_url=CCS_BASE):
         href_prefix="/agreements/",
     )
     collector.feed(html)
-    # Fall back to any /agreements/<slug> links if container class not found
+    # Fall back to RM-prefixed /agreements/<ref> links (CCS convention for real frameworks)
     if not collector.links:
-        paths = re.findall(r'href="(/agreements/[a-z0-9\-]+)"', html)
+        paths = re.findall(r'href="(/agreements/RM[0-9][a-zA-Z0-9.\-]*)"', html)
         collector.links = list(dict.fromkeys(paths))  # deduplicate preserving order
     return [f"{base_url}{path}" for path in collector.links]
 
 
 class _AgreementParser(HTMLParser):
     """
-    Parses a single CCS agreement detail page.
+    Parses a single GCA (formerly CCS) agreement detail page.
     Extracts: name, reference_no, expiry_date, description, lots.
+
+    GCA site structure (as of 2026-04):
+    - Name: <h1 class="...page-title...">
+    - Description: <div class="govuk-body-l"> (first one after h1)
+    - Reference/dates: <dt>Agreement ID</dt><dd>RM6348</dd> in Key Facts aside
+    - Lots: <span class="apollo-list--definition__key__inner">Lot 1a: Name</span>
     """
     def __init__(self):
         super().__init__()
@@ -147,67 +157,76 @@ class _AgreementParser(HTMLParser):
         self.expiry_date_raw = None
         self.description = None
         self.lots = []
-        self._current_tag = ""
-        self._current_class = ""
         self._capture = None
-        self._in_lots_table = False
-        self._current_lot = []
-        self._in_lot_row = False
-        self._lot_cell = 0
+        self._desc_depth = 0
+        self._in_dt = False
+        self._last_dt_text = ""
+        self._in_dd = False
+        self._dd_key = None
+        self._in_lot_span = False
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        cls = attrs.get("class", "")
-        self._current_tag = tag
-        self._current_class = cls
+        cls = attrs.get("class") or ""
 
-        if tag == "h1" and "agreement-title" in cls:
+        if tag == "h1" and "page-title" in cls:
             self._capture = "name"
-        elif tag == "p" and "reference-number" in cls:
-            self._capture = "reference_no"
-        elif tag == "p" and "expiry-date" in cls:
-            self._capture = "expiry_date_raw"
-        elif tag == "p" and "description" in cls:
-            self._capture = "description"
-        elif tag == "table" and "lots-table" in cls:
-            self._in_lots_table = True
-        elif self._in_lots_table and tag == "tr":
-            self._in_lot_row = True
-            self._current_lot = []
-            self._lot_cell = 0
-        elif self._in_lots_table and self._in_lot_row and tag == "td":
-            self._capture = f"lot_cell_{self._lot_cell}"
-            self._lot_cell += 1
+        elif tag == "div":
+            if "govuk-body-l" in cls and self.name and self.description is None:
+                self._capture = "description"
+                self._desc_depth = 1
+            elif self._capture == "description":
+                self._desc_depth += 1
+        elif tag == "dt":
+            self._in_dt = True
+            self._last_dt_text = ""
+        elif tag == "dd":
+            self._in_dd = True
+            if "apollo-list--definition__value" in cls:
+                self._dd_key = self._last_dt_text
+            else:
+                self._dd_key = None
+        elif tag == "span" and "apollo-list--definition__key__inner" in cls:
+            self._in_lot_span = True
 
     def handle_endtag(self, tag):
-        if tag in ("h1", "p"):
+        if tag == "h1" and self._capture == "name":
             self._capture = None
-        elif tag == "tr" and self._in_lot_row:
-            if len(self._current_lot) >= 2:
-                self.lots.append({
-                    "lot_number": self._current_lot[0].strip(),
-                    "lot_name": self._current_lot[1].strip(),
-                    "scope": self._current_lot[2].strip() if len(self._current_lot) > 2 else None,
-                })
-            self._in_lot_row = False
-            self._lot_cell = 0
-        elif tag == "table":
-            self._in_lots_table = False
+        elif tag == "div" and self._capture == "description":
+            self._desc_depth -= 1
+            if self._desc_depth == 0:
+                self._capture = None
+        elif tag == "dt":
+            self._in_dt = False
+        elif tag == "dd":
+            self._in_dd = False
+            self._dd_key = None
+        elif tag == "span" and self._in_lot_span:
+            self._in_lot_span = False
 
     def handle_data(self, data):
         data = data.strip()
-        if not data or not self._capture:
+        if not data:
             return
         if self._capture == "name":
             self.name = (self.name or "") + data
-        elif self._capture == "reference_no":
-            self.reference_no = (self.reference_no or "") + data
-        elif self._capture == "expiry_date_raw":
-            self.expiry_date_raw = (self.expiry_date_raw or "") + data
         elif self._capture == "description":
             self.description = (self.description or "") + data
-        elif self._capture and self._capture.startswith("lot_cell_"):
-            self._current_lot.append(data)
+        elif self._in_lot_span:
+            m = re.match(r'Lot\s+([0-9]+[a-zA-Z]*)\s*[:\-]\s*(.*)', data, re.IGNORECASE)
+            if m:
+                self.lots.append({
+                    "lot_number": m.group(1),
+                    "lot_name": m.group(2).strip(),
+                    "scope": None,
+                })
+        elif self._in_dt:
+            self._last_dt_text = data
+        elif self._in_dd and self._dd_key:
+            if self._dd_key == "Agreement ID" and not self.reference_no:
+                self.reference_no = data
+            elif self._dd_key == "End date" and not self.expiry_date_raw:
+                self.expiry_date_raw = data
 
 
 def parse_ccs_agreement(html):

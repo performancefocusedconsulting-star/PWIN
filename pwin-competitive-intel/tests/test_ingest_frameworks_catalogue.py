@@ -28,25 +28,43 @@ LIST_FIXTURE = """
 </body></html>
 """
 
-# Minimal fixture HTML representing a CCS agreement detail page
+# Minimal fixture HTML representing a GCA (formerly CCS) agreement detail page
+# Structure matches the actual GCA site as of 2026-04
 DETAIL_FIXTURE = """
 <html><body>
-  <h1 class="agreement-title">Network Services 3</h1>
-  <p class="reference-number">RM6116</p>
-  <p class="expiry-date">31 March 2027</p>
-  <p class="description">Wide area networking and connectivity services.</p>
-  <table class="lots-table">
-    <tbody>
-      <tr><td>1</td><td>Wide Area Network</td><td>Connectivity</td></tr>
-      <tr><td>2</td><td>Internet Access</td><td>Broadband</td></tr>
-    </tbody>
-  </table>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl page-title">Network Services 3</h1>
+    <div class="govuk-body-l">Wide area networking and connectivity services.</div>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <aside class="aside">
+      <div class="apollo-enclosure">
+        <h2 class="aside__heading">Key facts</h2>
+        <dl class="govuk-list govuk-list--definition">
+          <dt>Agreement ID</dt>
+          <dd class="apollo-list--definition__value">RM6116</dd>
+          <dt>End date</dt>
+          <dd class="apollo-list--definition__value">31/03/2027</dd>
+        </dl>
+      </div>
+    </aside>
+  </div>
+  <dl class="apollo-list apollo-list--definition">
+    <dt class="apollo-list--definition__key">
+      <span class="apollo-list--definition__key__inner">Lot 1: Wide Area Network</span>
+    </dt>
+    <dd class="apollo-list--definition__value"><p class>Expires: <time>31/03/2027</time></p></dd>
+    <dt class="apollo-list--definition__key">
+      <span class="apollo-list--definition__key__inner">Lot 2: Internet Access</span>
+    </dt>
+    <dd class="apollo-list--definition__value"><p class>Expires: <time>31/03/2027</time></p></dd>
+  </dl>
 </body></html>
 """
 
 DETAIL_FIXTURE_MINIMAL = """
 <html><body>
-  <h1 class="agreement-title">TEPAS 2</h1>
+  <h1 class="govuk-heading-xl page-title">TEPAS 2</h1>
 </body></html>
 """
 
