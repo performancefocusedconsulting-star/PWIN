@@ -34,7 +34,7 @@ from stakeholder_utils import (
 
 DB_PATH = Path(__file__).parent.parent / 'db' / 'bid_intel.db'
 SCHEMA_PATH = Path(__file__).parent.parent / 'db' / 'schema.sql'
-DATA_GOV_UK_API = 'https://data.gov.uk/api/3/action/package_search'
+DATA_GOV_UK_API = 'https://data.gov.uk/api/3/action/package_show'
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,26 +46,24 @@ log = logging.getLogger('ingest_organograms')
 # ── Priority departments (v1 — central government + major ALBs) ──────────────
 
 PRIORITY_DEPARTMENTS = {
-    'hmt':              {'query': 'HM Treasury organogram senior staff salaries',                         'canonical_id': 'hm-treasury'},
-    'mod':              {'query': 'Ministry of Defence organogram senior staff salaries',                  'canonical_id': 'ministry-of-defence'},
-    'dfe':              {'query': 'Department for Education organogram senior staff salaries',             'canonical_id': 'department-for-education'},
-    'home-office':      {'query': 'Home Office organogram senior staff salaries',                         'canonical_id': 'home-office'},
-    'hmrc':             {'query': 'HMRC organogram senior staff salaries',                                'canonical_id': 'hm-revenue-and-customs'},
-    'dhsc':             {'query': 'Department Health Social Care organogram senior staff',                 'canonical_id': 'department-of-health-and-social-care'},
-    'mhclg':            {'query': 'Ministry Housing Communities organogram senior staff',                  'canonical_id': 'ministry-of-housing-communities-and-local-government'},
-    'dwp':              {'query': 'Department Work Pensions organogram senior staff',                     'canonical_id': 'department-for-work-and-pensions'},
-    'moj':              {'query': 'Ministry of Justice organogram senior staff salaries',                  'canonical_id': 'ministry-of-justice'},
-    'dcms':             {'query': 'Department Culture Media Sport organogram senior staff',               'canonical_id': 'department-for-culture-media-and-sport'},
-    'desnz':            {'query': 'Department Energy Security Net Zero organogram senior staff',          'canonical_id': 'department-for-energy-security-and-net-zero'},
-    'dsit':             {'query': 'Department Science Innovation Technology organogram senior staff',     'canonical_id': 'department-for-science-innovation-and-technology'},
-    'fcdo':             {'query': 'Foreign Commonwealth Development Office organogram senior staff',      'canonical_id': 'foreign-commonwealth-and-development-office'},
-    'cabinet-office':   {'query': 'Cabinet Office organogram senior staff salaries',                     'canonical_id': 'cabinet-office'},
-    'dft':              {'query': 'Department for Transport organogram senior staff salaries',            'canonical_id': 'department-for-transport'},
-    'defra':            {'query': 'Department Environment Food Rural Affairs organogram senior staff',   'canonical_id': 'department-for-environment-food-and-rural-affairs'},
-    'environment-agency': {'query': 'Environment Agency organogram senior staff',                        'canonical_id': 'environment-agency'},
-    'ccs':              {'query': 'Crown Commercial Service organogram senior staff',                     'canonical_id': 'crown-commercial-service'},
-    'homes-england':    {'query': 'Homes England organogram senior staff',                               'canonical_id': 'homes-england'},
-    'ukri':             {'query': 'UK Research Innovation organogram senior staff',                      'canonical_id': 'uk-research-and-innovation'},
+    'hmt':              {'dataset_id': 'organogram-hm-treasury',                                              'canonical_id': 'hm-treasury'},
+    'mod':              {'dataset_id': 'organogram-head-office-and-corporate-services-mod',                   'canonical_id': 'ministry-of-defence'},
+    'dfe':              {'dataset_id': 'organogram-department-for-education',                                 'canonical_id': 'department-for-education'},
+    'home-office':      {'dataset_id': 'organogram-home-office',                                              'canonical_id': 'home-office'},
+    'hmrc':             {'dataset_id': 'organogram-hm-revenue-and-customs',                                   'canonical_id': 'hm-revenue-and-customs'},
+    'dhsc':             {'dataset_id': 'organogram-department-of-health',                                     'canonical_id': 'department-of-health-and-social-care'},
+    'mhclg':            {'dataset_id': 'organogram-department-for-levelling-up-housing-and-communities',      'canonical_id': 'ministry-of-housing-communities-and-local-government'},
+    'dwp':              {'dataset_id': 'organogram-department-for-work-and-pensions',                         'canonical_id': 'department-for-work-and-pensions'},
+    'moj':              {'dataset_id': 'organogram-ministry-of-justice',                                      'canonical_id': 'ministry-of-justice'},
+    'dcms':             {'dataset_id': 'organogram-department-for-culture-media-and-sport',                   'canonical_id': 'department-for-culture-media-and-sport'},
+    'desnz':            {'dataset_id': 'desnz-organogram-of-staff-roles-salaries',                            'canonical_id': 'department-for-energy-security-and-net-zero'},
+    'dsit':             {'dataset_id': 'dsit-organogram-of-staff-roles-salaries',                             'canonical_id': 'department-for-science-innovation-and-technology'},
+    'fcdo':             {'dataset_id': 'fcdo-organograms',                                                    'canonical_id': 'foreign-commonwealth-and-development-office'},
+    'cabinet-office':   {'dataset_id': 'organogram-cabinet-office',                                           'canonical_id': 'cabinet-office'},
+    'dft':              {'dataset_id': 'organogram-department-for-transport',                                  'canonical_id': 'department-for-transport'},
+    'defra':            {'dataset_id': 'organogram-department-for-environment-food-and-rural-affairs',        'canonical_id': 'department-for-environment-food-and-rural-affairs'},
+    'environment-agency': {'dataset_id': 'organogram-environment-agency',                                    'canonical_id': 'environment-agency'},
+    'ukri':             {'dataset_id': 'uk-research-and-innovation-organograms-and-senior-salaries',          'canonical_id': 'uk-research-and-innovation'},
 }
 
 _REDACTION_MARKERS = frozenset({'N/D', 'ND', 'REDACTED', 'WITHHELD', 'N/A', 'N/D (VPR)', '', '-'})
@@ -106,10 +104,14 @@ def _find_senior_staff_resource(package: dict) -> Optional[dict]:
     return candidates[0]
 
 
-def fetch_organogram_url(query: str) -> Optional[tuple]:
-    """Return (csv_url, dataset_url, snapshot_date) or None."""
-    params = urlencode({'q': query, 'sort': 'metadata_modified desc', 'rows': 5})
-    url = f'{DATA_GOV_UK_API}?{params}'
+def fetch_organogram_url(dataset_id: str) -> Optional[tuple]:
+    """Return (csv_url, dataset_url, snapshot_date) or None.
+
+    Uses package_show to look up the dataset directly by its known ID,
+    avoiding the unreliable free-text search which returns the most-recently-
+    modified dataset regardless of which department is being requested.
+    """
+    url = f'{DATA_GOV_UK_API}?id={dataset_id}'
     try:
         with urlopen(url, timeout=15) as resp:
             data = json.loads(resp.read())
@@ -117,16 +119,16 @@ def fetch_organogram_url(query: str) -> Optional[tuple]:
         log.warning('data.gov.uk API error: %s', e)
         return None
 
-    packages = data.get('result', {}).get('results', [])
-    if not packages:
+    package = data.get('result')
+    if not package:
         return None
 
-    resource = _find_senior_staff_resource(packages[0])
+    resource = _find_senior_staff_resource(package)
     if not resource:
         return None
 
     csv_url = resource.get('url')
-    dataset_url = f'https://data.gov.uk/dataset/{packages[0].get("name", "")}'
+    dataset_url = f'https://data.gov.uk/dataset/{dataset_id}'
     modified = resource.get('last_modified') or resource.get('created') or ''
     snapshot_date = modified.split('T')[0] if modified else None
     return csv_url, dataset_url, snapshot_date
@@ -248,7 +250,7 @@ def run(dept_filter=None, limit=None, dry_run=False):
     for dept_id, dept_info in depts.items():
         log.info('Processing %s...', dept_id)
 
-        result = fetch_organogram_url(dept_info['query'])
+        result = fetch_organogram_url(dept_info['dataset_id'])
         if not result:
             log.warning('  No organogram found for %s', dept_id)
             continue
