@@ -558,3 +558,9 @@ JSON save. The renderer applies BidEquity branding:
 
 - Midnight Navy `#021744`, Soft Sand `#F7F4EE`, Bright Aqua `#7ADDE2`
 - Calm Teal `#5CA3B6`, Pale Aqua `#E0F4F6`, Light Terracotta `#D17A74`
+
+The dossier JSON carries a top-level `claims[]` block alongside `meta`,
+`sourceRegister`, and the domain objects (D1–D9). Every material assertion
+in the narrative cites a claim by its `claimId`. The contract is documented
+in [`../CLAIMS-BLOCK-SCHEMA.md`](../CLAIMS-BLOCK-SCHEMA.md); the platform
+validator at `../scripts/validate_claims_block.py` enforces it.

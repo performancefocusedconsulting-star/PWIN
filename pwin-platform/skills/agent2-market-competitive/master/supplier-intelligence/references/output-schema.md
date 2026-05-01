@@ -41,6 +41,17 @@ domains and `strategicScores` are supplier-skill-specific.
     ]
   },
 
+  "claims": [
+    {
+      "claimId": "string — CLM-NNN format",
+      "claimText": "string — assertion text, self-contained",
+      "claimDate": "ISO 8601 date",
+      "source": "string — SRC-nnn or URL or upstream dossier reference",
+      "sourceDate": "ISO 8601 date or null",
+      "sourceTier": "integer — 1, 2, 3, or 4"
+    }
+  ],
+
   "changeSummary": [
     {
       "section": "string — top-level section affected, e.g. D6",
@@ -246,6 +257,38 @@ domains and `strategicScores` are supplier-skill-specific.
   }
 }
 ```
+
+## `claims` (array, required)
+
+Top-level array of structured claim objects. Every material assertion in
+the dossier narrative must appear here with a stable `claimId`. The
+narrative cites claims inline using `[CLM-id]` markers.
+
+```json
+{
+  "claims": [
+    {
+      "claimId": "CLM-001",
+      "claimText": "Serco holds the Electronic Monitoring contract with the Ministry of Justice, valued at approximately £300m over 8 years.",
+      "claimDate": "2026-04-30",
+      "source": "SRC-003",
+      "sourceDate": "2023-11-15",
+      "sourceTier": 1
+    }
+  ]
+}
+```
+
+The six fields are mandatory on every claim. Schema and validation rules
+live in `pwin-platform/skills/agent2-market-competitive/master/CLAIMS-BLOCK-SCHEMA.md`
+(canonical) and §13 of the Universal Skill Spec.
+
+"Material" means any claim that bears on a downstream decision — competitive
+positioning, win theme, displacement strategy, or incumbent threat assessment.
+Background colour ("Serco is a UK-listed public services company") does not
+need a citation.
+
+---
 
 ## Evidence wrapper structure
 

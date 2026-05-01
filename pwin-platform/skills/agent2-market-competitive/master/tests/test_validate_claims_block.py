@@ -104,6 +104,14 @@ class PerSkillFixtureTests(unittest.TestCase):
             f"Defence Digital fixture failed validator: {result.errors}",
         )
 
+    def test_supplier_anchor_fixture_passes_validator(self):
+        result = validate(_load("supplier_anchor_v1.json"))
+        self.assertEqual(
+            result.errors,
+            [],
+            f"Serco supplier anchor fixture failed validator: {result.errors}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
