@@ -161,6 +161,7 @@ This is a producer skill, so its required prerequisites are minimal.
 | FTS award data via MCP | `pwin-platform` (`get_buyer_profile`, `get_competitive_intel_summary`) | `procurementBehaviour`, `supplierEcosystem` |
 | Buyer-behaviour profile via MCP | `pwin-platform` (`get_buyer_behaviour_profile`) | `procurementBehaviourSnapshot` |
 | Sector brief for the buyer's sector | `sector-intelligence` skill | `commissioningContextHypotheses`, `risksAndSensitivities` |
+| Senior leadership (organogram DB) | `pwin-platform` (`get_senior_leadership`, `find_evaluators`) | `seniorLeadership`, `decisionUnitAssumptions` |
 
 ### Behaviour when prerequisites are missing
 
@@ -170,9 +171,28 @@ This is a producer skill, so its required prerequisites are minimal.
   When FTS data is missing, set
   `meta.prerequisitesPresentAt.preferred.ftsData` to `false`. When the
   sector brief is missing, set
-  `meta.prerequisitesPresentAt.preferred.sectorBrief` to `false`. Open
+  `meta.prerequisitesPresentAt.preferred.sectorBrief` to `false`. When the
+  organogram database is empty or unreachable, set
+  `meta.prerequisitesPresentAt.preferred.organogramData` to `false`. When
+  `find_evaluators` returns no results, set
+  `meta.prerequisitesPresentAt.preferred.evaluatorData` to `false`. Open
   refresh actions in the action register so the gap is closed when the
   prerequisite arrives.
+
+### Preferred MCP call sequence
+
+At the start of BUILD and REFRESH modes, make these calls in order before
+any web research:
+
+**1.** `get_buyer_profile(buyerName)` and `get_competitive_intel_summary(buyerName)` — preferred. Supplies FTS contract award history. Set `meta.prerequisitesPresentAt.preferred.ftsData` to `true` if successful.
+
+**2.** `get_buyer_behaviour_profile(buyerName)` — preferred. Supplies empirical procurement behaviour snapshot. Set `meta.prerequisitesPresentAt.preferred.behaviourProfile` to `true` if successful.
+
+**3a.** `get_senior_leadership(buyerName)` — preferred. Returns Director-tier and above civil servants from the organogram database. If successful, use as primary source for the `seniorLeadership` array. Set `meta.prerequisitesPresentAt.preferred.organogramData` to `true`. If the call returns an empty list or fails, fall back to web research and set to `false`.
+
+> **MCP data takes priority.** If `get_senior_leadership` returned results, use those as the primary source for `seniorLeadership`. Do not re-research from web if MCP data is present. Web research only supplements gaps — e.g. very recent appointees not yet in the latest organogram release.
+
+**3b.** `find_evaluators(buyerName)` — preferred. Returns Director-level SROs who have appeared as PAC witnesses — the most likely evaluators and governance owners on major procurements. Use to populate `decisionUnitAssumptions.seniorResponsibleOwner` and `decisionUnitAssumptions.likelyEvaluators`. Set `meta.prerequisitesPresentAt.preferred.evaluatorData` to `true` if successful.
 
 ---
 
