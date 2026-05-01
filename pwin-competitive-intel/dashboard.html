@@ -353,7 +353,7 @@ td.mono {
   border-radius: 4px;
   overflow: hidden;
   min-width: 120px;
-  background: rgba(255,255,255,0.05);
+  background: var(--border);
 }
 .proc-bar .seg { height: 100%; transition: width 0.4s ease; }
 .seg-open     { background: var(--green); }
@@ -400,17 +400,17 @@ td.mono {
 .empty-state h3 {
   font-family: var(--font-display);
   font-size: 22px;
-  color: var(--text);
+  color: var(--be-navy);
   margin-bottom: 8px;
 }
 .empty-state p { font-size: 13px; max-width: 400px; margin: 0 auto; }
 .empty-state code {
   font-family: var(--font-mono);
-  background: var(--bg-card);
+  background: var(--be-pale-aqua);
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 12px;
-  color: var(--gold);
+  color: var(--be-teal);
 }
 
 /* ── LOADING ────────────────────────────────────────────────── */
@@ -647,7 +647,7 @@ input[type="range"]::-webkit-slider-thumb {
         <label>Expiry Window</label>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="range" id="expiryDays" min="30" max="1095" value="365" oninput="updateExpiryLabel()" />
-          <span id="expiryDaysLabel" style="font-family:var(--font-mono);font-size:12px;color:var(--gold);min-width:50px;">365 days</span>
+          <span id="expiryDaysLabel" style="font-family:var(--font-body);font-size:12px;color:var(--be-navy);min-width:50px;">365 days</span>
         </div>
       </div>
       <div class="filter-group">
@@ -802,15 +802,15 @@ input[type="range"]::-webkit-slider-thumb {
     <!-- Filters -->
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
       <input type="text" id="fw-search" placeholder="Search name or reference…"
-             style="flex:2;min-width:200px;padding:8px 12px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
-      <select id="fw-filter-owner" style="flex:1;min-width:140px;padding:8px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+             style="flex:2;min-width:200px;padding:8px 12px;background:white;color:var(--be-navy);border:1px solid var(--border);border-radius:0">
+      <select id="fw-filter-owner" style="flex:1;min-width:140px;padding:8px;background:white;color:var(--be-navy);border:1px solid var(--border);border-radius:0">
         <option value="">All owners</option>
         <option value="central_gov">Central Govt (CCS)</option>
         <option value="nhs">NHS</option>
         <option value="local_gov">Local Government</option>
         <option value="departmental">Departmental</option>
       </select>
-      <select id="fw-filter-status" style="flex:1;min-width:140px;padding:8px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+      <select id="fw-filter-status" style="flex:1;min-width:140px;padding:8px;background:white;color:var(--be-navy);border:1px solid var(--border);border-radius:0">
         <option value="">All statuses</option>
         <option value="active">Active</option>
         <option value="expiring_soon">Expiring soon</option>
@@ -1106,9 +1106,9 @@ async function runServiceSearch() {
     const svcLabel = service ? (SERVICE_LABELS[service] || service) : 'All services';
     const buyerLabel = buyer || 'all buyers';
     document.getElementById('searchSummary').innerHTML = `
-      <span class="mono" style="color:var(--gold)">${fmtNumber(data.count)}</span> awards matching
+      <span class="mono" style="color:var(--be-navy);font-weight:600">${fmtNumber(data.count)}</span> awards matching
       <strong>${svcLabel}</strong> at <strong>${buyerLabel}</strong> ≥ ${fmtCurrency(Number(minValue))}
-      — total value <span class="mono" style="color:var(--gold)">${fmtCurrency(totalValue)}</span>
+      — total value <span class="mono" style="color:var(--be-navy);font-weight:600">${fmtCurrency(totalValue)}</span>
     `;
     document.getElementById('searchTitle').textContent = `— ${svcLabel}`;
 
@@ -1632,7 +1632,7 @@ async function loadExpiry() {
       return `<tr class="${hasDetail ? 'expandable' : ''}" ${hasDetail ? `onclick="toggleDetail('${detailId}')"` : ''}>
         <td>${c.buyer || '—'}</td>
         <td>${c.supplier || '—'}</td>
-        <td>${truncate(c.title, 45)}${hasDetail ? ' <span style="color:var(--gold);font-size:10px;">▸</span>' : ''}</td>
+        <td>${truncate(c.title, 45)}${hasDetail ? ' <span style="color:var(--be-teal);font-size:10px;">▸</span>' : ''}</td>
         <td class="num">${fmtCurrency(c.value)}</td>
         <td style="text-align:right">${urgencyBadge(d)}</td>
         <td class="mono">${c.method || '—'}</td>
@@ -1670,7 +1670,7 @@ async function loadPipeline() {
 
       return `<tr class="${hasDetail ? 'expandable' : ''}" ${hasDetail ? `onclick="toggleDetail('${detailId}')"` : ''}>
         <td>${n.buyer || '—'}</td>
-        <td>${truncate(n.title, 60)}${hasDetail ? ' <span style="color:var(--gold);font-size:10px;">▸</span>' : ''}</td>
+        <td>${truncate(n.title, 60)}${hasDetail ? ' <span style="color:var(--be-teal);font-size:10px;">▸</span>' : ''}</td>
         <td class="num">${fmtCurrency(n.estimated_value)}</td>
         <td class="mono">${fmtDate(n.engagement_deadline)}</td>
         <td class="mono">${fmtDate(n.future_notice_date)}</td>
