@@ -1646,8 +1646,17 @@ function buyerFrameworkUsage(buyerQuery) {
     if (!resolved) return { error: `No buyer found matching '${buyerQuery}'` };
     if (resolved.ambiguous) return { error: 'Ambiguous buyer name', candidates: resolved.candidates };
 
-    const canonicalId = resolved.canonicalId || (resolved.rawBuyerIds[0] || null);
-    if (!canonicalId) return { error: `Buyer '${buyerQuery}' has no data` };
+    if (!resolved.canonicalId) {
+      // framework_call_offs stores canonical IDs; a raw ID fallback would silently
+      // return zero rows. Surface the gap so callers know why results are empty.
+      return {
+        buyer: resolved.canonicalName || buyerQuery,
+        frameworkCount: 0,
+        frameworks: [],
+        warning: 'Buyer not fully canonicalised — framework usage data may be incomplete.',
+      };
+    }
+    const canonicalId = resolved.canonicalId;
 
     const usage = db.prepare(`
       SELECT f.id, f.name, f.reference_no, f.owner, f.category, f.status, f.expiry_date,
