@@ -2,8 +2,9 @@
 name: sector-intelligence
 description: >
   Build, refresh, or inject a sector intelligence brief on a UK public sector
-  market (central government, local authority, NHS, defence, justice,
-  transport, education, social care). Three modes: BUILD (new brief),
+  market (central government, local government, NHS & health, defence &
+  security, justice & home affairs, transport, education, emergency services,
+  devolved government). Three modes: BUILD (new brief),
   REFRESH (periodic re-run or upstream-data arrival), INJECT (add a source
   document). No AMEND mode — sector intelligence is public-domain. Triggers
   on: "sector brief", "sector intel", "market overview", "what's happening
@@ -123,7 +124,8 @@ server not connected at build time."
 
 Derive `<slug>` from the sector name: lowercase, hyphens not spaces.
 Examples: `central-government`, `local-government`, `nhs-health`,
-`defence`, `justice-home-affairs`, `transport`, `education`, `social-care`.
+`defence-security`, `justice-home-affairs`, `transport`, `education`,
+`emergency-services`, `devolved-government`.
 
 Initialise the meta block:
 

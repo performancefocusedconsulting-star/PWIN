@@ -4276,7 +4276,7 @@ function renderWizS1(d) {
       <div class="form-col">
         <label class="form-label">Sector</label>
         <select class="sel" onchange="WIZARD.set('sector',this.value)">
-          ${['','Central Government','Local Government','Defence & Security','Health','Education','Transport','Justice','Other'].map(s=>`<option value="${s}" ${d.sector===s?'selected':''}>${s||'— Select —'}</option>`).join('')}
+          ${['','Central Government','Local Government','NHS & Health','Defence & Security','Justice & Home Affairs','Transport','Education','Emergency Services','Devolved Government'].map(s=>`<option value="${s}" ${d.sector===s?'selected':''}>${s||'— Select —'}</option>`).join('')}
         </select>
       </div>
       <div class="form-col">
