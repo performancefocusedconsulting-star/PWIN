@@ -1,0 +1,168 @@
+{
+  "Central Government": {
+    "displayName": "Central Government",
+    "slug": "central-government",
+    "keyBuyers": [
+      "DWP", "HMRC", "Home Office", "Ministry of Justice", "Cabinet Office",
+      "DVLA", "Department for Business and Trade", "DEFRA", "FCDO",
+      "Department for Transport", "NHS England", "Government Digital Service"
+    ],
+    "procurementRoutes": [
+      "Crown Commercial Service frameworks (G-Cloud, Digital Outcomes, RM3749, RM6098)",
+      "Find a Tender Service (open and restricted procedures)",
+      "Procurement Act 2023 direct award and dynamic markets"
+    ],
+    "promptBlock": "Central Government buyers follow highly structured procurement processes with mandatory pass/fail gates before scored evaluation. Social value carries a minimum 10% weighting under Cabinet Office policy. Quality-price splits are typically 60/40 or 70/30, with written evidence required to substantiate every scored claim. Digital services must meet GDS service standards and departmental technology strategies. The business case approval cycle (Green Book) drives procurement timing — major contracts rarely move without a full-cycle spending review allocation. Procurement Intelligence about who owns the business case and who the Senior Responsible Owner is carries disproportionate weight at qualification stage. Evidence of cross-government delivery (naming specific departments and programmes) is far more credible than generic public sector claims."
+  },
+
+  "Local Government": {
+    "displayName": "Local Government",
+    "slug": "local-government",
+    "keyBuyers": [
+      "London boroughs", "Unitary authorities", "County and district councils",
+      "Greater Manchester Combined Authority", "West Midlands Combined Authority",
+      "Transport for London", "West Yorkshire Combined Authority"
+    ],
+    "procurementRoutes": [
+      "ESPO, YPO, NEPO, Eastern Shires purchasing consortia",
+      "Crown Commercial Service frameworks",
+      "Dynamic purchasing systems (DPS)",
+      "Local PCR-compliant tender processes"
+    ],
+    "promptBlock": "Local Government buyers operate under acute budget pressure — Medium Term Financial Strategy cycles drive procurement timing and cost reduction is a primary evaluation driver alongside quality. The member-officer dynamic is distinctive: elected members are involved in major contract decisions and scrutiny committees can reopen concluded procurements if politically contentious. Social value and community benefit carry heavy weighting, often exceeding central government norms. TUPE sensitivity runs high — outsourcing of previously in-house services faces workforce and political resistance, and bidders must demonstrate credible workforce transition plans. Evidence of work at comparable councils (named, recent, with outcomes) is essential; generic local government claims are challenged. Transformation and savings track record matters more than technical sophistication."
+  },
+
+  "NHS & Health": {
+    "displayName": "NHS & Health",
+    "slug": "nhs-health",
+    "keyBuyers": [
+      "NHS England", "Integrated Care Boards (ICBs)", "NHS acute trusts",
+      "NHS mental health trusts", "NHS ambulance trusts",
+      "NHS Business Services Authority", "UKHSA", "CQC", "NICE"
+    ],
+    "procurementRoutes": [
+      "NHS Supply Chain",
+      "Crown Commercial Service (RM6100, RM6161)",
+      "NHS Shared Business Services frameworks",
+      "Health Family procurement frameworks",
+      "Direct procurement above/below thresholds"
+    ],
+    "promptBlock": "NHS procurement operates across two distinct governance layers: individual trusts and the integrated care board (ICB) above them, with NHS England above that. Major strategic contracts increasingly require ICB or NHSE sign-off even when a trust is the contracting authority. Clinical safety is a non-negotiable gateway — Digital Technology Assessment Criteria (DTAC) applies to health tech, and Caldicott principles govern data handling. Evaluation committees typically include clinical leads, not just commercial and IT stakeholders; a solution that does not address the clinical workflow will fail regardless of commercial strength. Evidence of NHS-specific delivery (named trusts, patient outcome metrics, CQC inspection outcomes) is the credibility bar. The efficiency agenda (2% annual QIPP target) means cost reduction framing resonates, but clinical commissioners resist it when it implies service cuts — the winning narrative combines efficiency with outcomes improvement."
+  },
+
+  "Defence & Security": {
+    "displayName": "Defence & Security",
+    "slug": "defence-security",
+    "keyBuyers": [
+      "Ministry of Defence", "Defence Equipment & Support (DE&S)",
+      "Defence Science and Technology Laboratory (DSTL)",
+      "Army, Royal Navy, Royal Air Force commands",
+      "Strategic Command", "GCHQ", "National Cyber Security Centre",
+      "MI5", "MI6"
+    ],
+    "procurementRoutes": [
+      "Single Source Regulations (SSR) for non-competitive MOD contracts",
+      "DEFFORM contract forms",
+      "Restricted and classified tendering for sensitive work",
+      "NCSC-approved product and service frameworks",
+      "CCS commercial frameworks for back-office services"
+    ],
+    "promptBlock": "Defence and security procurement bifurcates sharply between the commercial market (logistics, facilities, IT back-office — competitive, CCS-routed) and the strategic/classified market (weapons systems, intelligence, operational capability — dominated by prime contractors under Single Source Regulations with limited open competition). Security clearances (DV, SC, CTC) are gateway requirements, not scored criteria — without them, the bid cannot proceed. For the competitive market, technical competence and delivery track record against MOD-specific programmes carry the highest weighting; civilian sector equivalents are discounted. DSR and Integrated Review cycles drive major procurement waves — a bid team that cannot link their solution to the current strategic review priorities will struggle to build an internal champion. Prime contractor relationships (BAE Systems, Babcock, Leonardo, Serco Defence) often matter more than direct MOD relationships for subcontract opportunities."
+  },
+
+  "Justice & Home Affairs": {
+    "displayName": "Justice & Home Affairs",
+    "slug": "justice-home-affairs",
+    "keyBuyers": [
+      "Ministry of Justice", "HMCTS", "HMPPS", "Legal Aid Agency",
+      "Home Office", "UK Visas and Immigration (UKVI)",
+      "Border Force", "National Crime Agency"
+    ],
+    "procurementRoutes": [
+      "MOJ commercial frameworks (prison services, offender management)",
+      "Home Office commercial frameworks",
+      "CCS frameworks for transversal services",
+      "Restricted tendering for operationally sensitive contracts"
+    ],
+    "promptBlock": "Justice and Home Affairs procurement operates under intense political and public scrutiny — contract failures (prisoner escapes, immigration backlogs, legal aid mismanagement) become parliamentary questions within days. Safeguarding of vulnerable populations (prisoners, asylum seekers, victims) is a mandatory gateway criterion; any gap in safeguarding credentials fails the bid regardless of price. Human rights compliance must be evidenced, not asserted. Legacy IT environments are pervasive across HMCTS, HMPPS, and Home Office — bidders who underestimate integration complexity routinely underprice. TUPE transfers from public sector delivery are common and workforce transition plans are scrutinised closely by trade unions and ministers. Evidence of managed transition without service disruption is among the highest-value proof points in this sector. Politically, contracts in this sector can be called in at ministerial level even after commercial award — build this risk into the qualification assessment."
+  },
+
+  "Transport": {
+    "displayName": "Transport",
+    "slug": "transport",
+    "keyBuyers": [
+      "National Highways", "Network Rail", "HS2 Ltd",
+      "Department for Transport", "DVSA", "DVLA",
+      "Transport for London", "Civil Aviation Authority",
+      "Maritime and Coastguard Agency", "Regional transport authorities"
+    ],
+    "procurementRoutes": [
+      "National Highways supplier frameworks",
+      "Network Rail commercial frameworks",
+      "Utilities Contracts Regulations 2016 (rail, ports)",
+      "CCS frameworks for professional services",
+      "DfT direct procurement"
+    ],
+    "promptBlock": "Transport procurement divides between infrastructure delivery (long contracts, 10-20+ years, capital-intensive) and operational/professional services (shorter, more competitive). Safety-critical accreditation is a non-negotiable gateway for infrastructure and operational roles — ISO 45001, RISQS (rail), Achilles (highways) must be in place before evaluation begins. Engineering track record in comparable operational environments (live rail, active highway, port operations) is the primary differentiator; advisory credentials without operational delivery evidence are discounted. Net zero and environmental commitments (Carbon Reduction Plans, sustainable procurement standards) are now standard scoring criteria, not differentiators. For infrastructure, the evaluating team will include technical engineers alongside commercial stakeholders — a bid that reads well commercially but cannot withstand technical scrutiny will be caught at moderation. Political visibility of major projects (HS2 in particular) means commercial terms can be revisited at ministerial level."
+  },
+
+  "Education": {
+    "displayName": "Education",
+    "slug": "education",
+    "keyBuyers": [
+      "Department for Education", "Education Skills Funding Agency (ESFA)",
+      "Ofsted", "Universities", "Multi-academy trusts (MATs)",
+      "Further education colleges", "Local authority education departments"
+    ],
+    "procurementRoutes": [
+      "Crown Commercial Service frameworks",
+      "Crescent Purchasing Consortium (CPC) for HE/FE",
+      "NEUPC (Northern Universities Purchasing Consortium)",
+      "APUC (Scotland)",
+      "EFA/ESFA supply chains"
+    ],
+    "promptBlock": "Education is the most fragmented buyer market in UK public sector — 23,000+ schools, 2,500+ colleges, and 160+ universities each procure independently above their own thresholds. Safeguarding requirements for any service involving children or young people are a mandatory gateway — a single gap in DBS, safeguarding policy, or designated safeguarding lead credentials will fail the bid regardless of other strengths. Ofsted inspection readiness is a live concern for school-facing services; anything that could create inspection risk will be challenged. Universities are OJEU-obligated above thresholds and operate more commercially than schools — research impact, international reputation, and REF performance shape their procurement priorities. Multi-academy trusts are the fastest-growing procurement unit and behave like commercial organisations; the largest MATs (Academies Enterprise Trust, United Learning, Ark) have central procurement functions and preferred supplier relationships that pre-qualify the field. Evidence of measurable student outcome improvements is required, not optional."
+  },
+
+  "Emergency Services": {
+    "displayName": "Emergency Services",
+    "slug": "emergency-services",
+    "keyBuyers": [
+      "43 police forces (England and Wales)", "Police Scotland",
+      "Police Service of Northern Ireland",
+      "Fire and rescue services (~50 in England)",
+      "NHS ambulance trusts (10 in England)",
+      "National Police Air Service (NPAS)",
+      "Counter Terrorism Policing"
+    ],
+    "procurementRoutes": [
+      "National Police Procurement Hub (NPPH)",
+      "National Fire Chiefs Council (NFCC) procurement frameworks",
+      "NHS procurement routes (for ambulance trusts)",
+      "Crown Commercial Service frameworks",
+      "Blue light collaboration shared service vehicles"
+    ],
+    "promptBlock": "Emergency services procurement is efficiency-driven post-austerity — cost reduction is often the primary evaluation driver, with police forces and fire services under direct Home Office pressure to reduce budgets year-on-year. Interoperability with national systems is a technical gateway: police solutions must integrate with PNC, PND, and the Emergency Services Network (ESN); fire solutions must meet JESIP interoperability standards. Blue light collaboration is increasing — regional procurement between forces and multi-force contracts are becoming standard for back-office and technology services, meaning a bid targeting one force may need to accommodate future extension to neighbouring forces. Public accountability is high: HMICFRS inspection findings and police and crime commissioner oversight mean contract failures become public quickly. Workforce sensitivities around Police Staff Regulations and retained firefighter arrangements constrain outsourcing options and require careful TUPE handling. Evidence of deployments within operational emergency environments (not civilian equivalents) is the credibility threshold."
+  },
+
+  "Devolved Government": {
+    "displayName": "Devolved Government",
+    "slug": "devolved-government",
+    "keyBuyers": [
+      "Welsh Government and its agencies",
+      "Scottish Government and its agencies",
+      "Transport Scotland", "Historic Environment Scotland",
+      "Northern Ireland Civil Service (NICS)",
+      "NI Executive departments",
+      "Senedd Cymru", "Scottish Parliament"
+    ],
+    "procurementRoutes": [
+      "Welsh Government procurement frameworks (separate from CCS)",
+      "Public Contracts Scotland (PCS) portal and Scottish frameworks",
+      "APUC (for Scottish universities)",
+      "eTendersNI and Central Procurement Directorate (CPD) NI",
+      "Note: NI applies EU procurement rules under Windsor Framework"
+    ],
+    "promptBlock": "Devolved government procurement operates under distinct legislative frameworks that differ materially from England: the Procurement Reform (Scotland) Act 2014, the Well-being of Future Generations (Wales) Act 2015, and separate NI procurement guidance under Windsor Framework arrangements (NI remains subject to EU procurement thresholds and rules). Welsh Language Act requirements are mandatory for Welsh-facing services — bilingual delivery capability is a gateway requirement, not a scored differentiator. Scotland's sustainable procurement duty requires community benefit and fair work conditions (real Living Wage) as scored criteria; bids that treat these as box-ticking exercises are penalised at moderation. Northern Ireland's post-conflict context means community impact and cross-community benefit are live evaluation considerations. Political divergence from Westminster (independence agenda in Scotland, power-sharing dynamics in NI) means major contracts can become politically salient beyond their commercial value. Evidence of devolved-market-specific delivery (named Scottish or Welsh public bodies, outcomes in the local policy context) is required — England-only references are discounted heavily."
+  }
+}
