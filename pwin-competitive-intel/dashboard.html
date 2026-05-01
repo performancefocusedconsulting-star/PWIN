@@ -62,26 +62,35 @@ body {
 
 /* ── HEADER ─────────────────────────────────────────────────── */
 .header {
-  background: var(--bg-mid);
-  border-bottom: 2px solid var(--gold);
+  background: var(--be-navy);
+  border-bottom: 3px solid var(--be-bright-aqua);
   padding: 20px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.header-left { display: flex; align-items: baseline; gap: 16px; }
-.header h1 {
+.header-left { display: flex; flex-direction: column; gap: 2px; }
+.header-wordmark {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--text-bright);
-  letter-spacing: 0.5px;
+  color: #F7F4EE;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
 }
-.header h1 span { color: var(--gold); }
+.header-wordmark .bid  { margin-right: 0.22em; }
+.header-descriptor {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--be-cyan);
+}
 .header-meta {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 11px;
-  color: var(--text-muted);
+  color: rgba(247,244,238,0.55);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -96,30 +105,32 @@ body {
 
 /* ── TABS ───────────────────────────────────────────────────── */
 .tabs {
-  background: var(--bg-mid);
+  background: var(--be-sand);
   padding: 0 32px;
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   overflow-x: auto;
 }
 .tab {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
   padding: 12px 20px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
+  margin-bottom: -2px;
+  transition: color 0.15s;
   white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.tab:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+.tab:hover { color: var(--be-navy); }
 .tab.active {
-  color: var(--gold);
-  border-bottom-color: var(--gold);
+  color: var(--be-navy);
+  border-bottom-color: var(--be-bright-aqua);
+  font-weight: 600;
 }
 
 /* ── MAIN CONTENT ───────────────────────────────────────────── */
