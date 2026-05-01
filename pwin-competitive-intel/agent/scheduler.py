@@ -22,6 +22,11 @@ Optional (pass --with-frameworks-catalogue):
   9. CCS framework catalogue ingest            (ingest_frameworks_catalogue.py)
  10. Framework consolidation / dedup           (consolidate_frameworks.py)
 
+Optional (pass --with-organograms, run twice-yearly):
+ 11. Organogram ingest — senior civil servants (ingest_organograms.py)
+     Published by each department ~March and ~September. Re-running is safe
+     (idempotent upsert; changed roles are written to stakeholder_history).
+
 NOT in this nightly:
   - Splink supplier matching (full wipe-and-replace, ~13 min) — run monthly
     or after large bulk imports:
@@ -77,6 +82,8 @@ if __name__ == "__main__":
     _parser = _ap.ArgumentParser()
     _parser.add_argument("--with-frameworks-catalogue", action="store_true",
                          help="Also run the monthly CCS catalogue ingest")
+    _parser.add_argument("--with-organograms", action="store_true",
+                         help="Also run the twice-yearly organogram ingest (senior civil servants)")
     _args = _parser.parse_args()
 
     log.info("Nightly pipeline starting")
@@ -113,6 +120,11 @@ if __name__ == "__main__":
     # canonical layer. Non-fatal — a failure here must not stop the core pipeline.
     run_step("Framework call-off mining",
              [str(AGENT_DIR / "mine_framework_calloffs.py")])
+
+    # Twice-yearly: organogram ingest (run with --with-organograms, ~March and ~September)
+    if _args.with_organograms:
+        run_step("Organogram ingest (senior civil servants, all priority departments)",
+                 [str(AGENT_DIR / "ingest_organograms.py")])
 
     # Monthly: CCS catalogue ingest (run with --with-frameworks-catalogue)
     if _args.with_frameworks_catalogue:
