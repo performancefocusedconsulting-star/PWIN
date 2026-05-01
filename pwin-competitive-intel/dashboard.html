@@ -421,6 +421,28 @@ td.mono {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── TAB INTRO PANELS ───────────────────────────────────────── */
+.tab-intro {
+  background: white;
+  border-left: 4px solid var(--be-teal);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.tab-intro-heading {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--be-navy);
+  margin-bottom: 4px;
+}
+.tab-intro-body {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.tab-intro-body strong { color: var(--be-navy); font-weight: 500; }
+
 /* ── TWO-COL LAYOUT ─────────────────────────────────────────── */
 .two-col {
   display: grid;
@@ -481,6 +503,10 @@ input[type="range"]::-webkit-slider-thumb {
 
   <!-- SUMMARY VIEW -->
   <section class="view active" id="view-summary">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">What's in the database</div>
+      <div class="tab-intro-body">A real-time snapshot of all contracts, buyers, and suppliers loaded from the UK government's public procurement feed. No inputs needed — the data updates automatically each night.</div>
+    </div>
     <div class="stat-grid" id="summaryStats"></div>
     <div class="two-col">
       <div class="card">
@@ -503,8 +529,12 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
   </section>
 
-  <!-- SERVICE SEARCH VIEW -->
+  <!-- MARKET SEARCH VIEW -->
   <section class="view" id="view-search">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Find contracts by what was bought</div>
+      <div class="tab-intro-body">Search across all active and recently-awarded contracts by service type, buying organisation, and minimum value. Use this to size a market, identify incumbents, and see who buys what from whom.</div>
+    </div>
     <div class="filters">
       <div class="filter-group">
         <label>Service Category</label>
@@ -558,8 +588,12 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
   </section>
 
-  <!-- BUYER INTELLIGENCE VIEW -->
+  <!-- BUYER INTEL VIEW -->
   <section class="view" id="view-buyer">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Profile a buying organisation</div>
+      <div class="tab-intro-body">Type any buyer name to see their full spending history: total awards, preferred suppliers, procurement methods, and behavioural patterns. Works best with the official buyer name — try <strong>Ministry of Defence</strong> or <strong>NHS England</strong>.</div>
+    </div>
     <div class="search-bar">
       <input type="text" id="buyerSearch" placeholder="Search buyer name (e.g. Ministry of Defence, NHS England)..." />
       <button onclick="searchBuyer()">Search</button>
@@ -573,8 +607,12 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
   </section>
 
-  <!-- SUPPLIER INTELLIGENCE VIEW -->
+  <!-- SUPPLIER INTEL VIEW -->
   <section class="view" id="view-supplier">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Profile a supplier</div>
+      <div class="tab-intro-body">Type any supplier name to see their contract wins across all buyers, with Companies House data (directors, parent company, turnover) where available. Variants and trading names are automatically grouped.</div>
+    </div>
     <div class="search-bar">
       <input type="text" id="supplierSearch" placeholder="Search supplier name (e.g. Serco, Capita, Fujitsu)..." />
       <button onclick="searchSupplier()">Search</button>
@@ -590,6 +628,10 @@ input[type="range"]::-webkit-slider-thumb {
 
   <!-- EXPIRY PIPELINE VIEW -->
   <section class="view" id="view-expiry">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Contracts coming up for renewal</div>
+      <div class="tab-intro-body">Spot re-bid and pipeline opportunities by filtering contracts due to expire within your chosen timeframe. Filter by buyer, service category, or minimum value.</div>
+    </div>
     <div class="filters">
       <div class="filter-group">
         <label>Expiry Window</label>
@@ -633,6 +675,10 @@ input[type="range"]::-webkit-slider-thumb {
 
   <!-- FORWARD PIPELINE VIEW -->
   <section class="view" id="view-pipeline">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Tenders not yet live</div>
+      <div class="tab-intro-body">Planning and market engagement notices published by buyers before a formal tender is released — typically 3 to 18 months ahead. Filter by buyer name or organisation type.</div>
+    </div>
     <div class="filters">
       <div class="filter-group">
         <label>Buyer</label>
@@ -683,8 +729,12 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
   </section>
 
-  <!-- PWIN SIGNALS VIEW -->
+  <!-- WIN SIGNALS VIEW -->
   <section class="view" id="view-pwin">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Competitive pressure by buyer and category</div>
+      <div class="tab-intro-body">Shows how many suppliers typically compete for contracts in each buyer/category combination, the average contract value, and how often work is awarded by open versus direct competition.</div>
+    </div>
     <div class="search-bar">
       <input type="text" id="pwinBuyer" placeholder="Filter by buyer name (optional)..." />
       <input type="text" id="pwinCategory" placeholder="Filter by category (optional)..." style="max-width:260px;" />
@@ -714,6 +764,11 @@ input[type="range"]::-webkit-slider-thumb {
   </section>
 
   <section class="view" id="view-frameworks">
+    <div class="tab-intro">
+      <div class="tab-intro-heading">Pre-agreed supplier shortlists</div>
+      <div class="tab-intro-body">Frameworks are agreements that let buyers award contracts quickly to pre-approved suppliers without a full tender. Browse by owner, status, or category to see which frameworks are active in your market.</div>
+    </div>
+
     <!-- Summary bar -->
     <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap" id="fw-summary-bar">
       <div class="card" style="flex:1;min-width:140px;text-align:center">
