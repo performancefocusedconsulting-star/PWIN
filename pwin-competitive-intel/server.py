@@ -496,6 +496,8 @@ def api_frameworks_list(params):
             LIMIT 200
         """, args).fetchall()
         return {"frameworks": [dict(r) for r in rows]}
+    except Exception:
+        return {"frameworks": []}
     finally:
         conn.close()
 
@@ -504,8 +506,12 @@ def api_framework_detail(params):
     conn = get_db()
     if not conn: return {"error": "Database not found"}
     try:
-        fw_id = params.get("id", [None])[0]
-        if not fw_id: return {"error": "id required"}
+        fw_id_raw = params.get("id", [None])[0]
+        if not fw_id_raw: return {"error": "id required"}
+        try:
+            fw_id = int(fw_id_raw)
+        except ValueError:
+            return {"error": "id must be a number"}
         fw = conn.execute(
             "SELECT * FROM frameworks WHERE id=?", (fw_id,)
         ).fetchone()
@@ -543,6 +549,8 @@ def api_framework_detail(params):
             "top_buyers": [dict(b) for b in top_buyers],
             "recent_call_offs": [dict(r) for r in recent],
         }
+    except Exception as e:
+        return {"error": str(e)}
     finally:
         conn.close()
 
