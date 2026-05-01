@@ -99,6 +99,7 @@ If they are absent, the skill refuses and tells the user what to run first.
 | Latest Qualify run / PWIN score | `pwin-platform` (`get_pwin_score`) | `goNoGoImplications.pwinScoreAlignment` |
 | Sector brief on the buyer's sector | `sector-intelligence` skill | `buyerSwitchingPsychology` (sector-typical change appetite), `requirementsBiasToIncumbent` |
 | Client intelligence | `pwin-platform` (`get_shared_client_intelligence`) | `buyerSwitchingPsychology` |
+| Senior leadership (organogram DB) | `pwin-platform` (`get_senior_leadership`, `find_evaluators`) | `incumbentAdvantage.relationshipEmbeddedness`, `buyerSwitchingPsychology`, `procurementContext` |
 
 ### Behaviour when prerequisites are missing
 
@@ -170,6 +171,8 @@ Then check preferred prerequisites:
 9. `get_pwin_score(pursuitId)` — preferred.
 10. Check `C:\Users\User\.pwin\intel\sectors\<sectorSlug>-brief.json` — preferred.
 11. `get_shared_client_intelligence(pursuitId)` — preferred.
+12. `get_senior_leadership(buyerName)` — preferred. Cross-reference with `incumbentProfile.accountTeam` — named relationships with current Director-level civil servants are a form of incumbency advantage. Set `prerequisitesPresentAt.preferred.organogramData` to `true` if successful.
+13. `find_evaluators(buyerName)` — preferred. Returns likely evaluators (PAC witnesses at Director level). Use to populate `procurementContext` (who will evaluate) and inform `buyerSwitchingPsychology` — evaluators who commissioned the incumbent carry relationship risk for a challenger. Set `prerequisitesPresentAt.preferred.evaluatorData` to `true` if successful.
 
 Print a prerequisites summary:
 
@@ -183,6 +186,8 @@ Capture plan:          FOUND | MISSING
 Latest Qualify run:    FOUND <date> PWIN=<score> | NONE
 Sector brief:          FOUND | MISSING
 Client intelligence:   FOUND | MISSING
+Organogram data:       FOUND | MISSING
+Evaluator data:        FOUND | MISSING
 ```
 
 This summary becomes `meta.prerequisitesPresentAt` in the output.
@@ -305,6 +310,8 @@ for scoring dimensions, decision logic, and judgement heuristics.
 
 6. **Assess incumbent advantage and stickiness.** Score each dimension using
    the model in `references/scenarios-and-scoring.md`.
+
+   > **Cross-reference organogram data.** If `get_senior_leadership` returned results, check whether any named account-team members from the incumbent profile appear in the current Director-level leadership list. If the key relationship contacts have left or moved, that is a vulnerability not an advantage. Evaluators from `find_evaluators` who overlap with the original commissioning decision strengthen the embeddedness case.
 
 7. **Assess incumbent vulnerabilities.** Identify weaknesses only where
    evidenced or clearly labelled as inference. For each, state whether it
