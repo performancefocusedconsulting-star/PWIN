@@ -1800,6 +1800,133 @@ function frameworkCallOffs(frameworkQuery, { buyer, supplier, since, limit = 20 
   }
 }
 
+// ── Stakeholder queries ──────────────────────────────────────────────────────
+
+/**
+ * Get senior leadership for a buyer (Director tier and above).
+ * @param {string} buyerName  - Buyer name or partial match
+ * @param {object} opts
+ * @param {string} [opts.tier] - Filter by scs_band_inferred (e.g. 'DirectorGeneral')
+ * @param {number} [opts.topN=20] - Max records to return
+ */
+function getStakeholders(buyerName, { tier = null, topN = 20 } = {}) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    const resolved = _resolveBuyerCanonical(db, buyerName);
+    if (!resolved) {
+      return { stakeholders: [], message: `No buyer found matching '${buyerName}'` };
+    }
+    if (resolved.ambiguous) {
+      return { stakeholders: [], ambiguous: true, candidates: resolved.candidates };
+    }
+    if (!resolved.canonicalId) {
+      return { stakeholders: [], message: `No canonical buyer for '${buyerName}'` };
+    }
+
+    const tierClause = tier ? ' AND scs_band_inferred = ?' : '';
+    const params = tier
+      ? [resolved.canonicalId, tier, topN]
+      : [resolved.canonicalId, topN];
+
+    const rows = db.prepare(`
+      SELECT person_id, name_normalised, job_title, unit, organisation,
+             scs_band_inferred, reports_to_post, source, snapshot_date
+      FROM stakeholders
+      WHERE canonical_buyer_id = ?${tierClause}
+      ORDER BY
+        CASE scs_band_inferred
+          WHEN 'PermanentSecretary' THEN 1
+          WHEN 'DirectorGeneral'    THEN 2
+          WHEN 'Director'           THEN 3
+          WHEN 'DeputyDirector'     THEN 4
+          ELSE 5
+        END, name_normalised
+      LIMIT ?
+    `).all(...params);
+
+    return {
+      canonical_buyer_id: resolved.canonicalId,
+      canonical_buyer_name: resolved.canonicalName,
+      count: rows.length,
+      stakeholders: rows,
+    };
+  } finally {
+    db.close();
+  }
+}
+
+/**
+ * Look up a named individual across organogram + PAC witness records.
+ * @param {string} name - Name or partial name
+ */
+function getStakeholderByName(name) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    const nameLike = `%${(name || '').toLowerCase()}%`;
+
+    const fromOrganograms = db.prepare(`
+      SELECT person_id AS id, name_normalised, name_raw, job_title,
+             unit, organisation, canonical_buyer_id, scs_band_inferred,
+             'organogram' AS source_type, snapshot_date
+      FROM stakeholders
+      WHERE lower(name_normalised) LIKE ? OR lower(name_raw) LIKE ?
+      LIMIT 10
+    `).all(nameLike, nameLike);
+
+    const fromPAC = db.prepare(`
+      SELECT witness_id AS id, name_normalised, name_raw, role_title AS job_title,
+             NULL AS unit, organisation, canonical_buyer_id, NULL AS scs_band_inferred,
+             'pac_witness' AS source_type, session_date AS snapshot_date
+      FROM pac_witnesses
+      WHERE lower(name_normalised) LIKE ? OR lower(name_raw) LIKE ?
+      LIMIT 10
+    `).all(nameLike, nameLike);
+
+    const combined = [...fromOrganograms, ...fromPAC];
+    return { count: combined.length, results: combined };
+  } finally {
+    db.close();
+  }
+}
+
+/**
+ * Find likely evaluators for a buyer — PAC witnesses (named SROs in sessions).
+ * @param {string} buyerName - Buyer name or partial match
+ */
+function findEvaluators(buyerName) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    const resolved = _resolveBuyerCanonical(db, buyerName);
+    if (!resolved || !resolved.canonicalId) {
+      return {
+        evaluators: [],
+        pac_witnesses: [],
+        message: `No canonical buyer found for '${buyerName}'`,
+      };
+    }
+
+    const witnesses = db.prepare(`
+      SELECT name_normalised, role_title, organisation, session_date, session_title, session_url
+      FROM pac_witnesses
+      WHERE canonical_buyer_id = ?
+      ORDER BY session_date DESC
+      LIMIT 20
+    `).all(resolved.canonicalId);
+
+    return {
+      canonical_buyer_id: resolved.canonicalId,
+      canonical_buyer_name: resolved.canonicalName,
+      pac_witnesses: witnesses,
+      note: 'PAC witnesses are Director-level SROs who have appeared before the Public Accounts Committee. FTS contact names (Grade 7 procurement leads) are the highest-priority future addition.',
+    };
+  } finally {
+    db.close();
+  }
+}
+
 export {
   dbSummary,
   buyerProfile,
@@ -1817,4 +1944,7 @@ export {
   buyerFrameworkUsage,
   supplierFrameworkPosition,
   frameworkCallOffs,
+  getStakeholders,
+  getStakeholderByName,
+  findEvaluators,
 };
