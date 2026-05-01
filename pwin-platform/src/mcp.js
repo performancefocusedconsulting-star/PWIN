@@ -13,6 +13,7 @@ import { randomUUID } from 'node:crypto';
 import * as store from './store.js';
 import { validateAIWrite } from './permissions.js';
 import * as compIntel from './competitive-intel.js';
+import * as intelDossiers from './intel-dossiers.js';
 
 function createMcpServer() {
   const server = new McpServer({
@@ -1705,6 +1706,78 @@ function createMcpServer() {
     }
   );
 
+  // ==========================================================================
+  // Agent 2 INTELLIGENCE DOSSIERS — read-only loaders for the rich dossiers
+  // produced by the four Agent 2 skills. These are distinct from
+  // get_buyer_profile / get_supplier_profile, which return the lighter
+  // procurement-database summary from competitive-intel.js.
+  // ==========================================================================
+
+  server.tool(
+    'get_buyer_intelligence_dossier',
+    'Load the Agent 2 buyer-intelligence dossier (rich narrative + structured claims). Distinct from get_buyer_profile which returns the lighter procurement-database summary. Returns the most recently modified version on disk.',
+    {
+      name: z.string().describe('Buyer name; will be slugified to find the dossier file (e.g. "Home Office" → home-office-dossier.json)'),
+    },
+    async ({ name }) => {
+      const slug = intelDossiers.slugify(name);
+      const data = await intelDossiers.getDossier('buyers', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No buyer dossier found for "${name}" at ~/.pwin/intel/buyers/${slug}-dossier.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_supplier_dossier',
+    'Load the Agent 2 supplier-intelligence dossier (rich narrative + structured claims). Distinct from get_supplier_profile which returns the lighter procurement-database summary. Returns the most recently modified version on disk.',
+    {
+      name: z.string().describe('Supplier name; will be slugified to find the dossier file (e.g. "Serco" → serco-dossier.json)'),
+    },
+    async ({ name }) => {
+      const slug = intelDossiers.slugify(name);
+      const data = await intelDossiers.getDossier('suppliers', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No supplier dossier found for "${name}" at ~/.pwin/intel/suppliers/${slug}-dossier.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_sector_brief',
+    'Load the Agent 2 sector-intelligence brief (rich narrative, competitive landscape, buyer patterns). Distinct from get_sector_knowledge which returns the platform seed knowledge base. Returns the most recently modified version on disk.',
+    {
+      sector: z.string().describe('Sector name; will be slugified to find the brief file'),
+    },
+    async ({ sector }) => {
+      const slug = intelDossiers.slugify(sector);
+      const data = await intelDossiers.getDossier('sectors', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No sector brief found for "${sector}" at ~/.pwin/intel/sectors/${slug}-brief.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_incumbency_analysis',
+    'Load the Agent 2 incumbency advantage / displacement strategy analysis. Keyed by a (supplier, buyer) pair slug. Returns the most recently modified version on disk.',
+    {
+      supplierName: z.string().describe('Incumbent supplier name (e.g. "Serco")'),
+      buyerName: z.string().describe('Buyer name (e.g. "Ministry of Defence")'),
+    },
+    async ({ supplierName, buyerName }) => {
+      const slug = `${intelDossiers.slugify(supplierName)}-${intelDossiers.slugify(buyerName)}`;
+      const data = await intelDossiers.getDossier('incumbency', slug);
+      if (!data) {
+        return { content: [{ type: 'text', text: JSON.stringify({ found: false, slug, message: `No incumbency analysis found for "${supplierName}" / "${buyerName}" — expected at ~/.pwin/intel/incumbency/${slug}-analysis.json` }, null, 2) }] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+    }
+  );
+
   server.tool(
     'get_expiring_contracts',
     'Find contracts expiring within N days — core sales prospecting tool. Filter by value, buyer, and category.',
@@ -1753,6 +1826,125 @@ function createMcpServer() {
     },
     async ({ code }) => {
       const result = compIntel.cpvSearch(code);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_buyer_behaviour_profile',
+    'Get behavioural intelligence on a buyer: empirical Probability of Going Out (PGO) signals from the last 5 years of UK procurement data. Returns volume trend, outcome mix (awarded / cancelled / no-compliant-bid / dormant / live), notice-to-award timeline distribution, top categories with outcome breakdown, cancellation rate vs peers of the same organisation type, procurement method mix, competition intensity, distressed-incumbent flag, and a one-sentence summary suitable for lifting into a Win Strategy document. Use when assessing whether a buyer\'s stated tender intention is likely to actually go to market and reach award. Returns same numbers across both Find a Tender (above threshold) and Contracts Finder (below threshold) where the canonical buyer is resolved; cancellation analysis is FTS-only because Contracts Finder lacks the signal.',
+    {
+      name: z.string().describe('Buyer name — canonical name, abbreviation, or partial match (e.g. "Ministry of Defence", "MOD", "Home Office", "Birmingham City Council")'),
+      years: z.number().optional().describe('Time window in years (default 5)'),
+    },
+    async ({ name, years }) => {
+      const result = compIntel.buyerBehaviourProfile(name, { years });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_framework_profile',
+    'Get full profile for a procurement framework — lots, top suppliers, call-off stats. Pass a reference number (e.g. RM6116) or a name.',
+    {
+      query: z.string().describe('Framework reference number (e.g. RM6116) or name (e.g. "Tech Services 3")'),
+    },
+    async ({ query }) => {
+      const result = compIntel.frameworkProfile(query);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'search_frameworks',
+    'Search the framework index by name, owner type, category, status, or expiry window. Returns ranked by call-off value.',
+    {
+      query: z.string().optional().describe('Free-text search on name or reference number'),
+      owner_type: z.string().optional().describe('central_gov | nhs | local_gov | departmental | devolved'),
+      category: z.string().optional().describe('technology | professional_services | facilities | etc.'),
+      status: z.string().optional().describe('active | expiring_soon | expired | replaced'),
+      expiring_within_months: z.number().optional().describe('Only return frameworks expiring within N months'),
+    },
+    async ({ query, owner_type, category, status, expiring_within_months }) => {
+      const result = compIntel.searchFrameworks(query, { ownerType: owner_type, category, status, expiringWithinMonths: expiring_within_months });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_buyer_framework_usage',
+    'Which procurement frameworks does a buyer route spend through? Returns frameworks ranked by call-off value.',
+    {
+      buyer: z.string().describe('Buyer name or canonical ID (e.g. "Ministry of Defence", "Home Office")'),
+    },
+    async ({ buyer }) => {
+      const result = compIntel.buyerFrameworkUsage(buyer);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_supplier_framework_position',
+    'Which frameworks is a supplier approved on, and how much are they winning through each? Returns framework positions by lot.',
+    {
+      supplier: z.string().describe('Supplier name or partial match (e.g. "Serco", "Leidos")'),
+    },
+    async ({ supplier }) => {
+      const result = compIntel.supplierFrameworkPosition(supplier);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_framework_call_offs',
+    'List individual contracts placed through a framework, with optional filters for buyer, supplier, and date.',
+    {
+      framework: z.string().describe('Framework name or reference number (e.g. RM6116, "Tech Services 3")'),
+      buyer: z.string().optional().describe('Filter by buyer canonical ID'),
+      supplier: z.string().optional().describe('Filter by supplier canonical ID'),
+      since: z.string().optional().describe('ISO date — only call-offs after this date (e.g. "2024-01-01")'),
+      limit: z.number().optional().describe('Max results (default 20)'),
+    },
+    async ({ framework, buyer, supplier, since, limit }) => {
+      const result = compIntel.frameworkCallOffs(framework, { buyer, supplier, since, limit });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_senior_leadership',
+    'Get senior civil servants (Director tier and above) for a government buyer from the organogram database. Returns names, job titles, SCS bands, and reporting lines. Use to populate the senior-leadership section of buyer intelligence dossiers or Win Strategy stakeholder maps.',
+    {
+      name: z.string().describe('Buyer name (e.g. "HM Treasury", "Ministry of Defence", "Home Office")'),
+      tier: z.string().optional().describe('Filter by seniority band: PermanentSecretary | DirectorGeneral | Director | DeputyDirector'),
+      topN: z.number().optional().describe('Max records to return (default 20)'),
+    },
+    async ({ name, tier, topN }) => {
+      const result = compIntel.getStakeholders(name, { tier, topN });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_stakeholder_by_name',
+    'Look up a named individual across organogram records and PAC witness lists. Returns matching stakeholders with their current role, organisation, and seniority band.',
+    {
+      name: z.string().describe('Name or partial name to search for (e.g. "Gallagher", "Tom Scholar")'),
+    },
+    async ({ name }) => {
+      const result = compIntel.getStakeholderByName(name);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'find_evaluators',
+    'Find likely evaluators for a buyer — PAC witnesses who are Director-level SROs. Use when assessing who will evaluate a bid or map stakeholder engagement risk.',
+    {
+      name: z.string().describe('Buyer name (e.g. "Home Office", "Ministry of Justice")'),
+    },
+    async ({ name }) => {
+      const result = compIntel.findEvaluators(name);
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
     }
   );

@@ -201,9 +201,37 @@ Quantify the problem before committing to the build.
 5. **How to surface canonical layer to existing consumers** — does the Qualify intel injection switch to canonical buyers immediately, or only when public release is reconsidered?
 6. **Maintenance cadence for the framework lot scheme** — when CCS publishes a new framework version (e.g. MCF5 supersedes MCF4), how does the taxonomy update flow?
 
+## Discovered limitation 2026-04-27 — alias coverage and consumer wiring gaps
+
+This section documents two limitations discovered when the buyer-intelligence skill produced a live MoJ dossier from Claude.ai. Both must be addressed before any buyer dossier output should be quoted externally.
+
+### Limitation D01 — `canonical_buyer_aliases` coverage is too thin to capture raw-data variants
+
+The aliases table currently registers 1–2 aliases per canonical entity (the basic name and the abbreviation). Real raw data emits the same buyer under many name spellings: trailing punctuation ("Ministry of Justice."), case variants, legal preambles ("The Secretary of State for X acting through Y"), full formal forms, brand-in-parentheses forms, verbose Scottish/NI forms.
+
+Because `_resolveBuyerCanonical` matches via exact `LOWER(TRIM(b.name)) = a.alias_lower`, any raw row whose name doesn't exact-match a registered alias is silently excluded from canonical aggregation. Spot-check across ten ministerial departments revealed orphan rates from 1% (DfE) to 88% (FCDO), with Cabinet Office at 84% and HM Treasury at 60%.
+
+**Fix:** wiki action [`pwin-canonical-buyer-alias-coverage-backfill`](../../Obsidian%20Vault/wiki/actions/pwin-canonical-buyer-alias-coverage-backfill.md). Programmatic name-variant harvesting from the raw `buyers` table, plus manual review of the worst-affected departments. Target: <5% orphan rate across the reference set.
+
+### Limitation D02 — `get_buyer_profile` MCP tool bypasses the canonical layer entirely
+
+The lookup tool the platform exposes for buyer profiles (`pwin-platform/src/competitive-intel.js:buyerProfile`) does a raw `LIKE '%name%'` on the `buyers` table. It never consults `canonical_buyer_aliases` or `canonical_buyers`. So even where the canonical layer is doing its job, this tool returns 1–10 raw rows per query and the consumer has no signal that they're seeing fragmented entities.
+
+`supplierProfile` in the same file already queries through `v_canonical_supplier_wins`, so the canonical pattern is implemented for suppliers but not for buyers. Looks like a half-completed piece of work that needs finishing.
+
+**Fix:** wiki action [`pwin-buyer-alias-resolution`](../../Obsidian%20Vault/wiki/actions/pwin-buyer-alias-resolution.md) (escalated 2026-04-27). Refactor `buyerProfile` to mirror `supplierProfile`'s canonical-first pattern.
+
+### Implications
+
+- Every buyer dossier produced before D01 + D02 are fixed is based on incomplete buyer aggregation.
+- The skew is not random — it preferentially excludes Contracts Finder rows for central government call-offs (because CF consistently appends a full stop to buyer names, and that variant is not aliased).
+- Buyer-behaviour analytics (cancellation rates, PGO benchmarks, competition profiles) are computed from the alias-linked subset only, so are biased away from CF-published data.
+- Pre-fix dossiers should carry a "buyer aggregation X% complete pending canonical alias backfill" data-confidence line and should not be quoted externally as definitive.
+
 ## Change log
 
 | Version | Date | Summary |
 |---|---|---|
 | 1.0 | 2026-04-11 | Initial decision register. Eight decisions agreed in working session. Phase 0 Discovery pending. |
 | 1.1 | 2026-04-14 | Added Decision C09 — raw layer is write-through, canonical layer is bulk-safe. Locks in the "frozen baseline + clean on arrival" pattern so weekly OCP refreshes cannot clobber cleaned data. |
+| 1.2 | 2026-04-27 | Added Discovered limitations D01 (alias coverage too thin) and D02 (`get_buyer_profile` bypasses canonical). Both surfaced live by the MoJ buyer dossier. Two wiki actions filed: alias backfill (new), `get_buyer_profile` refactor (escalated to urgent). |

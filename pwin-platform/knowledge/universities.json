@@ -1,0 +1,2793 @@
+{
+  "_comment": "UK universities and higher-education buying consortia. Hand-curated 2026-04-28 from the Office for Students Register, Scottish Funding Council list, HEFCW list, Department for the Economy NI list, and the Russell Group membership. Aliases captured from real Find a Tender Service publisher name variants in pwin-competitive-intel/db/bid_intel.db. Where bodies already exist on the master list (APUC, College of Policing), this file appends new aliases via canonical_id merge rather than creating duplicates. NHS university hospital trusts are intentionally excluded — they are NHS bodies, already canonical in nhs-organisations.json. Oxford and Cambridge constituent colleges are intentionally excluded for v1 — only the federal university entries are included; constituent colleges may be added later if dossier work shows the granularity is needed. Further-education colleges (FE), sixth-form colleges, academy trusts, and Royal Colleges of professional bodies (Royal College of Surgeons etc.) are out of scope: those are not degree-awarding higher-education providers.",
+  "version": "1.0",
+  "source": "hand_curated_universities",
+  "last_updated": "2026-04-28",
+  "entities": [
+    {
+      "canonical_id": "university-of-birmingham",
+      "canonical_name": "University of Birmingham",
+      "abbreviation": "UoB",
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Birmingham University",
+        "THE UNIVERSITY OF BIRMINGHAM",
+        "The University of Birmingham",
+        "UNIVERSITY OF BIRMINGHAM",
+        "University of Birmingham",
+        "university of birmingham"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-bristol",
+      "canonical_name": "University of Bristol",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Bristol University",
+        "The University of Bristol",
+        "UNIVERSITY OF BRISTOL",
+        "University of Bristol",
+        "university of bristol"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-cambridge",
+      "canonical_name": "University of Cambridge",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cambridge University",
+        "The Chancellor, Masters and Scholars of the University of Cambridge",
+        "The University of Cambridge",
+        "UNIVERSITY OF CAMBRIDGE",
+        "University of Cambridge",
+        "university of cambridge"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "cardiff-university",
+      "canonical_name": "Cardiff University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "CARDIFF UNIVERSITY",
+        "Cardiff University",
+        "Prifysgol Caerdydd",
+        "University of Cardiff",
+        "cardiff university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "durham-university",
+      "canonical_name": "Durham University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "DURHAM UNIVERSITY",
+        "Durham University",
+        "The University of Durham",
+        "University of Durham",
+        "durham university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-edinburgh",
+      "canonical_name": "University of Edinburgh",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Edinburgh University",
+        "The University of Edinburgh",
+        "UNIVERSITY OF EDINBURGH",
+        "University Of Edinburgh",
+        "University of Edinburgh",
+        "university of edinburgh"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-exeter",
+      "canonical_name": "University of Exeter",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Exeter University",
+        "The University of Exeter",
+        "UNIVERSITY OF EXETER",
+        "University of Exeter",
+        "university of exeter"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-glasgow",
+      "canonical_name": "University of Glasgow",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Glasgow University",
+        "The University of Glasgow",
+        "UNIVERSITY OF GLASGOW",
+        "University of Glasgow",
+        "university of glasgow"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "imperial-college-london",
+      "canonical_name": "Imperial College London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "IMPERIAL COLLEGE LONDON",
+        "Imperial College",
+        "Imperial College London",
+        "Imperial College of Science, Technology and Medicine",
+        "imperial college london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "kings-college-london",
+      "canonical_name": "King's College London",
+      "abbreviation": "KCL",
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "KCL",
+        "KING'S COLLEGE LONDON",
+        "KINGS COLLEGE LONDON",
+        "King's College London",
+        "King's College, London",
+        "Kings College London",
+        "king's college london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-leeds",
+      "canonical_name": "University of Leeds",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Leeds University",
+        "The University of Leeds",
+        "UNIVERSITY OF LEEDS",
+        "University of Leeds",
+        "university of leeds"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-liverpool",
+      "canonical_name": "University of Liverpool",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Liverpool University",
+        "The University of Liverpool",
+        "UNIVERSITY OF LIVERPOOL",
+        "University of Liverpool",
+        "university of liverpool"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "london-school-of-economics",
+      "canonical_name": "London School of Economics and Political Science",
+      "abbreviation": "LSE",
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LONDON SCHOOL OF ECONOMICS AND POLITICAL SCIENCE",
+        "LSE",
+        "London School of Economics",
+        "London School of Economics & Political Science",
+        "London School of Economics and Political Science",
+        "The London School of Economics and Political Science",
+        "london school of economics and political science"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-manchester",
+      "canonical_name": "University of Manchester",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Manchester University",
+        "The University Of Manchester",
+        "The University of Manchester",
+        "UNIVERSITY OF MANCHESTER",
+        "University of Manchester",
+        "university of manchester"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "newcastle-university",
+      "canonical_name": "Newcastle University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NEWCASTLE UNIVERSITY",
+        "Newcastle University",
+        "The University of Newcastle upon Tyne",
+        "University of Newcastle",
+        "University of Newcastle upon Tyne",
+        "University of Newcastle upon Tyne t/a Newcastle University",
+        "newcastle university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-nottingham",
+      "canonical_name": "University of Nottingham",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Nottingham University",
+        "THE UNIVERSITY OF NOTTINGHAM",
+        "The University of Nottingham",
+        "UNIVERSITY OF NOTTINGHAM",
+        "UNIVERSITY OF NOTTINGHAM (THE)",
+        "University of Nottingham",
+        "university of nottingham"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-oxford",
+      "canonical_name": "University of Oxford",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Oxford University",
+        "The Chancellor, Masters and Scholars of the University of Oxford",
+        "The University of Oxford",
+        "UNIVERSITY OF OXFORD",
+        "University of Oxford",
+        "university of oxford"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "queen-mary-university-of-london",
+      "canonical_name": "Queen Mary University of London",
+      "abbreviation": "QMUL",
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "QMUL",
+        "QUEEN MARY UNIVERSITY OF LONDON",
+        "Queen Mary College",
+        "Queen Mary University of London",
+        "Queen Mary, University of London",
+        "queen mary university of london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "queens-university-belfast",
+      "canonical_name": "Queen's University Belfast",
+      "abbreviation": "QUB",
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "QUB",
+        "QUEEN'S UNIVERSITY BELFAST",
+        "Queen' University Belfast",
+        "Queen's University Belfast",
+        "Queens University Belfast",
+        "The Queen's University of Belfast",
+        "queen's university belfast"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-sheffield",
+      "canonical_name": "University of Sheffield",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Sheffield University",
+        "The University Of Sheffield, AMRC",
+        "The University of Sheffield",
+        "UNIVERSITY OF SHEFFIELD",
+        "University Of Sheffield",
+        "University of Sheffield",
+        "university of sheffield"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-southampton",
+      "canonical_name": "University of Southampton",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Southampton University",
+        "The University of Southampton",
+        "UNIVERSITY OF SOUTHAMPTON",
+        "University of Southampton",
+        "university of southampton"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-college-london",
+      "canonical_name": "University College London",
+      "abbreviation": "UCL",
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UCL",
+        "UNIVERSITY COLLEGE LONDON",
+        "University College London",
+        "University College, London",
+        "university college london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-warwick",
+      "canonical_name": "University of Warwick",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Warwick",
+        "UNIVERSITY OF WARWICK",
+        "University Of Warwick",
+        "University of Warwick",
+        "Warwick University",
+        "university of warwick"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-york",
+      "canonical_name": "University of York",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "Russell Group",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of York",
+        "UNIVERSITY OF YORK",
+        "University of York",
+        "university of york"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "anglia-ruskin-university",
+      "canonical_name": "Anglia Ruskin University",
+      "abbreviation": "ARU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ANGLIA RUSKIN UNIVERSITY",
+        "ARU",
+        "Anglia Ruskin University",
+        "Anglia Ruskin University Higher Education Corporation",
+        "anglia ruskin university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "arts-university-bournemouth",
+      "canonical_name": "Arts University Bournemouth",
+      "abbreviation": "AUB",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ARTS UNIVERSITY BOURNEMOUTH",
+        "AUB",
+        "Arts University Bournemouth",
+        "arts university bournemouth"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "aston-university",
+      "canonical_name": "Aston University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ASTON UNIVERSITY",
+        "Aston University",
+        "aston university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "bath-spa-university",
+      "canonical_name": "Bath Spa University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BATH SPA UNIVERSITY",
+        "Bath Spa University",
+        "bath spa university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-bath",
+      "canonical_name": "University of Bath",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Bath",
+        "UNIVERSITY OF BATH",
+        "University of Bath",
+        "university of bath"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-bedfordshire",
+      "canonical_name": "University of Bedfordshire",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF BEDFORDSHIRE",
+        "University Of Bedfordshire",
+        "University of Bedfordshire",
+        "university of bedfordshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "birkbeck-university-of-london",
+      "canonical_name": "Birkbeck, University of London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BIRKBECK COLLEGE",
+        "BIRKBECK, UNIVERSITY OF LONDON",
+        "Birkbeck",
+        "Birkbeck College",
+        "Birkbeck College, University of London",
+        "Birkbeck, University of London",
+        "birkbeck, university of london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "birmingham-city-university",
+      "canonical_name": "Birmingham City University",
+      "abbreviation": "BCU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BCU",
+        "BIRMINGHAM CITY UNIVERSITY",
+        "Birmingham City University",
+        "birmingham city university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "bishop-grosseteste-university",
+      "canonical_name": "Bishop Grosseteste University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BISHOP GROSSETESTE UNIVERSITY",
+        "Bishop Grosseteste University",
+        "bishop grosseteste university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-bolton",
+      "canonical_name": "University of Bolton",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Bolton",
+        "UNIVERSITY OF BOLTON",
+        "University of Bolton",
+        "university of bolton"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "bournemouth-university",
+      "canonical_name": "Bournemouth University",
+      "abbreviation": "BU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BOURNEMOUTH UNIVERSITY",
+        "Bournemouth University",
+        "bournemouth university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-bradford",
+      "canonical_name": "University of Bradford",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF BRADFORD",
+        "University of Bradford",
+        "university of bradford"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-brighton",
+      "canonical_name": "University of Brighton",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF BRIGHTON",
+        "University of Brighton",
+        "university of brighton"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "brunel-university-london",
+      "canonical_name": "Brunel University London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BRUNEL UNIVERSITY LONDON",
+        "Brunel University",
+        "Brunel University London",
+        "brunel university london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-buckingham",
+      "canonical_name": "University of Buckingham",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF BUCKINGHAM",
+        "University of Buckingham",
+        "university of buckingham"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "buckinghamshire-new-university",
+      "canonical_name": "Buckinghamshire New University",
+      "abbreviation": "BNU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BUCKINGHAMSHIRE NEW UNIVERSITY",
+        "Buckinghamshire New University",
+        "Bucks New University",
+        "buckinghamshire new university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "canterbury-christ-church-university",
+      "canonical_name": "Canterbury Christ Church University",
+      "abbreviation": "CCCU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "CANTERBURY CHRIST CHURCH UNIVERSITY",
+        "Canterbury Christ Church University",
+        "canterbury christ church university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-central-lancashire",
+      "canonical_name": "University of Central Lancashire",
+      "abbreviation": "UCLan",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Central Lancashire",
+        "UCLan",
+        "UNIVERSITY OF CENTRAL LANCASHIRE",
+        "University of Central Lancashire",
+        "university of central lancashire"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-chester",
+      "canonical_name": "University of Chester",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF CHESTER",
+        "University of Chester",
+        "university of chester"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-chichester",
+      "canonical_name": "University of Chichester",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "THE UNIVERSITY OF CHICHESTER",
+        "UNIVERSITY OF CHICHESTER",
+        "University of Chichester",
+        "university of chichester"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "city-university-of-london",
+      "canonical_name": "City, University of London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "CITY, UNIVERSITY OF LONDON",
+        "City St George's, University of London",
+        "City University",
+        "City University of London",
+        "City, University of London",
+        "city, university of london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "courtauld-institute-of-art",
+      "canonical_name": "The Courtauld Institute of Art",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "COURTAULD INSTITUTE OF ART",
+        "Courtauld Institute of Art",
+        "THE COURTAULD INSTITUTE OF ART",
+        "The Courtauld Institute of Art",
+        "the courtauld institute of art"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "coventry-university",
+      "canonical_name": "Coventry University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "COVENTRY UNIVERSITY",
+        "Coventry University",
+        "coventry university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-for-the-creative-arts",
+      "canonical_name": "University for the Creative Arts",
+      "abbreviation": "UCA",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UCA",
+        "UNIVERSITY FOR THE CREATIVE ARTS",
+        "University for the Creative Arts",
+        "university for the creative arts"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-cumbria",
+      "canonical_name": "University of Cumbria",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "THE UNIVERSITY OF CUMBRIA",
+        "UNIVERSITY OF CUMBRIA",
+        "University of Cumbria",
+        "university of cumbria"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "de-montfort-university",
+      "canonical_name": "De Montfort University",
+      "abbreviation": "DMU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "DE MONTFORT UNIVERSITY",
+        "DMU",
+        "De Montfort University",
+        "de montfort university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-derby",
+      "canonical_name": "University of Derby",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF DERBY",
+        "University of Derby",
+        "university of derby"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "edge-hill-university",
+      "canonical_name": "Edge Hill University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "EDGE HILL UNIVERSITY",
+        "Edge Hill University",
+        "edge hill university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-east-anglia",
+      "canonical_name": "University of East Anglia",
+      "abbreviation": "UEA",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UEA",
+        "UNIVERSITY OF EAST ANGLIA",
+        "University of East Aglia",
+        "University of East Anglia",
+        "university of east anglia"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-east-london",
+      "canonical_name": "University of East London",
+      "abbreviation": "UEL",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of East London",
+        "UEL",
+        "UNIVERSITY OF EAST LONDON",
+        "University Of East London",
+        "University of East London",
+        "university of east london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-essex",
+      "canonical_name": "University of Essex",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF ESSEX",
+        "University of Essex",
+        "university of essex"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "falmouth-university",
+      "canonical_name": "Falmouth University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "FALMOUTH UNIVERSITY",
+        "Falmouth University",
+        "falmouth university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-gloucestershire",
+      "canonical_name": "University of Gloucestershire",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF GLOUCESTERSHIRE",
+        "University of Gloucestershire",
+        "university of gloucestershire"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "goldsmiths-university-of-london",
+      "canonical_name": "Goldsmiths, University of London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "GOLDSMITHS' COLLEGE",
+        "GOLDSMITHS, UNIVERSITY OF LONDON",
+        "Goldsmiths",
+        "Goldsmiths College",
+        "Goldsmiths' College",
+        "Goldsmiths, University of London",
+        "goldsmiths, university of london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-greenwich",
+      "canonical_name": "University of Greenwich",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF GREENWICH",
+        "University of Greenwich",
+        "university of greenwich"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "harper-adams-university",
+      "canonical_name": "Harper Adams University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HARPER ADAMS UNIVERSITY",
+        "Harper Adams University",
+        "Harper Adams University College",
+        "harper adams university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "hartpury-university",
+      "canonical_name": "Hartpury University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HARTPURY UNIVERSITY",
+        "Hartpury University",
+        "Hartpury University and Hartpury College",
+        "hartpury university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-hertfordshire",
+      "canonical_name": "University of Hertfordshire",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Hertfordshire",
+        "UNIVERSITY OF HERTFORDSHIRE",
+        "University of Hertfordshire",
+        "University of Hertfordshire Higher Education Corporation",
+        "university of hertfordshire"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-huddersfield",
+      "canonical_name": "University of Huddersfield",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF HUDDERSFIELD",
+        "University of Huddersfield",
+        "University of Huddersfield e-Tendering",
+        "university of huddersfield"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-hull",
+      "canonical_name": "University of Hull",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF HULL",
+        "University of Hull",
+        "university of hull"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "keele-university",
+      "canonical_name": "Keele University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "KEELE UNIVERSITY",
+        "Keele University",
+        "Keele University Leisure Centre",
+        "The University of Keele",
+        "UNIVERSITY OF KEELE",
+        "University of Keele",
+        "keele university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-kent",
+      "canonical_name": "University of Kent",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University Of Kent",
+        "The University of Kent",
+        "UNIVERSITY OF KENT",
+        "University of Kent",
+        "university of kent"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "kingston-university",
+      "canonical_name": "Kingston University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "KINGSTON UNIVERSITY",
+        "Kingston University",
+        "Kingston University Higher Education Corporation",
+        "Kingston University London",
+        "kingston university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "lancaster-university",
+      "canonical_name": "Lancaster University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LANCASTER UNIVERSITY",
+        "Lancaster University",
+        "UNIVERSITY OF LANCASTER",
+        "University of Lancaster",
+        "lancaster university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "leeds-arts-university",
+      "canonical_name": "Leeds Arts University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LEEDS ARTS UNIVERSITY",
+        "Leeds Arts University",
+        "leeds arts university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "leeds-beckett-university",
+      "canonical_name": "Leeds Beckett University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LEEDS BECKETT UNIVERSITY",
+        "Leeds Beckett University",
+        "Leeds Metropolitan University",
+        "leeds beckett university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "leeds-trinity-university",
+      "canonical_name": "Leeds Trinity University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LEEDS TRINITY UNIVERSITY",
+        "Leeds Trinity University",
+        "leeds trinity university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-leicester",
+      "canonical_name": "University of Leicester",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Leicester",
+        "UNIVERSITY OF LEICESTER",
+        "University of Leicester",
+        "university of leicester"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-lincoln",
+      "canonical_name": "University of Lincoln",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF LINCOLN",
+        "University of Lincoln",
+        "university of lincoln"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "liverpool-hope-university",
+      "canonical_name": "Liverpool Hope University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LIVERPOOL HOPE UNIVERSITY",
+        "Liverpool Hope University",
+        "liverpool hope university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "liverpool-john-moores-university",
+      "canonical_name": "Liverpool John Moores University",
+      "abbreviation": "LJMU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LIVERPOOL JOHN MOORES UNIVERSITY",
+        "LJMU",
+        "Liverpool John Moores University",
+        "liverpool john moores university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "liverpool-school-of-tropical-medicine",
+      "canonical_name": "Liverpool School of Tropical Medicine",
+      "abbreviation": "LSTM",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LIVERPOOL SCHOOL OF TROPICAL MEDICINE",
+        "LSTM",
+        "Liverpool School of Tropical Medicine",
+        "liverpool school of tropical medicine"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "london-business-school",
+      "canonical_name": "London Business School",
+      "abbreviation": "LBS",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LBS",
+        "LONDON BUSINESS SCHOOL",
+        "London Business School",
+        "london business school"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "london-metropolitan-university",
+      "canonical_name": "London Metropolitan University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LONDON METROPOLITAN UNIVERSITY",
+        "London Metropolitan University",
+        "london metropolitan university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "london-school-of-hygiene-and-tropical-medicine",
+      "canonical_name": "London School of Hygiene & Tropical Medicine",
+      "abbreviation": "LSHTM",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LONDON SCHOOL OF HYGIENE & TROPICAL MEDICINE",
+        "LSHTM",
+        "London School of Hygiene & Tropical Medicine",
+        "London School of Hygiene and Tropical Medicine",
+        "london school of hygiene & tropical medicine"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "london-south-bank-university",
+      "canonical_name": "London South Bank University",
+      "abbreviation": "LSBU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LONDON SOUTH BANK UNIVERSITY",
+        "LSBU",
+        "London South Bank University",
+        "South Bank University",
+        "london south bank university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "loughborough-university",
+      "canonical_name": "Loughborough University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LOUGHBOROUGH UNIVERSITY",
+        "Loughborough University",
+        "loughborough university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "manchester-metropolitan-university",
+      "canonical_name": "Manchester Metropolitan University",
+      "abbreviation": "MMU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "MANCHESTER METROPOLITAN UNIVERSITY",
+        "MMU",
+        "Manchester Metropolitan University",
+        "Manchester Metropolitan University C/O Pelican Procurement Services",
+        "manchester metropolitan university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "middlesex-university",
+      "canonical_name": "Middlesex University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "MIDDLESEX UNIVERSITY",
+        "Middlesex University",
+        "Middlesex University London",
+        "middlesex university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-northampton",
+      "canonical_name": "University of Northampton",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Northampton",
+        "UNIVERSITY OF NORTHAMPTON",
+        "University of Northampton",
+        "University of Northampton e-Tendering",
+        "university of northampton"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "northumbria-university",
+      "canonical_name": "Northumbria University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NORTHUMBRIA UNIVERSITY",
+        "Northumbria University",
+        "Northumbria University at Newcastle",
+        "The University of Northumbria at Newcastle",
+        "University of Northumbria at Newcastle",
+        "northumbria university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "norwich-university-of-the-arts",
+      "canonical_name": "Norwich University of the Arts",
+      "abbreviation": "NUA",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NORWICH UNIVERSITY OF THE ARTS",
+        "NUA",
+        "Norwich University of the Arts",
+        "norwich university of the arts"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "nottingham-trent-university",
+      "canonical_name": "Nottingham Trent University",
+      "abbreviation": "NTU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NOTTINGHAM TRENT UNIVERSITY",
+        "NTU",
+        "Nottingham Trent University",
+        "Nottingham Trent University (NTU)",
+        "nottingham trent university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "the-open-university",
+      "canonical_name": "The Open University",
+      "abbreviation": "OU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "OPEN UNIVERSITY",
+        "OPEN UNIVERSITY(THE)",
+        "OU",
+        "Open University",
+        "THE OPEN UNIVERSITY",
+        "The Open University",
+        "the open university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "oxford-brookes-university",
+      "canonical_name": "Oxford Brookes University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "OXFORD BROOKES UNIVERSITY",
+        "Oxford Brookes University",
+        "oxford brookes university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "plymouth-marjon-university",
+      "canonical_name": "Plymouth Marjon University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "PLYMOUTH MARJON UNIVERSITY",
+        "Plymouth Marjon University",
+        "University of St Mark and St John",
+        "plymouth marjon university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-plymouth",
+      "canonical_name": "University of Plymouth",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Plymouth University",
+        "UNIVERSITY OF PLYMOUTH",
+        "University of Plymouth",
+        "university of plymouth"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-portsmouth",
+      "canonical_name": "University of Portsmouth",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF PORTSMOUTH",
+        "University of Portsmouth",
+        "University of Portsmouth Higher Education Corporation",
+        "University of Portsmouth e-Tendering",
+        "university of portsmouth"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "ravensbourne-university-london",
+      "canonical_name": "Ravensbourne University London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RAVENSBOURNE UNIVERSITY LONDON",
+        "Ravensbourne",
+        "Ravensbourne University London",
+        "ravensbourne university london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-reading",
+      "canonical_name": "University of Reading",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF READING",
+        "University of Reading",
+        "university of reading"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "regents-university-london",
+      "canonical_name": "Regent's University London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "REGENT'S UNIVERSITY LONDON",
+        "Regent's University London",
+        "regent's university london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "richmond-american-international-university",
+      "canonical_name": "Richmond, The American International University in London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RICHMOND, THE AMERICAN INTERNATIONAL UNIVERSITY IN LONDON",
+        "Richmond American University London",
+        "Richmond, The American International University in London",
+        "richmond, the american international university in london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-academy-of-music",
+      "canonical_name": "Royal Academy of Music",
+      "abbreviation": "RAM",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RAM",
+        "ROYAL ACADEMY OF MUSIC",
+        "Royal Academy of Music",
+        "royal academy of music"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-agricultural-university",
+      "canonical_name": "Royal Agricultural University",
+      "abbreviation": "RAU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RAU",
+        "ROYAL AGRICULTURAL UNIVERSITY",
+        "Royal Agricultural College",
+        "Royal Agricultural University",
+        "royal agricultural university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-college-of-art",
+      "canonical_name": "Royal College of Art",
+      "abbreviation": "RCA",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RCA",
+        "ROYAL COLLEGE OF ART",
+        "Royal College of Art",
+        "royal college of art"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-college-of-music",
+      "canonical_name": "Royal College of Music",
+      "abbreviation": "RCM",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RCM",
+        "ROYAL COLLEGE OF MUSIC",
+        "Royal College of Music",
+        "royal college of music"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-conservatoire-of-scotland",
+      "canonical_name": "Royal Conservatoire of Scotland",
+      "abbreviation": "RCS",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RCS",
+        "ROYAL CONSERVATOIRE OF SCOTLAND",
+        "Royal Conservatoire of Scotland",
+        "royal conservatoire of scotland"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-northern-college-of-music",
+      "canonical_name": "Royal Northern College of Music",
+      "abbreviation": "RNCM",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RNCM",
+        "ROYAL NORTHERN COLLEGE OF MUSIC",
+        "Royal Northern College of Music",
+        "royal northern college of music"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "royal-holloway-university-of-london",
+      "canonical_name": "Royal Holloway, University of London",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ROYAL HOLLOWAY, UNIVERSITY OF LONDON",
+        "Royal Holloway",
+        "Royal Holloway College",
+        "Royal Holloway University of London",
+        "Royal Holloway and Bedford New College",
+        "Royal Holloway and Bedford New College (known as Royal Holloway, University of London)",
+        "Royal Holloway and Bedford New College University, k/a Royal Holloway University of London",
+        "Royal Holloway and Bedford New College, known as Royal Holloway, University of London",
+        "Royal Holloway, University of London",
+        "royal holloway, university of london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-roehampton",
+      "canonical_name": "University of Roehampton",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Roehampton University",
+        "UNIVERSITY OF ROEHAMPTON",
+        "University of Roehampton",
+        "university of roehampton"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-salford",
+      "canonical_name": "University of Salford",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Salford",
+        "UNIVERSITY OF SALFORD",
+        "UNIVERSITY OF SALFORD(THE)",
+        "University of Salford",
+        "university of salford"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "school-of-oriental-and-african-studies",
+      "canonical_name": "SOAS University of London",
+      "abbreviation": "SOAS",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "SOAS",
+        "SOAS UNIVERSITY OF LONDON",
+        "SOAS University of London",
+        "SOAS, University of London",
+        "School of Oriental and African Studies",
+        "soas university of london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "sheffield-hallam-university",
+      "canonical_name": "Sheffield Hallam University",
+      "abbreviation": "SHU",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "SHEFFIELD HALLAM UNIVERSITY",
+        "SHU",
+        "Sheffield Hallam University",
+        "Sheffield Hallam University e-Tendering",
+        "sheffield hallam university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "solent-university",
+      "canonical_name": "Solent University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "SOLENT UNIVERSITY",
+        "Solent University",
+        "Southampton Solent University",
+        "solent university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "staffordshire-university",
+      "canonical_name": "Staffordshire University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "STAFFORDSHIRE UNIVERSITY",
+        "Staffordshire University",
+        "University of Staffordshire",
+        "staffordshire university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-suffolk",
+      "canonical_name": "University of Suffolk",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF SUFFOLK",
+        "University Campus Suffolk",
+        "University of Suffolk",
+        "university of suffolk"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-sunderland",
+      "canonical_name": "University of Sunderland",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF SUNDERLAND",
+        "University of Sunderland",
+        "university of sunderland"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-surrey",
+      "canonical_name": "University of Surrey",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF SURREY",
+        "University of Surrey",
+        "university of surrey"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-sussex",
+      "canonical_name": "University of Sussex",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Sussex",
+        "UNIVERSITY OF SUSSEX",
+        "UNIVERSITY OF SUSSEX(THE)",
+        "University of Sussex",
+        "university of sussex"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "teesside-university",
+      "canonical_name": "Teesside University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "TEESSIDE UNIVERSITY",
+        "Teesside University",
+        "University of Teesside",
+        "teesside university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "trinity-laban-conservatoire",
+      "canonical_name": "Trinity Laban Conservatoire of Music and Dance",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "TRINITY LABAN CONSERVATOIRE OF MUSIC AND DANCE",
+        "Trinity Laban",
+        "Trinity Laban Conservatoire of Music and Dance",
+        "trinity laban conservatoire of music and dance"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-the-arts-london",
+      "canonical_name": "University of the Arts London",
+      "abbreviation": "UAL",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UAL",
+        "UNIVERSITY OF THE ARTS LONDON",
+        "University of the Arts London",
+        "university of the arts london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-the-west-of-england",
+      "canonical_name": "University of the West of England, Bristol",
+      "abbreviation": "UWE",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF THE WEST OF ENGLAND",
+        "UNIVERSITY OF THE WEST OF ENGLAND, BRISTOL",
+        "UWE",
+        "UWE Bristol",
+        "University Of The West Of England",
+        "University of the West of England",
+        "University of the West of England, Bristol",
+        "university of the west of england, bristol"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-west-london",
+      "canonical_name": "University of West London",
+      "abbreviation": "UWL",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Thames Valley University",
+        "UNIVERSITY OF WEST LONDON",
+        "UWL",
+        "University of West London",
+        "university of west london"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-westminster",
+      "canonical_name": "University of Westminster",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "THE UNIVERSITY OF WESTMINSTER",
+        "UNIVERSITY OF WESTMINSTER",
+        "University of Westminster",
+        "university of westminster"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-winchester",
+      "canonical_name": "University of Winchester",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF WINCHESTER",
+        "University of Winchester",
+        "university of winchester"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-wolverhampton",
+      "canonical_name": "University of Wolverhampton",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF WOLVERHAMPTON",
+        "UNIVERSITY OF WOLVERHAMPTON ENTERPRISE LIMITED",
+        "University of Wolverhampton",
+        "University of Wolverhampton Enterprise Limited",
+        "Wolverhampton University",
+        "university of wolverhampton"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-worcester",
+      "canonical_name": "University of Worcester",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF WORCESTER",
+        "University Of Worcester",
+        "University of Worcester",
+        "university of worcester"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "writtle-university-college",
+      "canonical_name": "Writtle University College",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "WRITTLE UNIVERSITY COLLEGE",
+        "Writtle College",
+        "Writtle University College",
+        "writtle university college"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "york-st-john-university",
+      "canonical_name": "York St John University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "YORK ST JOHN UNIVERSITY",
+        "York St John University",
+        "york st john university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "aecc-university-college",
+      "canonical_name": "AECC University College",
+      "abbreviation": "AECC",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "AECC",
+        "AECC UNIVERSITY COLLEGE",
+        "AECC University College",
+        "Anglo-European College of Chiropractic",
+        "aecc university college"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "conservatoire-for-dance-and-drama",
+      "canonical_name": "Conservatoire for Dance and Drama",
+      "abbreviation": "CDD",
+      "type": "University",
+      "subtype": "University (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "CDD",
+        "CONSERVATOIRE FOR DANCE AND DRAMA",
+        "Conservatoire for Dance and Drama",
+        "conservatoire for dance and drama"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-aberdeen",
+      "canonical_name": "University of Aberdeen",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Aberdeen",
+        "UNIVERSITY OF ABERDEEN",
+        "University of Aberdeen",
+        "university of aberdeen"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "abertay-university",
+      "canonical_name": "Abertay University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ABERTAY UNIVERSITY",
+        "Abertay University",
+        "University of Abertay Dundee",
+        "abertay university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-dundee",
+      "canonical_name": "University of Dundee",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF DUNDEE",
+        "University of Dundee",
+        "university of dundee"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "edinburgh-napier-university",
+      "canonical_name": "Edinburgh Napier University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "EDINBURGH NAPIER UNIVERSITY",
+        "Edinburgh Napier University",
+        "Napier University",
+        "edinburgh napier university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "glasgow-caledonian-university",
+      "canonical_name": "Glasgow Caledonian University",
+      "abbreviation": "GCU",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "GCU",
+        "GLASGOW CALEDONIAN UNIVERSITY",
+        "Glasgow Caledonian University",
+        "glasgow caledonian university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "glasgow-school-of-art",
+      "canonical_name": "The Glasgow School of Art",
+      "abbreviation": "GSA",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "GLASGOW SCHOOL OF ART",
+        "GSA",
+        "Glasgow School of Art",
+        "THE GLASGOW SCHOOL OF ART",
+        "The Glasgow School of Art",
+        "the glasgow school of art"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "heriot-watt-university",
+      "canonical_name": "Heriot-Watt University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HERIOT-WATT UNIVERSITY",
+        "Heriot Watt University",
+        "Heriot-Watt University",
+        "heriot-watt university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-the-highlands-and-islands",
+      "canonical_name": "University of the Highlands and Islands",
+      "abbreviation": "UHI",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UHI",
+        "UNIVERSITY OF THE HIGHLANDS AND ISLANDS",
+        "University of the Highlands and Islands",
+        "university of the highlands and islands"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "queen-margaret-university",
+      "canonical_name": "Queen Margaret University",
+      "abbreviation": "QMU",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "QMU",
+        "QUEEN MARGARET UNIVERSITY",
+        "Queen Margaret University",
+        "Queen Margaret University, Edinburgh",
+        "queen margaret university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "robert-gordon-university",
+      "canonical_name": "Robert Gordon University",
+      "abbreviation": "RGU",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "RGU",
+        "ROBERT GORDON UNIVERSITY",
+        "Robert Gordon University",
+        "The Robert Gordon University",
+        "robert gordon university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "scotlands-rural-college",
+      "canonical_name": "Scotland's Rural College",
+      "abbreviation": "SRUC",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "SCOTLAND'S RURAL COLLEGE",
+        "SRUC",
+        "Scotland's Rural College",
+        "scotland's rural college"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-st-andrews",
+      "canonical_name": "University of St Andrews",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "St Andrews University",
+        "The University of St Andrews",
+        "UNIVERSITY OF ST ANDREWS",
+        "University of St Andrews",
+        "university of st andrews"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-stirling",
+      "canonical_name": "University of Stirling",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF STIRLING",
+        "University of Stirling",
+        "university of stirling"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-strathclyde",
+      "canonical_name": "University of Strathclyde",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Strathclyde University",
+        "UNIVERSITY OF STRATHCLYDE",
+        "University of Strathclyde",
+        "university of strathclyde"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-the-west-of-scotland",
+      "canonical_name": "University of the West of Scotland",
+      "abbreviation": "UWS",
+      "type": "University",
+      "subtype": "University (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UNIVERSITY OF THE WEST OF SCOTLAND",
+        "UWS",
+        "University of the West of Scotland",
+        "university of the west of scotland"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "aberystwyth-university",
+      "canonical_name": "Aberystwyth University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ABERYSTWYTH UNIVERSITY",
+        "Aberystwyth University",
+        "Prifysgol Aberystwyth",
+        "University of Wales, Aberystwyth",
+        "aberystwyth university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "bangor-university",
+      "canonical_name": "Bangor University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "BANGOR UNIVERSITY",
+        "Bangor University",
+        "Prifysgol Bangor",
+        "Prifysgol Bangor / Bangor University",
+        "University of Wales, Bangor",
+        "bangor university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "cardiff-metropolitan-university",
+      "canonical_name": "Cardiff Metropolitan University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "CARDIFF METROPOLITAN UNIVERSITY",
+        "Cardiff Metropolitan University",
+        "UWIC",
+        "University of Wales Institute Cardiff",
+        "cardiff metropolitan university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "swansea-university",
+      "canonical_name": "Swansea University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Prifysgol Abertawe",
+        "SWANSEA UNIVERSITY",
+        "Swansea University",
+        "University of Wales Swansea",
+        "swansea university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-south-wales",
+      "canonical_name": "University of South Wales",
+      "abbreviation": "USW",
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Prifysgol De Cymru",
+        "UNIVERSITY OF SOUTH WALES",
+        "USW",
+        "University of South Wales",
+        "university of south wales"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "university-of-wales-trinity-saint-david",
+      "canonical_name": "University of Wales Trinity Saint David",
+      "abbreviation": "UWTSD",
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Trinity Saint David",
+        "UNIVERSITY OF WALES TRINITY SAINT DAVID",
+        "UWTSD",
+        "University of Wales Trinity Saint David",
+        "University of Wales: Trinity Saint David",
+        "university of wales trinity saint david"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "wrexham-university",
+      "canonical_name": "Wrexham University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Glyndwr University",
+        "WREXHAM UNIVERSITY",
+        "Wrexham Glyndwr University",
+        "Wrexham University",
+        "wrexham university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "the-open-university-in-wales",
+      "canonical_name": "The Open University in Wales",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "OPEN UNIVERSITY IN WALES",
+        "Open University in Wales",
+        "THE OPEN UNIVERSITY IN WALES",
+        "The Open University in Wales",
+        "the open university in wales"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "ulster-university",
+      "canonical_name": "Ulster University",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The University of Ulster",
+        "ULSTER UNIVERSITY",
+        "Ulster University",
+        "University of Ulster",
+        "ulster university"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "st-marys-university-college-belfast",
+      "canonical_name": "St Mary's University College, Belfast",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "ST MARY'S UNIVERSITY COLLEGE, BELFAST",
+        "St Mary's University College Belfast",
+        "St Mary's University College, Belfast",
+        "st mary's university college, belfast"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "stranmillis-university-college",
+      "canonical_name": "Stranmillis University College",
+      "abbreviation": null,
+      "type": "University",
+      "subtype": "University (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "STRANMILLIS UNIVERSITY COLLEGE",
+        "Stranmillis College",
+        "Stranmillis University College",
+        "stranmillis university college"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "southern-universities-purchasing-consortium",
+      "canonical_name": "Southern Universities Purchasing Consortium",
+      "abbreviation": "SUPC",
+      "type": "Central buying agency",
+      "subtype": "Higher-education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "SOUTHERN UNIVERSITIES PURCHASING CONSORTIUM",
+        "SUPC",
+        "Southern Universities Purchasing Consortium",
+        "Southern Universities Purchasing Consortium Limited",
+        "Southern Universities Purchasing Consortium Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "the-university-caterers-organisation",
+      "canonical_name": "The University Caterers Organisation",
+      "abbreviation": "TUCO",
+      "type": "Central buying agency",
+      "subtype": "Higher-education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "THE UNIVERSITY CATERERS ORGANISATION LIMITED",
+        "TUCO",
+        "TUCO Limited",
+        "TUCO Ltd",
+        "The University Caterers Organisation",
+        "The University Caterers Organisation Limited",
+        "The University Caterers Organisation Ltd",
+        "The University Caterers Organisation Ltd (TUCO Ltd)"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "higher-education-purchasing-consortium-wales",
+      "canonical_name": "Higher Education Purchasing Consortium Wales",
+      "abbreviation": "HEPCW",
+      "type": "Central buying agency",
+      "subtype": "Higher-education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HE Purchasing Consortium Wales",
+        "HEPCW",
+        "Higher Education Purchasing Consortium Wales"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "north-eastern-universities-purchasing-consortium",
+      "canonical_name": "North Eastern Universities Purchasing Consortium",
+      "abbreviation": "NEUPC",
+      "type": "Central buying agency",
+      "subtype": "Higher-education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NEUPC",
+        "North East Universities Purchasing Consortium",
+        "North Eastern Universities Purchasing Consortium",
+        "North Eastern Universities Purchasing Consortium Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "london-universities-purchasing-consortium",
+      "canonical_name": "London Universities Purchasing Consortium",
+      "abbreviation": "LUPC",
+      "type": "Central buying agency",
+      "subtype": "Higher-education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "LUPC",
+        "London Universities Purchasing Consortium"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "north-western-universities-purchasing-consortium",
+      "canonical_name": "North Western Universities Purchasing Consortium",
+      "abbreviation": "NWUPC",
+      "type": "Central buying agency",
+      "subtype": "Higher-education buying consortium",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NWUPC",
+        "North Western Universities Purchasing Consortium"
+      ],
+      "status": "active",
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "advanced-procurement-for-universities-and-colleges",
+      "type": "Alias merge",
+      "aliases": [
+        "APUC Limited",
+        "APUC Ltd",
+        "Advanced Procurement for Universities & Colleges",
+        "Advanced Procurement for Universities and Colleges (Scotland)"
+      ],
+      "source": "hand_curated_universities"
+    },
+    {
+      "canonical_id": "college-of-policing",
+      "type": "Alias merge",
+      "aliases": [
+        "COLLEGE OF POLICING LIMITED",
+        "College of Policing Limited",
+        "College of Policing Ltd"
+      ],
+      "source": "hand_curated_universities"
+    }
+  ]
+}

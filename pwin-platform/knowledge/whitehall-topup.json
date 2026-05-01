@@ -1,0 +1,605 @@
+{
+  "_comment": "Central-government and arm's-length bodies missing from the GOV.UK organisations API or published under names the API did not surface. Hand-curated 2026-04-29 from the top-100 unmapped buyer audit. Two entry types: (a) genuinely new entities that the GOV.UK API did not return, and (b) alias-supplement entries that add missing FTS name variants to entities the GOV.UK API already holds. Aliases taken from real FTS publisher name variants in pwin-competitive-intel/db/bid_intel.db.",
+  "version": "1.0",
+  "source": "hand_curated_whitehall_topup",
+  "last_updated": "2026-04-29",
+  "entities": [
+    {
+      "canonical_id": "uk-shared-business-services",
+      "canonical_name": "UK Shared Business Services",
+      "abbreviation": "UKSBS",
+      "type": "Executive agency",
+      "subtype": "Central government",
+      "parent_ids": ["uk-research-and-innovation"],
+      "child_ids": [],
+      "aliases": [
+        "UK Shared Business Services",
+        "UK SHARED BUSINESS SERVICES",
+        "UK Shared Business Services Ltd",
+        "UK Shared Business Services Limited",
+        "UK SHARED BUSINESS SERVICES LIMITED",
+        "UKSBS"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "health-education-england",
+      "canonical_name": "Health Education England",
+      "abbreviation": "HEE",
+      "type": "Non-departmental public body",
+      "subtype": "Central government (integrated into NHS England 2023)",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "Health Education England",
+        "HEALTH EDUCATION ENGLAND",
+        "HEE",
+        "health education england"
+      ],
+      "status": "closed",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "nhs-property-services",
+      "canonical_name": "NHS Property Services",
+      "abbreviation": "NHSPS",
+      "type": "Public corporation",
+      "subtype": "Central government",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "NHS Property Services",
+        "NHS PROPERTY SERVICES",
+        "NHS Property Services Limited",
+        "NHS PROPERTY SERVICES LIMITED",
+        "NHS Property Services Ltd",
+        "NHSPS"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "sellafield-ltd",
+      "canonical_name": "Sellafield Ltd",
+      "abbreviation": null,
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Sellafield",
+        "SELLAFIELD",
+        "Sellafield Limited",
+        "SELLAFIELD LIMITED"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "radioactive-waste-management",
+      "canonical_name": "Radioactive Waste Management",
+      "abbreviation": "RWM",
+      "type": "Public corporation",
+      "subtype": "Central government (NDA subsidiary)",
+      "parent_ids": ["nuclear-decommissioning-authority"],
+      "child_ids": [],
+      "aliases": [
+        "Radioactive Waste Management",
+        "RADIOACTIVE WASTE MANAGEMENT",
+        "Radioactive Waste Management Limited",
+        "RADIOACTIVE WASTE MANAGEMENT LIMITED",
+        "Radioactive Waste Management Ltd",
+        "RWM"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "national-audit-office",
+      "canonical_name": "National Audit Office",
+      "abbreviation": "NAO",
+      "type": "Non-departmental public body",
+      "subtype": "Central government",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "National Audit Office",
+        "NATIONAL AUDIT OFFICE",
+        "NAO",
+        "national audit office"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "high-speed-two-limited",
+      "canonical_name": "High Speed Two (HS2) Limited",
+      "abbreviation": "HS2",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HS2",
+        "HS2 Limited",
+        "HS2 LIMITED"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "nhs-digital",
+      "canonical_name": "NHS Digital",
+      "abbreviation": "NHSD",
+      "type": "Non-departmental public body",
+      "subtype": "Central government (integrated into NHS England 2023)",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "NHS Digital",
+        "NHS DIGITAL",
+        "NHSD",
+        "nhs digital",
+        "NHS Digital (HSCIC)"
+      ],
+      "status": "closed",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "genomics-england",
+      "canonical_name": "Genomics England",
+      "abbreviation": null,
+      "type": "Public corporation",
+      "subtype": "Central government",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "Genomics England",
+        "GENOMICS ENGLAND",
+        "Genomics England Limited",
+        "GENOMICS ENGLAND LIMITED",
+        "Genomics England Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "general-medical-council",
+      "canonical_name": "General Medical Council",
+      "abbreviation": "GMC",
+      "type": "Non-departmental public body",
+      "subtype": "Central government",
+      "parent_ids": ["department-of-health-and-social-care"],
+      "child_ids": [],
+      "aliases": [
+        "General Medical Council",
+        "GENERAL MEDICAL COUNCIL",
+        "GMC",
+        "General Medical Council (GMC)",
+        "general medical council"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "royal-botanic-gardens-kew",
+      "canonical_name": "Royal Botanic Gardens, Kew",
+      "abbreviation": "RBG Kew",
+      "type": "Non-departmental public body",
+      "subtype": "Central government",
+      "parent_ids": ["department-for-environment-food-rural-affairs"],
+      "child_ids": [],
+      "aliases": [
+        "Royal Botanic Gardens, Kew",
+        "Royal Botanic Gardens Kew",
+        "ROYAL BOTANIC GARDENS, KEW",
+        "ROYAL BOTANIC GARDENS KEW",
+        "The Board of Trustees of the Royal Botanic Gardens, Kew",
+        "Board of Trustees of the Royal Botanic Gardens Kew",
+        "RBG Kew"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "midlands-lancashire-commissioning-support-unit",
+      "canonical_name": "Midlands and Lancashire Commissioning Support Unit",
+      "abbreviation": "MLCSU",
+      "type": "NHS Commissioning Support Unit",
+      "subtype": "NHS",
+      "parent_ids": ["nhs-england"],
+      "child_ids": [],
+      "aliases": [
+        "Midlands and Lancashire Commissioning Support Unit",
+        "MIDLANDS AND LANCASHIRE COMMISSIONING SUPPORT UNIT",
+        "Midlands and Lancashire Commissioning Support",
+        "NHS Midlands & Lancashire Commissioning Support Unit",
+        "NHS Midlands and Lancashire Commissioning Support Unit",
+        "Midlands and Lancashire CSU",
+        "MLCSU",
+        "NHS Arden and GEM CSU",
+        "Arden and GEM Commissioning Support Unit",
+        "North East and North Cumbria Commissioning Support",
+        "NORTH OF ENGLAND COMMISSIONING SUPPORT",
+        "North of England Commissioning Support",
+        "North of England Commissioning Support Unit",
+        "NECSU",
+        "Staffordshire and Lancashire Commissioning Support Unit",
+        "STAFFORDSHIRE AND LANCASHIRE COMMISSIONING SUPPORT UNIT",
+        "Shropshire Healthcare Procurement Service",
+        "NHS South West - Acutes",
+        "Attain"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "north-east-north-cumbria-icb",
+      "canonical_name": "North East and North Cumbria Integrated Care Board",
+      "abbreviation": "NENC ICB",
+      "type": "NHS Integrated Care Board",
+      "subtype": "NHS",
+      "parent_ids": ["nhs-england"],
+      "child_ids": [],
+      "aliases": [
+        "North East and North Cumbria Integrated Care Board",
+        "NORTH EAST AND NORTH CUMBRIA INTEGRATED CARE BOARD",
+        "North East and North Cumbria ICB",
+        "NENC ICB"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "uk-research-and-innovation",
+      "canonical_name": "UK Research and Innovation",
+      "abbreviation": "UKRI",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "UK Research & Innovation",
+        "UK RESEARCH & INNOVATION",
+        "UK Research & Innovation (UKRI)",
+        "UK Research and Innovation (UKRI)"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "national-highways",
+      "canonical_name": "National Highways",
+      "abbreviation": "NH",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Highways England",
+        "HIGHWAYS ENGLAND",
+        "Highways England Company Limited",
+        "HIGHWAYS ENGLAND COMPANY LIMITED"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "department-for-environment-food-rural-affairs",
+      "canonical_name": "Department for Environment, Food & Rural Affairs",
+      "abbreviation": "Defra",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Defra Network eTendering Portal",
+        "DEPARTMENT FOR ENVIRONMENT FOOD & RURAL AFFAIRS",
+        "Department for Environment Food and Rural Affairs",
+        "Department for Environment, Food and Rural Affairs"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "foreign-commonwealth-development-office",
+      "canonical_name": "Foreign, Commonwealth & Development Office",
+      "abbreviation": "FCDO",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Foreign Commonwealth and Development Office",
+        "Foreign, Commonwealth and Development Office",
+        "FOREIGN COMMONWEALTH AND DEVELOPMENT OFFICE",
+        "FOREIGN, COMMONWEALTH AND DEVELOPMENT OFFICE"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "maritime-and-coastguard-agency",
+      "canonical_name": "Maritime and Coastguard Agency",
+      "abbreviation": "MCA",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "MCA - Maritime and Coastguard Agency",
+        "Maritime & Coastguard Agency",
+        "MARITIME & COASTGUARD AGENCY"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "department-for-transport",
+      "canonical_name": "Department for Transport",
+      "abbreviation": "DfT",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "DfTc - Department for Transport",
+        "DFTC - DEPARTMENT FOR TRANSPORT",
+        "Department for Transport c"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "department-of-health-and-social-care",
+      "canonical_name": "Department of Health and Social Care",
+      "abbreviation": "DHSC",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Department of Health and Social Care (DHSC)",
+        "Department of Health and Social Care (T&T)",
+        "DHSC - Department of Health and Social Care"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "health-and-safety-executive",
+      "canonical_name": "Health and Safety Executive",
+      "abbreviation": "HSE",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Health & Safety Executive",
+        "HEALTH & SAFETY EXECUTIVE"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "driver-and-vehicle-licensing-agency",
+      "canonical_name": "Driver and Vehicle Licensing Agency",
+      "abbreviation": "DVLA",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "DVLA - Driver & Vehicle Licensing Agency",
+        "DVLA - Driver and Vehicle Licensing Agency"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "driver-and-vehicle-standards-agency",
+      "canonical_name": "Driver and Vehicle Standards Agency",
+      "abbreviation": "DVSA",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "DVSA - Driver and Vehicle Standards Agency",
+        "DVSA - Driver & Vehicle Standards Agency"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "uk-health-security-agency",
+      "canonical_name": "UK Health Security Agency",
+      "abbreviation": "UKHSA",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Secretary of State for Health and Social Care acting as part of the Crown through UK Health Security Agency",
+        "UKHSA - UK Health Security Agency"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "nhs-shared-business-services",
+      "canonical_name": "NHS Shared Business Services",
+      "abbreviation": "NHS SBS",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "N H S Shared Business Services",
+        "N.H.S. Shared Business Services"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "nuclear-decommissioning-authority",
+      "canonical_name": "Nuclear Decommissioning Authority",
+      "abbreviation": "NDA",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "CTM Portal for the NDA Shared Services Alliance",
+        "NDA Shared Services Alliance",
+        "NDA Group"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "nuclear-restoration-services",
+      "canonical_name": "Nuclear Restoration Services",
+      "abbreviation": "NRS",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Nuclear Restoration Services Limited",
+        "NUCLEAR RESTORATION SERVICES LIMITED",
+        "Nuclear Restoration Services Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "food-standards-agency",
+      "canonical_name": "Food Standards Agency",
+      "abbreviation": "FSA",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "The Food Standards Agency",
+        "THE FOOD STANDARDS AGENCY"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "national-physical-laboratory",
+      "canonical_name": "National Physical Laboratory",
+      "abbreviation": "NPL",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NPL Management Limited",
+        "NPL MANAGEMENT LIMITED",
+        "NPL Management Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "ofsted",
+      "canonical_name": "Ofsted",
+      "abbreviation": "Ofsted",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "OFFICE FOR STANDARDS IN EDUCATION, CHILDRENS SERVICES AND SKILLS",
+        "Office for Standards in Education, Children's Services and Skills",
+        "Office for Standards in Education"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "hm-revenue-customs",
+      "canonical_name": "HM Revenue & Customs",
+      "abbreviation": "HMRC",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "H M REVENUE & CUSTOMS",
+        "H.M. Revenue & Customs",
+        "H M Revenue & Customs",
+        "HM Revenue and Customs",
+        "HM REVENUE AND CUSTOMS"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "high-speed-two-limited",
+      "canonical_name": "High Speed Two (HS2) Limited",
+      "abbreviation": "HS2",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "HS2",
+        "HS2 Limited"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "national-wealth-fund",
+      "canonical_name": "National Wealth Fund",
+      "abbreviation": "NWF",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "NATIONAL WEALTH FUND LIMITED",
+        "National Wealth Fund Limited"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "department-for-business-energy-and-industrial-strategy",
+      "canonical_name": "Department for Business, Energy & Industrial Strategy",
+      "abbreviation": "BEIS",
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Business Energy and Industrial Strategy",
+        "BUSINESS ENERGY AND INDUSTRIAL STRATEGY",
+        "Department for Business, Energy and Industrial Strategy"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    },
+    {
+      "canonical_id": "post-office",
+      "canonical_name": "Post Office",
+      "abbreviation": null,
+      "type": "Alias supplement",
+      "subtype": null,
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Post Office Limited",
+        "POST OFFICE LIMITED",
+        "Post Office Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_whitehall_topup"
+    }
+  ]
+}

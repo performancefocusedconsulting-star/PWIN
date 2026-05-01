@@ -1,0 +1,329 @@
+# Session Handoff — Procurement Intelligence Analytics
+# =====================================================
+# Purpose: Pick this up in a Claude Code session on your laptop and continue
+# the procurement intelligence analytics work without re-explaining context.
+#
+# Recommended kickoff prompt for the next session:
+#   "Read pwin-competitive-intel/docs/session-handoff-2026-04-27.yaml and
+#    pwin-competitive-intel/docs/buyer-behaviour-analytics-v1.md. We are
+#    picking up the procurement intelligence analytics work. Start by
+#    answering the open_questions in the v1 scoping doc, then begin the
+#    v1 build per the actions list."
+
+session:
+  date: 2026-04-27
+  branch: claude/procurement-intelligence-analytics-MOWqZ
+  topic: Procurement intelligence analytics — buyer behaviour, PGO, Pursuit ROI
+  surface_used: Claude Code on the web (cloud sandbox — no access to bid_intel.db)
+  next_surface: Claude Code on laptop terminal (database in reach)
+
+context_arc:
+  - Question opened with the FTS database — could it surface slippage,
+    conversion rates, notice-to-award timelines, CPV benchmarks?
+  - Scope evolved to a buyer-focused PGO (Probability of Going Out) module
+    intended to give Win Strategy and Qualify a defensible empirical
+    PGO number, not a consultant guess.
+  - Realisation that the database already merges three sources
+    (Find a Tender, Contracts Finder, Companies House) — README is stale
+    on Contracts Finder.
+  - Brought in Pursuit ROI as the headline BidEquity KPI, with the
+    standard formula TCV × Margin × PGO × PWIN ÷ Pursuit Cost.
+  - User pushed back on simplistic stage-by-stage PGO numbers — late-stage
+    cancellation is real, weighting between PGO and PWIN matters, joint
+    multiplication washes out signal.
+  - User introduced the Five Case Model business case maturity as a
+    foundational PGO factor — Gate 2 (OBC) approval is effectively a
+    pre-requisite for major procurements going to market.
+  - Three-tier PGO factor model emerged — observable in our database,
+    observable from external public data, structured judgement.
+
+key_decisions:
+
+  - id: D1
+    decision: Build buyer behaviour analytics v1 first, refine theory after
+    rationale: Empirical foundation must come before further design.
+                The v1 build will tell us which factors actually matter.
+    document: pwin-competitive-intel/docs/buyer-behaviour-analytics-v1.md
+
+  - id: D2
+    decision: Data foundation is FTS + Contracts Finder + Companies House from day one
+    rationale: agent/ingest_cf.py is operational, schema has data_source column,
+                CF rows tagged 'cf'. README incorrectly says CF "not yet integrated".
+    follow_up: README needs updating (action A1).
+
+  - id: D3
+    decision: Pursuit ROI is the headline BidEquity KPI
+    formula: "Pursuit ROI = (TCV × Margin × PGO × PWIN) ÷ Pursuit Cost"
+    rationale: PWIN is the headline for PWIN-the-product. Different products,
+                different audiences. BidEquity converts the inputs into a money
+                decision; that is the differentiated layer.
+
+  - id: D4
+    decision: Always show PGO and PWIN as components, never the joint alone
+    rationale: Multiplication treats two numbers of asymmetric precision as
+                equal-status. PGO is anchored in history; PWIN is judgement
+                early, evidenced late. Components are diagnostic; joint feeds
+                ROI calculation only.
+
+  - id: D5
+    decision: PGO is a failure-mode decomposition, not a single percentage
+    rationale: Late-stage residual risk is structured (cancellation /
+                no-compliant-bid / dormant / insourcing / budget-cut /
+                policy-pull), not random. Decomposition makes the number
+                transparent and lets the consultant see which mode dominates.
+    failure_modes_observable_in_data:
+      - explicit cancellation (tender_status / latest_tag)
+      - no compliant bid (awards.status = 'unsuccessful')
+      - dormant past category benchmark
+    failure_modes_external_or_judgement:
+      - policy refocus
+      - insourcing decision
+      - budget cut mid-process
+      - legal challenge
+      - award-stage withdrawal
+
+  - id: D6
+    decision: Three-tier PGO factor model
+    tier_1_observable_in_database:
+      - historical cancellation rate by buyer × category
+      - schedule adherence (planned vs actual timelines)
+      - competition intensity (bid count history)
+      - amendment behaviour (indecision signal)
+      - outcome mix patterns
+      - incumbent distress (Companies House status)
+    tier_2_external_public_data:
+      - IPA Government Major Projects Portfolio (delivery confidence RAG)
+      - council s.114 notices (DLUHC)
+      - NHS trust deficit positions
+      - Cabinet Office commercial pipeline
+      - departmental business plans / Spending Review allocations
+      - NAO and PAC procurement audit reports
+    tier_3_structured_judgement:
+      - strategic fit with departmental priorities
+      - procurement capability (people and skills)
+      - business case gate status (where not public)
+      - political / ministerial risk
+    combination_model: "PGO = base_rate (Tier 1) × observable_modifier (Tier 2) × judgement_overlay (Tier 3)"
+
+  - id: D7
+    decision: Pursuit cost model extends the existing CFO model — do not rebuild
+    existing_files:
+      - pwin-competitive-intel/bidequity-cfo-model.html
+      - pwin-competitive-intel/docs/strategic-supplier-pursuit-spend-methodology-2026-04-25.md
+      - pwin-bid-execution/docs/website_value_messaging.md (£100m worked example)
+    existing_parameters:
+      - contract value (6 tiers)
+      - bid type (7 types with multipliers)
+      - sector profile (1.4-2.5% of revenue)
+      - win rate
+    proposed_extensions:
+      - stage at engagement (planning / pre-publication / post-publication / late capture)
+      - defended vs attack bid (incumbent typically 30-50% cheaper)
+      - number of lots (sub-linear scaling, ~1.4× for 2 lots)
+      - capture period length
+      - pricing complexity (fixed / open-book / variable)
+
+  - id: D8
+    decision: Margin defaults sourced from Companies House accounts of public-sector contractors
+    rationale: CH integration already exists. Sector defaults from real
+                contractor accounts more defensible than guesses.
+    proposed_sector_defaults:
+      bpo_outsourcing: 4-7%
+      it_services: 3-6%
+      facilities_management: 5-8%
+      construction_civils: 1-3%
+      defence: 7-10%
+      consulting_advisory: 15-25%
+    user_override: yes, per pursuit, with default visible to consultant
+
+  - id: D9
+    decision: Pursuit ROI placement is all three (Qualify, Portfolio, Verdict) but as derived output
+    primacy: components (PWIN, PGO, margin, cost) are entry points;
+              ROI is calculated rendering, not a primary input
+    framing_per_product:
+      qualify: "Given latest PGO and PWIN, here is what this pursuit is worth"
+      portfolio: "BidEquity-branded leadership lens across all pursuits"
+      verdict: "Was the pursuit spend defensible given what was knowable?"
+
+  - id: D10
+    decision: V1 build happens in a laptop-side Claude Code session
+    rationale: bid_intel.db (570MB) is gitignored; not present in cloud sandbox.
+                Iterative query-validate-refine loop needs the live database.
+    cloud_sandbox_role: design, scoping, factor model — what we did this session
+    laptop_role: build, query, validate against real data
+
+  - id: D11
+    decision: Tussell positioning is complementary, not competitive
+    tussell_strengths: descriptive market intelligence, entity resolution,
+                        framework holdings, sector reports
+    bidequity_differentiator: predictive PGO layer, behavioural pattern analysis,
+                              conditional ROI calculation
+    do_not: rebuild Tussell's descriptive layer
+
+design_artefacts_produced:
+
+  - file: pwin-competitive-intel/docs/buyer-behaviour-analytics-v1.md
+    status: rev 2, committed and pushed
+    summary: 10-section buyer behaviour profile spec
+    sections:
+      - 1. Volume and trend (5-year, FTS+CF combined)
+      - 2. Outcome mix (4 buckets — awarded / cancelled / no-compliant-bid / dormant)
+      - 3. Notice-to-award timeline distribution
+      - 4. Category footprint (top 10 CPV with per-category outcome mix)
+      - 5. Cancellation behaviour with time-to-cancellation distribution
+      - 6. Procurement method mix
+      - 7. Competition intensity
+      - 8. Amendment behaviour
+      - 9. Incumbent-distress flag (CH integration)
+      - 10. PGO summary line
+    open_questions_to_decide_before_build:
+      - q1: Time window — last 5 years default, or configurable?
+      - q2: Minimum sample size before showing percentages — suggest hide below 10
+      - q3: Peer-buyer definition — same org type + region, or richer?
+      - q4: Dormant threshold — P95 of category timeline + 90 days, or P99?
+      - q5: FTS / CF split reporting — merged with caption, or always side-by-side?
+      - q6: Cross-source canonicalisation — are FTS and CF buyer IDs already mapped to same canonical entities?
+      - q7: MCP tool consumers from day one — Win Strategy + Qualify, or also Verdict / Bid Execution?
+
+actions:
+
+  immediate:
+    - id: A1
+      task: Update README in pwin-competitive-intel
+      detail: Remove the stale "Contracts Finder not yet integrated" line.
+      file: pwin-competitive-intel/README.md
+      effort: 5 minutes
+
+    - id: A2
+      task: Decide on the seven open questions in the v1 scoping doc
+      detail: Required before v1 build can start.
+      effort: 30 minutes — consultant decision
+
+  v1_build:
+    - id: A3
+      task: Build buyer-behaviour command-line query
+      detail: Extend existing buyer command pattern in queries/queries.py:126
+      surface: "python queries/queries.py buyer-behaviour 'Buyer Name'"
+      effort: 3-4 days
+      depends_on: [A2]
+
+    - id: A4
+      task: Build MCP tool wrapper
+      detail: Add get_buyer_behaviour_profile(buyer_name) to pwin-platform/src/competitive-intel.js
+      effort: 0.5 day
+      depends_on: [A3]
+
+    - id: A5
+      task: Build dashboard panel
+      detail: Extend buyer profile view in pwin-competitive-intel/dashboard.html with Behaviour panel
+      effort: 1-2 days
+      depends_on: [A3]
+
+  parallel_design:
+    - id: A6
+      task: Draft PGO Factor Model companion scoping doc
+      detail: Three-tier model (observable / external / judgement). Companion to v1 doc.
+      proposed_path: pwin-competitive-intel/docs/pgo-factor-model.md
+      effort: 1 day
+      can_run_in_parallel_with: v1 build
+
+    - id: A7
+      task: Read CFO model end-to-end and propose extensions
+      files_to_read:
+        - pwin-competitive-intel/bidequity-cfo-model.html
+        - pwin-competitive-intel/docs/strategic-supplier-pursuit-spend-methodology-2026-04-25.md
+      proposed_new_variables:
+        - stage at engagement
+        - defended vs attack bid
+        - number of lots
+        - capture period length
+        - pricing complexity
+      output: Short note proposing extensions, not a rebuild
+      effort: 1 day
+
+    - id: A8
+      task: Harvest sector margin defaults from Companies House data
+      sources: top 5-10 public-sector contractors per sector via existing CH enrichment
+      validation_targets: see D8 sector defaults
+      effort: 0.5-1 day
+
+  v2_phase_2:
+    - id: A9
+      task: Planning-notice to tender heuristic linking
+      detail: Match planning notices to subsequent tender notices on
+              buyer + title similarity + CPV proximity + date proximity
+      unlocks:
+        - slippage analysis (planning indicative date vs actual publication)
+        - planning-to-published conversion rate
+        - full lifecycle PGO (planning → published → awarded)
+      expected_match_rate: 75-85%
+      effort: 1-2 weeks
+
+    - id: A10
+      task: Parent-company-adjusted competition intensity
+      detail: Dedupe bidder counts by Companies House parent company
+      depends_on: canonical-supplier-to-CH-parent join
+      effort: 1 week
+
+    - id: A11
+      task: Buyer financial-distress overlay
+      external_sources:
+        - DLUHC council s.114 notice register
+        - NHS England trust financial position data
+        - IPA Annual Report on Major Projects (delivery confidence RAG)
+      effort: 1-2 weeks
+
+key_concepts_to_remember:
+
+  - concept: PGO is multi-stage with structured residual risk
+    detail: Pre-publication 30-60% / post-publication-pre-evaluation 70-85% /
+            post-evaluation-pre-award 85-95%. Late-stage residual is named
+            failure modes, not random noise.
+
+  - concept: PGO and PWIN have asymmetric precision
+    detail: PGO trustworthy early (anchored in history), PWIN guesswork early.
+            PGO becomes residual late, PWIN becomes well-evidenced late.
+            Therefore lead with PGO early, lead with PWIN late.
+
+  - concept: Forward-looking ROI vs total ROI
+    detail: At each stage gate, the decision is "is the REMAINING spend worth
+            the CURRENT expected return?" — not "was the total worth it".
+            Total ROI is a retrospective Verdict measure.
+
+  - concept: Pursuit ROI most useful in early stages
+    detail: This is where money gets wasted on phantom opportunities. By
+            Stage 5, sunk cost dominates and only PWIN matters. PGO
+            inclusion in ROI is therefore most valuable early.
+
+environment_state:
+
+  cloud_sandbox_session:
+    has_access_to:
+      - all code and docs in the git repo
+      - pwin-competitive-intel/db/schema.sql (structure only)
+    does_not_have_access_to:
+      - bid_intel.db (570MB, gitignored)
+      - data/ folder (gitignored, OCP bulk file)
+      - Obsidian Vault (on user's laptop)
+      - any local files outside the repo
+
+  laptop_session_recommended_for:
+      - any work that queries bid_intel.db
+      - validating the v1 build against real data
+      - iterating on query SQL
+      - generating real output samples
+
+git_state_at_handoff:
+  branch: claude/procurement-intelligence-analytics-MOWqZ
+  pushed_to_remote: yes
+  recent_commits:
+    - e09df9f docs Update buyer behaviour scoping 3-source data 4 new v1 signals
+    - e4af355 docs Scope buyer behaviour analytics v1 for PGO defensibility
+
+next_session_kickoff:
+  recommended_first_actions:
+    - 1. Read this handoff document and pwin-competitive-intel/docs/buyer-behaviour-analytics-v1.md
+    - 2. Decide the seven open questions in the v1 doc
+    - 3. Run action A1 (update README — 5 minutes)
+    - 4. Start the v1 build at A3 — command-line query, validating against bid_intel.db as you go
+    - 5. In parallel design track, take A7 (CFO model extension proposal) when convenient

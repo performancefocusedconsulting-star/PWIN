@@ -375,11 +375,27 @@ def upsert_notice(conn: sqlite3.Connection, release: dict, buyer_id: str):
     amount = val.get("amount")
     amount_gross = val.get("amountGross") or amount
 
-    # Notice URL from documents
-    docs = tender.get("documents", [])
+    # Notice URL from documents.
+    # Procurement Act 2023 notices attach their HTML doc differently by type:
+    # - UK4/UK5/UK6 → tender.documents or awards[].documents
+    # - UK7 (contract details) and UK11 (contract end) → contracts[].documents
+    # - UK9 (performance) → contracts[].implementation.documents
+    # - UK10 (change)     → contracts[].amendments[].documents
+    # Scan every location, then pick the LATEST published HTML notice so
+    # compiled releases (which carry UK4 + UK6 + UK7 together) report the
+    # most recent notice type rather than the earliest.
+    docs = list(tender.get("documents", []))
     for a in awards:
         docs.extend(a.get("documents", []))
-    notice = next((d for d in docs if d.get("format") == "text/html"), {})
+    for c in release.get("contracts", []):
+        docs.extend(c.get("documents", []))
+        impl = c.get("implementation", {}) or {}
+        docs.extend(impl.get("documents", []))
+        for amd in c.get("amendments", []) or []:
+            docs.extend(amd.get("documents", []))
+    html_docs = [d for d in docs if d.get("format") == "text/html"]
+    html_docs.sort(key=lambda d: d.get("datePublished") or "", reverse=True)
+    notice = html_docs[0] if html_docs else {}
 
     tags = release.get("tag", [])
 

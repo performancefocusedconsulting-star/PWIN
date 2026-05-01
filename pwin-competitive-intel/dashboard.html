@@ -448,6 +448,7 @@ input[type="range"]::-webkit-slider-thumb {
   <div class="tab" data-view="expiry">Expiry Pipeline</div>
   <div class="tab" data-view="pipeline">Forward Pipeline</div>
   <div class="tab" data-view="pwin">PWIN Signals</div>
+  <div class="tab" data-view="frameworks">Frameworks</div>
 </nav>
 
 <!-- ── VIEWS ──────────────────────────────────────────────── -->
@@ -687,6 +688,85 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
   </section>
 
+  <section class="view" id="view-frameworks">
+    <!-- Summary bar -->
+    <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap" id="fw-summary-bar">
+      <div class="card" style="flex:1;min-width:140px;text-align:center">
+        <div class="card-title">Total Frameworks</div>
+        <div style="font-size:2rem;font-family:var(--font-display)" id="fw-total">—</div>
+      </div>
+      <div class="card" style="flex:1;min-width:140px;text-align:center">
+        <div class="card-title">Active</div>
+        <div style="font-size:2rem;font-family:var(--font-display)" id="fw-active">—</div>
+      </div>
+      <div class="card" style="flex:1;min-width:160px;text-align:center">
+        <div class="card-title">Expiring ≤12 months</div>
+        <div style="font-size:2rem;font-family:var(--font-display);color:var(--warning)" id="fw-expiring">—</div>
+      </div>
+      <div class="card" style="flex:1;min-width:160px;text-align:center">
+        <div class="card-title">Total Call-off Value</div>
+        <div style="font-size:2rem;font-family:var(--font-display)" id="fw-total-value">—</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+      <input type="text" id="fw-search" placeholder="Search name or reference…"
+             style="flex:2;min-width:200px;padding:8px 12px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+      <select id="fw-filter-owner" style="flex:1;min-width:140px;padding:8px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+        <option value="">All owners</option>
+        <option value="central_gov">Central Govt (CCS)</option>
+        <option value="nhs">NHS</option>
+        <option value="local_gov">Local Government</option>
+        <option value="departmental">Departmental</option>
+      </select>
+      <select id="fw-filter-status" style="flex:1;min-width:140px;padding:8px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="expiring_soon">Expiring soon</option>
+        <option value="expired">Expired</option>
+      </select>
+      <button id="fw-search-btn" class="btn" style="padding:8px 16px">Search</button>
+    </div>
+
+    <!-- Directory table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Reference</th><th>Name</th><th>Owner</th><th>Category</th>
+            <th>Status</th><th>Suppliers</th><th>Call-offs</th><th>Value (£)</th>
+          </tr>
+        </thead>
+        <tbody id="fw-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Detail panel (hidden until row clicked) -->
+    <div id="fw-detail" style="display:none;margin-top:24px">
+      <h3 id="fw-detail-name" style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:4px"></h3>
+      <div id="fw-detail-meta" style="color:var(--muted);font-size:0.85rem;margin-bottom:16px"></div>
+      <div class="two-col" id="fw-detail-grid">
+        <div class="card">
+          <div class="card-title">Lots</div>
+          <div id="fw-detail-lots"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top Suppliers by Call-off Value</div>
+          <div id="fw-detail-suppliers"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top Buyers</div>
+          <div id="fw-detail-buyers"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Call-offs</div>
+          <div id="fw-detail-calloffs"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <script>
@@ -810,6 +890,9 @@ document.getElementById('tabs').addEventListener('click', (e) => {
   }
   if (e.target.dataset.view === 'pwin' && !view.dataset.loaded) {
     loadPwin(); view.dataset.loaded = '1';
+  }
+  if (e.target.dataset.view === 'frameworks' && !view.dataset.loaded) {
+    loadFrameworksSummary(); loadFrameworksList(); view.dataset.loaded = '1';
   }
 });
 
@@ -1007,11 +1090,230 @@ async function loadBuyerDirect(name) {
     const match = (data.buyers || []).find(b => b.name === name) || (data.buyers || [])[0];
     if (match) {
       renderBuyerProfile(match);
+      loadBuyerBehaviour(name);  // fire-and-forget — appends below
     } else {
       document.getElementById('buyerResults').innerHTML = `
         <div class="empty-state"><h3>No results</h3><p>No buyer matching "${name}" found.</p></div>`;
     }
   } catch (e) { showError('buyerResults'); }
+}
+
+async function loadBuyerBehaviour(name) {
+  // Append a placeholder card so the user sees something immediately.
+  // Behaviour data takes 5-15s for canonical buyers (Ministry of Defence,
+  // Home Office), 20-40s for fragmented buyers (sub-organisations whose
+  // name doesn't resolve to a canonical entity, e.g. "Defence Digital").
+  // The first call after server start can be slower while the per-category
+  // dormant thresholds are computed and cached for 24h.
+  const placeholderId = 'behaviour-loading';
+  const startedAt = Date.now();
+  document.getElementById('buyerResults').insertAdjacentHTML('beforeend', `
+    <div class="card" id="${placeholderId}">
+      <div class="card-title">Buyer behaviour (last 5 years)</div>
+      <p style="color:var(--text-muted);font-style:italic">
+        Computing behavioural intelligence — this typically takes 10 to 30 seconds
+        on first request. <span id="behaviour-elapsed">elapsed: 0s</span>
+      </p>
+    </div>`);
+  // Live elapsed counter so a long wait visibly progresses
+  const elapsedTicker = setInterval(() => {
+    const el = document.getElementById('behaviour-elapsed');
+    if (!el) { clearInterval(elapsedTicker); return; }
+    el.textContent = `elapsed: ${Math.round((Date.now() - startedAt) / 1000)}s`;
+  }, 1000);
+
+  try {
+    const data = await apiFetch('buyer-behaviour', { name });
+    clearInterval(elapsedTicker);
+    const target = document.getElementById(placeholderId);
+    if (!target) return;
+    if (data.error) {
+      target.outerHTML = `
+        <div class="card">
+          <div class="card-title">Buyer behaviour</div>
+          <p style="color:var(--text-muted)">${data.error}</p>
+        </div>`;
+      return;
+    }
+    target.outerHTML = renderBuyerBehaviour(data);
+  } catch (e) {
+    clearInterval(elapsedTicker);
+    const target = document.getElementById(placeholderId);
+    if (target) target.outerHTML = `
+      <div class="card">
+        <div class="card-title">Buyer behaviour</div>
+        <p style="color:var(--text-muted)">Behaviour endpoint unavailable.</p>
+      </div>`;
+  }
+}
+
+function renderBuyerBehaviour(d) {
+  const m = d.outcomeMix;
+  const v = d.volume;
+  const c = d.competition;
+  const tl = d.timeline;
+  const cn = d.cancellation;
+  const pct = (x) => (x == null ? '—' : `${x}%`);
+  const fmtN = (x) => (x == null ? '—' : Number(x).toLocaleString());
+
+  // Headline stats — 5 boxes
+  const stats = `
+    <div class="stat-grid" style="grid-template-columns:repeat(5, 1fr)">
+      <div class="stat-box">
+        <div class="stat-value">${fmtN(m.sampleSize)}</div>
+        <div class="stat-label">Notices in window</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${pct(m.awardedOfClosedPct)}</div>
+        <div class="stat-label">Awarded (of closed)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${pct(m.sharesPct.cancelled)}</div>
+        <div class="stat-label">Cancelled (FTS only)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${pct(m.sharesPct.dormant)}</div>
+        <div class="stat-label">Dormant</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${c.avgBidders != null ? c.avgBidders.toFixed(1) : '—'}</div>
+        <div class="stat-label">Avg bidders</div>
+      </div>
+    </div>`;
+
+  // Outcome mix as a stacked horizontal bar
+  const buckets = [
+    { k: 'awarded',        col: 'var(--green)',  label: 'Awarded' },
+    { k: 'cancelled',      col: 'var(--amber)',  label: 'Cancelled' },
+    { k: 'noCompliantBid', col: '#9b59b6',       label: 'No bid' },
+    { k: 'dormant',        col: '#7f8c8d',       label: 'Dormant' },
+    { k: 'inFlight',       col: '#3498db',       label: 'Live' },
+  ];
+  const total = m.sampleSize || 1;
+  const barSegs = buckets.map(b => {
+    const n = m.buckets[b.k] || 0;
+    const w = (n * 100 / total).toFixed(2);
+    if (n === 0) return '';
+    return `<span style="display:inline-block;height:18px;width:${w}%;background:${b.col};vertical-align:top" title="${b.label}: ${n.toLocaleString()} (${w}%)"></span>`;
+  }).join('');
+  const legend = buckets.map(b => `
+    <span><span class="swatch" style="background:${b.col}"></span>${b.label}: ${(m.buckets[b.k] || 0).toLocaleString()} (${pct(m.sharesPct[b.k])})</span>`).join('');
+
+  const outcomeBar = `
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Outcome mix</div>
+      <div style="border:1px solid var(--border);border-radius:2px;overflow:hidden;line-height:0">${barSegs}</div>
+      <div class="proc-legend" style="margin-top:8px;flex-wrap:wrap;gap:12px;">${legend}</div>
+    </div>`;
+
+  // PGO summary line
+  const summary = d.summary
+    ? `<div style="background:var(--surface-2);padding:14px 16px;border-left:3px solid var(--accent);margin-bottom:20px;font-style:italic;line-height:1.55">${d.summary}</div>`
+    : `<div style="color:var(--text-muted);font-style:italic;margin-bottom:20px">Sample too small to generate PGO summary line (need ≥25 closed notices).</div>`;
+
+  // Timeline + cancellation peer comparison
+  const timelineLine = (tl && tl.medianDays != null)
+    ? `<strong>Timeline:</strong> Median ${tl.medianDays} days from publish to award. 90% complete within ${tl.p90Days} days. <span style="color:var(--text-muted)">(n=${tl.pairedN.toLocaleString()} paired)</span>`
+    : `<strong>Timeline:</strong> <span style="color:var(--text-muted)">${tl ? tl.suppressedReason : 'no data'}</span>`;
+
+  let cancelLine = `<strong>Cancellation rate:</strong> ${pct(cn.thisBuyerPct)} of ${cn.ftsTotal.toLocaleString()} FTS notices`;
+  if (cn.peer && cn.peer.peerCount) {
+    cancelLine += ` &middot; peer median ${cn.peer.peerMedianPct}% across ${cn.peer.peerCount} ${cn.peer.peerType} buyers &middot; <strong>${cn.peer.positionLabel}</strong>`;
+  } else if (cn.peer) {
+    cancelLine += ` &middot; <span style="color:var(--text-muted)">${cn.peer.note || 'no peer set'}</span>`;
+  }
+
+  let competitionLine = '';
+  if (c.lowCompetitionSharePct != null) {
+    competitionLine = `<strong>Competition:</strong> ${c.lowCompetitionSharePct}% of bid-recorded notices attracted fewer than 3 bidders`;
+    if (c.lowCompetitionSharePct > 25) competitionLine += ' &middot; <span style="color:var(--amber)">elevated no-compliant-bid risk</span>';
+  }
+
+  let trendLine = '';
+  if (v.trendDirection) {
+    trendLine = `<strong>Volume trend:</strong> ${v.trendDirection} (${v.trendDeltaPct >= 0 ? '+' : ''}${v.trendDeltaPct}% YoY)`;
+  }
+
+  const insightLines = [trendLine, timelineLine, cancelLine, competitionLine]
+    .filter(Boolean)
+    .map(l => `<div style="margin-bottom:6px">${l}</div>`)
+    .join('');
+
+  // Category footprint table
+  const catRows = (d.categoryFootprint || []).map(cat => `
+    <tr>
+      <td>${cat.label}</td>
+      <td class="num">${fmtN(cat.total)}</td>
+      <td class="num">${pct(cat.awardedPct)}</td>
+      <td class="num">${pct(cat.cancelledPct)}</td>
+      <td class="num">${pct(cat.dormantPct)}</td>
+      <td class="num">${pct(cat.inFlightPct)}</td>
+    </tr>`).join('');
+  const catTable = catRows ? `
+    <table>
+      <thead><tr>
+        <th>Category</th>
+        <th style="text-align:right">N</th>
+        <th style="text-align:right">Awarded</th>
+        <th style="text-align:right">Cancelled</th>
+        <th style="text-align:right">Dormant</th>
+        <th style="text-align:right">Live</th>
+      </tr></thead>
+      <tbody>${catRows}</tbody>
+    </table>` : '<p style="color:var(--text-muted)">No category data</p>';
+
+  // Distress
+  const dr = d.distress;
+  let distressBlock;
+  if (!dr.count) {
+    distressBlock = `<p style="color:var(--text-muted)">No live contracts with a distressed-supplier flag in this buyer's portfolio. <span style="font-size:12px">(Coverage: ~27% of suppliers carry a Companies House number; flag fires only on enriched suppliers.)</span></p>`;
+  } else {
+    const dRows = dr.contracts.slice(0, 10).map(x => `
+      <tr>
+        <td>${truncate(x.title, 50)}</td>
+        <td>${x.supplierName}</td>
+        <td><span style="color:var(--amber)">${x.chStatus}</span></td>
+        <td class="num">${fmtCurrency(x.contractValue)}</td>
+        <td class="mono">${fmtDate(x.contractEndDate)}</td>
+      </tr>`).join('');
+    distressBlock = `
+      <p style="color:var(--amber);margin-bottom:8px"><strong>${dr.count} live contract${dr.count === 1 ? '' : 's'} with a distressed incumbent.</strong></p>
+      <table>
+        <thead><tr><th>Contract</th><th>Supplier</th><th>Status</th><th style="text-align:right">Value</th><th>Expires</th></tr></thead>
+        <tbody>${dRows}</tbody>
+      </table>`;
+  }
+
+  // Sample-quality and fragmented warnings
+  const warnings = [];
+  if (d.meta.fragmented) {
+    warnings.push(`<div style="color:var(--amber);margin-bottom:8px">⚠ This buyer did not resolve to a canonical entity. Aggregations may be incomplete.</div>`);
+  }
+  if (m.sampleQuality === 'too_small') {
+    warnings.push(`<div style="color:var(--amber);margin-bottom:8px">⚠ Sample size (${m.sampleSize}) too small for reliable percentages. Counts only.</div>`);
+  } else if (m.sampleQuality === 'indicative') {
+    warnings.push(`<div style="color:var(--text-muted);margin-bottom:8px">Indicative only — sample n=${m.sampleSize}.</div>`);
+  }
+
+  return `
+    <div class="card">
+      <div class="card-title">Buyer behaviour (last ${d.meta.yearsWindow} years)</div>
+      ${warnings.join('')}
+      ${stats}
+      ${outcomeBar}
+      ${summary}
+      <div style="line-height:1.7;margin-bottom:18px">${insightLines}</div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Category footprint</div>
+        ${catTable}
+      </div>
+      <div class="card">
+        <div class="card-title">Distressed incumbents (live contracts)</div>
+        ${distressBlock}
+      </div>
+    </div>`;
 }
 
 function renderBuyerProfile(b) {
@@ -1314,6 +1616,104 @@ async function loadPwin() {
       '<tr><td colspan="6"><div class="empty-state"><h3>Data Server Unavailable</h3><p><code>python server.py</code></p></div></td></tr>';
   }
 }
+
+/* ── FRAMEWORKS VIEW ────────────────────────────────────────── */
+
+function statusBadge(status) {
+  const colours = {
+    active: 'color:#4caf50',
+    expiring_soon: 'color:#ff9800',
+    expired: 'color:#f44336',
+    replaced: 'color:#9e9e9e',
+  };
+  const style = colours[status] || '';
+  return `<span style="${style}">${status || '—'}</span>`;
+}
+
+async function loadFrameworksSummary() {
+  const data = await fetch('/api/frameworks-summary').then(r => r.json()).catch(() => ({}));
+  document.getElementById('fw-total').textContent = data.total ?? '—';
+  document.getElementById('fw-active').textContent = data.active ?? '—';
+  document.getElementById('fw-expiring').textContent = data.expiring_soon ?? '—';
+  document.getElementById('fw-total-value').textContent = fmtCurrency(data.total_call_off_value);
+}
+
+async function loadFrameworksList() {
+  const q = document.getElementById('fw-search').value;
+  const owner = document.getElementById('fw-filter-owner').value;
+  const status = document.getElementById('fw-filter-status').value;
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (owner) params.set('owner_type', owner);
+  if (status) params.set('status', status);
+
+  const data = await fetch(`/api/frameworks?${params}`).then(r => r.json()).catch(() => ({frameworks: []}));
+  const tbody = document.getElementById('fw-table-body');
+  tbody.innerHTML = '';
+  for (const fw of (data.frameworks || [])) {
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.innerHTML = `
+      <td style="font-family:var(--font-mono);font-size:0.85rem">${fw.reference_no || '—'}</td>
+      <td>${fw.name}</td>
+      <td style="font-size:0.85rem">${fw.owner || '—'}</td>
+      <td style="font-size:0.85rem">${fw.category || '—'}</td>
+      <td>${statusBadge(fw.status)}</td>
+      <td style="text-align:right">${fw.supplier_count || 0}</td>
+      <td style="text-align:right">${fw.call_off_count || 0}</td>
+      <td style="text-align:right">${fmtCurrency(fw.call_off_value_total)}</td>
+    `;
+    tr.addEventListener('click', () => loadFrameworkDetail(fw.id));
+    tbody.appendChild(tr);
+  }
+}
+
+async function loadFrameworkDetail(id) {
+  const data = await fetch(`/api/framework?id=${id}`).then(r => r.json()).catch(() => null);
+  if (!data || data.error) return;
+  const fw = data.framework;
+  document.getElementById('fw-detail').style.display = 'block';
+  document.getElementById('fw-detail-name').textContent = fw.name;
+  document.getElementById('fw-detail-meta').textContent =
+    [fw.reference_no, fw.owner, fw.expiry_date ? `Expires ${fmtDate(fw.expiry_date)}` : null,
+     fw.source === 'contracts_only' ? '⚑ Enrich from catalogue' : null]
+    .filter(Boolean).join(' · ');
+
+  const lotsEl = document.getElementById('fw-detail-lots');
+  lotsEl.innerHTML = data.lots.length
+    ? '<table>' + data.lots.map(l =>
+        `<tr><td style="font-family:var(--font-mono)">${l.lot_number || ''}</td><td>${l.lot_name || ''}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No lot data</p>';
+
+  const supEl = document.getElementById('fw-detail-suppliers');
+  supEl.innerHTML = data.top_suppliers.length
+    ? '<table>' + data.top_suppliers.map(s =>
+        `<tr><td>${s.supplier_name_raw || '—'}</td><td style="text-align:right">${fmtCurrency(s.call_off_value)}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No supplier data</p>';
+
+  const buyEl = document.getElementById('fw-detail-buyers');
+  buyEl.innerHTML = data.top_buyers.length
+    ? '<table>' + data.top_buyers.map(b =>
+        `<tr><td>${b.buyer || '—'}</td><td style="text-align:right">${fmtCurrency(b.total_value)}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No buyer data</p>';
+
+  const coEl = document.getElementById('fw-detail-calloffs');
+  coEl.innerHTML = data.recent_call_offs.length
+    ? '<table>' + data.recent_call_offs.map(c =>
+        `<tr><td style="font-size:0.8rem">${c.awarded_date || ''}</td><td style="font-size:0.8rem">${c.title || '—'}</td><td style="text-align:right;font-size:0.8rem">${fmtCurrency(c.value)}</td></tr>`
+      ).join('') + '</table>'
+    : '<p style="color:var(--muted)">No call-off data</p>';
+
+  document.getElementById('fw-detail').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('fw-search-btn').addEventListener('click', loadFrameworksList);
+document.getElementById('fw-search').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadFrameworksList();
+});
 
 /* ── KEYBOARD SHORTCUTS ─────────────────────────────────────── */
 document.getElementById('pipelineBuyer').addEventListener('keydown', (e) => {

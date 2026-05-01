@@ -479,3 +479,186 @@ LEFT JOIN canonical_suppliers cs    ON s2c.canonical_id = cs.canonical_id
 JOIN awards a               ON asup.award_id = a.id
 JOIN notices n              ON a.ocid = n.ocid
 JOIN buyers b               ON n.buyer_id = b.id;
+
+-- ── £25k spend transparency tables (Wave 1 sub-org overlay) ─────────────────
+
+CREATE TABLE IF NOT EXISTS spend_files_state (
+    id              TEXT PRIMARY KEY,   -- first 16 hex chars of SHA-256(url)
+    department      TEXT NOT NULL,
+    year            INTEGER NOT NULL,
+    month           INTEGER NOT NULL,
+    entity_override TEXT,
+    source_url      TEXT NOT NULL,
+    format_id       TEXT NOT NULL,
+    local_path      TEXT,
+    file_checksum   TEXT,
+    row_count       INTEGER,
+    status          TEXT NOT NULL DEFAULT 'pending',
+    error_message   TEXT,
+    loaded_at       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS spend_transactions (
+    id                  TEXT PRIMARY KEY,   -- '{file_id}-{row_idx:06d}'
+    source_file_id      TEXT NOT NULL REFERENCES spend_files_state(id),
+    department_family   TEXT NOT NULL,
+    raw_entity          TEXT,
+    raw_supplier_name   TEXT NOT NULL,
+    amount              REAL NOT NULL,
+    payment_date        TEXT,
+    expense_type        TEXT,
+    expense_area        TEXT,
+    canonical_sub_org_id   TEXT,
+    canonical_supplier_id  TEXT,
+    ingested_at         TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ============================================================
+-- FRAMEWORKS CANONICAL LAYER (2026-04-30)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS frameworks (
+    id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+    reference_no             TEXT UNIQUE,
+    name                     TEXT NOT NULL,
+    short_name               TEXT,
+    owner                    TEXT NOT NULL,
+    owner_type               TEXT,
+    category                 TEXT,
+    sub_category             TEXT,
+    description              TEXT,
+    max_value                REAL,
+    start_date               TEXT,
+    expiry_date              TEXT,
+    status                   TEXT NOT NULL DEFAULT 'active',
+    replacement_framework_id INTEGER REFERENCES frameworks(id),
+    eligible_buyer_types     TEXT,
+    route_type               TEXT NOT NULL DEFAULT 'framework_agreement',
+    lot_count                INTEGER NOT NULL DEFAULT 0,
+    supplier_count           INTEGER NOT NULL DEFAULT 0,
+    call_off_count           INTEGER NOT NULL DEFAULT 0,
+    call_off_value_total     REAL NOT NULL DEFAULT 0,
+    first_call_off_date      TEXT,
+    last_call_off_date       TEXT,
+    source                   TEXT NOT NULL DEFAULT 'contracts_only',
+    source_url               TEXT,
+    last_updated             TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_frameworks_ref      ON frameworks(reference_no);
+CREATE INDEX IF NOT EXISTS idx_frameworks_status   ON frameworks(status);
+CREATE INDEX IF NOT EXISTS idx_frameworks_owner    ON frameworks(owner_type);
+CREATE INDEX IF NOT EXISTS idx_frameworks_category ON frameworks(category);
+CREATE INDEX IF NOT EXISTS idx_frameworks_expiry   ON frameworks(expiry_date);
+
+CREATE TABLE IF NOT EXISTS framework_lots (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id   INTEGER NOT NULL REFERENCES frameworks(id),
+    lot_number     TEXT,
+    lot_name       TEXT,
+    scope          TEXT,
+    max_value      REAL,
+    supplier_count INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_fw_lots_fw ON framework_lots(framework_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_lots_unique
+    ON framework_lots(framework_id, COALESCE(lot_number, ''));
+
+CREATE TABLE IF NOT EXISTS framework_suppliers (
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id          INTEGER NOT NULL REFERENCES frameworks(id),
+    lot_id                INTEGER REFERENCES framework_lots(id),
+    supplier_canonical_id TEXT,
+    supplier_name_raw     TEXT,
+    awarded_date          TEXT,
+    status                TEXT NOT NULL DEFAULT 'active',
+    call_off_count        INTEGER NOT NULL DEFAULT 0,
+    call_off_value        REAL NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_fw_sup_fw  ON framework_suppliers(framework_id);
+CREATE INDEX IF NOT EXISTS idx_fw_sup_can ON framework_suppliers(supplier_canonical_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_sup_unique
+    ON framework_suppliers(framework_id, COALESCE(lot_id, 0), COALESCE(supplier_canonical_id, ''));
+
+CREATE TABLE IF NOT EXISTS framework_call_offs (
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id          INTEGER NOT NULL REFERENCES frameworks(id),
+    lot_id                INTEGER REFERENCES framework_lots(id),
+    notice_ocid           TEXT REFERENCES notices(ocid),
+    supplier_canonical_id TEXT,
+    buyer_canonical_id    TEXT,
+    sub_org_canonical_id  TEXT,
+    value                 REAL,
+    awarded_date          TEXT,
+    contract_title        TEXT,
+    match_method          TEXT NOT NULL DEFAULT 'reference_no',
+    match_confidence      REAL NOT NULL DEFAULT 1.0
+);
+
+CREATE INDEX IF NOT EXISTS idx_fw_co_fw       ON framework_call_offs(framework_id);
+CREATE INDEX IF NOT EXISTS idx_fw_co_notice   ON framework_call_offs(notice_ocid);
+CREATE INDEX IF NOT EXISTS idx_fw_co_buyer    ON framework_call_offs(buyer_canonical_id);
+CREATE INDEX IF NOT EXISTS idx_fw_co_supplier ON framework_call_offs(supplier_canonical_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fw_co_unique
+    ON framework_call_offs(framework_id, notice_ocid)
+    WHERE notice_ocid IS NOT NULL;
+
+-- ============================================================
+-- STAKEHOLDER CANONICAL LAYER (2026-04-30)
+-- Organogram-derived senior civil servants, Director tier and above.
+-- Supplemented by PAC witness lists for event-driven SRO capture.
+-- Feasibility report: docs/research/2026-04-30-stakeholder-database-feasibility.md
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS stakeholders (
+    person_id          TEXT PRIMARY KEY,   -- '{name-slug}--{canonical_buyer_id}'
+    name_raw           TEXT NOT NULL,      -- verbatim from source
+    name_normalised    TEXT NOT NULL,      -- 'First Last' for cross-source matching
+    job_title          TEXT,
+    unit               TEXT,              -- organisational unit within department
+    organisation       TEXT,             -- sub-org (e.g. NISTA within HM Treasury)
+    parent_department  TEXT,             -- raw dept name from source CSV
+    canonical_buyer_id TEXT REFERENCES canonical_buyers(canonical_id),
+    scs_band_inferred  TEXT,             -- PermanentSecretary | DirectorGeneral | Director | DeputyDirector | Unknown
+    reports_to_post    TEXT,             -- 'Reports to Senior Post' value from organogram
+    source             TEXT NOT NULL,   -- 'organogram' | 'pac_witness'
+    source_url         TEXT,
+    snapshot_date      TEXT,             -- YYYY-MM-DD of organogram; NULL for pac_witness rows
+    ingested_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_stakeholders_buyer  ON stakeholders(canonical_buyer_id);
+CREATE INDEX IF NOT EXISTS idx_stakeholders_name   ON stakeholders(name_normalised);
+CREATE INDEX IF NOT EXISTS idx_stakeholders_band   ON stakeholders(scs_band_inferred);
+CREATE INDEX IF NOT EXISTS idx_stakeholders_source ON stakeholders(source);
+
+CREATE TABLE IF NOT EXISTS stakeholder_history (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    person_id          TEXT NOT NULL REFERENCES stakeholders(person_id),
+    snapshot_date      TEXT NOT NULL,
+    job_title          TEXT,
+    unit               TEXT,
+    canonical_buyer_id TEXT,
+    recorded_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_sh_person   ON stakeholder_history(person_id);
+CREATE INDEX IF NOT EXISTS idx_sh_snapshot ON stakeholder_history(snapshot_date);
+
+CREATE TABLE IF NOT EXISTS pac_witnesses (
+    witness_id         TEXT PRIMARY KEY,   -- '{name-slug}--{session-date}'
+    name_raw           TEXT NOT NULL,
+    name_normalised    TEXT NOT NULL,
+    role_title         TEXT,
+    organisation       TEXT,
+    canonical_buyer_id TEXT REFERENCES canonical_buyers(canonical_id),
+    session_date       TEXT,              -- YYYY-MM-DD
+    session_title      TEXT,
+    session_url        TEXT NOT NULL,
+    scraped_at         TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_pac_buyer ON pac_witnesses(canonical_buyer_id);
+CREATE INDEX IF NOT EXISTS idx_pac_name  ON pac_witnesses(name_normalised);

@@ -27,3 +27,20 @@ pwin-competitive-intel/agent/*.log
 
 # Skill test outputs — local artefacts, not source
 pwin-platform/test/skill-tests/results/
+
+# Canonical buyer alias review exports — derived from canonical_buyers + alias glossary, not source
+pwin-competitive-intel/canonical-buyer-aliases-review*.csv
+
+# Built skill archives — derived from the master source folders, not source
+pwin-platform/skills/agent2-market-competitive/master/*.skill
+pwin-platform/skills/agent2-market-competitive/master/*.zip
+
+# Skill run output samples — real Claude.ai output, not hand-crafted fixtures
+pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/*_skillrun_*.json
+
+# Temp download files from seed scripts (e.g. GIAS academy trust spreadsheet)
+pwin-platform/knowledge/.tmp_*.xlsx
+pwin-competitive-intel/db/.tmp.drive*/
+
+# Brainstorming session files (visual companion)
+.superpowers/

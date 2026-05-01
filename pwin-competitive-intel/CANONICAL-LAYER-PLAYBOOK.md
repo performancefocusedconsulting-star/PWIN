@@ -31,6 +31,42 @@ The reason they diverge: **a single mega-buyer like the Ministry of Defence appe
 
 **Corollary:** when prioritising curation work, sort the unmatched residual by **award count or award value**, not by alphabetical order or buyer name frequency. The next 10 high-volume unmatched buyers will give you more coverage gain than the next 100 random ones.
 
+## 1b. Alias coverage is the second bottleneck — and it's invisible until a dossier surfaces it
+
+> **Added 2026-04-27** after the MoJ live dossier surfaced this. Read it before quoting any buyer-aggregation number.
+
+There are **three** numbers that matter, not two:
+
+1. **% of canonical entities defined** — does the canonical layer know that "Ministry of Justice" is a real entity with the canonical ID `ministry-of-justice`?
+2. **% of awards mapped** — covered above. The headline-grabbing number.
+3. **% of raw buyer rows linked to their canonical entity via the alias glossary** — the number we forgot to track.
+
+(1) and (3) sound similar but they are not the same number. The canonical layer can correctly identify MoJ as one entity (point 1 = 100%) while only linking 81% of the raw MoJ rows to it (point 3 = 81%). The 19% orphaned rows still appear as raw fragmented buyers to any consumer that joins through `canonical_buyer_aliases`.
+
+The reason: `canonical_buyer_aliases` is only as comprehensive as the aliases registered for each entity. The Phase 0 build registered 1–2 aliases per canonical entity (the basic name and the abbreviation). Real raw data emits each entity under a much wider set of name spellings — see Section 3 for the full taxonomy. Any raw row whose name doesn't exact-match a registered alias is silently dropped from canonical aggregation.
+
+Spot-check across UK ministerial departments (2026-04-27) showed orphan rates from 1% (DfE) to 88% (FCDO):
+
+| Dept | Orphan rate (raw rows not linked to canonical) |
+|---|---:|
+| FCDO | 88% |
+| Cabinet Office | 84% |
+| HM Treasury | 60% |
+| DHSC | 47% |
+| MoJ | 19% |
+| MoD | 7% |
+| Home Office | 5% |
+| DWP | 2% |
+| DfE | 1% |
+
+The pattern is not random. The departments most likely to publish under formal legal names ("The Secretary of State for X acting through Y") and the departments most active on Contracts Finder (where the publisher consistently appends a full stop to the buyer name — "Ministry of Justice." rather than "Ministry of Justice") are the ones most affected. So the orphaning is **systematically biased** away from precisely the data we added Contracts Finder ingestion to capture.
+
+**Rule:** when reporting coverage to anyone (including yourself), always report all three numbers — entities defined, awards mapped, raw rows linked. The third one is the dossier-quality number. The first two are misleadingly reassuring on their own.
+
+**Operational consequence:** every buyer dossier produced before the alias backfill (action [`pwin-canonical-buyer-alias-coverage-backfill`](../../../Obsidian%20Vault/wiki/actions/pwin-canonical-buyer-alias-coverage-backfill.md)) is computed from the alias-linked subset only. The procurement-behaviour numbers (cancellation rate, PGO benchmark, competition profile) are directionally correct but quantitatively biased. Until the backfill is done, every buyer dossier should carry a "buyer aggregation X% complete pending canonical alias backfill" data-confidence line, and pre-fix dossiers should not be quoted externally as definitive.
+
+**Lesson for the future cleaning skill:** never measure coverage by entity definition alone. Measure it by raw-row linkage rate against the orphan list, broken down by buyer (so the worst offenders surface). The cleaning skill should run an "orphan rate report" as a routine output of every canonical refresh — without it, a high-quality canonical layer can be sitting next to a low-quality alias glossary and nobody notices.
+
 ## 2. The four-source model (and why no single source is enough)
 
 Real coverage needs four data sources merged into one canonical layer:
@@ -510,6 +546,408 @@ This flag only catches unambiguous data errors. It does **not** solve the broade
 - If FTS publisher behaviour changes (e.g. more errors start appearing below £10bn), lower the threshold
 - If genuine >£10bn single awards start appearing (HS2 mega-lots, nuclear decommissioning), raise the threshold or move to a heuristic flag (e.g. flag only when value > N × buyer's 95th percentile)
 
+## §16 — Buyer alias backfill (2026-04-28)
+
+The canonical layer correctly identified the right entities (1,929 of them) but
+the alias table was too thin: each canonical had ~2 spellings registered
+(canonical name + abbreviation). Real raw data uses many more variants. Two
+gaps surfaced live on 2026-04-27 when a buyer dossier was produced and
+spot-checks showed orphan rates of 60–88% on FCDO, Cabinet Office, Treasury,
+and DHSC.
+
+### What the fix did
+
+Two pieces of work, both implemented per design spec
+[`docs/superpowers/specs/2026-04-27-buyer-alias-resolution-design.md`](../docs/superpowers/specs/2026-04-27-buyer-alias-resolution-design.md):
+
+1. **`pwin-platform/src/competitive-intel.js` — `buyerProfile()` rewritten.**
+   Now resolves through `_resolveBuyerCanonical()` first (the helper that was
+   already being used by `buyerBehaviourProfile`). If the lookup resolves
+   cleanly, all raw buyer rows are aggregated into one consolidated profile
+   via `buyers.canonical_id` join. If ambiguous, candidates are returned. If
+   no canonical match, falls back to raw LIKE with a `fragmented: true` flag
+   so consumers can detect the degraded case. The supplier half of this
+   pattern was already wired via `v_canonical_supplier_wins`; this brings
+   the buyer half to parity.
+
+2. **`agent/backfill-buyer-aliases.py` — new script.** Walks every raw buyer
+   name, applies tidying rules (trailing punctuation, HM/His Majesty's
+   preamble, dept-prefix-then-dash, brand-in-parentheses, "Secretary of State
+   for X acting through Y", "more commonly known as Z", "on behalf of X"),
+   and where a tidied name **exactly** matches a canonical name or
+   abbreviation, registers a new alias and back-fills `buyers.canonical_id`
+   if it was NULL. Exact-match-only — never fuzzy. Idempotent. `--dry-run`
+   mode for safe review.
+
+### Result
+
+371 new aliases registered. 126 raw buyer rows that previously had
+`canonical_id = NULL` are now linked to the right canonical entity. Orphan
+rates by department, before vs after:
+
+| Dept | Before | After | Spec target |
+|---|---:|---:|---:|
+| Foreign Office | 88% | 11% | <20% ✅ |
+| Cabinet Office | 84% | 26% | <20% — close, sub-org work needed |
+| Treasury | 60% | 30% | <20% — only 3 raw rows remain (sub-orgs) |
+| Health | 47% | 12% | <20% ✅ |
+| Justice | 19% | <1% | <10% ✅ |
+| Defence | 7% | 7% | <5% — sub-unit names dominate residual |
+| Home Office | 5% | 3% | <5% ✅ |
+| Work and Pensions | 2% | 2% | <5% ✅ |
+| Education | 1% | 5% | <5% — within target band |
+
+### What's left
+
+The residual orphans are all the same shape: **sub-organisations that are
+either separate canonical entities (Government Property Agency, IPA,
+National Infrastructure Commission) or naming variants that hang detail
+off the parent ("Ministry of Defence, Strategic Command Commercial,
+Defence Intelligence")**. The design spec explicitly deferred sub-org
+handling to a separate design call. This is the next canonical-layer task
+when a downstream product needs sub-org-level resolution.
+
+## §17 — Sub-organisation pass (2026-04-28)
+
+The deferred sub-org work landed on 2026-04-28. Three pieces:
+
+1. **Nine missing major sub-orgs added to the glossary** via
+   `agent/add_missing_sub_orgs.py`: Defence Digital, UK Strategic Command,
+   British Army, Royal Navy, Royal Air Force, Defence Business Services,
+   Royal Fleet Auxiliary (all under `ministry-of-defence`); Infrastructure
+   and Projects Authority (under `cabinet-office`); National Infrastructure
+   Commission (under `hm-treasury`). Each entry carries the common name
+   variants the raw data uses ("Strategic Command, Defence Digital",
+   "Ministry of Defence - Defence Digital", etc.) so the glossary alone
+   resolves the bulk of orphan rows after `load-canonical-buyers.py`
+   re-runs.
+
+2. **Multi-part candidate splitting added to `backfill-buyer-aliases.py`.**
+   Real raw names chain entities together using `,`, ` : `, and ` - ` —
+   "Government Property Agency : Cabinet Office", "Strategic Command,
+   Defence Digital, Ministry of Defence". The new rule splits on these
+   separators, strips trailing parenthesised abbreviations from each piece,
+   and offers each piece as its own candidate alias.
+
+3. **Hierarchy-aware ambiguity resolution.** When the same raw name matches
+   multiple canonicals (e.g. "Defence Equipment & Support, Ministry of
+   Defence" matches both DE&S and MoD), the new resolver checks whether
+   the matches are all on the same hierarchy line. If they are, it picks
+   the most-specific descendant (DE&S in this example). Genuinely
+   unrelated multi-matches still go to the ambiguous bucket.
+
+### Result
+
+- 9 new canonical entities; 1,938 canonical entities total.
+- 667 new aliases registered, 1,427 raw buyer rows newly back-filled.
+- Sub-org dossiers now consolidate end-to-end:
+
+| Sub-org | Members | Awards | Total spend |
+|---|---:|---:|---:|
+| Defence Digital | 10 | 48 | £37m |
+| UK Strategic Command | 11 | 10 | £19m |
+| Government Property Agency | 10 | 167 | £1,116m |
+| Crown Commercial Service | 36 | 818 | £580bn (frameworks) |
+| Infrastructure and Projects Authority | 1 | 5 | £2m |
+| National Infrastructure Commission | 2 | 7 | £0.5m |
+| British Army | 2 | 4 | £4m |
+| Royal Air Force | 2 | 1 | <£1m |
+
+- Department-family orphan rates (parent + descendants):
+
+| Dept | After §16 | After §17 |
+|---|---:|---:|
+| Foreign Office | 11% | 0% |
+| Cabinet Office | 26% | 16% |
+| Treasury | 30% | 0% |
+| Health | 12% | 12% |
+| Justice | <1% | 10% (note 1) |
+| Defence | 7% | 2% |
+
+Note 1: MoJ rose to 10% because the new multi-part rule re-routed some
+"Department of Justice (NI)" rows that were previously linked to MoJ as a
+mis-match (Department of Justice for Northern Ireland is a separate
+canonical with its own parent). The "rise" is a correction.
+
+### Lessons (additional)
+
+- **Glossary is the source of truth, not the database tables.** The morning
+  pass (§16) added 371 aliases directly into the database. The §17 pass
+  re-ran `load-canonical-buyers.py` (which wipes and reloads from glossary)
+  and lost those 371 morning-only aliases. New rules in the backfill
+  recovered most of them, but the lesson is: durable changes belong in the
+  glossary file (`~/.pwin/platform/buyer-canonical-glossary.json`), not
+  just in the database.
+- **Hierarchy is more useful than alias coverage past a point.** The §16
+  pass tried to teach more aliases. The §17 pass teaches the matcher to
+  reason about sub-org → parent relationships. The latter scales — every
+  new sub-org you add automatically picks up multi-part raw rows that name
+  it alongside the parent — without any new alias rules.
+- **One commit per major data layer change.** The two passes (§16 + §17)
+  produced different snapshots of `buyers.canonical_id` because of how
+  `load-canonical-buyers.py` wipes and rebuilds. Future passes should
+  always be: edit glossary → reload → run backfill → measure → commit, in
+  that order, with no intermediate database-only edits.
+
+### Lessons
+
+- **Mirror the supplier pattern when adding new resolution paths.** The
+  `_resolveBuyerCanonical` + `v_canonical_supplier_wins` pattern was already
+  there — `buyerProfile()` just hadn't been wired through it. Half-finished
+  work on a foundational layer compounds quickly when downstream skills
+  rely on the data.
+- **Exact-match-only after tidying is the right default.** The dry-run
+  flagged 315 ambiguous matches that, if fuzzy-resolved, would have
+  silently corrupted the alias table. Examples: SPA (Scottish Procurement
+  Alliance vs Service Prosecuting Authority), DCMS (the pre-2023 vs the
+  current Department for Culture, Media...). Conservative wins.
+- **The improvement isn't where you'd expect it on a raw count.** Of 55,342
+  raw buyer rows scanned, only 126 ended up newly back-filled. But those
+  126 sit on the heaviest-traffic departments (FCDO, Cabinet Office, HMT,
+  DHSC) which were under-aggregated by 50%+ before — so the dossier-quality
+  impact is much larger than the raw-row count implies.
+
+## §18 — Alias gap closures, UK7 capture fix, and the publish-at-parent finding (2026-04-28)
+
+Three things landed this day, building on §17.
+
+### Alias gap closures
+
+Five small alias gaps closed for sub-organisations that publish on Find a Tender in their own name but had spelling variants we weren't catching (`patch_alias_gaps.py`):
+
+- "The Legal Aid Agency" (8 raw rows) → `legal-aid-agency`
+- "D S T L" spaced variants (2 rows) → `defence-science-and-technology-laboratory`
+- "DIO : DIO" colon-doubled variant (1 row) → `defence-infrastructure-organisation`
+- "DE&S Deca" + "DGM PT, DE&S" (6 rows) → `defence-equipment-and-support`
+- Five "Department of Justice — Youth Justice Agency" variants (5 rows) → `youth-justice-agency-of-northern-ireland`
+
+Total: 14 new aliases registered, persisted in the glossary file so they survive future reloads.
+
+### Procurement Act 2023 UK7 notice capture
+
+The ingest parser was reading the OCDS `noticeType` field from `tender.documents` and `awards[].documents` only. The Procurement Act 2023 introduced UK7 (contract details, mandatory within 30 days of contract signature) which attaches its document to `contracts[].documents`. The parser was silently dropping the UK7 marker — verified against a real OCDS release for notice 038645-2026 (Bank of England UPS maintenance, £41k).
+
+Fix extends the document scan to include `contracts[].documents`, `contracts[].implementation.documents`, and `contracts[].amendments[].documents`. For compiled releases that carry UK4 + UK6 + UK7 together, candidate HTML documents are sorted by `datePublished` descending so the most recent notice type wins. The same fix recovers UK9 (performance), UK10 (change), and UK11 (contract end) notices — none of which were being captured before.
+
+Effect from the next nightly ingest: every contract above threshold will carry a UK7 marker with confirmed contract period (start/end), supplier, value, and procurement method. Through-life signals (KPI performance, change events, contract terminations) flow correctly. No retroactive backfill applied — that's a separate workstream.
+
+### The publish-at-parent finding
+
+The structural finding that frames future work: **about 5% of contract awards (22,057 of 447,201) are dark at sub-organisation level because four ministerial departments publish under the parent name with no breakout for executive agencies.**
+
+| Department | Family awards | Parent's share | Buried sub-organisations |
+|---|---:|---:|---|
+| Ministry of Justice | 4,413 | 95% | HMPPS, HMCTS, Office of the Public Guardian |
+| Home Office | 2,258 | 91% | UKVI, Border Force, HM Passport Office, Immigration Enforcement |
+| Department for Education | 4,528 | 88% | ESFA, Ofsted, Ofqual, Office for Students |
+| Ministry of Defence | 9,854 | 79% | Defence Digital, Strategic Command, the service commands. DE&S, Dstl, DIO, SDA correctly attributed. |
+
+The Procurement Act 2023 does not fix this — the buyer field is still freeform and inherits departmental publishing practice. Closing the gap requires an overlay layer (£25k spend transparency, NISTA major projects, NAO/PAC reports, framework call-offs, departmental annual reports), not a contract-feed change.
+
+The remaining 93% of the contract universe names sub-organisations correctly. Local authorities, NHS bodies, devolved administrations, universities, police forces, and most ministerial departments (DHSC, DfT, Cabinet Office, DSIT, HMT, Defra, etc.) all publish at sub-organisation level.
+
+### Lessons
+
+- **The canonical layer is sound for 93% of the universe.** Today's alias gaps and the UK7 fix close most of what was fixable in the data layer. The 5% residual is a publisher-data limitation, not a canonical-layer flaw, and requires an overlay strategy rather than further canonicalisation work.
+- **UK7 ≠ sub-organisation breakout.** The Procurement Act 2023 makes contract data richer per notice but does not change which departments publish at parent level. Future planning should treat the overlay layer as a permanent component, not a temporary scaffold.
+- **The OCDS structural-where for notice documents is not consistent across notice types.** UK4/UK5/UK6 attach to tender.documents or awards[].documents; UK7 and UK11 attach to contracts[].documents; UK9 attaches to contracts[].implementation.documents; UK10 attaches to contracts[].amendments[].documents. Any future parser work should scan all five locations and prefer the latest by datePublished.
+
+### See also
+
+- `wiki/platform/sub-org-data-coverage.md` — executive summary with hard numbers and the overlay-strategy plan
+- `docs/research/2026-04-28-sub-org-intel-sources.md` — full catalogue of overlay-layer source candidates
+- `docs/research/2026-04-28-sub-org-contract-registers.md` — contract-register-specific deep dive plus Procurement Act 2023 transparency regime analysis
+- `wiki/actions/pwin-sub-org-overlay-layer.md` — the new action note for the next workstream
+
+## §19 — £25k spend transparency ingest: Wave 1 pipeline built (2026-04-29)
+
+This section documents the first concrete step in closing the publish-at-parent gap identified in §18. The approach is an overlay layer that enriches the contract database with payment-level data from the UK government's monthly transparency publication.
+
+### What was built
+
+Eight implementation tasks delivered in one session. Everything is Python stdlib only — no new external dependencies.
+
+**New data tables** (`spend_files_state`, `spend_transactions`) in the existing `bid_intel.db`:
+
+- `spend_files_state`: one row per spend file in the catalogue. Tracks download status (`pending → downloaded → loaded → error`), file checksum, row count, and the local path on disk.
+- `spend_transactions`: one row per payment line. Stores raw text (`raw_entity`, `raw_supplier_name`) plus canonicalised IDs (`canonical_sub_org_id`, `canonical_supplier_id`). Amount, date, expense type, and expense area captured for filtering.
+
+**New scripts (all in `agent/`):**
+
+| Script | What it does |
+|---|---|
+| `spend-catalogue.json` | Static list of 48 verified gov.uk download URLs for 2025 data (Home Office 12, MoJ HQ 6, HMCTS 6, LAA 2, DfE 10, MoD 12). Not a scraper — a curated config file updated once a year. |
+| `fetch_spend.py` | Downloads pending files from the catalogue, 1s polite delay between requests, writes to `data/spend/<dept>/`, marks status in `spend_files_state`. |
+| `parse_spend.py` | Four format handlers — one per department family. Yields normalised rows for each payment line. |
+| `canonicalise_spend.py` | Matches `raw_entity` → `canonical_sub_org_id` via `canonical_buyer_aliases`; `raw_supplier_name` → `canonical_supplier_id` via `canonical_suppliers`. Normaliser is a copy of `load-canonical-buyers.py::norm` (same rules, same result). Unmatched rows stay NULL — never rejected. |
+| `ingest_spend.py` | Orchestrator: calls fetch → parse → canonicalise in order. Idempotent. |
+| `generate_spend_health.py` | Produces a Markdown health section (file counts, row counts, canonicalisation %, any download errors) for the nightly digest. |
+
+**MCP surface change** (`pwin-platform/src/competitive-intel.js`): `_buildConsolidatedProfile` now calls `_buildSpendSignal(db, canonicalId)` and adds a `spendSignal` property to every buyer profile returned. Null when no data yet or when the table doesn't exist (graceful degradation).
+
+**Nightly pipeline**: `scheduler.py` gains a non-fatal spend step after the daily pipeline scan. `save_digest` in `run-pipeline-scan.py` appends the health section to the nightly digest markdown.
+
+### MoD publishes ODS, not CSV
+
+Every other department publishes a plain comma-separated file. MoD publishes an OpenDocument Spreadsheet (`.ods`). The parser handles this using Python's built-in `zipfile` + `xml.etree.ElementTree` — the ODS format is a ZIP archive containing `content.xml`. No external packages added.
+
+Rule: always inspect the first URL in any new department's catalogue entry before writing the parser. Assume nothing about file format.
+
+### The entity_override pattern for MoJ
+
+MoJ publishes three separate files per month — one for MoJ HQ, one for HMCTS, one for LAA (and historically HMPPS). Each file covers one sub-organisation but the file itself contains no entity column (it's all one entity's payments). The catalogue carries an `entity_override` field per entry (`"ministry-of-justice"`, `"hm-courts-and-tribunals-service"`, `"legal-aid-agency"`). `ingest_spend.py` reads this from the catalogue and writes it as `raw_entity` for all rows from that file, bypassing the file-level parser which returns `""`.
+
+This pattern is general: any department that uses per-sub-org separate files (rather than a single multi-sub-org file with an entity column) uses `entity_override`. The schema is department-agnostic — adding a new family is a catalogue edit, not a code change.
+
+### Permissive ingest, strict render
+
+All rows are stored regardless of whether the entity or supplier matched a canonical ID. The `canonical_sub_org_id` and `canonical_supplier_id` columns are nullable. Unmatched rows are not visible in client output — `_buildSpendSignal` only surfaces totals and top suppliers, which are computed from all rows.
+
+The rule: never reject a row because a name didn't match. The canonical IDs are enrichment, not a gate. Rejecting unmatched rows would silently shrink the spend picture and bias it toward suppliers already in the canonical layer.
+
+### What to run next
+
+```bash
+cd pwin-competitive-intel
+python agent/ingest_spend.py   # downloads 48 files, parses, canonicalises
+```
+
+Expect approximately 3–5 minutes for the downloads (1s delay between requests), then a few seconds for parsing and canonicalisation.
+
+After the first run, check:
+
+```bash
+python agent/generate_spend_health.py
+```
+
+### What this does not yet cover
+
+- **HMPPS 2025 data** — not yet found and confirmed. Try `https://www.gov.uk/government/publications/hm-prison-and-probation-service-spending-over-25000-2025` and add to the catalogue if it exists.
+- **Prior years (2020–2024)** — the catalogue seeds 2025 only. Add earlier entries to `spend-catalogue.json` following the same pattern; the pipeline will pick them up on the next run.
+- **NISTA major projects portfolio** — Wave 1 Item 2. The only open-data source that explicitly tags Defence Digital programmes as Defence Digital. Planned but not yet built.
+- **Organograms** — Wave 1 Item 3. For stakeholder mapping. Planned but not yet built.
+
+### Coverage numbers as of 2026-04-29
+
+Canonical buyer layer: 2,247 entities, 75.73% of all notices mapped (385,909 of 509,553). The spend ingest adds a second intelligence dimension — payment-level supplier data — that the contract-notice layer alone cannot provide for the four publish-at-parent departments.
+
+---
+
+## §20 — Canonical buyer expansion programme: 55.6% → 85.1% (2026-04-29)
+
+This was the first full-programme canonical-layer expansion since the initial Phase 0 + Phase 1 build. It executed the plan at `docs/superpowers/plans/2026-04-28-canonical-buyer-expansion.md` end-to-end, lifting buyer-side coverage from 55.59% to 85.09% of all contract notices in two sessions.
+
+### Headline numbers
+
+| Metric | Baseline (2026-04-28) | Final (2026-04-29) | Delta |
+|---|---:|---:|---:|
+| Canonical entities | 1,939 | 4,155 | +2,216 (+114%) |
+| Canonical aliases | 3,942 | 8,804 | +4,862 (+123%) |
+| Notices mapped | 282,997 (55.59%) | 433,565 (85.09%) | +150,568 (+29.5pp) |
+| Notices unmapped | 226,051 | 75,988 | −150,063 |
+
+### The eight-stage programme
+
+Each stage was a self-contained iteration of the §5 curation workflow. Tasks were sequenced so each one's output unblocked the next, and the alias backfill ran after every stage so the database stayed in sync with the glossary.
+
+| Task | Category | Entities added | Coverage gain | Approach |
+|---|---|---:|---:|---|
+| 1 | Strengthen the alias normaliser | — | +8.10pp | Code change to `norm()` and `_norm()` (Ltd↔Limited, &↔and, THE-prefix, portal/eTendering suffix stripping). One pass through the existing canonical layer reclaimed tens of thousands of orphaned notices without adding any entities. |
+| 2 | Police forces, PCCs, joint procurement bodies | ~90 | +1.52pp | Hand-curated from the Home Office published list of forces. |
+| 3 | Universities + HE buying consortia | ~170 | +5.15pp | Hand-curated from Office for Students Register + SFC/HEFCW/DfE NI lists, plus six HE buying consortia (SUPC, TUCO, HEPCW, APUC, NEUPC, LUPC). |
+| 4 | Fire & rescue authorities | 50 | +0.65pp | Hand-curated from NFCC member list — 44 England + 1 Scotland (SFRS) + 3 Wales + 1 NI + NFCC. Note: the plan originally said England 45; the authoritative ONS dataset confirms 44 (Hampshire and IoW merged in 2021). |
+| 5 | Whitehall top-up | ~35 | +4.72pp | Audit of top-100 unmapped buyers identified ~35 central-government and arm's-length bodies missing from the GOV.UK API or under different aliases. Half were genuinely new entities; half were alias supplements to existing GOV.UK entries. Includes the discovery that `--skip-fetch` was stripping only entries with exactly `source = "hand_curated"` — fixed to strip everything starting with `hand_curated`. |
+| 6 | Multi-academy trusts | 540 | +0.37pp | Originally planned to fetch DfE GIAS group CSV but the published URL pattern returned 404. Workaround: combined the DfE Open Academies spreadsheet (112 trusts) with the DfE Financial Benchmarking Insight Tool suggest API queried for every MAT-like unmapped buyer name (469 trusts). 540 unique. |
+| 7 | Housing associations | 1,347 | +2.53pp | Fetched the Regulator of Social Housing register from GOV.UK as Excel, parsed in stdlib using `zipfile` + `xml.etree.ElementTree` (no openpyxl dependency). Filtered to private registered providers only — local-authority RPs are already canonicalised. |
+| 8 | Alias supplements pass + final docs | 14 + 27 alias merges | +6.46pp | A targeted cleanup file (`alias-supplements.json`) covering top-40 remaining unmapped: council name variants ("Bristol City Council" → `la-bristol-city-of`), sub-department suffixes ("London Borough of Haringey - Passenger Transport"), 9 missing NHS trusts including 2 Welsh health boards, plus genuinely new bodies (UKAEA, Scottish Water, Translink NI, NI Water, Merseytravel, Local Government Association, Financial Ombudsman Service, NMC, VOA, WRAP, Cumbria County Council as historical, etc.). |
+
+### What worked (and should be reused next time)
+
+**The expansion plan structure itself.** Each task was self-contained: one knowledge JSON, one merge call into the seed script, one regenerate/reload/backfill cycle, one verify query, one commit. This made it safe to checkpoint and resume across sessions and easy to delegate stages to subagents.
+
+**Generating alias seeds from the database before hand-curating.** Each task started with a query that returned the unmapped buyer names matching the category's keyword pattern. That output was the input for the alias arrays — every variant the publishers actually use, captured first time. Without this step the hand-curated aliases miss the strings the data actually contains.
+
+**The `Alias supplement` pattern as a first-class construct.** Most of Task 8's wins were not new entities — they were alias-supplement entries with `type: "Alias supplement"` and a `canonical_id` matching an existing entity. `merge_hand_curated()` already supported this (see lines 219–226 of `seed-canonical-buyers.py`): if the canonical_id exists, the supplement's aliases are merged into the existing entity. The pattern lets a single JSON file fix dozens of name-variant gaps without bloating the entity count or duplicating canonical metadata.
+
+**The 90% acceptance bar was aspirational.** The plan estimated four tasks would add ~28,000 notices and clear 90%. Actual: ~50,000 notices but the category-by-category gains were uneven. Tasks 5 and 8 (Whitehall top-up and alias supplements) over-delivered; Tasks 4, 6, 7 (fire, MAT, housing) delivered less than estimated because the publishers in those categories tend to publish at parent or under abbreviations the seed list didn't catch. For future programmes, **estimate per-task gain by querying the category's unmapped notice count first**, not by entity count — entity count and notice count diverge sharply for the long tail.
+
+### Lessons learned
+
+**The fundamental insight: the practical ceiling is ~86–87%, not 100% or 90%.** The remaining ~15% of unmapped notices break into three structural buckets:
+
+1. **eProcurement platform intermediaries** publishing under their own name (BIP Solutions, capitalEsourcing, ATAMIS, Mercell UK, In-Tend, Partners Procurement Service, WESTWORKS, Procurement Assist, PROSPER). These are tender-portal companies, not public buyers. Canonicalising them would mis-attribute the underlying buyer's procurement to a software vendor. Total: ~3,500 notices.
+2. **Private-sector contractors** publishing notices under their own legal-entity name (Leidos Supply, Corserv Limited, Amey Defence Services, Kier Transportation, Advance Northumberland Limited, etc.). These are companies bidding for or sub-letting public contracts — they're suppliers, not buyers. Total: a few thousand notices.
+3. **One-off and rare buyers** — small charities, joint-venture special-purpose vehicles, foreign organisations placing UK-side procurement, defunct bodies. Each appears in 1–10 notices. Total: tens of thousands of notices but no concentration.
+
+**Rule:** for future expansions, compute a "structural ceiling" estimate before setting an acceptance bar. The structural ceiling is `1 − (eProcurement-platform notices + private-contractor notices + one-off notices) / total notices`. For UK FTS data the ceiling sits around 86–88%. Anything more requires a fundamentally different approach (e.g. resolving the underlying buyer behind each platform notice via the title or contract description).
+
+**Strengthening the normaliser was the highest-leverage single task.** Task 1's +8.1pp gain on a single code change beat any of the data-curation tasks on a per-effort basis. Adding rules for `Ltd↔Limited`, `&↔and`, `THE` prefix, and portal/eTendering suffix stripping reclaimed notices that had matching canonical entities all along but were missed by exact-string matching. **Always strengthen the normaliser before adding new categories** — every new alias added afterwards benefits from the cleaner normalisation.
+
+**Sub-department suffix patterns are an under-appreciated source of orphans.** "Suffolk County Council Passenger Transport", "London Borough of Haringey - Parks and Leisure", "Royal Borough of Greenwich - managed by GS Plus Ltd" — all of these are the same canonical entity publishing under a sub-team or operating-partner annotation. The current normaliser strips parenthesised suffixes but not " - " or " Passenger Transport"–style trailing decorations. A future enhancement could add a rule that strips trailing " - <text>" and " <DepartmentSuffixWord>" patterns when the leading prefix matches a canonical alias. For now, these are handled with explicit alias-supplement entries.
+
+**Historical entities matter for backfill.** Cumbria County Council was abolished in April 2023 (replaced by Cumberland and Westmorland and Furness). It still has 3,000+ pre-2023 notices in the database. The right pattern is to add it as a canonical entity with `status: "historical"` and a `_note` field explaining the timeline. Don't try to redirect historical notices to the successor entities — that would lose the procurement history of the abolished body.
+
+**Glossary fields are not enforced beyond the schema.** When adding new entities, the seed script accepts arbitrary fields (`subtype`, `_note`, anything new). This is liberating but means the layer's quality depends on author discipline. Always include `canonical_id`, `canonical_name`, `type`, `aliases`, `status`, and `source` at minimum. Use `subtype` for filterable categorisation. Use `_note` for free-text explanations a future operator will need.
+
+**Spec compliance review found bugs the implementer's self-report missed.** During Task 4, the implementer reported 50 entities and 174 aliases. Spec review caught the actual file contents: 50 entities, 191 aliases, 18 duplicate or trailing-whitespace aliases. Five of those duplicates collapsed silently at load time (so functionally fine) but cleaner data is easier to maintain. Always verify counts against the file, not the report.
+
+**Re-running `--skip-fetch` is the right way to iterate.** The seed script's `--skip-fetch` flag loads the cached GOV.UK fetch (which takes 2+ minutes), strips hand-curated entries, and re-merges. This makes the iteration loop fast (~10 seconds end-to-end). Every task in the programme used it. Without it, each iteration would have hit the GOV.UK API 1,251 times.
+
+**The `--skip-fetch` strip filter had a bug for sources prefixed with `hand_curated_`.** Original code stripped only entries where `source == "hand_curated"` (exact match). New entities had sources like `hand_curated_police`, `hand_curated_universities`, `hand_curated_fire` — these were not stripped, which meant on every re-run the same entities were duplicated as ghosts. Fixed in Task 5 to strip anything starting with `hand_curated`. **Anyone adding a new hand-curated category must use a `hand_curated_<category>` source value** for this to work.
+
+### The operational sequence to repeat next time
+
+This is the rhythm that worked for every task in the programme. Memorise it.
+
+```
+1. Audit:    Generate alias seed list from DB. Filter unmapped, group by name, sort by notice count.
+2. Decide:   For each top-N name, decide: alias supplement to existing entity, or new entity?
+             Use the existing-glossary lookup to confirm before creating new entities.
+3. Curate:   Hand-craft the JSON. Always include all observed name variants from the seed list.
+4. Wire:     Add the constant + merge call to seed-canonical-buyers.py before write_output.
+5. Generate: python scripts/seed-canonical-buyers.py --skip-fetch (from pwin-platform/)
+6. Reload:   python agent/load-canonical-buyers.py (from pwin-competitive-intel/)
+7. Backfill: python agent/backfill-buyer-aliases.py (from pwin-competitive-intel/)
+8. Verify:   Coverage delta, plus zero-match audit per new entity.
+9. Commit:   feat(intel): add <category> to canonical layer + coverage delta in message
+```
+
+**Steps 5–8 should run together in one shell loop** because they always run together and any individual step's output without the others is misleading. Treat them as a single atomic operation in your mental model.
+
+### Anti-patterns observed during this programme
+
+- **Don't try to canonicalise eProcurement platforms.** BIP Solutions / capitalEsourcing / ATAMIS / Mercell UK are not buyers — they're tender-portal companies that publish on behalf of buyers. Resolving them to "platform X" would mis-attribute every notice to the platform. They should remain unmapped, or eventually be flagged with a separate `is_intermediary: true` field if the data layer ever needs to distinguish them.
+- **Don't try to canonicalise private contractors publishing as buyers.** Leidos, Corserv, Amey, Kier — these are suppliers/contractors that occasionally publish a procurement notice (typically for sub-tier supply chain). They should be in the canonical-supplier layer, not the canonical-buyer layer. If the data eventually needs to support both directions of resolution, add the contractor's company entity to `canonical_suppliers`, not `canonical_buyers`.
+- **Don't add an entity without confirming it doesn't already exist under a different canonical ID.** Task 5 caught two collisions (`hs2-limited` colliding with `high-speed-two-limited`, `sellafield` colliding with `sellafield-ltd`) that would have polluted the layer. The pre-flight check is one Python snippet; always run it.
+- **Don't trust the implementer's row count or entity count without verifying the file.** Read the file, count entities yourself, count aliases yourself. Reports are written from memory at the end of a session and accumulate small inaccuracies.
+
+### Files added and modified across the programme
+
+**New knowledge files (all in `pwin-platform/knowledge/`):**
+
+- `police-forces.json` — 90 entities (43 territorial forces + Met + COL + 4 specialist + Police Scotland + PSNI + 41 PCCs + ~8 joint procurement bodies)
+- `universities.json` — ~170 entities (UK degree-awarding bodies + 6 HE buying consortia)
+- `fire-and-rescue.json` — 50 entities (45 territorial including IoW historical + Scotland + 3 Wales + NI + NFCC)
+- `whitehall-topup.json` — ~35 entities (genuinely new bodies + alias supplements to existing GOV.UK entries)
+- `multi-academy-trusts.json` — 540 entities (auto-generated)
+- `housing-associations.json` — 1,347 entities (auto-generated)
+- `alias-supplements.json` — ~40 entries mostly alias supplements + 14 new entities
+
+**New scripts (all in `pwin-platform/scripts/`):**
+
+- `seed-mat-from-gias.py` — DfE Open Academies + FBIT API fetcher
+- `seed-housing-from-rsh.py` — Regulator of Social Housing register fetcher (handles xlsx via stdlib zipfile)
+
+**Modified scripts:**
+
+- `pwin-platform/scripts/seed-canonical-buyers.py` — six new constants + six new merge calls + `--skip-fetch` strip-filter fix
+- `pwin-competitive-intel/agent/load-canonical-buyers.py` — strengthened `norm()`
+- `pwin-competitive-intel/agent/backfill-buyer-aliases.py` — strengthened `_norm()` to mirror
+
+**Tests:**
+
+- `pwin-competitive-intel/agent/test_normaliser.py` — pins the load↔backfill normaliser parity. Run after any change to either function.
+
 ## Change log
 
 | Version | Date | Summary |
@@ -518,4 +956,10 @@ This flag only catches unambiguous data errors. It does **not** solve the broade
 | 1.1 | 2026-04-12 | Added §13: NHS ODS lessons learned — England-only gap, naming conventions, deferred hierarchy. |
 | 1.2 | 2026-04-12 | Added §14: Next steps for the residual 29.7%. Token matching vs Splink analysis. Five-source coverage at 70.3%. |
 | 1.3 | 2026-04-14 | Added §15: Supplier entity resolution Splink v1 build. 161k → 82,637 canonical (48.7% compression). |
+| 1.4 | 2026-04-28 | Added §16: Buyer alias backfill — `buyerProfile()` rewritten, 371 aliases registered, 126 raw rows back-filled. FCDO/DHSC/Justice now under target orphan rate; Cabinet Office and Treasury residual is sub-org work (deferred). |
 | 1.4 | 2026-04-14 | Added §16: Value-outlier detection. `awards.value_quality` flag at £10bn threshold. 78 awards flagged. |
+| 1.5 | 2026-04-28 | Added §17: Sub-organisation pass. 9 new canonicals (Defence Digital, UK Strategic Command, IPA, NIC, etc.), multi-part candidate splitting, hierarchy-aware ambiguity resolution. 667 new aliases, 1,427 rows back-filled. Sub-org dossiers operational. |
+| 1.6 | 2026-04-28 | Added §18: Five additional alias gaps closed (LAA, Dstl spaced, DIO doubled, DE&S Deca, NI Youth Justice). Procurement Act 2023 UK7 / UK9 / UK10 / UK11 notice capture fixed in `agent/ingest.py` — parser was reading `noticeType` from the wrong OCDS location. Publish-at-parent finding documented: 5% of contract awards (22k of 447k) dark at sub-organisation level across MoJ, Home Office, DfE, MoD; UK7 doesn't fix this; overlay strategy required. |
+| 1.7 | 2026-04-29 | Added §19: £25k spend transparency ingest Wave 1 — 8 implementation tasks, spend_transactions/spend_files_state schema, 48 verified URLs, four department format handlers, spend signal on buyer profiles. |
+| 1.8 | 2026-04-29 | Added §20: Canonical buyer expansion programme — 55.6% → 85.1% notice coverage, 1,939 → 4,155 entities, eight-stage plan. Lessons: normaliser-strengthening is highest-leverage, 86–87% is the structural ceiling (eProcurement platforms + private contractors + one-off buyers), `Alias supplement` pattern formalised, operational sequence locked. |
+| 1.7 | 2026-04-29 | Added §19: £25k spend transparency ingest Wave 1 pipeline (8 tasks). 48 verified URLs in catalogue. ODS reader for MoD. entity_override pattern for MoJ streams. spendSignal added to buyer profile. Nightly digest integration. 23 tests. |

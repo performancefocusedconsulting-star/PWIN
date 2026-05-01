@@ -1,6 +1,23 @@
+# ============================================================================
+# DEPRECATED — superseded 2026-04-27
+# ----------------------------------------------------------------------------
+# This skill is no longer the live version. The master copy now lives at:
+#   pwin-platform/skills/agent2-market-competitive/master/
+#     incumbency-advantage-displacement-strategy/SKILL.md
+#
+# Reason: the per-minute throughput cap on the pay-per-use API could not
+# handle the token volume this skill produces. The operational runtime
+# moved to the Claude.ai subscription, where the master SKILL.md is run.
+# See decisions/intelligence-skills-claude-ai-canonical.md in the wiki.
+#
+# This file is retained for reference and possible future automation if the
+# throughput problem is solved (tier upgrade or batch-processing migration).
+# Do not edit it as a route to changing live behaviour.
+# ============================================================================
+
 id: incumbent-assessment
 agent: 2
-name: Incumbent Assessment
+name: Incumbent Assessment (DEPRECATED)
 description: Structured assessment of incumbent supplier covering SLA performance, contract stickiness, transformation opportunities, displacement narrative, and competitive positioning against the current provider
 phase: 5
 order: 3

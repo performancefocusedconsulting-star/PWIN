@@ -1,0 +1,480 @@
+{
+  "hmt": {
+    "encoding_used": "utf-8-sig",
+    "total_rows": 165,
+    "named_staff": 44,
+    "redacted_or_blank": 121,
+    "by_grade": {
+      "Unknown": 44
+    },
+    "columns_found": [
+      "Post Unique Reference",
+      "Name",
+      "Grade (or equivalent)",
+      "Job Title",
+      "Job/Team Function",
+      "Parent Department",
+      "Organisation",
+      "Unit",
+      "Contact Phone",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "FTE",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Professional/Occupational Group",
+      "Office Region",
+      "Notes",
+      "Valid?"
+    ],
+    "missing_standard_columns": [
+      "Grade",
+      "Contact Email",
+      "Reports To Senior Post",
+      "Salary Cost of Reports",
+      "Actual Pay Floor",
+      "Actual Pay Ceiling"
+    ],
+    "extra_columns": [
+      "Grade (or equivalent)",
+      "Job/Team Function",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Office Region"
+    ],
+    "field_completeness_pct": {
+      "Post Unique Reference": 100.0,
+      "Name": 100.0,
+      "Grade": null,
+      "Job Title": 100.0,
+      "Parent Department": 100.0,
+      "Organisation": 100.0,
+      "Unit": 100.0,
+      "Contact Phone": 100.0,
+      "Contact Email": null,
+      "Reports To Senior Post": null,
+      "Salary Cost of Reports": null,
+      "FTE": 100.0,
+      "Actual Pay Floor": null,
+      "Actual Pay Ceiling": null,
+      "Professional/Occupational Group": 100.0,
+      "Notes": 0.0,
+      "Valid?": 100.0
+    },
+    "sample_5": [
+      {
+        "name": "Vickerstaff, Matthew",
+        "grade": "",
+        "job_title": "Director of Finance and Deputy CEO Infrastructure Projects Authority",
+        "unit": "National Infrastructure and Service Transformation Authority",
+        "organisation": "HM Treasury",
+        "reports_to": ""
+      },
+      {
+        "name": "Gallagher, Daniel",
+        "grade": "",
+        "job_title": "Director - Economics",
+        "unit": "Economics",
+        "organisation": "HM Treasury",
+        "reports_to": ""
+      },
+      {
+        "name": "Coady, Rebecca",
+        "grade": "",
+        "job_title": "Director - Corporate Centre",
+        "unit": "Corporate Centre",
+        "organisation": "HM Treasury",
+        "reports_to": ""
+      },
+      {
+        "name": "Russell, Elizabeth",
+        "grade": "",
+        "job_title": "Second Permanent Secretary",
+        "unit": "Ministerial & Communications",
+        "organisation": "HM Treasury",
+        "reports_to": ""
+      },
+      {
+        "name": "Glover, Jessica",
+        "grade": "",
+        "job_title": "Director General and Chief Economic Adviser",
+        "unit": "Ministerial & Communications",
+        "organisation": "HM Treasury",
+        "reports_to": ""
+      }
+    ],
+    "parse_notes": [
+      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2025-12-31",
+      "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
+    ],
+    "name": "HM Treasury",
+    "status": "parsed",
+    "source_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/organogram-hm-treasury/resources/2026-01-15T16-07-06Z-2025-12-31-organogram-senior.csv",
+    "resource_last_modified": null
+  },
+  "mod": {
+    "encoding_used": "utf-8-sig",
+    "total_rows": 213,
+    "named_staff": 43,
+    "redacted_or_blank": 170,
+    "by_grade": {
+      "Unknown": 43
+    },
+    "columns_found": [
+      "Post Unique Reference",
+      "Name",
+      "Grade (or equivalent)",
+      "Job Title",
+      "Job/Team Function",
+      "Parent Department",
+      "Organisation",
+      "Unit",
+      "Contact Phone",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "FTE",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Professional/Occupational Group",
+      "Office Region",
+      "Notes",
+      "Valid?"
+    ],
+    "missing_standard_columns": [
+      "Grade",
+      "Contact Email",
+      "Reports To Senior Post",
+      "Salary Cost of Reports",
+      "Actual Pay Floor",
+      "Actual Pay Ceiling"
+    ],
+    "extra_columns": [
+      "Grade (or equivalent)",
+      "Job/Team Function",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Office Region"
+    ],
+    "field_completeness_pct": {
+      "Post Unique Reference": 100.0,
+      "Name": 100.0,
+      "Grade": null,
+      "Job Title": 100.0,
+      "Parent Department": 100.0,
+      "Organisation": 100.0,
+      "Unit": 100.0,
+      "Contact Phone": 100.0,
+      "Contact Email": null,
+      "Reports To Senior Post": null,
+      "Salary Cost of Reports": null,
+      "FTE": 100.0,
+      "Actual Pay Floor": null,
+      "Actual Pay Ceiling": null,
+      "Professional/Occupational Group": 100.0,
+      "Notes": 100.0,
+      "Valid?": 100.0
+    },
+    "sample_5": [
+      {
+        "name": "Rouse, Deana (Deana), Miss",
+        "grade": "",
+        "job_title": "Director Resources HO&CF",
+        "unit": "LEVEL 2: COO",
+        "organisation": "Ministry of Defence",
+        "reports_to": ""
+      },
+      {
+        "name": "Cooke, Kerry, Ms",
+        "grade": "",
+        "job_title": "NAD-CSM-PFO Programme Director",
+        "unit": "LEVEL 2: COO",
+        "organisation": "Ministry of Defence",
+        "reports_to": ""
+      },
+      {
+        "name": "Mitchell, Austin (Austin), Mr",
+        "grade": "",
+        "job_title": "Secretary of State COS-2",
+        "unit": "LEVEL 2: DELIVERY AND STRATEGY",
+        "organisation": "Ministry of Defence",
+        "reports_to": ""
+      },
+      {
+        "name": "Berthon, Richard (Richard), Mr",
+        "grade": "",
+        "job_title": "FCAS Director",
+        "unit": "LEVEL 2: DCDS MILCAP",
+        "organisation": "Ministry of Defence",
+        "reports_to": ""
+      },
+      {
+        "name": "Cameron, Eliza (Eliza), Mrs",
+        "grade": "",
+        "job_title": "Strat Hub-Strategy-Dir",
+        "unit": "LEVEL 2: DELIVERY AND STRATEGY",
+        "organisation": "Ministry of Defence",
+        "reports_to": ""
+      }
+    ],
+    "parse_notes": [
+      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31",
+      "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
+    ],
+    "name": "Ministry of Defence",
+    "status": "parsed",
+    "source_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/organogram-head-office-and-corporate-services-mod/resources/2026-04-30T15-12-14Z-2026-03-31-organogram-senior.csv",
+    "resource_last_modified": null
+  },
+  "dfe": {
+    "encoding_used": "utf-8-sig",
+    "total_rows": 267,
+    "named_staff": 56,
+    "redacted_or_blank": 211,
+    "by_grade": {
+      "Unknown": 56
+    },
+    "columns_found": [
+      "Post Unique Reference",
+      "Name",
+      "Grade (or equivalent)",
+      "Job Title",
+      "Job/Team Function",
+      "Parent Department",
+      "Organisation",
+      "Unit",
+      "Contact Phone",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "FTE",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Professional/Occupational Group",
+      "Office Region",
+      "Notes",
+      "Valid?"
+    ],
+    "missing_standard_columns": [
+      "Grade",
+      "Contact Email",
+      "Reports To Senior Post",
+      "Salary Cost of Reports",
+      "Actual Pay Floor",
+      "Actual Pay Ceiling"
+    ],
+    "extra_columns": [
+      "Grade (or equivalent)",
+      "Job/Team Function",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Office Region"
+    ],
+    "field_completeness_pct": {
+      "Post Unique Reference": 100.0,
+      "Name": 100.0,
+      "Grade": null,
+      "Job Title": 100.0,
+      "Parent Department": 100.0,
+      "Organisation": 100.0,
+      "Unit": 100.0,
+      "Contact Phone": 100.0,
+      "Contact Email": null,
+      "Reports To Senior Post": null,
+      "Salary Cost of Reports": null,
+      "FTE": 100.0,
+      "Actual Pay Floor": null,
+      "Actual Pay Ceiling": null,
+      "Professional/Occupational Group": 100.0,
+      "Notes": 100.0,
+      "Valid?": 100.0
+    },
+    "sample_5": [
+      {
+        "name": "Isabelle Trowler",
+        "grade": "",
+        "job_title": "Director",
+        "unit": "Families Group",
+        "organisation": "Department for Education",
+        "reports_to": ""
+      },
+      {
+        "name": "Helen Waite",
+        "grade": "",
+        "job_title": "Director",
+        "unit": "CSC Strategy and Care System",
+        "organisation": "Department for Education",
+        "reports_to": ""
+      },
+      {
+        "name": "Kate Dixon",
+        "grade": "",
+        "job_title": "Director",
+        "unit": "Strategy and Safer Streets",
+        "organisation": "Department for Education",
+        "reports_to": ""
+      },
+      {
+        "name": "Kate Dethridge",
+        "grade": "",
+        "job_title": "Director",
+        "unit": "Regions Group: South East",
+        "organisation": "Department for Education",
+        "reports_to": ""
+      },
+      {
+        "name": "Sophie Taylor",
+        "grade": "",
+        "job_title": "Director",
+        "unit": "Educational Engagement, Access and Wellbeing (EEAW)",
+        "organisation": "Department for Education",
+        "reports_to": ""
+      }
+    ],
+    "parse_notes": [
+      "resource_last_modified not returned by data.gov.uk API; date inferred from resource URL: 2026-03-31",
+      "Column names in actual CSV differ from STANDARD_ORGANOGRAM_COLUMNS: 'Grade' is published as 'Grade (or equivalent)', 'Reports To Senior Post' as 'Reports to Senior Post', 'Contact Email' as 'Contact E-mail', and pay columns carry a '(£)' suffix. As a result, by_grade shows only 'Unknown' and Reports To Senior Post completeness is null — the data exists in the CSV but the parser addressed it under the wrong key. Task 5 scorer must use job_title-based detection for senior civil service grade identification."
+    ],
+    "name": "Department for Education",
+    "status": "parsed",
+    "source_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/organogram-department-for-education/resources/2026-04-30T06-55-58Z-2026-03-31-organogram-senior.csv",
+    "resource_last_modified": null
+  },
+  "nhse": {
+    "encoding_used": "utf-8-sig",
+    "total_rows": 258,
+    "named_staff": 258,
+    "redacted_or_blank": 0,
+    "by_grade": {
+      "Unknown": 258
+    },
+    "columns_found": [
+      "Post Unique Reference",
+      "Name",
+      "Grade (or equivalent)",
+      "Job Title",
+      "Job/Team Function",
+      "Parent Department",
+      "Organisation",
+      "Unit",
+      "Contact Phone",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "FTE",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      "",
+      "Professional/Occupational Group",
+      "Notes",
+      "Valid?"
+    ],
+    "missing_standard_columns": [
+      "Grade",
+      "Contact Email",
+      "Reports To Senior Post",
+      "Salary Cost of Reports",
+      "Actual Pay Floor",
+      "Actual Pay Ceiling"
+    ],
+    "extra_columns": [
+      "Grade (or equivalent)",
+      "Job/Team Function",
+      "Contact E-mail",
+      "Reports to Senior Post",
+      "Salary Cost of Reports (£)",
+      "Actual Pay Floor (£)",
+      "Actual Pay Ceiling (£)",
+      ""
+    ],
+    "field_completeness_pct": {
+      "Post Unique Reference": 100.0,
+      "Name": 100.0,
+      "Grade": null,
+      "Job Title": 100.0,
+      "Parent Department": 100.0,
+      "Organisation": 100.0,
+      "Unit": 100.0,
+      "Contact Phone": 100.0,
+      "Contact Email": null,
+      "Reports To Senior Post": null,
+      "Salary Cost of Reports": null,
+      "FTE": 100.0,
+      "Actual Pay Floor": null,
+      "Actual Pay Ceiling": null,
+      "Professional/Occupational Group": 100.0,
+      "Notes": 82.9,
+      "Valid?": 100.0
+    },
+    "sample_5": [
+      {
+        "name": "Cally Palmer",
+        "grade": "",
+        "job_title": "National Cancer Director",
+        "unit": "Medical",
+        "organisation": "NHS England",
+        "reports_to": ""
+      },
+      {
+        "name": "Kate Shields",
+        "grade": "",
+        "job_title": "Regional Director of Specialised Commissioning (South)",
+        "unit": "South Region",
+        "organisation": "NHS England",
+        "reports_to": ""
+      },
+      {
+        "name": "Dr Alistair Lipp",
+        "grade": "",
+        "job_title": "Medical Director (Midlands and East - East)",
+        "unit": "Midlands and East Region",
+        "organisation": "NHS England",
+        "reports_to": ""
+      },
+      {
+        "name": "Vacant",
+        "grade": "",
+        "job_title": "Programme Delivery Director",
+        "unit": "Nursing",
+        "organisation": "NHS England",
+        "reports_to": ""
+      },
+      {
+        "name": "Nicola Luffingham",
+        "grade": "",
+        "job_title": "Director of Operations and Delivery (South Central)",
+        "unit": "South Region",
+        "organisation": "NHS England",
+        "reports_to": ""
+      }
+    ],
+    "parse_notes": [
+      "Data from September 2016 — NHS England stopped publishing organograms in Cabinet Office CSV format. Not suitable for current stakeholder identification."
+    ],
+    "name": "NHS England",
+    "status": "parsed",
+    "source_url": "https://s3-eu-west-1.amazonaws.com/datagovuk-production-ckan-organogram/legacy/organogram/nhs-england/30/9/2016/300916_NHSEngland_Organogram_Final-senior.csv",
+    "resource_last_modified": null
+  },
+  "bcc": {
+    "name": "Birmingham City Council",
+    "status": "absent",
+    "absence_note": "No organogram dataset found on data.gov.uk. Local authorities have no organogram publishing requirement under the Cabinet Office transparency mandate (which covers central government departments and arm's-length bodies only). Birmingham City Council does not appear to publish a senior-staff organogram in the standard Cabinet Office CSV format."
+  }
+}

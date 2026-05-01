@@ -1,0 +1,833 @@
+{
+  "_comment": "UK fire and rescue authorities. Hand-curated 2026-04-29. Sources: NFCC member list, Fire and Rescue Services Act 2004 (England & Wales), Police and Fire Reform (Scotland) Act 2012, Fire and Rescue Services (Northern Ireland) Order 2006. Aliases from real FTS publisher name variants in pwin-competitive-intel/db/bid_intel.db.",
+  "version": "1.0",
+  "source": "hand_curated_fire",
+  "last_updated": "2026-04-29",
+  "entities": [
+    {
+      "canonical_id": "avon-fire-and-rescue-service",
+      "canonical_name": "Avon Fire & Rescue Service",
+      "abbreviation": "Avon FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Avon Fire & Rescue Service",
+        "Avon Fire and Rescue Service",
+        "Avon Fire Rescue Service",
+        "Avon Fire and  Rescue Service",
+        "Avon Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "bedfordshire-fire-and-rescue-service",
+      "canonical_name": "Bedfordshire Fire and Rescue Service",
+      "abbreviation": "Beds FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Bedfordshire Fire and Rescue Service",
+        "Bedfordshire Fire & Rescue Service",
+        "Bedfordshire Fire and Rescue",
+        "Bedfordshire Fire and Rescue Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "buckinghamshire-fire-and-rescue-service",
+      "canonical_name": "Buckinghamshire Fire & Rescue Service",
+      "abbreviation": "Bucks FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Buckinghamshire Fire & Rescue Service",
+        "Buckinghamshire & Milton Keynes Fire Authority",
+        "Buckinghamshire and Milton Keynes Fire Authority",
+        "Buckinghamshire & Milton Keynes Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "cambridgeshire-fire-and-rescue-service",
+      "canonical_name": "Cambridgeshire Fire and Rescue Service",
+      "abbreviation": "Cambs FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cambridgeshire Fire and Rescue Service",
+        "Cambridgeshire Fire & Rescue Service",
+        "Cambridgeshire Fire and Rescue Authority",
+        "Cambridgeshire and Peterborough Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "cheshire-fire-and-rescue-service",
+      "canonical_name": "Cheshire Fire and Rescue Service",
+      "abbreviation": "Cheshire FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cheshire Fire and Rescue Service",
+        "Cheshire Fire Authority",
+        "Cheshire Fire & Rescue"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "cleveland-fire-brigade",
+      "canonical_name": "Cleveland Fire Brigade",
+      "abbreviation": "CFB",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cleveland Fire Brigade",
+        "Cleveland Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "cumbria-fire-and-rescue-service",
+      "canonical_name": "Cumbria Fire and Rescue Service",
+      "abbreviation": "Cumbria FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cumbria Fire and Rescue Service",
+        "Cumbria Commissioner Fire and Rescue Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "derbyshire-fire-and-rescue-service",
+      "canonical_name": "Derbyshire Fire and Rescue Service",
+      "abbreviation": "Derbyshire FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Derbyshire Fire and Rescue Service",
+        "Derbyshire Fire and Rescue Authority",
+        "The Derbyshire Fire and Rescue Authority",
+        "Derbyshire Fire Authorities"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "devon-and-somerset-fire-and-rescue-service",
+      "canonical_name": "Devon and Somerset Fire and Rescue Service",
+      "abbreviation": "DSFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Devon and Somerset Fire and Rescue Service",
+        "Devon & Somerset Fire & Rescue Service",
+        "Devon and Somerset Fire and Rescue Authority",
+        "Devon & Somerset Fire & Rescue Authority",
+        "Devon & Somerset Fire and Rescue Authority",
+        "Devon & Somerset Fire & Rescue",
+        "Devon & Somerset Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "dorset-and-wiltshire-fire-and-rescue-service",
+      "canonical_name": "Dorset and Wiltshire Fire and Rescue Service",
+      "abbreviation": "DWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Dorset and Wiltshire Fire and Rescue Service",
+        "Dorset & Wiltshire Fire and Rescue Service",
+        "Dorset & Wiltshire Fire and Rescue Authority",
+        "Dorset and Wiltshire Fire and Rescue Authority",
+        "Dorset and Wiltshire Fire and Rescue Services",
+        "Dorset & Wiltshire Fire and Rescue",
+        "Wiltshire Fire And Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "durham-and-darlington-fire-and-rescue-service",
+      "canonical_name": "Durham and Darlington Fire and Rescue Service",
+      "abbreviation": "DDFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Durham and Darlington Fire and Rescue Service",
+        "County Durham and Darlington Fire and Rescue Service",
+        "County Durham and Darlington Fire and Rescue Authority",
+        "Co Durham and Darlington Fire and Rescue Service",
+        "County Durham & Darlington Fire & Rescue"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "east-sussex-fire-and-rescue-service",
+      "canonical_name": "East Sussex Fire and Rescue Service",
+      "abbreviation": "East Sussex FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "East Sussex Fire and Rescue Service",
+        "East Sussex Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "essex-county-fire-and-rescue-service",
+      "canonical_name": "Essex County Fire and Rescue Service",
+      "abbreviation": "ECFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Essex County Fire and Rescue Service",
+        "ESSEX COUNTY FIRE & RESCUE SERVICE"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "gloucestershire-fire-and-rescue-service",
+      "canonical_name": "Gloucestershire Fire and Rescue Service",
+      "abbreviation": "Glos FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Gloucestershire Fire and Rescue Service",
+        "Gloucestershire Fire & Rescue Service",
+        "Gloucestershire County Council / Gloucestershire Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "greater-manchester-fire-and-rescue-service",
+      "canonical_name": "Greater Manchester Fire and Rescue Service",
+      "abbreviation": "GMFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Greater Manchester Fire and Rescue Service",
+        "Greater Manchester Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "hampshire-and-isle-of-wight-fire-and-rescue-service",
+      "canonical_name": "Hampshire and Isle of Wight Fire and Rescue Service",
+      "abbreviation": "HIWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Hampshire and Isle of Wight Fire and Rescue Service",
+        "Hampshire Fire and Rescue Service",
+        "Hampshire Fire & Rescue Service",
+        "Hampshire Fire and Rescue Services Headquarters",
+        "Hampshire and Isle of Wight Fire Rescue Service",
+        "Hampshire and Isle of Wight Fire Rescue Authority",
+        "Hampshire and Isle of Wight Fire and Rescue Authority",
+        "HAMPSHIRE & ISLE OF WIGHT FIRE AND RESCUE SERVICE",
+        "Hampshire & Isle of Wight Fire & Rescue Service and Office of the Police & Commissioner for Hampshire & Isle of Wight"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "hereford-and-worcester-fire-and-rescue-service",
+      "canonical_name": "Hereford and Worcester Fire and Rescue Service",
+      "abbreviation": "HWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Hereford and Worcester Fire and Rescue Service",
+        "Hereford & Worcester Fire and Rescue Service",
+        "Hereford & Worcester Fire & Rescue Service",
+        "Hereford and Worcester Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "hertfordshire-fire-and-rescue-service",
+      "canonical_name": "Hertfordshire Fire and Rescue Service",
+      "abbreviation": "Herts FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Hertfordshire Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "humberside-fire-and-rescue-service",
+      "canonical_name": "Humberside Fire and Rescue Service",
+      "abbreviation": "Humberside FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Humberside Fire and Rescue Service",
+        "Humberside Fire & Rescue Service",
+        "Humberside Fire Authority",
+        "Humberside Fire and Rescue"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "isle-of-wight-fire-and-rescue-service",
+      "canonical_name": "Isle of Wight Fire and Rescue Service",
+      "abbreviation": "IoW FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Isle of Wight Fire and Rescue Service"
+      ],
+      "status": "historical",
+      "source": "hand_curated_fire",
+      "_note": "Pre-2021 service, now covered by Hampshire and Isle of Wight FRS. Retained for matching pre-merger FTS tender records."
+    },
+    {
+      "canonical_id": "kent-fire-and-rescue-service",
+      "canonical_name": "Kent Fire and Rescue Service",
+      "abbreviation": "KFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Kent Fire and Rescue Service",
+        "Kent Fire & Rescue Service",
+        "Kent and Medway Towns Fire and Rescue Authority",
+        "Kent and Medway Towns Fire Authority",
+        "Kent & Medway Fire & Rescue Authority",
+        "Kent Fire and Medway Towns Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "lancashire-fire-and-rescue-service",
+      "canonical_name": "Lancashire Fire and Rescue Service",
+      "abbreviation": "Lancs FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Lancashire Fire and Rescue Service",
+        "Lancashire Fire & Rescue Service",
+        "Lancashire Combined Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "leicestershire-fire-and-rescue-service",
+      "canonical_name": "Leicestershire Fire and Rescue Service",
+      "abbreviation": "Leics FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Leicestershire Fire and Rescue Service",
+        "Leicester, Leicestershire and Rutland Combined Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "lincolnshire-fire-and-rescue-service",
+      "canonical_name": "Lincolnshire Fire and Rescue Service",
+      "abbreviation": "Lincs FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Lincolnshire Fire and Rescue Service",
+        "Lincolnshire Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "london-fire-brigade",
+      "canonical_name": "London Fire Brigade",
+      "abbreviation": "LFB",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "London Fire Brigade",
+        "LFB",
+        "London Fire Commissioner",
+        "London Fire Commission"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "merseyside-fire-and-rescue-service",
+      "canonical_name": "Merseyside Fire and Rescue Service",
+      "abbreviation": "MFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Merseyside Fire and Rescue Service",
+        "Merseyside Fire & Rescue Service",
+        "Merseyside Fire and Rescue Authority",
+        "Merseyside Fire & Rescue Authority",
+        "Merseyside Fire Authority",
+        "Merseyside Fire and Resscue Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "norfolk-fire-and-rescue-service",
+      "canonical_name": "Norfolk Fire and Rescue Service",
+      "abbreviation": "Norfolk FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Norfolk Fire and Rescue Service",
+        "Norfolk Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "north-yorkshire-fire-and-rescue-service",
+      "canonical_name": "North Yorkshire Fire and Rescue Service",
+      "abbreviation": "NYFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "North Yorkshire Fire and Rescue Service",
+        "North Yorkshire Fire & Rescue Service",
+        "York and North Yorkshire Combined Authority acting as Fire and Rescue Authority",
+        "York and North Yorkshire Combined Authority acting as Fire and Rescue Authority.",
+        "The York and North Yorkshire Combined Authority Policing, Fire and Crime Directorate (YNYCA)"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "northamptonshire-fire-and-rescue-service",
+      "canonical_name": "Northamptonshire Fire and Rescue Service",
+      "abbreviation": "Northants FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Northamptonshire Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "northumberland-fire-and-rescue-service",
+      "canonical_name": "Northumberland Fire and Rescue Service",
+      "abbreviation": "Northumberland FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Northumberland Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "nottinghamshire-fire-and-rescue-service",
+      "canonical_name": "Nottinghamshire Fire and Rescue Service",
+      "abbreviation": "Notts FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Nottinghamshire Fire and Rescue Service",
+        "Nottinghamshire Fire & Rescue Service",
+        "Nottinghamshire and City of Nottingham Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "oxfordshire-fire-and-rescue-service",
+      "canonical_name": "Oxfordshire Fire and Rescue Service",
+      "abbreviation": "Oxon FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Oxfordshire Fire and Rescue Service",
+        "Oxfordshire Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "royal-berkshire-fire-and-rescue-service",
+      "canonical_name": "Royal Berkshire Fire and Rescue Service",
+      "abbreviation": "RBFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Royal Berkshire Fire and Rescue Service",
+        "Royal Berkshire Fire & Rescue Service",
+        "Royal Berkshire Fire Authority",
+        "Royal Berkshire Fire & Rescue"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "shropshire-fire-and-rescue-service",
+      "canonical_name": "Shropshire Fire and Rescue Service",
+      "abbreviation": "Shropshire FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Shropshire Fire and Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "south-yorkshire-fire-and-rescue-service",
+      "canonical_name": "South Yorkshire Fire and Rescue Service",
+      "abbreviation": "SYFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "South Yorkshire Fire and Rescue Service",
+        "South Yorkshire Fire & Rescue",
+        "South Yorkshire Fire & Rescue Service",
+        "South Yorkshire Fire and Rescue Authority",
+        "South Yorkshire Fire Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "staffordshire-fire-and-rescue-service",
+      "canonical_name": "Staffordshire Fire and Rescue Service",
+      "abbreviation": "Staffs FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Staffordshire Fire and Rescue Service",
+        "Staffordshire Commissioner Fire and Rescue Service",
+        "The Staffordshire Commissioner Fire and Rescue Authority (on Behalf of Staffordshire Fire and Rescue Service)"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "suffolk-fire-and-rescue-service",
+      "canonical_name": "Suffolk Fire and Rescue Service",
+      "abbreviation": "Suffolk FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Suffolk Fire and Rescue Service",
+        "Suffolk Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "surrey-fire-and-rescue-service",
+      "canonical_name": "Surrey Fire and Rescue Service",
+      "abbreviation": "Surrey FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Surrey Fire and Rescue Service",
+        "Surrey Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "tyne-and-wear-fire-and-rescue-service",
+      "canonical_name": "Tyne and Wear Fire and Rescue Service",
+      "abbreviation": "TWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Tyne and Wear Fire and Rescue Service",
+        "Tyne and Wear Fire and Rescue Service (TWFRS)",
+        "Tyne and Wear Fire and Rescue Authority",
+        "Tyne & Wear Fire and Rescue Authority",
+        "Tyne & Wear Fire & Rescue",
+        "Tyne & Wear Fire and Rescue Service",
+        "TWFRS",
+        "Tyne & Wear Fire & Rescue Authority and TWFRS Ltd"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "warwickshire-fire-and-rescue-service",
+      "canonical_name": "Warwickshire Fire and Rescue Service",
+      "abbreviation": "Warwicks FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Warwickshire Fire and Rescue Service",
+        "Warwickshire Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "west-midlands-fire-service",
+      "canonical_name": "West Midlands Fire Service",
+      "abbreviation": "WMFS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "West Midlands Fire Service",
+        "West Midlands Fire and Rescue Authority",
+        "West Midlands Fire & Rescue Authority",
+        "West Midlands Fire & Rescue"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "west-sussex-fire-and-rescue-service",
+      "canonical_name": "West Sussex Fire and Rescue Service",
+      "abbreviation": "West Sussex FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "West Sussex Fire and Rescue Service",
+        "West Sussex Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "west-yorkshire-fire-and-rescue-service",
+      "canonical_name": "West Yorkshire Fire and Rescue Service",
+      "abbreviation": "WYFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "West Yorkshire Fire and Rescue Service",
+        "West Yorkshire Fire & Rescue",
+        "West Yorkshire Fire & Rescue Service",
+        "West Yorkshire Fire and Rescue Authority"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "cornwall-fire-and-rescue-service",
+      "canonical_name": "Cornwall Fire and Rescue Service",
+      "abbreviation": "Cornwall FRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (England)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Cornwall Fire and Rescue Service",
+        "Cornwall Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "scottish-fire-and-rescue-service",
+      "canonical_name": "Scottish Fire and Rescue Service",
+      "abbreviation": "SFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (Scotland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Scottish Fire and Rescue Service",
+        "Scottish Fire & Rescue Service",
+        "SFRS"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "mid-and-west-wales-fire-and-rescue-service",
+      "canonical_name": "Mid and West Wales Fire and Rescue Service",
+      "abbreviation": "MAWWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Mid and West Wales Fire and Rescue Service",
+        "Mid and West Wales Fire and Rescue Authority",
+        "Mid & West Wales Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "north-wales-fire-and-rescue-service",
+      "canonical_name": "North Wales Fire and Rescue Service",
+      "abbreviation": "NWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "North Wales Fire and Rescue Service",
+        "North Wales Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "south-wales-fire-and-rescue-service",
+      "canonical_name": "South Wales Fire and Rescue Service",
+      "abbreviation": "SWFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (Wales)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "South Wales Fire and Rescue Service",
+        "South Wales Fire & Rescue Service"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "northern-ireland-fire-and-rescue-service",
+      "canonical_name": "Northern Ireland Fire and Rescue Service",
+      "abbreviation": "NIFRS",
+      "type": "Fire and rescue authority",
+      "subtype": "Territorial fire and rescue service (Northern Ireland)",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "Northern Ireland Fire and Rescue Service",
+        "Northern Ireland Fire & Rescue Service",
+        "Northern Ireland Fire and Rescure Service",
+        "NIFRS",
+        "Business Services Organisation, Procurement and Logistics Service on behalf of Northern Ireland Fire and Rescue Service",
+        "Business Services Organisation, Procurement and Logistics Service on behalf of the Northern Ireland Fire and Rescue Service",
+        "Northern Ireland Fire and Rescue Service - NIFRS / Northern Ireland Ambulance Service Health and Social Care Trust - NIAS"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    },
+    {
+      "canonical_id": "national-fire-chiefs-council",
+      "canonical_name": "National Fire Chiefs Council",
+      "abbreviation": "NFCC",
+      "type": "Fire and rescue authority",
+      "subtype": "National body",
+      "parent_ids": [],
+      "child_ids": [],
+      "aliases": [
+        "National Fire Chiefs Council",
+        "National Fire Chiefs Council Limited",
+        "NFCC",
+        "Chief Fire Officers Association",
+        "THE CHIEF FIRE OFFICERS' ASSOCIATION",
+        "Chief Fire Officers' Association"
+      ],
+      "status": "active",
+      "source": "hand_curated_fire"
+    }
+  ]
+}

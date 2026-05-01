@@ -1,0 +1,112 @@
+[
+  {
+    "id": "gov_uk_people",
+    "name": "GOV.UK People pages",
+    "coverage_note": "Lists Executive Management Board / Director General tier only — approximately 10–15 named individuals per department. HMT: 12 named (DG + Finance Director tier). MoD: no named individuals at all (page describes committee structures only). DfE: ~10 named (DG/Permanent Secretary tier). Does not reach Director level or below.",
+    "currency_note": "HMT page correct as of 20 October 2025 (stated on page). MoD page does not give a currency date. DfE page does not give a currency date. Update frequency appears to be ad hoc, not scheduled.",
+    "structure": "semi-structured",
+    "licence": "OGL",
+    "useful_for_senior_tier": true,
+    "useful_for_evaluator_tier": false,
+    "notes": "Only viable for the very top tier (DG/Perm Sec). Verified 3 of 3 HMT DG-level individuals still in post from a Dec 2025 organogram, confirming reasonable currency. MoD page is structurally unhelpful — names no one. Would need scraping per department; no bulk feed."
+  },
+  {
+    "id": "gov_uk_appointments_rss",
+    "name": "GOV.UK appointments RSS",
+    "coverage_note": "Feed appears to have broken. Old URL (announcements.atom?announcement_filter_option=appointments) returns HTTP 404. New URL (search/news-and-communications.atom?announcement_filter_option=appointments) returns 20 mixed entries not filtered to appointments — included a terror attack press release and a fisheries consultation. The filter parameter is no longer honoured.",
+    "currency_note": "Feed would be near-real-time if working. Currently not operational as a filtered appointments source.",
+    "structure": "semi-structured",
+    "licence": "OGL",
+    "useful_for_senior_tier": false,
+    "useful_for_evaluator_tier": false,
+    "notes": "Source is broken as of April 2026. GOV.UK announcements feed no longer supports the appointment_filter_option parameter. Would need a different approach (e.g. scraping search.gov.uk with keyword 'appointed') to recover appointment signals. Not viable without engineering work."
+  },
+  {
+    "id": "companies_house",
+    "name": "Companies House — ALB officers",
+    "coverage_note": "Returns only the registered director/company secretary for each ALB — 1 active officer per entity tested (UKHSA, Homes England, UKRI). These are the statutory officers of the corporate entity, not the executive board. UKHSA: Haydn James Davies (director, appointed 2020). Homes England: Jermaine Arron Humphrey (director, appointed 2014). UKRI: Warren Neil Wilson (director, appointed 2017).",
+    "currency_note": "Companies House data is live and reflects current filings. However, the data only covers the statutory officer (often a Solicitor to the Board or company secretary role) — not the Chief Executive, Executive Directors, or other senior leaders.",
+    "structure": "structured",
+    "licence": "OGL",
+    "useful_for_senior_tier": false,
+    "useful_for_evaluator_tier": false,
+    "notes": "Government ALBs register at Companies House but typically only file one statutory director. The executive board members (CEO, CFO, Directors) are not listed as Companies House officers for government bodies. Not a viable stakeholder source."
+  },
+  {
+    "id": "nao_reports",
+    "name": "NAO published reports",
+    "coverage_note": "Named officials (SROs, Accounting Officers) appear in the report PDFs, not on the web summary pages. Web pages show department and topic but no named individuals. Recent reports cover: DfE (school places), DCMS (museums), DfT (Northern Powerhouse Rail), DSIT (research infrastructure). Named SROs would require PDF parsing.",
+    "currency_note": "Reports published approximately weekly. Each report typically names 1–3 officials (the Accounting Officer plus the SRO if different). Coverage is sparse and incident-driven — only departments with active NAO scrutiny are represented.",
+    "structure": "unstructured",
+    "licence": "OGL",
+    "useful_for_senior_tier": true,
+    "useful_for_evaluator_tier": false,
+    "notes": "Useful as an event-driven supplement for Accounting Officers and major programme SROs, but requires PDF parsing. Approximately 40–50 VFM reports per year across ~20 departments = sparse coverage. Not a bulk source. Best used as a validation layer, not a primary source."
+  },
+  {
+    "id": "pac_witnesses",
+    "name": "Public Accounts Committee witness lists",
+    "coverage_note": "Witness lists are structured and publicly accessible on the PAC publications page. Each session names 3–5 officials with role and department. Sessions verified: 27 April 2026 (DfT — Director level: Nick Bisson, Director Northern Powerhouse Rail; Will Davis, Director Local Growth at MHCLG); 20 April 2026 (DCMS — Director level: Hannah Malik, Director for Culture). Approximately 25–35 sessions per year = 75–120 distinct named officials annually.",
+    "currency_note": "Session pages published within 1–2 days of the hearing. Witnesses are current at time of session. HTML pages are machine-readable.",
+    "structure": "semi-structured",
+    "licence": "Parliament copyright — open publication",
+    "useful_for_senior_tier": true,
+    "useful_for_evaluator_tier": true,
+    "notes": "Best automated supplementary source found. Reaches Director level (SCS2), which is the tier most relevant as evaluators. HTML structure is consistent and parseable. Coverage is accountability-driven — only departments with active PAC scrutiny appear, but that covers most major spending departments. Recommended as event-driven volatile-tier source."
+  },
+  {
+    "id": "civil_service_jobs",
+    "name": "Civil Service Jobs vacancies",
+    "coverage_note": "Not checked directly. From general knowledge: vacancy postings name the hiring department and grade but typically do not name the hiring manager. Some senior postings include a named contact for informal enquiries. Coverage of Grade 7 and above is broad but naming rate is very low.",
+    "currency_note": "Postings are live but ephemeral — typically removed after closing date.",
+    "structure": "semi-structured",
+    "licence": "OGL",
+    "useful_for_senior_tier": false,
+    "useful_for_evaluator_tier": false,
+    "notes": "Not viable for stakeholder identification. Vacancies represent open posts (by definition the postholder is leaving or the role is new), not who currently holds positions. Naming rate for the hiring manager is too low."
+  },
+  {
+    "id": "linkedin_manual",
+    "name": "LinkedIn (manual search)",
+    "coverage_note": "Not probed programmatically (requires authenticated session). From general knowledge: Director-level civil servants often have LinkedIn profiles, but profile completeness varies significantly. 'Current employer' shown, but unit/team data is inconsistent. Search results limited without connection or Premium account.",
+    "currency_note": "Self-reported; no guaranteed currency. Profiles may lag real movements by months.",
+    "structure": "semi-structured",
+    "licence": "ToS-restricted",
+    "useful_for_senior_tier": true,
+    "useful_for_evaluator_tier": true,
+    "notes": "Potentially rich but ToS-restricted for bulk scraping. A manual research channel for individual validation, not a bulk source. LinkedIn Sales Navigator would provide better coverage but is a paid product with significant cost."
+  },
+  {
+    "id": "trade_press",
+    "name": "Trade press (Civil Service World, Public Technology, Public Sector Executive)",
+    "coverage_note": "Not checked directly. From general knowledge: trade press covers senior appointments and policy announcements. Civil Service World publishes appointment notices. Coverage is sporadic and typically limited to SCS2+ (Director and above).",
+    "currency_note": "Published daily/weekly. Appointment notices typically appear within weeks of a senior appointment.",
+    "structure": "unstructured",
+    "licence": "Scrape-required or paid subscription",
+    "useful_for_senior_tier": true,
+    "useful_for_evaluator_tier": false,
+    "notes": "Useful for confirming senior appointments after the fact, but not a bulk source. Requires scraping or manual monitoring. Coverage too sparse and unstructured to use as a primary layer."
+  },
+  {
+    "id": "fts_contact_names",
+    "name": "Procurement notice contacts in bid_intel.db",
+    "coverage_note": "No contact columns exist on the notices table. The bid_intel.db schema does not extract contact_name from the OCDS tender data. Contact information is embedded in the raw OCDS JSON (under tender.procuringEntity.contactPoint) but was not parsed out during ingest.",
+    "currency_note": "N/A — data not available in current schema.",
+    "structure": "structured",
+    "licence": "OGL",
+    "useful_for_senior_tier": false,
+    "useful_for_evaluator_tier": true,
+    "notes": "Potentially the most valuable source for evaluator-tier names (procurement officers who publish notices), but requires a schema extension to extract contact names from OCDS JSON. Would give names at Grade 7 / commercial lead level for ~175k notices. Recommended as a future enhancement, not a v1 source. Re-ingesting the contact name from tender.procuringEntity.contactPoint.name is a one-column schema change."
+  },
+  {
+    "id": "dods_people",
+    "name": "Dods People (paid commercial product)",
+    "coverage_note": "Dods People claims comprehensive coverage of UK public sector senior staff including civil servants, councillors and NHS leaders. Not trialled. Pricing not publicly listed — enterprise sales only.",
+    "currency_note": "Vendor claims real-time updates. Not verified.",
+    "structure": "structured",
+    "licence": "paid",
+    "useful_for_senior_tier": true,
+    "useful_for_evaluator_tier": true,
+    "notes": "Likely the most complete commercial option. Enterprise pricing makes it unsuitable as a build-vs-buy justification unless PWIN pursues a significant number of engagements. Worth pricing for comparison if the 'don't build from scratch' verdict is reached — Dods People may be a viable licensed data feed alternative."
+  }
+]

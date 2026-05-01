@@ -17,6 +17,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { join, basename } from 'node:path';
 import { parse as parseYAML } from './yaml-lite.js';
 import * as store from './store.js';
+import * as intelDossiers from './intel-dossiers.js';
 import * as intel from './competitive-intel.js';
 
 // ---------------------------------------------------------------------------
@@ -149,14 +150,55 @@ async function gatherContext(skill, input) {
         break;
       }
       case 'supplier_dossier': {
-        // Load a previously-generated supplier intelligence dossier from
-        // ~/.pwin/reference/suppliers/{supplierName}.json. The supplierName
-        // comes from skill input — enables downstream skills (competitive
-        // strategy, incumbent assessment) to pull in the deep dossier.
+        // Load the Agent 2 supplier-intelligence dossier from
+        // ~/.pwin/intel/suppliers/{slug}-dossier.json. supplierName comes
+        // from skill input.
         const supplierName = input?.supplierName;
         if (supplierName) {
-          const slug = supplierName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-          context.supplierDossier = await store.getReferenceData('suppliers', slug);
+          context.supplierDossier = await intelDossiers.getDossier(
+            'suppliers',
+            intelDossiers.slugify(supplierName)
+          );
+        }
+        break;
+      }
+      case 'buyer_dossier': {
+        // Load the Agent 2 buyer-intelligence dossier from
+        // ~/.pwin/intel/buyers/{slug}-dossier.json. buyerName comes from
+        // skill input; falls back to the pursuit's client name if not
+        // supplied directly.
+        const buyerName = input?.buyerName || context.pursuit?.client;
+        if (buyerName) {
+          context.buyerDossier = await intelDossiers.getDossier(
+            'buyers',
+            intelDossiers.slugify(buyerName)
+          );
+        }
+        break;
+      }
+      case 'sector_brief': {
+        // Load the Agent 2 sector brief from
+        // ~/.pwin/intel/sectors/{slug}-brief.json. sector comes from skill
+        // input or the pursuit record.
+        const sector = input?.sector || context.pursuit?.sector;
+        if (sector) {
+          context.sectorBrief = await intelDossiers.getDossier(
+            'sectors',
+            intelDossiers.slugify(sector)
+          );
+        }
+        break;
+      }
+      case 'incumbency_analysis': {
+        // Load the Agent 2 incumbency analysis from
+        // ~/.pwin/intel/incumbency/{supplier-slug}-{buyer-slug}-analysis.json.
+        // Requires supplierName in input. Buyer side is resolved from
+        // input.incumbentBuyerName, then input.buyerName, then the pursuit's client.
+        const supplierName = input?.supplierName;
+        const buyerName = input?.incumbentBuyerName || input?.buyerName || context.pursuit?.client;
+        if (supplierName && buyerName) {
+          const slug = `${intelDossiers.slugify(supplierName)}-${intelDossiers.slugify(buyerName)}`;
+          context.incumbencyAnalysis = await intelDossiers.getDossier('incumbency', slug);
         }
         break;
       }
@@ -244,6 +286,31 @@ async function gatherContext(skill, input) {
             ? `No FTS data found for sector: ${sectorName}`
             : data;
         }
+        break;
+      }
+      case 'fts_pipeline_data': {
+        const hoursLookback = input?.lookbackHours || 24;
+        // Use the lowest scan floor so we don't drop notices the skill might
+        // still pick up (BOOK floor defaults to £2m, INTEL to £2m). NULL
+        // values are always included regardless of floor.
+        const valueFloor = input?.valueFloorIntel || input?.valueFloorBook || 1_000_000;
+        const data = intel.pipelineRecentNotices({ hoursLookback, valueFloor });
+        context.fts_pipeline_data = data;
+        break;
+      }
+      case 'fts_awards_data': {
+        // Depends on fts_pipeline_data being computed first (skill YAML must
+        // list them in order). Fetches recent awards for the buyers that
+        // appear in the pipeline batch — gives the LLM a focused
+        // competitive-field reference rather than a generic blob.
+        const hoursLookback = input?.lookbackHours || 24;
+        const pipeline = context.fts_pipeline_data || intel.pipelineRecentNotices({ hoursLookback });
+        const buyerIds = [...new Set([
+          ...((pipeline.notices || []).map(n => n.buyerId)),
+          ...((pipeline.planningNotices || []).map(n => n.buyerId)),
+        ].filter(Boolean))];
+        const data = intel.pipelineRecentAwardsForBuyers({ buyerIds });
+        context.fts_awards_data = data;
         break;
       }
       default:
@@ -826,8 +893,9 @@ async function executeToolCall(toolName, pursuitId, input) {
 async function executeSkill(skillId, input) {
   const skill = await loadSkill(skillId);
 
-  // Validate required input
-  for (const req of skill.input?.required || []) {
+  // Validate required input. Filter out null/empty entries that the YAML
+  // parser may emit for `required: []` (parses as [null]).
+  for (const req of (skill.input?.required || []).filter(r => r != null && r !== '')) {
     if (input[req] === undefined) {
       throw new Error(`Missing required input: ${req}`);
     }

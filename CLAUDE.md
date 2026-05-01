@@ -86,6 +86,7 @@ This is still the right default for **prototypes** and for **consultant standalo
 | bidequity-verdict | Runs on the pwin-platform MCP server | Two-pass forensic review needs server-side execution and platform knowledge access | — |
 | pwin-platform | Node.js + MCP server | Multi-product orchestration is inherently server-side | — |
 | pwin-competitive-intel | Python pipeline + SQLite + Cloudflare D1 | Data ingestion and serverless query layer for an internal-only DB | — |
+| Agent 2 intelligence skills (buyer / supplier / sector / incumbency) | Master copies live at `pwin-platform/skills/agent2-market-competitive/master/<skill>/SKILL.md` and run from the Claude.ai subscription. The matching YAML files in the same folder are deprecated. | The per-minute usage cap on the pay-per-use API could not handle the token volume these skills produce; the subscription has different metering and works reliably. Decision recorded 2026-04-27. | The API tier is upgraded, or the skills are re-engineered to use Anthropic's bulk-processing route, at which point the YAML versions can be revived from the master `SKILL.md`. |
 
 ---
 
@@ -296,6 +297,44 @@ node test/test-skills.js        # Run test suite (68 tests)
 
 ---
 
+## Agent 2 intelligence skills (operational runtime)
+
+The four Agent 2 intelligence skills — **buyer-intelligence**, **supplier-intelligence**, **sector-intelligence**, and **incumbency-advantage-displacement-strategy** — do not run via the platform skill-runner today. They run from the user's Claude.ai subscription because the per-minute usage cap on the pay-per-use API could not handle the token volume each dossier produces (large injected context plus long structured JSON output blew through the cap mid-run).
+
+### Where the master files live
+
+```
+pwin-platform/skills/agent2-market-competitive/master/
+├── SKILL-UNIVERSAL-SPEC.md         # rulebook every skill conforms to
+├── buyer-intelligence/
+│   ├── SKILL.md                    # the live skill
+│   ├── references/                 # output schema, source rules
+│   └── scripts/render_dossier.py   # HTML renderer
+├── supplier-intelligence/   (same shape)
+├── sector-intelligence/     (same shape)
+└── incumbency-advantage-displacement-strategy/   (same shape, plus evals/)
+```
+
+These are the live versions. The matching `<skill>.yaml` files in the parent folder are deprecated and carry a header notice saying so.
+
+### Editing workflow
+
+1. **Edit the master `SKILL.md` directly** in the repo, in whichever environment you're working (Claude Code, text editor, Claude.ai pointed at the repo path).
+2. **Review for content quality** by pasting the file into Claude.ai's skill-creator and into ChatGPT — different models catch different blind spots. Do this on major rewrites, not for small tweaks.
+3. **Apply feedback as further commits** to the repo — git history is the audit trail.
+4. **Final structural sanity check** in Claude.ai's skill-creator before packaging a major new version.
+5. **Run from Claude.ai** — the subscription packages and executes the skill.
+
+The output JSON dossiers land in `~/.pwin/intel/<type>/<slug>-<artefact>.json` on the laptop. The platform's existing MCP tools (`get_buyer_profile`, `get_competitor_dossier`, etc.) serve those stored dossiers to the other PWIN products.
+
+### Re-evaluate when
+
+The deprecated YAMLs can be revived if either (a) the API tier is upgraded enough to handle the throughput, or (b) the skills are re-engineered to use Anthropic's bulk-processing route (the "Batch API" — cheaper, much higher throughput, designed for non-realtime work). At that point the master SKILL.md is the source from which a new YAML is regenerated.
+
+See `wiki/decisions/intelligence-skills-claude-ai-canonical.md` for the full decision record.
+
+---
+
 ## pwin-strategy
 
 AI-driven capture-phase strategy development. The bridge between Qualify ("should we bid?") and Execution ("execute the bid"). Develops and locks the win strategy, competitive positioning, and capture plan that **informs the bid manager** running Execution.
@@ -446,19 +485,25 @@ Internal-only intelligence database of UK public sector procurement, built on th
 - **Cloudflare Worker** (`workers/intel-api.js`) — serves `/api/intel/*` endpoints from D1 serverless SQLite. Currently stale (D1 deploy descoped — see below).
 - **D1 sync** (`agent/sync-d1.py`) — exports local SQLite to SQL for `wrangler d1 execute`
 - **GitHub Actions** (`.github/workflows/ingest.yml`, at repo root) — nightly at 02:00 UTC: FTS incremental ingest → CH enrichment (200/night) → D1 sync. The workflow file MUST live at the repo root, not nested under `pwin-competitive-intel/.github/`, or GitHub Actions will not pick it up.
-- **Scheduler** (`agent/scheduler.py`) — cron wrapper for local nightly runs
+- **Scheduler** (`agent/scheduler.py`) — cron wrapper for local nightly runs. Pipeline: FTS ingest → CF ingest → CH enrichment → CPV tagging → buyer fuzzy match → daily pipeline scan → spend transparency ingest.
+- **Spend transparency catalogue** (`agent/spend-catalogue.json`) — static list of 48 verified gov.uk £25k spend file URLs (Home Office, MoJ/HMCTS/LAA, DfE, MoD). Updated annually each March. Department-agnostic schema: adding a new family is a catalogue edit, not a code change.
+- **Spend fetch** (`agent/fetch_spend.py`) — downloads pending files from the catalogue into `data/spend/<dept>/`, 1s polite delay, marks status in `spend_files_state`.
+- **Spend parser** (`agent/parse_spend.py`) — four format handlers (Home Office, MoJ/agencies, DfE, MoD). MoD publishes ODS (OpenDocument Spreadsheet); parsed via Python stdlib `zipfile` + `xml.etree.ElementTree` — no external dependencies. Reads CSVs as UTF-8 with cp1252 fallback (UK government CSVs typically use Windows-1252 for the `£` sign and accented characters). Date strings are normalised to ISO `YYYY-MM-DD` at parse time — handles `DD/MM/YYYY`, `DD-MMM-YY`, `DD.MM.YYYY`, and **Excel serial integers** (the MoJ family publishes dates as raw Excel day-counts, not strings).
+- **Spend canonicaliser** (`agent/canonicalise_spend.py`) — matches `raw_entity` → `canonical_sub_org_id` via `canonical_buyer_aliases` (with a `^[A-Z][A-Za-z0-9]+ - ` prefix-strip fallback for Home Office cost-centre labels); `raw_supplier_name` → `canonical_supplier_id` via the alias-aware index built from `suppliers` joined to `supplier_to_canonical`. Also classifies each row's `recipient_type` as either `'supplier'` (procurement) or `'public_body'` (transfers / grants / inter-government payments) — needed because roughly half of total spend value is grants and council pass-through funding, not procurement, and would otherwise dilute match-rate diagnostics. Unmatched rows stay NULL; never rejected.
+- **Spend ingest orchestrator** (`agent/ingest_spend.py`) — calls fetch → parse → canonicalise in sequence. Idempotent. Wired into `scheduler.py` as a non-fatal step.
+- **Spend health reporter** (`agent/generate_spend_health.py`) — Markdown section (file counts, row counts, **procurement vs public-body recipient mix**, **procurement-only canonicalisation match rate**, errors) appended to the nightly digest by `run-pipeline-scan.py::save_digest`.
 
 ### Platform Integration
 
-- **MCP tools** — 7 read tools added to `pwin-platform/src/mcp.js` via `competitive-intel.js` module (uses node:sqlite): `get_competitive_intel_summary`, `get_buyer_profile`, `get_supplier_profile`, `get_expiring_contracts`, `get_forward_pipeline`, `get_pwin_signals`, `search_cpv_codes`
+- **MCP tools** — 8 read tools added to `pwin-platform/src/mcp.js` via `competitive-intel.js` module (uses node:sqlite): `get_competitive_intel_summary`, `get_buyer_profile`, `get_supplier_profile`, `get_expiring_contracts`, `get_forward_pipeline`, `get_pwin_signals`, `search_cpv_codes`, and `get_buyer_behaviour_profile` (the buyer-behaviour analytics v1 layer — full nine-section profile with outcome mix, timeline, cancellation peer comparison, distressed-incumbent flag, and a consultant-liftable summary sentence; powers the empirical PGO figure for Win Strategy, Verdict, and the future paid Qualify tier)
 - **Platform Data API** — `/api/intel/*` endpoints added to `pwin-platform/src/api.js` (same queries, served via HTTP for HTML apps)
 - **Qualify integration (current state)** — both `pwin-qualify/docs/PWIN_Architect_v1.html` and `bidequity-co/qualify-app.html` currently fetch buyer profile + PWIN signals before every AI review (auto-detects: localhost → platform API, production → Cloudflare Worker). **This is being suppressed for the public lead-gen release**: when public release is imminent, the intel calls will be feature-flagged off in the public versions of these apps. They stay available for internal Bid Execution / Win Strategy / Verdict consumption and for the future paid Qualify tier. Re-enabling on the paid tier is gated on data-quality work (entity resolution, CH name-matching) clearing the misleading-assertion risk.
 
 ### Technical Constraints
 
 - Python 3.9+ stdlib only for ingest, enrichment, dashboard, and query layer — zero external deps. The canonical layer (Splink supplier dedup) is scoped into `.venv/` with its own `requirements-splink.txt`; nightly cron unaffected.
-- SQLite for local persistence — currently ~570 MB at 175k notices, scales comfortably
-- Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day) — **deploy descoped from immediate priority** since public Qualify is shipping intel-stripped; D1 becomes relevant again when paid Qualify or another internal product needs production access. The current 570 MB DB has not been validated against `wrangler d1 execute` load limits — verify before any deploy attempt.
+- SQLite for local persistence — currently ~1.3 GB at ~175k notices plus the 82,637-row supplier canonical layer (verified 2026-04-28), scales comfortably
+- Cloudflare D1 for production (serverless SQLite, free tier: 5GB, 5M reads/day) — **deploy descoped from immediate priority** since public Qualify is shipping intel-stripped; D1 becomes relevant again when paid Qualify or another internal product needs production access. The current 1.3 GB DB has not been validated against `wrangler d1 execute` load limits — verify before any deploy attempt.
 - FTS API rate limits: 1s between pages, 429 retries with exponential backoff, 60s read timeout with retries
 - Companies House API: 600ms between calls, free key required
 - Database not committed to repo (`.gitignore`); the OCP bulk JSONL file (`data/`) is also gitignored — built from a single download, not from git
@@ -475,9 +520,10 @@ Cross-cutting **internal** knowledge layer feeding the other pursuit products:
 
 ### Known Limitations
 
-- **Canonical entity layer.** Buyer canonical layer at 70.3% award-weighted coverage of the £1m+ universe (1,928 entities from GOV.UK + central buying agencies + NHS ODS + ONS LA codes + devolved, built 2026-04-11/12). Supplier canonical layer built 2026-04-14: 161,119 raw suppliers → **82,637 canonical** via Splink + deterministic name-merge post-pass. Downstream consumers should join through `canonical_suppliers` + `supplier_to_canonical` (or `canonical_buyers` + the buyer glossary) rather than aggregating raw IDs. See `CANONICAL-LAYER-DESIGN.md`, `DISCOVERY-REPORT.md`, and `CANONICAL-LAYER-PLAYBOOK.md` for decisions and lessons.
+- **Canonical entity layer.** Buyer canonical layer at **85.09% of all notices** (4,155 entities as of 2026-04-29 — GOV.UK + central buying agencies + NHS ODS + ONS LA codes + devolved + police forces + universities + fire & rescue + whitehall top-up + multi-academy trusts + housing associations + alias supplements). Up from 55.59% baseline before the 2026-04-29 expansion. The remaining ~15% are eProcurement platform intermediaries (BIP Solutions, capitalEsourcing, ATAMIS, etc.) and private-sector contractors publishing under their own name — genuinely unresolvable without a separate entity type. Supplier canonical layer: 161,119 raw suppliers → **82,637 canonical** via Splink + deterministic name-merge post-pass. Downstream consumers should join through `canonical_suppliers` + `supplier_to_canonical` (or `canonical_buyers` + the buyer glossary) rather than aggregating raw IDs. See `CANONICAL-LAYER-DESIGN.md`, `DISCOVERY-REPORT.md`, and `CANONICAL-LAYER-PLAYBOOK.md` for decisions and lessons.
 - **Companies House coverage.** ~27% of suppliers have a CH number on file. The rest are publisher name-only entries (no structured ID), GB-PPON-only, non-UK, or public sector bodies. Recovering name-only suppliers via Splink-against-CH-register is the next canonical-layer task, deferred until this v1 is validated against live dossier work.
 - **Framework values.** OCDS records framework *maximum* values, not realised spend. Total-value summaries reflect ceilings, not draw-down.
+- **Sub-organisation visibility.** About 5% of contract awards (22k of 447k, concentrated in four ministerial departments — Ministry of Justice, Home Office, Department for Education, Ministry of Defence) are dark at sub-organisation level because those departments publish under the parent name with no breakout for executive agencies (HMPPS, HMCTS, UKVI, Border Force, ESFA, Defence Digital, the service commands etc.). The Procurement Act 2023 UK7 notice does not fix this — the buyer field is still freeform and inherits departmental publishing practice. The remaining 93% of the contract universe names sub-organisations correctly. **Wave 1 of the overlay layer is now built** (`spend-catalogue.json` + five new agent scripts): 48 £25k spend transparency files are ready to download and load. Run `python agent/ingest_spend.py` from `pwin-competitive-intel/` to populate `spend_transactions`. **For the canonical reference picture with hard numbers, see `wiki/platform/sub-org-data-coverage.md`.**
 
 ### Running
 
@@ -516,7 +562,7 @@ python queries/queries.py supplier "Serco"
 python queries/queries.py expiring --days 180 --value 500000
 python queries/queries.py pwin --category services
 
-# Deploy to Cloudflare D1 (descoped — verify load mechanism for ~570 MB DB first)
+# Deploy to Cloudflare D1 (descoped — verify load mechanism for ~1.3 GB DB first)
 cd workers
 npx wrangler d1 create pwin-competitive-intel       # paste ID into wrangler.toml
 npx wrangler d1 execute pwin-competitive-intel --file=../db/schema.sql

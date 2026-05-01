@@ -48,6 +48,13 @@ HAND_CURATED = os.path.join(KNOWLEDGE_DIR, "central-buying-agencies.json")
 NHS_ODS = os.path.join(KNOWLEDGE_DIR, "nhs-organisations.json")
 LOCAL_AUTH = os.path.join(KNOWLEDGE_DIR, "local-authorities.json")
 DEVOLVED = os.path.join(KNOWLEDGE_DIR, "devolved-and-combined.json")
+POLICE = os.path.join(KNOWLEDGE_DIR, "police-forces.json")
+UNIVERSITIES = os.path.join(KNOWLEDGE_DIR, "universities.json")
+FIRE_RESCUE = os.path.join(KNOWLEDGE_DIR, "fire-and-rescue.json")
+WHITEHALL_TOPUP = os.path.join(KNOWLEDGE_DIR, "whitehall-topup.json")
+MAT = os.path.join(KNOWLEDGE_DIR, "multi-academy-trusts.json")
+HOUSING = os.path.join(KNOWLEDGE_DIR, "housing-associations.json")
+ALIAS_SUPPLEMENTS = os.path.join(KNOWLEDGE_DIR, "alias-supplements.json")
 
 
 def fetch_page(page: int) -> dict:
@@ -179,8 +186,6 @@ def transform(orgs: list, include_closed: bool) -> dict:
         "not_covered_yet": [
             "NHS organisations (trusts, ICBs)",
             "Local authorities (councils)",
-            "Police forces",
-            "Universities (excluding HE buying consortia)",
             "Schools and academy trusts",
         ],
         "skipped_closed": skipped_closed,
@@ -335,8 +340,14 @@ def main():
         print(f"Loading existing glossary from {args.output} (skipping GOV.UK fetch)")
         with open(args.output) as f:
             glossary = json.load(f)
-        # Strip any prior hand-curated entries before re-merging
-        glossary["entities"] = [e for e in glossary["entities"] if e.get("source") != "hand_curated"]
+        # Strip any prior hand-curated entries before re-merging.
+        # Match the "hand_curated" prefix so that all hand-curated sources
+        # (hand_curated, hand_curated_fire, hand_curated_whitehall_topup, etc.)
+        # are stripped and cleanly re-merged from source files.
+        glossary["entities"] = [
+            e for e in glossary["entities"]
+            if not str(e.get("source", "")).startswith("hand_curated")
+        ]
     else:
         orgs = fetch_all()
         glossary = transform(orgs, include_closed=args.include_closed)
@@ -356,6 +367,34 @@ def main():
     print(f"\nMerging devolved/combined authorities from {DEVOLVED}...")
     dev_added, dev_merged = merge_hand_curated(glossary, DEVOLVED)
     print(f"  +{dev_added} new entities, {dev_merged} alias merges")
+
+    print(f"\nMerging police forces and PCCs from {POLICE}...")
+    police_added, police_merged = merge_hand_curated(glossary, POLICE)
+    print(f"  +{police_added} new entities, {police_merged} alias merges")
+
+    print(f"\nMerging universities and HE consortia from {UNIVERSITIES}...")
+    uni_added, uni_merged = merge_hand_curated(glossary, UNIVERSITIES)
+    print(f"  +{uni_added} new entities, {uni_merged} alias merges")
+
+    print(f"\nMerging fire and rescue authorities from {FIRE_RESCUE}...")
+    fire_added, fire_merged = merge_hand_curated(glossary, FIRE_RESCUE)
+    print(f"  +{fire_added} new entities, {fire_merged} alias merges")
+
+    print(f"\nMerging Whitehall top-up entities from {WHITEHALL_TOPUP}...")
+    wt_added, wt_merged = merge_hand_curated(glossary, WHITEHALL_TOPUP)
+    print(f"  +{wt_added} new entities, {wt_merged} alias merges")
+
+    print(f"\nMerging multi-academy trusts from {MAT}...")
+    mat_added, mat_merged = merge_hand_curated(glossary, MAT)
+    print(f"  +{mat_added} new entities, {mat_merged} alias merges")
+
+    print(f"\nMerging housing associations from {HOUSING}...")
+    h_added, h_merged = merge_hand_curated(glossary, HOUSING)
+    print(f"  +{h_added} new entities, {h_merged} alias merges")
+
+    print(f"\nMerging alias supplements from {ALIAS_SUPPLEMENTS}...")
+    as_added, as_merged = merge_hand_curated(glossary, ALIAS_SUPPLEMENTS)
+    print(f"  +{as_added} new entities, {as_merged} alias merges")
 
     write_output(glossary, args.output)
     print_stats(glossary)

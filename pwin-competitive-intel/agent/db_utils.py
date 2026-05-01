@@ -57,6 +57,61 @@ def _migrate_schema(conn: sqlite3.Connection):
         conn.execute("ALTER TABLE notices ADD COLUMN suitable_for_sme INTEGER DEFAULT 0")
         log.info("Migrated notices: added column suitable_for_sme")
 
+    # ── spend transparency tables (2026-04-29) ──
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    if "spend_files_state" not in tables:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS spend_files_state (
+                id              TEXT PRIMARY KEY,
+                department      TEXT NOT NULL,
+                year            INTEGER NOT NULL,
+                month           INTEGER NOT NULL,
+                entity_override TEXT,
+                source_url      TEXT NOT NULL,
+                format_id       TEXT NOT NULL,
+                local_path      TEXT,
+                file_checksum   TEXT,
+                row_count       INTEGER,
+                status          TEXT NOT NULL DEFAULT 'pending',
+                error_message   TEXT,
+                loaded_at       TEXT
+            )""")
+        log.info("Migrated: created spend_files_state")
+    if "spend_transactions" not in tables:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS spend_transactions (
+                id                     TEXT PRIMARY KEY,
+                source_file_id         TEXT NOT NULL REFERENCES spend_files_state(id),
+                department_family      TEXT NOT NULL,
+                raw_entity             TEXT,
+                raw_supplier_name      TEXT NOT NULL,
+                amount                 REAL NOT NULL,
+                payment_date           TEXT,
+                expense_type           TEXT,
+                expense_area           TEXT,
+                canonical_sub_org_id   TEXT,
+                canonical_supplier_id  TEXT,
+                ingested_at            TEXT NOT NULL DEFAULT (datetime('now'))
+            )""")
+        log.info("Migrated: created spend_transactions")
+
+    # ── spend_transactions: recipient_type column (2026-04-29) ──
+    if "spend_transactions" in tables:
+        spend_cols = {r[1] for r in conn.execute("PRAGMA table_info(spend_transactions)").fetchall()}
+        if "recipient_type" not in spend_cols:
+            conn.execute("ALTER TABLE spend_transactions ADD COLUMN recipient_type TEXT")
+            log.info("Migrated spend_transactions: added column recipient_type")
+
+    # ── frameworks canonical layer (2026-04-30) ──
+    # New tables: created by CREATE TABLE IF NOT EXISTS in schema.sql.
+    # Only column additions to existing framework tables go here.
+    pass
+
+    # ── stakeholder canonical layer (2026-04-30) ──
+    # Three new tables: stakeholders, stakeholder_history, pac_witnesses.
+    # Created by CREATE TABLE IF NOT EXISTS in schema.sql — no ALTER needed.
+    pass
+
     conn.commit()
 
 

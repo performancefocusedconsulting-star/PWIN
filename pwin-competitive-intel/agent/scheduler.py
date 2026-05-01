@@ -13,10 +13,14 @@ Pipeline (all incremental — safe to re-run):
      categories using procurement codes
   5. Match new buyers to the master list       (fuzzy-match-buyers.py
      using fuzzy matching at threshold 95       --threshold 95 --apply)
+  6. Daily pipeline scan (triage into BOOK /   (run-pipeline-scan.py --hours 24)
+     QUALIFY / INTEL / WATCH)
+  7. £25k spend transparency ingest            (ingest_spend.py — non-fatal)
+  8. Framework call-off mining                 (mine_framework_calloffs.py — non-fatal)
 
-Steps 4 and 5 are new (added 2026-04-25) — they keep the cleaning current
-on every night's load. Without them, the database loads new raw data but
-never tags or matches it.
+Optional (pass --with-frameworks-catalogue):
+  9. CCS framework catalogue ingest            (ingest_frameworks_catalogue.py)
+ 10. Framework consolidation / dedup           (consolidate_frameworks.py)
 
 NOT in this nightly:
   - Splink supplier matching (full wipe-and-replace, ~13 min) — run monthly
@@ -69,6 +73,12 @@ def run_step(label: str, args: list[str], fatal: bool = False) -> int:
 
 
 if __name__ == "__main__":
+    import argparse as _ap
+    _parser = _ap.ArgumentParser()
+    _parser.add_argument("--with-frameworks-catalogue", action="store_true",
+                         help="Also run the monthly CCS catalogue ingest")
+    _args = _parser.parse_args()
+
     log.info("Nightly pipeline starting")
 
     fts_rc = run_step("Find a Tender ingest",
@@ -85,6 +95,31 @@ if __name__ == "__main__":
 
     run_step("Buyer fuzzy matching (threshold 95)",
              [str(AGENT_DIR / "fuzzy-match-buyers.py"), "--threshold", "95", "--apply"])
+
+    # Daily pipeline scan: triage last 24h of new notices into BOOK / QUALIFY /
+    # INTEL / WATCH, write Obsidian pursuit files for actionable items, upsert
+    # crm.db, save digest. Email send is a separate step (Gmail token).
+    # Non-fatal — a failed scan must not stop the data pipeline.
+    run_step("Daily pipeline scan (Agent 2 triage)",
+             [str(AGENT_DIR / "run-pipeline-scan.py"), "--hours", "24"])
+
+    # £25k spend transparency: download any new files from the catalogue,
+    # parse into spend_transactions, canonicalise entity + supplier names.
+    # Non-fatal — a failure here must not stop the core data pipeline.
+    run_step("Spend transparency: parse downloaded files + canonicalise",
+             [str(AGENT_DIR / "ingest_spend.py")])
+
+    # Framework call-off mining: links newly ingested contracts to the frameworks
+    # canonical layer. Non-fatal — a failure here must not stop the core pipeline.
+    run_step("Framework call-off mining",
+             [str(AGENT_DIR / "mine_framework_calloffs.py")])
+
+    # Monthly: CCS catalogue ingest (run with --with-frameworks-catalogue)
+    if _args.with_frameworks_catalogue:
+        run_step("CCS framework catalogue ingest",
+                 [str(AGENT_DIR / "ingest_frameworks_catalogue.py")])
+        run_step("Framework consolidation",
+                 [str(AGENT_DIR / "consolidate_frameworks.py")])
 
     log.info("Nightly pipeline complete")
     sys.exit(0 if fts_rc == 0 else fts_rc)

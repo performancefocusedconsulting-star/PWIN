@@ -441,6 +441,120 @@ def api_expiry_categories():
         conn.close()
 
 
+def api_frameworks_summary():
+    conn = get_db()
+    if not conn: return {"error": "Database not found"}
+    try:
+        total = conn.execute("SELECT COUNT(*) FROM frameworks").fetchone()[0]
+        active = conn.execute(
+            "SELECT COUNT(*) FROM frameworks WHERE status='active'"
+        ).fetchone()[0]
+        expiring = conn.execute(
+            "SELECT COUNT(*) FROM frameworks WHERE status='active'"
+            " AND expiry_date IS NOT NULL"
+            " AND expiry_date <= date('now', '+12 months')"
+        ).fetchone()[0]
+        total_value = conn.execute(
+            "SELECT COALESCE(SUM(call_off_value_total), 0) FROM frameworks"
+        ).fetchone()[0]
+        return {
+            "total": total, "active": active,
+            "expiring_soon": expiring, "total_call_off_value": total_value,
+        }
+    except Exception:
+        return {"total": 0, "active": 0, "expiring_soon": 0, "total_call_off_value": 0}
+    finally:
+        conn.close()
+
+
+def api_frameworks_list(params):
+    conn = get_db()
+    if not conn: return {"error": "Database not found"}
+    try:
+        q = params.get("q", [""])[0].lower()
+        owner_type = params.get("owner_type", [""])[0]
+        status = params.get("status", [""])[0]
+        category = params.get("category", [""])[0]
+
+        conditions, args = [], []
+        if q:
+            conditions.append("(instr(lower(name), ?) > 0 OR instr(lower(reference_no), ?) > 0)")
+            args += [q, q]
+        if owner_type:
+            conditions.append("owner_type = ?"); args.append(owner_type)
+        if status:
+            conditions.append("status = ?"); args.append(status)
+        if category:
+            conditions.append("instr(lower(category), ?) > 0"); args.append(category)
+
+        where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+        rows = conn.execute(f"""
+            SELECT id, name, reference_no, owner, owner_type, category, status,
+                   expiry_date, supplier_count, call_off_count, call_off_value_total, source
+            FROM frameworks {where}
+            ORDER BY call_off_value_total DESC
+            LIMIT 200
+        """, args).fetchall()
+        return {"frameworks": [dict(r) for r in rows]}
+    except Exception:
+        return {"frameworks": []}
+    finally:
+        conn.close()
+
+
+def api_framework_detail(params):
+    conn = get_db()
+    if not conn: return {"error": "Database not found"}
+    try:
+        fw_id_raw = params.get("id", [None])[0]
+        if not fw_id_raw: return {"error": "id required"}
+        try:
+            fw_id = int(fw_id_raw)
+        except ValueError:
+            return {"error": "id must be a number"}
+        fw = conn.execute(
+            "SELECT * FROM frameworks WHERE id=?", (fw_id,)
+        ).fetchone()
+        if not fw: return {"error": "Not found"}
+
+        lots = conn.execute(
+            "SELECT * FROM framework_lots WHERE framework_id=? ORDER BY lot_number",
+            (fw_id,)
+        ).fetchall()
+        top_suppliers = conn.execute("""
+            SELECT supplier_name_raw, call_off_count, call_off_value
+            FROM framework_suppliers WHERE framework_id=?
+            ORDER BY call_off_value DESC LIMIT 10
+        """, (fw_id,)).fetchall()
+        top_buyers = conn.execute("""
+            SELECT buyer_canonical_id AS buyer, COUNT(*) AS call_offs,
+                   SUM(value) AS total_value
+            FROM framework_call_offs WHERE framework_id=?
+              AND buyer_canonical_id IS NOT NULL
+            GROUP BY buyer_canonical_id
+            ORDER BY total_value DESC LIMIT 10
+        """, (fw_id,)).fetchall()
+        recent = conn.execute("""
+            SELECT contract_title, buyer_canonical_id AS buyer,
+                   supplier_canonical_id AS supplier,
+                   value, awarded_date
+            FROM framework_call_offs WHERE framework_id=?
+            ORDER BY awarded_date DESC LIMIT 20
+        """, (fw_id,)).fetchall()
+
+        return {
+            "framework": dict(fw),
+            "lots": [dict(l) for l in lots],
+            "top_suppliers": [dict(s) for s in top_suppliers],
+            "top_buyers": [dict(b) for b in top_buyers],
+            "recent_call_offs": [dict(r) for r in recent],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        conn.close()
+
+
 def api_search(params):
     """Three-dimension bid-director search: service × buyer × value."""
     service = params.get("service", [""])[0]
@@ -518,15 +632,35 @@ def api_search(params):
 
 # ── HTTP Server ───────────────────────────────────────────────────────────
 
+def api_buyer_behaviour(params):
+    """Behaviour analytics endpoint — calls the JSON-emitting variant of
+    the buyer_behaviour CLI command in queries/queries.py."""
+    name = params.get("name", [None])[0]
+    if not name:
+        return {"error": "name parameter required"}
+    try:
+        years = int(params.get("years", ["5"])[0])
+    except ValueError:
+        years = 5
+    # Lazy import — avoids paying CPV-cache build cost on every server start
+    sys.path.insert(0, str(Path(__file__).parent / "queries"))
+    from queries import buyer_behaviour_data
+    return buyer_behaviour_data(name, years=years)
+
+
 ROUTES = {
     "/api/summary": lambda p: api_summary(),
     "/api/buyer": api_buyer,
+    "/api/buyer-behaviour": api_buyer_behaviour,
     "/api/supplier": api_supplier,
     "/api/expiring": api_expiring,
     "/api/pipeline": api_pipeline,
     "/api/pwin": api_pwin,
     "/api/categories": lambda p: api_service_categories(),
     "/api/expiry-categories": lambda p: api_expiry_categories(),
+    "/api/frameworks-summary": lambda p: api_frameworks_summary(),
+    "/api/frameworks": api_frameworks_list,
+    "/api/framework": api_framework_detail,
     "/api/search": api_search,
 }
 
