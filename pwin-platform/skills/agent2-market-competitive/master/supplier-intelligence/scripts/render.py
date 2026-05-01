@@ -23,14 +23,10 @@ CITATION_RE = re.compile(r"\[(CLM-[0-9A-Z-]+|[A-Z]+-CLM-[0-9A-Z-]+)\]")
 
 
 def _linkify_citations(text: str) -> str:
-    """Replace [CLM-id] markers in narrative with anchor links."""
     if not isinstance(text, str):
         return text
     return CITATION_RE.sub(
-        lambda m: (
-            f'<a class="claim-cite" href="#claim-{m.group(1)}">'
-            f'[{m.group(1)}]</a>'
-        ),
+        lambda m: f'<a class="claim-cite" href="#claim-{m.group(1)}">[{m.group(1)}]</a>',
         text,
     )
 
@@ -57,7 +53,7 @@ def _render_claims_block(claims: list) -> str:
     )
 
 
-def ev(w, default="--"):
+def ev(w, default="—"):
     if isinstance(w, dict):
         return _linkify_citations(str(w.get("value", default)))
     return _linkify_citations(str(w)) if w else default
@@ -100,15 +96,8 @@ def domain_table(domain_data, fields):
     return "".join(rows)
 
 
-def render(slug):
-    intel = fr"C:\Users\User\.pwin\intel\suppliers\{slug}-dossier.json"
-    ws_dir = r"C:\Users\User\Documents\Claude\Projects\Bid Equity\suppliers"
-    os.makedirs(ws_dir, exist_ok=True)
-    os.makedirs(r"C:\Users\User\.pwin\intel\suppliers", exist_ok=True)
-
-    with open(intel, encoding="utf-8") as f:
-        d = json.load(f)
-
+def build_html(d: dict) -> str:
+    """Build the full HTML string from a dossier dict. Testable without file I/O."""
     meta = d.get("meta", {})
     sc = d.get("strategicScores", {})
 
@@ -128,17 +117,120 @@ def render(slug):
             f'<div style="margin-bottom:24px">'
             f'<h3 style="font-family:Cormorant Garamond,serif;color:{NAVY};'
             f'font-size:1.1em;margin:0 0 8px 0;padding-bottom:4px;'
-            f'border-bottom:1px solid {PALE}">{code} -- {title}</h3>'
+            f'border-bottom:1px solid {PALE}">{code} — {title}</h3>'
             f'<table style="width:100%;border-collapse:collapse">{rows}</table></div>'
         )
 
+    # D3: Framework & Contract Positions
+    d3 = d.get("D3", {})
+    fp_rows = "".join(
+        f'<tr>'
+        f'<td style="padding:6px 12px">{fp.get("framework", "")}</td>'
+        f'<td style="padding:6px 12px">{fp.get("lot", "")}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace">{fp.get("expiry", "")}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace">'
+        f'{"£{:,.0f}m".format(fp["valueCeilingGbpm"]) if fp.get("valueCeilingGbpm") else "—"}</td></tr>'
+        for fp in d3.get("frameworkPositions", [])
+    )
+    tc_rows = "".join(
+        f'<tr>'
+        f'<td style="padding:6px 12px">{tc.get("buyer", "")}</td>'
+        f'<td style="padding:6px 12px">{tc.get("title", "")}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace">'
+        f'{"£{:,.0f}m".format(tc["valueGbpm"]) if tc.get("valueGbpm") else "—"}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace">{tc.get("expiry", "")}</td>'
+        f'<td style="padding:6px 12px;font-size:0.8em;color:#666">{tc.get("cpv", "")}</td></tr>'
+        for tc in d3.get("topContracts", [])
+    )
+    d3_html = ""
+    if fp_rows or tc_rows:
+        d3_html = (
+            '<div style="margin-bottom:24px">'
+            f'<h3 style="font-family:Cormorant Garamond,serif;color:{NAVY};font-size:1.1em;'
+            f'margin:0 0 8px 0;padding-bottom:4px;border-bottom:1px solid {PALE}">'
+            'D3 — Framework &amp; Contract Positions</h3>'
+        )
+        if fp_rows:
+            d3_html += (
+                '<p style="font-size:0.8em;color:#666;margin-bottom:4px">Framework positions</p>'
+                f'<table style="width:100%;border-collapse:collapse;margin-bottom:12px">'
+                f'<thead><tr style="background:{NAVY};color:{SAND}">'
+                '<th style="padding:6px 12px;text-align:left">Framework</th>'
+                '<th style="padding:6px 12px;text-align:left">Lot</th>'
+                '<th style="padding:6px 12px;text-align:left">Expiry</th>'
+                '<th style="padding:6px 12px;text-align:left">Ceiling</th></tr></thead>'
+                f'<tbody>{fp_rows}</tbody></table>'
+            )
+        if tc_rows:
+            d3_html += (
+                '<p style="font-size:0.8em;color:#666;margin-bottom:4px">Top contracts</p>'
+                f'<table style="width:100%;border-collapse:collapse">'
+                f'<thead><tr style="background:{NAVY};color:{SAND}">'
+                '<th style="padding:6px 12px;text-align:left">Buyer</th>'
+                '<th style="padding:6px 12px;text-align:left">Title</th>'
+                '<th style="padding:6px 12px;text-align:left">Value</th>'
+                '<th style="padding:6px 12px;text-align:left">Expiry</th>'
+                '<th style="padding:6px 12px;text-align:left">CPV</th></tr></thead>'
+                f'<tbody>{tc_rows}</tbody></table>'
+            )
+        d3_html += '</div>'
+
+    # D4: Contracts Expiring 24m
+    d4 = d.get("D4", {})
+    vuln_col = {"high": TERRA, "medium": AQUA, "low": PALE}
+    exp_rows = "".join(
+        f'<tr>'
+        f'<td style="padding:6px 12px">{c.get("buyer", "")}</td>'
+        f'<td style="padding:6px 12px">{c.get("title", "")}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace">'
+        f'{"£{:,.0f}m".format(c["valueGbpm"]) if c.get("valueGbpm") else "—"}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace">{c.get("expiry", "")}</td>'
+        f'<td style="padding:6px 12px">'
+        f'<span style="background:{vuln_col.get(c.get("rebidVulnerability", ""), PALE)};'
+        f'color:{NAVY};padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600">'
+        f'{c.get("rebidVulnerability", "").upper()}</span></td>'
+        f'<td style="padding:6px 12px;font-size:0.82em;color:#444">'
+        f'{c.get("vulnerabilityRationale", "")}</td></tr>'
+        for c in d4.get("contractsExpiring24m", [])
+    )
+    pipeline_items = "".join(
+        f'<li style="margin-bottom:4px">{ev(p)}</li>'
+        for p in d4.get("knownPipelinePursuits", [])
+    )
+    d4_html = ""
+    if exp_rows or pipeline_items:
+        d4_html = (
+            '<div style="margin-bottom:24px">'
+            f'<h3 style="font-family:Cormorant Garamond,serif;color:{NAVY};font-size:1.1em;'
+            f'margin:0 0 8px 0;padding-bottom:4px;border-bottom:1px solid {PALE}">'
+            'D4 — Contracts Expiring 24m</h3>'
+        )
+        if exp_rows:
+            d4_html += (
+                f'<table style="width:100%;border-collapse:collapse;margin-bottom:12px">'
+                f'<thead><tr style="background:{NAVY};color:{SAND}">'
+                '<th style="padding:6px 12px;text-align:left">Buyer</th>'
+                '<th style="padding:6px 12px;text-align:left">Contract</th>'
+                '<th style="padding:6px 12px;text-align:left">Value</th>'
+                '<th style="padding:6px 12px;text-align:left">Expiry</th>'
+                '<th style="padding:6px 12px;text-align:left">Vulnerability</th>'
+                '<th style="padding:6px 12px;text-align:left">Rationale</th></tr></thead>'
+                f'<tbody>{exp_rows}</tbody></table>'
+            )
+        if pipeline_items:
+            d4_html += (
+                '<p style="font-size:0.8em;color:#666;margin:8px 0 4px">Known pipeline pursuits</p>'
+                f'<ul style="margin:0;padding-left:18px">{pipeline_items}</ul>'
+            )
+        d4_html += '</div>'
+
     vmap_rows = "".join(
         f'<tr>'
-        f'<td style="padding:8px 12px">{r.get("contract","")}</td>'
-        f'<td style="padding:8px 12px">{r.get("buyer","")}</td>'
-        f'<td style="padding:8px 12px;font-family:DM Mono,monospace">{r.get("expiry","")}</td>'
-        f'<td style="padding:8px 12px">{r.get("vulnerability","")}</td>'
-        f'<td style="padding:8px 12px;font-size:0.88em">{r.get("displacementRoute","")}</td></tr>'
+        f'<td style="padding:8px 12px">{r.get("contract", "")}</td>'
+        f'<td style="padding:8px 12px">{r.get("buyer", "")}</td>'
+        f'<td style="padding:8px 12px;font-family:DM Mono,monospace">{r.get("expiry", "")}</td>'
+        f'<td style="padding:8px 12px">{r.get("vulnerability", "")}</td>'
+        f'<td style="padding:8px 12px;font-size:0.88em">{r.get("displacementRoute", "")}</td></tr>'
         for r in d.get("vulnerabilityMap", [])
     )
 
@@ -159,7 +251,8 @@ def render(slug):
         f'<td style="padding:6px 12px;font-family:DM Mono,monospace;font-size:0.8em">{s.get("sourceId")}</td>'
         f'<td style="padding:6px 12px;font-size:0.85em">{s.get("tier")}</td>'
         f'<td style="padding:6px 12px;font-size:0.85em">{s.get("title")}</td>'
-        f'<td style="padding:6px 12px;font-family:DM Mono,monospace;font-size:0.8em">{", ".join(s.get("sectionsSupported",[]))}</td>'
+        f'<td style="padding:6px 12px;font-family:DM Mono,monospace;font-size:0.8em">'
+        f'{", ".join(s.get("sectionsSupported", []))}</td>'
         f'<td style="padding:6px 12px;font-family:DM Mono,monospace;font-size:0.8em">{s.get("accessDate")}</td></tr>'
         for s in sources
     )
@@ -177,7 +270,7 @@ def render(slug):
     html = (
         '<!DOCTYPE html><html lang="en"><head>'
         '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        f'<title>{meta.get("supplierName","Supplier")} -- Intelligence Dossier</title>'
+        f'<title>{meta.get("supplierName", "Supplier")} — Intelligence Dossier</title>'
         '<link href="https://fonts.googleapis.com/css2?'
         'family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500'
         '&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">'
@@ -200,11 +293,11 @@ def render(slug):
         'a.claim-cite:hover{text-decoration:underline}'
         '</style></head><body>'
         '<div class="hdr">'
-        f'<h1>{meta.get("supplierName","Supplier Intelligence Dossier")}</h1>'
-        f'<div class="sub">v{meta.get("version","1.0.0")} &nbsp;|&nbsp; '
-        f'Built {meta.get("builtDate","--")} &nbsp;|&nbsp; '
-        f'{meta.get("sourceCount",0)} sources &nbsp;|&nbsp; '
-        f'<span style="text-transform:uppercase">{meta.get("mode","build")}</span>'
+        f'<h1>{meta.get("supplierName", "Supplier Intelligence Dossier")}</h1>'
+        f'<div class="sub">v{meta.get("version", "1.0.0")} &nbsp;|&nbsp; '
+        f'Built {meta.get("builtDate", "--")} &nbsp;|&nbsp; '
+        f'{meta.get("sourceCount", 0)} sources &nbsp;|&nbsp; '
+        f'<span style="text-transform:uppercase">{meta.get("mode", "build")}</span>'
         f'<span style="background:{TEAL};color:{SAND};padding:2px 10px;border-radius:12px;'
         f'font-family:DM Mono,monospace;font-size:0.75em;margin-left:10px">INTERNAL</span></div></div>'
         '<div class="body">'
@@ -225,6 +318,8 @@ def render(slug):
             ("% of group", "pctOfGroupRevenue"),
             ("Geography", "geographicSpread"),
         ])
+        + d3_html
+        + d4_html
         + domain_card("D5", "Capabilities & Service Lines", [
             ("Core capabilities", "coreCapabilities"),
             ("Tech stack", "technologyStack"),
@@ -285,7 +380,19 @@ def render(slug):
     )
     html += _render_claims_block(d.get("claims", []))
     html += '</div></body></html>'
+    return html
 
+
+def render(slug):
+    intel = fr"C:\Users\User\.pwin\intel\suppliers\{slug}-dossier.json"
+    ws_dir = r"C:\Users\User\Documents\Claude\Projects\Bid Equity\suppliers"
+    os.makedirs(ws_dir, exist_ok=True)
+    os.makedirs(r"C:\Users\User\.pwin\intel\suppliers", exist_ok=True)
+
+    with open(intel, encoding="utf-8") as f:
+        d = json.load(f)
+
+    html = build_html(d)
     out_paths = [
         fr"C:\Users\User\.pwin\intel\suppliers\{slug}-dossier.html",
         os.path.join(ws_dir, f"{slug}-dossier.html"),
