@@ -746,7 +746,7 @@ input[type="range"]::-webkit-slider-thumb {
     <div id="fw-detail" style="display:none;margin-top:24px">
       <h3 id="fw-detail-name" style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:4px"></h3>
       <div id="fw-detail-meta" style="color:var(--muted);font-size:0.85rem;margin-bottom:16px"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" id="fw-detail-grid">
+      <div class="two-col" id="fw-detail-grid">
         <div class="card">
           <div class="card-title">Lots</div>
           <div id="fw-detail-lots"></div>
@@ -1618,13 +1618,6 @@ async function loadPwin() {
 }
 
 /* ── FRAMEWORKS VIEW ────────────────────────────────────────── */
-function fmtVal(v) {
-  if (!v) return '—';
-  if (v >= 1e9) return '£' + (v/1e9).toFixed(1) + 'bn';
-  if (v >= 1e6) return '£' + (v/1e6).toFixed(1) + 'm';
-  if (v >= 1e3) return '£' + (v/1e3).toFixed(0) + 'k';
-  return '£' + v.toFixed(0);
-}
 
 function statusBadge(status) {
   const colours = {
@@ -1642,7 +1635,7 @@ async function loadFrameworksSummary() {
   document.getElementById('fw-total').textContent = data.total ?? '—';
   document.getElementById('fw-active').textContent = data.active ?? '—';
   document.getElementById('fw-expiring').textContent = data.expiring_soon ?? '—';
-  document.getElementById('fw-total-value').textContent = fmtVal(data.total_call_off_value);
+  document.getElementById('fw-total-value').textContent = fmtCurrency(data.total_call_off_value);
 }
 
 async function loadFrameworksList() {
@@ -1668,7 +1661,7 @@ async function loadFrameworksList() {
       <td>${statusBadge(fw.status)}</td>
       <td style="text-align:right">${fw.supplier_count || 0}</td>
       <td style="text-align:right">${fw.call_off_count || 0}</td>
-      <td style="text-align:right">${fmtVal(fw.call_off_value_total)}</td>
+      <td style="text-align:right">${fmtCurrency(fw.call_off_value_total)}</td>
     `;
     tr.addEventListener('click', () => loadFrameworkDetail(fw.id));
     tbody.appendChild(tr);
@@ -1682,7 +1675,7 @@ async function loadFrameworkDetail(id) {
   document.getElementById('fw-detail').style.display = 'block';
   document.getElementById('fw-detail-name').textContent = fw.name;
   document.getElementById('fw-detail-meta').textContent =
-    [fw.reference_no, fw.owner, fw.expiry_date ? `Expires ${fw.expiry_date}` : null,
+    [fw.reference_no, fw.owner, fw.expiry_date ? `Expires ${fmtDate(fw.expiry_date)}` : null,
      fw.source === 'contracts_only' ? '⚑ Enrich from catalogue' : null]
     .filter(Boolean).join(' · ');
 
@@ -1696,21 +1689,21 @@ async function loadFrameworkDetail(id) {
   const supEl = document.getElementById('fw-detail-suppliers');
   supEl.innerHTML = data.top_suppliers.length
     ? '<table>' + data.top_suppliers.map(s =>
-        `<tr><td>${s.supplier_name_raw || '—'}</td><td style="text-align:right">${fmtVal(s.call_off_value)}</td></tr>`
+        `<tr><td>${s.supplier_name_raw || '—'}</td><td style="text-align:right">${fmtCurrency(s.call_off_value)}</td></tr>`
       ).join('') + '</table>'
     : '<p style="color:var(--muted)">No supplier data</p>';
 
   const buyEl = document.getElementById('fw-detail-buyers');
   buyEl.innerHTML = data.top_buyers.length
     ? '<table>' + data.top_buyers.map(b =>
-        `<tr><td>${b.buyer || '—'}</td><td style="text-align:right">${fmtVal(b.total_value)}</td></tr>`
+        `<tr><td>${b.buyer || '—'}</td><td style="text-align:right">${fmtCurrency(b.total_value)}</td></tr>`
       ).join('') + '</table>'
     : '<p style="color:var(--muted)">No buyer data</p>';
 
   const coEl = document.getElementById('fw-detail-calloffs');
   coEl.innerHTML = data.recent_call_offs.length
     ? '<table>' + data.recent_call_offs.map(c =>
-        `<tr><td style="font-size:0.8rem">${c.awarded_date || ''}</td><td style="font-size:0.8rem">${c.title || '—'}</td><td style="text-align:right;font-size:0.8rem">${fmtVal(c.value)}</td></tr>`
+        `<tr><td style="font-size:0.8rem">${c.awarded_date || ''}</td><td style="font-size:0.8rem">${c.title || '—'}</td><td style="text-align:right;font-size:0.8rem">${fmtCurrency(c.value)}</td></tr>`
       ).join('') + '</table>'
     : '<p style="color:var(--muted)">No call-off data</p>';
 
