@@ -1911,6 +1911,44 @@ function createMcpServer() {
     }
   );
 
+  server.tool(
+    'get_senior_leadership',
+    'Get senior civil servants (Director tier and above) for a government buyer from the organogram database. Returns names, job titles, SCS bands, and reporting lines. Use to populate the senior-leadership section of buyer intelligence dossiers or Win Strategy stakeholder maps.',
+    {
+      name: z.string().describe('Buyer name (e.g. "HM Treasury", "Ministry of Defence", "Home Office")'),
+      tier: z.string().optional().describe('Filter by seniority band: PermanentSecretary | DirectorGeneral | Director | DeputyDirector'),
+      topN: z.number().optional().describe('Max records to return (default 20)'),
+    },
+    async ({ name, tier, topN }) => {
+      const result = compIntel.getStakeholders(name, { tier, topN });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_stakeholder_by_name',
+    'Look up a named individual across organogram records and PAC witness lists. Returns matching stakeholders with their current role, organisation, and seniority band.',
+    {
+      name: z.string().describe('Name or partial name to search for (e.g. "Gallagher", "Tom Scholar")'),
+    },
+    async ({ name }) => {
+      const result = compIntel.getStakeholderByName(name);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'find_evaluators',
+    'Find likely evaluators for a buyer — PAC witnesses who are Director-level SROs. Use when assessing who will evaluate a bid or map stakeholder engagement risk.',
+    {
+      name: z.string().describe('Buyer name (e.g. "Home Office", "Ministry of Justice")'),
+    },
+    async ({ name }) => {
+      const result = compIntel.findEvaluators(name);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
   // ==========================================================================
   // CANONICAL ADJUDICATOR WRITE TOOLS
   // ==========================================================================
