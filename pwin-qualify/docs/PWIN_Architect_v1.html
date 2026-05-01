@@ -4752,7 +4752,8 @@ function getContextBlock() {
 }
 
 // ── Competitive Intelligence from FTS procurement data ──────
-// Fetches buyer profile and PWIN signals from the platform API.
+// Fetches buyer profile, PWIN signals, sector context, competitor profiles,
+// forward pipeline, and expiring contracts from the platform API.
 // Returns a formatted text block for injection into AI prompts.
 // Fails silently — competitive intel enriches but is not required.
 
@@ -4797,14 +4798,15 @@ async function fetchPwinSignals(org) {
       .then(r => r.ok ? r.json() : null).catch(() => null);
     if (!resp?.signals?.length) return '';
     const sig = resp.signals[0];
-    const lines = ['PROCUREMENT INTELLIGENCE — Competition Signals:'];
+    const lines = [];
     if (sig.awardsCount) lines.push(`Competition level: ${sig.awardsCount} awards tracked`);
     if (sig.avgBidsPerTender) lines.push(`Average bids per tender: ${Number(sig.avgBidsPerTender).toFixed(1)}`);
     const total = (sig.openAwards || 0) + (sig.limitedAwards || 0) + (sig.directAwards || 0) + (sig.selectiveAwards || 0);
     if (total > 0) {
       lines.push(`Method breakdown: open=${sig.openAwards || 0}, limited=${sig.limitedAwards || 0}, direct=${sig.directAwards || 0}, selective=${sig.selectiveAwards || 0}`);
     }
-    return lines.join('\n');
+    if (!lines.length) return '';
+    return ['PROCUREMENT INTELLIGENCE — Competition Signals:', ...lines].join('\n');
   } catch { return ''; }
 }
 
