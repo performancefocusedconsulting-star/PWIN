@@ -42,7 +42,8 @@
   --be-teal:        #5CA3B6;
   --be-sand:        #F7F4EE;
   --be-navy:        #021744;
-  --be-terracotta:  #D17A74;
+  --be-terracotta:      #D17A74;
+  --be-terracotta-dark: #B8645E; /* button hover */
   --be-pale-aqua:   #E0F4F6;
   --be-bright-aqua: #7ADDE2;
   --be-cyan:        #60F5F7;
@@ -309,7 +310,7 @@ td.mono {
   cursor: pointer;
   transition: background 0.2s;
 }
-.search-bar button:hover, .btn:hover { background: #B8645E; }
+.search-bar button:hover, .btn:hover { background: var(--be-terracotta-dark); }
 
 /* ── FILTERS ────────────────────────────────────────────────── */
 .filters {
@@ -372,7 +373,7 @@ td.mono {
 .proc-legend .swatch {
   display: inline-block;
   width: 10px; height: 10px;
-  border-radius: 2px;
+  border-radius: 0;
   margin-right: 4px;
   vertical-align: middle;
 }
@@ -469,7 +470,7 @@ input[type="range"] {
   -webkit-appearance: none;
   background: var(--bg-card);
   height: 4px;
-  border-radius: 2px;
+  border-radius: 0;
   outline: none;
   width: 140px;
 }
@@ -1292,7 +1293,7 @@ function renderBuyerBehaviour(d) {
   const outcomeBar = `
     <div style="margin-bottom:20px">
       <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Outcome mix</div>
-      <div style="border:1px solid var(--border);border-radius:2px;overflow:hidden;line-height:0">${barSegs}</div>
+      <div style="border:1px solid var(--border);border-radius:0;overflow:hidden;line-height:0">${barSegs}</div>
       <div class="proc-legend" style="margin-top:8px;flex-wrap:wrap;gap:12px;">${legend}</div>
     </div>`;
 
