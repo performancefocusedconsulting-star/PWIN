@@ -1,0 +1,460 @@
+[
+  {
+    "sector": "Central Government",
+    "opportunityType": "BPO",
+    "promptBlock": "Cabinet Office spend controls apply to major BPO contracts — contracts over £20m require central commercial governance approval. Social value weighting (minimum 10% under PPN 06/21) is mandatory. Trade union engagement through public sector TUPE is scrutinised by ministers and civil service unions (PCS, Prospect). The business case must pass Green Book appraisal and HM Treasury review for large contracts."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "Technology Code of Practice and cloud-first policy govern the technical approach. Central government IT is subject to GDS assurance and Cabinet Office spending controls for digital and IT programmes above £5m. Legacy system dependencies in departments like DWP and HMRC (mainframe, COBOL) create significant transition complexity that challengers must address explicitly. Security classifications (OFFICIAL, OFFICIAL-SENSITIVE, SECRET) must be confirmed before scoping the solution."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Cabinet Office commercial function reviews major managed service contracts. Crown Commercial Service frameworks are the preferred procurement route. The Senior Responsible Owner (SRO) appointment is mandatory for Major Projects Authority-tracked contracts. Efficiency savings targets are explicit evaluation criteria — the bid must demonstrate value for money against cross-government benchmarks."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Government Property Agency (GPA) estate strategy shapes facilities contracts — many departments are consolidating into GPA-managed hubs, and FM contracts must align with the GPA masterplan for the relevant estate. PFI legacy contracts create parallel obligations where new FM scope must not conflict with existing PFI terms. Cross-departmental facilities contracts require Cabinet Office alignment and may require HM Treasury consent for long-term commitments."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "Cloud-first policy and CDDO-funded legacy modernisation investment programmes create the context for most hybrid transformation bids. The Target Operating Model (TOM) design is often evaluated as heavily as the technical solution — evaluation panels include commercial, digital, and operations leads. Cabinet Office scrutiny of long-term managed service commitments attached to transformation programmes is high — lock-in risk must be explicitly addressed in the commercial construct."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "Digital Outcomes and Specialists (DSPS) framework is the mandatory or preferred route for digital service delivery. GDS service assessment gates (Alpha, Beta, Live) apply and are evaluated criteria, not optional governance. The Cabinet Office DDAT (Digital, Data and Technology) capability framework shapes how team roles must be defined in the bid — generic IT role titles are not accepted."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "Cabinet Office consultancy spending controls (PPN 01/21) cap and scrutinise use of external consultants — bids must articulate knowledge transfer and capability build, not just advisory delivery. Off-payroll working (IR35) rules affect how individuals can be engaged on central government consulting contracts. OGC Gateway-style assurance reviews may require advisory deliverables to be peer-reviewed by Crown commercial advisers before they can be used to inform policy or spending decisions."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "CCS Technology Products and Associated Services (RM3733) and G-Cloud are the primary procurement routes. Security classification requirements must be confirmed before specification — NCSC-approved product lists apply for security-sensitive hardware deployments. Cyber Essentials Plus is mandatory for suppliers handling government data. Supply chain assurance requirements (NIST 800-161, DCPP for defence-adjacent work) may apply to hardware with national security relevance."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "G-Cloud is the preferred procurement route — annual framework renewal means positions must be maintained. Data residency in UK or approved jurisdictions is mandatory for OFFICIAL-SENSITIVE data processing. Government Security Classifications and their handling requirements must be addressed in the product security architecture. NCSC Cloud Security Principles assessment must be evidenced for any cloud product handling government data above OFFICIAL."
+  },
+  {
+    "sector": "Central Government",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "CCS frameworks are the dominant vehicle for central government — framework position is a prerequisite for most call-off opportunities. Social value and Net Zero (PPN 06/21, Carbon Reduction Plans) commitments must be evidenced at framework application stage, not deferred to call-off. Central commercial function oversight means framework terms are reviewed and can be tightened on renewal — track record on existing CCS frameworks directly affects renewal prospects."
+  },
+
+  {
+    "sector": "Local Government",
+    "opportunityType": "BPO",
+    "promptBlock": "Shared service models and joint ventures between councils are common — bidders should expect consortium procurement and multi-authority contracts covering several borough or district councils. Community Wealth Building policies in some Labour-controlled councils (Preston Model, Islington approach) create preference for cooperative models and local supply chains. Trade union resistance to outsourcing (UNISON, GMB) is active and can delay or politically derail procurement even after commercial award."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "Legacy supplier lock-in (Capita One, Civica, NEC Software) is pervasive in revenues and benefits, planning, and social care systems — challengers must demonstrate specific transition credibility from these platforms, not just generic ITO experience. Shared IT services between councils (one authority hosting for several) are growing — bids must account for multi-council service levels within a single contract. Local government systems have specialist requirements not covered by central government or private sector ITO experience."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Full council overview and scrutiny committee involvement in major managed service awards creates a dual approval path — officer recommendation must survive member challenge. The council's Medium Term Financial Strategy (MTFS) drives contract start dates and savings targets — bids must align cost reduction to specific MTFS years to be commercially credible. Union consultation under TUPE is not just legal compliance — it carries political weight at Full Council and can delay award."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Leisure centre management, waste collection, housing repairs, and grounds maintenance are the dominant local government facilities categories. Social enterprise and in-house insourcing movements are live competition in some authorities — the bid must address the in-house option directly if it is on the table. Community Impact Assessment is increasingly a standard gate in procurements involving public-facing services and must be completed before award."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "Transformation programmes are typically funded by DLUHC grants or UKSPF levelling-up allocations with tight spend profiles and activity milestones — bids must show deliverability within grant conditions, not just contract terms. Member appetite for transformation risk is low — hybrid bids must separate the transformation horizon (politically risky) from the operational baseline (politically safe) to survive scrutiny committee review."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "Local authorities procure digital services outside the DOS framework more often than central government — direct procurement under PCR thresholds is common and GDS service standards are advisory, not mandatory. Local Government Digital Service (LGDS) standards are applied by some larger authorities as evaluation criteria. GDS-style agile delivery methodology is less embedded in local government than Whitehall — evidence of successful local government digital delivery specifically is valued over central government references."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "Elected member engagement is essential — advisory engagements that inform cabinet decisions require councillor buy-in from inception, not just officer sponsorship. Political cycle sensitivity is acute — work that could embarrass the administration before an election or appear critically in the local press is avoided by risk-averse officers. Section 151 officer sign-off is required for any consulting contract that informs budget decisions, adding a second approval path beyond the commissioning officer."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "ESPO, YPO, NEPO, and Eastern Shires purchasing consortia hardware frameworks are the standard routes — not CCS. Community benefit clauses attached to major infrastructure contracts are increasingly common in combined authority areas. Whole-life cost and sustainability evaluation criteria reflect the Net Zero and carbon reduction commitments most councils have adopted as policy — lifecycle carbon must be addressed, not just capital cost."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "Core local government Management Information Systems (Revenues & Benefits, Planning, Adults Social Care) are a specialist category where only a handful of suppliers compete — generic SaaS references are insufficient. Open source and shared platform models are attractive to cost-pressed authorities. Data sovereignty and compliance with council data protection policies (many specify UK data residency) is a standard gateway requirement that must be addressed before scoring."
+  },
+  {
+    "sector": "Local Government",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "ESPO, YPO, NEPO, and regional consortia frameworks are the most common route — CCS frameworks are used but not as dominant as in central government. Framework renewal cycles (3-4 years) create cliff-edge competition windows. Many councils operate their own dynamic purchasing systems (DPS) for common spend categories — framework bids must anticipate that call-offs may come through DPS mini-competitions, not framework direct award."
+  },
+
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "BPO",
+    "promptBlock": "NHS Business Services Authority (NHSBSA) is the dominant BPO buyer — pension administration, prescription processing, and workforce services are the primary categories. NHS-specific TUPE (Agenda for Change terms and conditions) creates more complex workforce transition obligations than equivalent public sector BPO — AFC pay spine, unsocial hours, and NHS pension liabilities must be modelled explicitly. ICS commissioning authority for care integration BPO is emerging as ICBs consolidate functions."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "NHS Data Security and Protection Toolkit (DSPT) compliance is a mandatory gateway for any ITO handling NHS data — non-compliant suppliers cannot be awarded. NHS Digital standards (now NHS England) govern network architecture — N3/HSCN connectivity is essential for any ITO with clinical system integration. Electronic Patient Record (EPR) platform alignment (EMIS, TPP, System C, Oracle Cerner) shapes integration requirements and creates significant switching barriers that challengers must address specifically."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Managed Service",
+    "promptBlock": "NHS Supply Chain mandatory use categories apply to some managed service categories — suppliers must confirm whether their service falls within mandated supply routes before bidding. Clinical engineering managed services are regulated under MHRA — appropriate certifications must be in place before evaluation. NHS Property Services (NHSPS) holds the estate for many trusts and has separate FM obligations that constrain new FM managed service scope — understanding the NHSPS boundary is essential."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "PFI legacy contracts govern facilities management in many NHS trusts built between 1997-2015 — new FM contracts must not conflict with existing PFI scope and may require PFI unilateral variation. NHS Cleaning Standards (National Standards of Healthcare Cleanliness) and Health Technical Memoranda (HTM) are mandatory — operational compliance with HTM 01-01 to HTM 07-04 must be evidenced. CQC inspection readiness is a live operational concern — FM failures in infection control or fire safety become regulatory risks under the CQC's Well-led domain."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "NHS Long Term Plan and NHSE transformation programmes (elective recovery, primary care access, mental health) drive hybrid contracts combining service transformation with ongoing operations. The Federated Data Platform (FDP) is the NHSE-mandated architecture for data integration — any hybrid involving NHS data must demonstrate FDP compatibility. Clinical safety officer obligations (DCB0129 for manufacturers, DCB0160 for deployers) apply to digital elements of hybrid contracts and are non-negotiable gateway requirements."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "Digital Technology Assessment Criteria (DTAC) is mandatory for any digital health technology procured by NHS organisations — a failed DTAC assessment fails the bid regardless of other strengths. NHS App integration pathway and NHSE standards for patient-facing digital services apply to any solution with a patient interface. NHS-specific accessibility requirements (WCAG 2.1 AA minimum) and the Accessible Information Standard must be evidenced in the bid."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "NHS Standard Contract provisions apply to advisory work that touches clinical pathway design. NHSE oversight of ICS decision-making means significant advisory engagements affecting system strategy may require NHSE sign-off beyond the commissioning ICS or trust. The NHS operating model (provider/commissioner separation, ICB governance, NHS England oversight) must be understood to identify the correct contracting authority — common errors in identifying the buyer cause procurement delays."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "NHS Supply Chain mandatory use categories include a broad range of medical devices, consumables, and clinical equipment — non-compliance with mandatory routes is a procurement breach that can be challenged post-award. MHRA regulation applies to all medical devices and in-vitro diagnostic devices — CE/UKCA marking must be confirmed before specification. Asset management and planned preventive maintenance schedules must comply with Health Technical Memoranda (HTM) for clinical engineering equipment."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "DTAC is the primary gateway — clinical safety, data security, interoperability, usability, and technical assurance must all pass before scoring begins. Data residency within UK jurisdiction is mandatory for patient identifiable data under DSPT requirements. HL7 FHIR and NHS-standard API interoperability requirements apply for any system connecting to NHS clinical data — suppliers without existing FHIR implementation experience are immediately disadvantaged."
+  },
+  {
+    "sector": "NHS & Health",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "NHS Shared Business Services (NHS SBS) frameworks, NHS Supply Chain, and Health Family procurement frameworks are the primary routes — CCS frameworks are used for non-clinical categories only. NHSE has a preferred supplier approach for major national programmes — framework position does not guarantee consideration for national-level contracts, which are negotiated separately under NHS England's own commercial governance. DSPT compliance must be current at time of framework application and maintained annually."
+  },
+
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "BPO",
+    "promptBlock": "Commercial BPO in defence (HR, payroll, catering, logistics support) is dominated by a small number of cleared prime contractors — Serco, Sodexo, Compass, and Amey hold the majority of volume. Security clearance at SC level is the minimum for staff with any access to MOD data or secure sites. Single Source Regulations (SSR) may apply where competition is demonstrably not achievable — suppliers should understand SSR pricing obligations before bidding any non-competitive MOD contract."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "SECRET-capable infrastructure (accredited to handle MOD SECRET classification) is required for MOD IT outsourcing — not all suppliers have the accreditation timeline to achieve this. DEFTECH standards and JSP 440 (information security) govern IT security requirements throughout delivery. Legacy infrastructure (mainframes, MODAS, JPA payroll) creates significant transition complexity; challengers must name comparable legacy decommissioning experience, not assert general ITO competence."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Whole Force concept (military, civil service, and contractor mix) constrains how managed service headcount is structured — suppliers must understand military covenant obligations and MOD employment frameworks. Defence Infrastructure Organisation (DIO) is the MOD landlord — managed services operating on MOD sites interact with DIO facilities contracts and require DIO access permissions. Security Vetting Service timescales for staff mobilisation (3-6 months for SC, 9-12 months for DV) must be built into transition plans as a hard constraint."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Defence Infrastructure Organisation (DIO) is the primary FM buyer through Project PACE and related infrastructure programmes. Soft FM on military bases requires SC clearance as minimum for all deployed staff — this is a hard gateway, not a scored criterion, and affects mobilisation timeline. Base operational support services are often bundled in prime contracting models (Amey, Mitie Defence, Incentive FM) — understanding the prime contractor relationship structure is essential before positioning as a subcontractor or challenger."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "Transformation programmes in defence are subject to Major Projects Authority review and Defence Equipment Plan financial constraints — cost overruns become parliamentary questions. Hybrid transformation involving SECRET data handling requires accreditation planning from day zero — this is a critical path item with 12-18 month lead times, not an afterthought. MOD's Sovereign Capability policy means domestic delivery and skills transfer are explicit evaluation criteria, not desirable extras."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "Defence AI Centre and DSTL are the primary buyers for digital innovation. OFFICIAL-SENSITIVE is the minimum data classification for all defence digital outputs — most work is above OFFICIAL and requires accredited handling. NATO interoperability requirements (STANAG standards) apply to any digital systems connecting to coalition networks or used in joint exercises."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "Security clearance (SC minimum, DV for sensitive analytical work) is required before consultants can access classified material — this creates a 3-9 month lead time that must be built into programme planning from contract award. The cleared consulting market is thin — challenge any capability claim that does not name specific cleared individuals with verifiable credentials. MOD commercial reform and Integrated Review scrutiny of consultancy spend means knowledge transfer and enduring MOD capability-build are explicit deliverable requirements."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "ITAR (International Traffic in Arms Regulations) and EAR (Export Administration Regulations) apply to US-origin technology — suppliers must confirm export control compliance before specification. DEFCON contract conditions apply to all direct MOD contracts and flow down to subcontractors — DEFCON 658 (cyber security) is now standard. NCSC-approved product lists are mandatory for security-relevant hardware. Intellectual property ownership of custom hardware is a standard contractual dispute point and must be resolved in heads of terms."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "No SECRET data may be processed on commercial cloud without NCSC-accredited SECRET cloud (currently limited to a small number of approved providers). MOD digital strategy mandates cloud for OFFICIAL tier — on-premises proposals for OFFICIAL work are challenged at evaluation. Software supply chain security (SBOM requirements, SSDF compliance) is increasingly a contractual requirement. DEFCON 658 cyber security conditions apply to all software in the supply chain."
+  },
+  {
+    "sector": "Defence & Security",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "MOD's own commercial frameworks dominate — CCS frameworks are used for genuinely commercial (non-defence-specific) categories only, such as professional services and office supplies. Framework position does not guarantee call-off consideration where operational security requirements restrict competition post-award. DSTL research frameworks operate under different IP terms from operational delivery frameworks — IP assignment clauses must be reviewed before framework application."
+  },
+
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "BPO",
+    "promptBlock": "Prison services and probation BPO involves direct responsibility for the custody and rehabilitation of vulnerable people — a single safeguarding failure can terminate the contract and result in criminal liability for directors. The Probation Reform Programme (2021 unification) has made the market cautious about large Justice BPO bids following the CRC privatisation and insourcing cycle. TUPE transfer from public sector probation staff involves historic pension liabilities (civil service pension) that must be modelled explicitly."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "HMCTS Reform Programme (£1bn+ digital courts modernisation) and Home Office IT renewal are the two dominant ITO opportunities. Legacy system integration (CREST, LIBRA, XHIBIT in courts; NDelius in probation; NOMS in prison) is the primary transition challenge — named experience of these systems is a credibility threshold. Law Enforcement Processing under Part 3 DPA 2018 governs data handling and is stricter than standard GDPR — data processor obligations must be confirmed before pricing."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Contracted-out prison management is a thin, high-stakes market dominated by Sodexo, Serco, and Mitie — new entrants face significant credibility barriers without named custodial operations experience. Home Secretary accountability means contract failures become ministerial crises within days — this must be built into commercial risk assessments as a realistic scenario. HMIP inspection findings are published and directly affect contract extension decisions — bidders should review the most recent HMIP reports for the buyer."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Custody suite and detention centre FM requires security-cleared staff with specific safeguarding training — unescorted access to detainees is a regulated activity. Immigration Removal Centre (IRC) facilities require compliance with Detention Services Order (DSO) standards. Court facilities interact with judicial security requirements and HMCTS estate obligations — FM scope at court buildings is constrained by judicial independence principles."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "HMCTS Reform Programme hybrid (digital courts transformation + ongoing court operations) is the defining model. Home Office digital transformation (UKVI, Border Force) combines legacy IT decommissioning with new digital services — transition sequencing is the primary complexity and must be demonstrated in a detailed plan. Parliamentary and NAO scrutiny of hybrid programme costs is near-certain for contracts above £50m — contingency planning and cost-at-completion modelling must be explicit in the bid."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "Home Office digital services (UKVI online immigration status, right-to-work checking) and HMCTS digital (MyHMCTS, online plea) are the primary categories. Criminal justice data standards (Criminal Justice Secure eMail, PNC, Police National Database) are mandatory integration requirements. Biometric data handling (fingerprints, facial recognition in immigration and law enforcement) requires explicit GDPR Article 9 compliance and notification to the Biometrics and Surveillance Camera Commissioner."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "Political sensitivity means advisory work that surfaces service failures must be managed carefully — findings that could embarrass ministers are at risk of being suppressed or delayed. NAO value-for-money studies follow most major Justice advisory engagements — advisers should expect their outputs to be scrutinised by the Public Accounts Committee within 18 months. Independent advisory on prison or probation reform requires HMPPS governance board awareness, even where the contracting authority is MOJ directly."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "Custody suite CCTV, body-worn video for immigration enforcement, and biometric equipment for UKVI are the primary hardware categories. Security and surveillance hardware for law enforcement use requires NCSC assessment for government deployments. DSIT export controls apply to biometric technology with dual-use potential. Prison cell equipment is subject to Prison Service Instructions (PSIs) and must be pre-approved by HMPPS before procurement specification is finalised."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "Law Enforcement Processing under Part 3 DPA 2018 is the governing data framework — stricter subject rights limitations and more onerous processor obligations than GDPR Part 2. OFFICIAL-SENSITIVE minimum classification for all case management and offender management systems. Any software connecting to Police National Computer (PNC) or Police National Database (PND) must meet NPCC technical integration standards — these are non-negotiable gateway requirements."
+  },
+  {
+    "sector": "Justice & Home Affairs",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "MOJ commercial frameworks for legal services and court-related procurement, and Home Office's own commercial frameworks for immigration and border technology, operate separately — suppliers must maintain positions on both for full sector coverage. Framework position alone does not protect against political intervention in high-profile contract awards in this sector — reputational risk management is as important as commercial positioning. Human rights scrutiny of supplier track record is applied at framework evaluation stage."
+  },
+
+  {
+    "sector": "Transport",
+    "opportunityType": "BPO",
+    "promptBlock": "DVLA back-office processing (vehicle licensing, driver records) and DVSA enforcement administration are the two main BPO opportunities in central transport. Transport for London's back-office (Oyster, congestion charging, ULEZ enforcement) is substantial but largely insourced with a preference for in-house delivery. Operational continuity in transport BPO is safety-adjacent — service failure in licensing or enforcement directly affects road safety outcomes and generates ministerial attention."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "Network Rail's IT is subject to ORR (Office of Rail and Road) regulatory oversight — systems touching safety-critical functions require ORR notification before deployment. RSSB (Rail Safety and Standards Board) standards apply to technology deployed in railway operational environments. TfL's IT operates on a unique integrated network architecture — named experience of large-scale urban transport IT specifically is a credibility threshold, not a differentiator."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Roads maintenance managed service contracts (National Highways MAC framework) are among the longest in UK public sector — 15-year framework agreements with annual output specification reviews. Rail infrastructure managed services operate under Network Licence obligations and are subject to ORR periodic review — commercial terms can be reopened by the regulator. Multiple regulatory bodies (ORR, RAIB, AAIB) can intervene in contract delivery independent of the client — risk registers must reflect regulatory intervention as a live scenario."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Motorway service area FM, highway maintenance depots, and rail station facilities management are the dominant categories. RICS professional standards and the New Engineering Contract (NEC4) form govern most transport FM contracts — bidders must have NEC-literate commercial teams. CIRAS (Confidential Incident Reporting and Analysis System) safety reporting culture requirements apply to all transport operational environments and must be embedded in the operating model."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "Rail modernisation (East Coast Digital Programme, ETCS/ERTMS signalling deployment) combines digital infrastructure installation with ongoing operational railway management. DfT Major Projects Authority review applies to all transport transformation investments above £50m. Safety case management is a critical path item — any digital overlay to operational railway systems requires separate ORR safety case approval that is independent of the commercial contract timeline and can delay deployment by 12-24 months."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "DVLA digital services (online licence renewal, vehicle enquiry service) and National Highways digital monitoring platforms are the main categories. Where DfT is the procuring department, GDS service standards apply. Real-time passenger information systems require Open Data compliance under the Bus Open Data Service (BODS) legislation — non-compliant solutions fail a mandatory gateway."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "RICS chartered surveyors, CIHT (Chartered Institution of Highways and Transportation), and ICE (Institution of Civil Engineers) memberships are recognised credibility markers for transport consulting. Infrastructure projects require professionally indemnified design — professional indemnity insurance evidence is a standard evaluation criterion. Network Rail requires all consultants to complete NWR safety induction and hold PTS (Personal Track Safety) certification for any on-site work — this adds 4-8 weeks to mobilisation."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "NEC4 contract form is mandatory for National Highways and Network Rail construction and infrastructure contracts — procurement teams and commercial leads must be NEC-trained or NEC-accredited. Major Projects Authority tracking applies to investments above capital thresholds set in the Highways Investment Strategy and Rail Investment Strategy. RICS quantity surveying standards govern cost estimating at each RIBA stage — cost estimates not prepared to RICS standards are challenged at gateway review."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "Safety-critical software in rail requires SIL (Safety Integrity Level) assessment under IEC 61508 — SIL 2 minimum for trackside systems, SIL 4 for signalling. RSSB safety management system standards apply. Road traffic management software must comply with UTMC (Urban Traffic Management and Control) standards for interoperability with local authority traffic signal networks — proprietary systems that cannot interface with UTMC fail technical evaluation."
+  },
+  {
+    "sector": "Transport",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "National Highways and Network Rail each operate their own supplier framework structures that do not align with CCS — CCS frameworks apply only to back-office and professional services categories. HS2 Ltd has its own framework structure separate from both NR and NH. Framework positions on transport-specific frameworks are the primary commercial asset in this sector — maintaining and renewing these positions requires continuous relationship management with the framework owner's commercial team."
+  },
+
+  {
+    "sector": "Education",
+    "opportunityType": "BPO",
+    "promptBlock": "Student Loans Company (SLC) and ESFA BPO (apprenticeships administration, EFA payments processing) are the dominant central education BPO categories. University BPO (student admissions, finance processing, HR) is procured through NEUPC or APUC frameworks. Safeguarding obligations apply to BPO involving student data — children's data (under 13) requires parental consent and GDPR Article 9 special category treatment where disability or mental health data is processed."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "Universities operate on complex hybrid architectures (JANET/Jisc backbone, local data centres, cloud migration) — ITO experience specifically in higher education is a distinct credibility requirement from general public sector ITO. School MIS (Management Information System) outsourcing is dominated by a small number of vendors (Capita SIMS, Arbor, Bromcom) — switching requires careful data migration planning. DfE standards for academy trust IT governance affect how large MATs can procure and manage ITO contracts and must be addressed in the solution design."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Managed Service",
+    "promptBlock": "University campus managed services are often bundled contracts covering IT, facilities, and student services under a single prime. Ofsted 'requires improvement' or 'inadequate' judgements can trigger emergency managed service interventions in schools and MATs — suppliers with improvement turnaround experience are strongly preferred in this scenario. Academy trust managed service contracts above £500k require DfE Regional Director awareness and may require academy trust board approval beyond the principal."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "RAAC (Reinforced Autoclaved Aerated Concrete) remediation is an active and urgent capital and FM programme across schools built before 1990 — contractors must hold verifiable RAAC structural experience. Safeguarding requirements apply to all facilities operatives who work regularly on school or college premises — enhanced DBS certificates are mandatory and must be in place before mobilisation. School Food Standards regulations apply to catering and must be explicitly addressed in the food service specification."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "University digital transformation (student experience platforms, research data management, HR/finance modernisation) is the dominant hybrid category in HE. DfE's digital transformation for schools combines IT infrastructure consolidation with ongoing managed services. Whole-estate condition-led capital programmes bundled with FM managed services are growing as LAs and academy trusts seek to simplify supplier relationships — bidders must be able to price the capital and operational elements separately as procurement rules require them to be evaluated distinctly."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "EdTech procurement is unregulated compared to NHS — there is no sector equivalent to DTAC — but DfE's EdTech Evidence Hub guides purchasing decisions and evidence of efficacy is increasingly expected. Digital accessibility requirements under PSBAR 2018 apply to all publicly-funded education institutions' digital services — WCAG 2.1 AA must be evidenced. Online learning platforms in HE (Blackboard, Canvas, Moodle) are common call-off opportunities where incumbency is strong and switching cost evidence is a key bid lever."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "Ofsted preparation and post-inspection improvement consulting is a competitive and sensitive market — SLT (Senior Leadership Team) relationship is the primary buying relationship and institutional trust in the adviser matters as much as methodology. University strategic advisory is governed by the Universities UK good governance framework — outputs that could affect a university's league table position or research funding are scrutinised at board level. REF (Research Excellence Framework) preparation advisory requires co-authorship models where academic ownership of outputs is preserved."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "ESFA Condition Improvement Fund and Priority School Building Programme capital investment cycles drive school hardware procurement — timing bids to funding announcement cycles is a key market intelligence requirement. DfE ICT procurement guidance recommends CCS Technology Products framework as the primary route for schools. University data centre and network hardware is typically procured through NEUPC or direct tender — Jisc provides aggregated buying for network infrastructure that is strongly preferred."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "GDPR compliance for student data is the primary gateway — children's data (under 13) requires parental consent and stricter processing rules under UK GDPR Article 8. DfE standards for data sharing from school MIS systems (via the School Census and other returns) restrict which third-party applications can access pupil-level data. University procurement of research software is subject to UKRI open access requirements where the software is used in funded research outputs."
+  },
+  {
+    "sector": "Education",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "Crescent Purchasing Consortium (CPC) for HE and FE and ESPO for schools are the dominant education framework providers — not CCS. DfE recommends CCS frameworks for centrally-managed purchasing but does not mandate them for academies. Universities are OJEU-obligated above threshold and run mini-competitions off NEUPC and APUC frameworks — framework position on these education-specific consortia is more commercially valuable in this sector than CCS framework position."
+  },
+
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "BPO",
+    "promptBlock": "National Police Procurement Hub (NPPH) governs BPO for police forces — shared services models (contact centres, HR, finance, fleet) are procured through collaborative frameworks covering multiple forces. Fire and Rescue back-office BPO is small-volume and often combined with local government procurement. Ambulance BPO (patient transport, 111 administration) is procured through NHS routes — the contracting authority is an NHS trust, not an emergency services body."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "Command and Control (C&C) systems (Icad, Incase, Hexagon, Motorola PremierOne) are safety-critical — ITO experience on live operational C&C is a mandatory credibility threshold, not a differentiator. Police National Computer (PNC) and Police National Database integration are mandatory technical requirements that must be confirmed in place before evaluation proceeds. NPCC (National Police Chiefs' Council) technology strategy governs police ITO architecture — deviations require NPCC endorsement, not just client approval."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Emergency Services Network (ESN) transition from Airwave (Motorola) to 4G/5G broadband critical communications is the largest managed service contract in emergency services — the incumbent relationship (Motorola) shapes the entire market and any challenger must have a credible interoperability and transition strategy. Blue light vehicle fleet managed services are procured collaboratively through regional fleet sharing agreements. Ambulance managed services interact with NHS commissioning — service failure directly affects CQC registration, creating a dual regulatory exposure."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Police custody suite FM requires SC clearance for all operatives with unsupervised access to custody areas — this creates a 3-6 month mobilisation constraint. Fire station FM must accommodate the retained duty system (RDS) workforce patterns with flexible service delivery models that do not impede on-call response times. Emergency service fleet operations (workshops, tyres, fuelling) are often bundled with vehicle procurement through NPPH or Crown Commercial Service fleet frameworks."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "ESN programme (4G broadband mission-critical PTT + application ecosystem + operational comms management) is the defining hybrid in emergency services — operational comms transformation running alongside live operational dependency on Airwave. Digital forensics modernisation (cloud evidence management platform + operational investigation support services) is the next major hybrid cycle. Cross-service interoperability between police, fire, and ambulance is a shared technical requirement that must be addressed at solution design stage, not deferred to integration."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "Body-worn video (BWV) platforms (Axon, Motorola, Reveal) have migrated from hardware to SaaS model — digital evidence management is now a platform play, not a hardware sale. 999 and 101 digital front-end transformation is a live priority across police forces following the Angiolini Inquiry. NPCC digital policing strategy mandates specific technology choices in some categories — challenge any capability claim that assumes free technology selection without confirming NPCC strategy alignment."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "HMICFRS (His Majesty's Inspectorate of Constabulary and Fire & Rescue Services) inspection findings drive the majority of advisory work — consultants who can evidence experience of HMICFRS improvement programme delivery are strongly preferred. Police and Crime Commissioners (PCCs) are the governance layer for police advisory — engaging the Chief Constable without PCC awareness is a political misstep that can derail an engagement. CFOA (Chief Fire Officers Association) peer review frameworks shape fire and rescue advisory and must be understood to position consultancy credibly."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "NPPH hardware frameworks cover vehicles, body armour, weapons, communications, and surveillance equipment — non-framework procurement requires chief officer authorisation and is the exception. Body-worn video, ANPR, and surveillance technology deployments require Surveillance Camera Commissioner compliance under the Protection of Freedoms Act 2012. Drones (UAVs) require CAA commercial operator certification and compliance with NPCC drone governance — suppliers without existing drone governance frameworks in place cannot meet this requirement at short notice."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "Police information systems are governed by NPCC's APP (Authorised Professional Practice) — software handling police intelligence data must comply with CPIA (Criminal Procedure and Investigations Act) disclosure requirements to protect evidential integrity. Biometric data (DNA, fingerprints, facial recognition) requires Home Office oversight and Biometrics Commissioner notification for any new application — this is not delegated to force level. Ambulance clinical software must integrate with NHS Pathways (clinical decision support) and comply with CAD interoperability standards specified by NHSE."
+  },
+  {
+    "sector": "Emergency Services",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "NPPH framework is the gateway for police supply — non-framework procurement is the exception requiring chief officer justification. NFCC (National Fire Chiefs Council) has its own procurement function and frameworks that operate separately from NPPH. Blue light collaboration vehicles allow joint procurement across police/fire/ambulance — framework bids must be designed to accommodate multi-service call-offs with different operational requirements, not just single-service scope."
+  },
+
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "BPO",
+    "promptBlock": "Welsh Government BPO requires bilingual (Welsh/English) service delivery — operational Welsh language fluency is mandatory for customer-facing roles under the Welsh Language Act 1993 and Welsh Language (Wales) Measure 2011, not a desirable extra. Scottish Government BPO must comply with Fair Work First conditions (real Living Wage, no exploitative zero-hours contracts, effective trade union recognition) as a scored criterion. NI BPO may require Section 75 community impact assessment under the Northern Ireland Act 1998 equality obligations."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "IT Outsourcing",
+    "promptBlock": "Welsh Government IT strategy (Cymru Wales Digital Strategy) and Scottish Digital Strategy diverge from UK Government CDDO direction — suppliers must not assume GDS standards or UK Government cloud guidance applies. NI Civil Service IT operates on the NICS network separate from UK Government networks — cross-border data transfers between NI and Republic of Ireland have additional considerations under Windsor Framework data adequacy provisions. Devolved ITO experience is a distinct credibility requirement — central government or English local authority ITO references are insufficient."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Managed Service",
+    "promptBlock": "Public Services Boards (Wales) and Community Planning Partnerships (Scotland) mean managed services must demonstrate contribution to statutory wellbeing outcomes — not just efficiency. Welsh Government Well-being of Future Generations Act 2015 creates long-term stewardship obligations that affect governance and exit terms in managed service contracts. Scottish community benefit requirements for contracts over £4m are mandatory and must be costed into the commercial model."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Facilities / Field / Operational Service",
+    "promptBlock": "Welsh Government estates are managed through Welsh Government Property, not GPA — CCS facilities frameworks are not automatically applicable. Historic Environment Scotland governs FM in listed or historic buildings in Scotland — specialist heritage FM credentials are required. NI infrastructure investment is partly EU-funded (Shared Island, Peace PLUS) — EU procurement rules apply to EU-funded contracts in NI regardless of UK domestic procurement legislation, creating parallel compliance obligations."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Hybrid Transformation + Managed Service",
+    "promptBlock": "Scottish Government digital transformation (ScotCloud, Scottish Wide Area Network) runs parallel to but independently of UK Government cloud strategy — Scottish-specific cloud governance applies. Welsh Government transformation investments are subject to the Well-being of Future Generations Act stewardship obligations — transformation bids must evidence long-term sustainability, not just initial delivery. NI Executive transformation programmes are subject to power-sharing dynamics — political instability (Executive collapse or suspension) can pause procurement mid-process, and contracts must include provisions for this risk."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Digital Outcomes",
+    "promptBlock": "mygov.scot and gov.wales are the respective digital citizen platforms — digital services must integrate with devolved authentication infrastructure (myaccount.scot, Digital ID Wales) rather than GOV.UK Verify or One Login. Scottish and Welsh governments do not use GOV.UK Notify or GOV.UK Pay as defaults — devolved equivalents apply and integration with UK Government services requires explicit cross-border API governance. NI Direct is the equivalent citizen platform in Northern Ireland."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Consulting / Advisory",
+    "promptBlock": "Independence-related policy advisory in Scotland is politically sensitive — consultants must not assume UK Government policy positions apply or that UK-wide benchmarks are the appropriate reference point. Welsh Government commissions advisory work through a smaller, more relationship-driven market where framework positions matter less than in Whitehall. NI Executive advisory work requires sensitivity to cross-community relations — ministerial portfolios are divided between unionist and nationalist parties and advisory outputs must be demonstrably impartial."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Infrastructure & Hardware",
+    "promptBlock": "Welsh language interface requirements apply to all hardware with user-facing displays deployed in Welsh Government buildings or public-facing settings — software localisation in Welsh must be functional, not decorative. Scottish Procurement Reform Act 2014 requires community benefit clauses on contracts over £4m including hardware contracts. NI infrastructure investment through the New Decade, New Approach (NDNA) commitments creates specific capital programme priorities that bidders should reference when positioning."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Software / SaaS",
+    "promptBlock": "Welsh Language Technology Action Plan requires substantive Welsh language functionality in software procured by Welsh public bodies — machine translation is not sufficient for transactional or decision-making interfaces. Scottish public bodies must comply with the Gaelic Language (Scotland) Act 2005 for services in designated Gaelic Language Plan areas. Data residency requirements vary by devolved body — some specify UK jurisdiction, others accept EEA; this must be confirmed per-organisation before cloud solution design is finalised."
+  },
+  {
+    "sector": "Devolved Government",
+    "opportunityType": "Framework / Panel Appointment",
+    "promptBlock": "Welsh Government has its own national procurement frameworks (Sector Management Unit) — CCS frameworks are not automatically applicable and require Welsh Government adoption before use. Public Contracts Scotland (PCS) portal is the mandatory publishing and tendering platform for Scottish public contracts — suppliers must maintain an active PCS profile. NI uses eTendersNI — separate from both PCS and Find a Tender. Suppliers seeking devolved coverage must maintain active registrations on all three portals, as framework positions are not automatically transferable between jurisdictions."
+  }
+]
