@@ -332,6 +332,25 @@ for scoring dimensions, decision logic, and judgement heuristics.
 
 13. **Reconcile with PWIN.** If `get_pwin_score` returned a current score,
     check alignment. If misaligned, add a reconciliation note.
+14. **Emit a structured `claims[]` block.** Every assessment you produce must
+    include a top-level `claims[]` array containing every material assertion
+    in the narrative. Each claim has six required fields: `claimId`,
+    `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier`. As an
+    integrator skill, use the `INC-CLM-` prefix (e.g. `INC-CLM-001`) and
+    populate the optional `derivedFrom` field to record which upstream buyer
+    or supplier claims you synthesised from. Cite claims inline using
+    `[INC-CLM-id]` markers — **one claim ID per bracket**. Where multiple
+    claims support the same assertion, cite them consecutively:
+    `[INC-CLM-001][INC-CLM-002]`, **never** `[INC-CLM-001, INC-CLM-002]`.
+    Comma-separated IDs inside a single bracket are invisible to the validator
+    and all downstream consumers. See `../CLAIMS-BLOCK-SCHEMA.md` and §13 of
+    the Universal Skill Spec.
+15. **Write currency symbols as literal Unicode characters.** The pound
+    sterling sign must always appear as `£` (Unicode U+00A3) in every JSON
+    string value — never as `Â£`, `&pound;`, `&#163;`, or any other encoding
+    artefact. Before delivering any assessment, scan your output for the
+    string `Â£`. If found, stop, correct every affected string, and re-emit
+    the full JSON. `Â£` is never correct in any field of this assessment.
 
 ---
 

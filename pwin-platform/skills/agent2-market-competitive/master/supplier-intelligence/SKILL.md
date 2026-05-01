@@ -531,6 +531,23 @@ Source IDs are append-only. Do not renumber on refresh or rebuild.
 7. **Source register is append-only.** Never renumber existing IDs.
 8. **Refresh on artefact-arrival.** When a previously-missing prerequisite
    becomes available, run a targeted refresh, not a fresh build.
+9. **Emit a structured `claims[]` block.** Every dossier you produce must
+   include a top-level `claims[]` array containing every material assertion
+   in the narrative. Each claim has six required fields: `claimId`,
+   `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier`. Cite
+   claims inline using `[CLM-id]` markers — **one claim ID per bracket**.
+   Where multiple claims support the same assertion, cite them consecutively:
+   `[CLM-001][CLM-007]`, **never** `[CLM-001, CLM-007]`. Comma-separated IDs
+   inside a single bracket are invisible to the validator and all downstream
+   consumers. A material claim with no `claimId` citation is a contract
+   violation. See `../CLAIMS-BLOCK-SCHEMA.md` and §13 of the Universal
+   Skill Spec.
+10. **Write currency symbols as literal Unicode characters.** The pound
+    sterling sign must always appear as `£` (Unicode U+00A3) in every JSON
+    string value — never as `Â£`, `&pound;`, `&#163;`, or any other encoding
+    artefact. Before delivering any dossier, scan your output for the string
+    `Â£`. If found, stop, correct every affected string, and re-emit the full
+    JSON. `Â£` is never correct in any field of this dossier.
 
 ---
 
