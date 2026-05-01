@@ -328,7 +328,18 @@ These apply across every mode.
     include a top-level `claims[]` array containing every material assertion
     in the narrative. Each claim has six required fields: `claimId`,
     `claimText`, `claimDate`, `source`, `sourceDate`, `sourceTier`. Cite
-    claims inline using `[CLM-id]` markers. A material claim with no `claimId`
-    citation in the narrative is a contract violation. See
+    claims inline using `[CLM-id]` markers — **one claim ID per bracket**.
+    Where multiple claims support the same assertion, cite them consecutively:
+    `[CLM-001][CLM-007]`, **never** `[CLM-001, CLM-007]`. Comma-separated IDs
+    inside a single bracket are invisible to the validator and all downstream
+    consumers — they break the citation-integrity check. A material claim with
+    no `claimId` citation in the narrative is a contract violation. See
     `../CLAIMS-BLOCK-SCHEMA.md`, §13 of the Universal Skill Spec, and
     `../scripts/validate_claims_block.py` (the platform compliance validator).
+20. **Write currency symbols as literal Unicode characters.** The pound
+    sterling sign must always appear as `£` (Unicode U+00A3) in every JSON
+    string value — never as `Â£`, `&pound;`, `&#163;`, or any other
+    encoding artefact. Before delivering any dossier, scan your output for
+    the string `Â£`. If found, you have a UTF-8 encoding error: stop, correct
+    every affected string, and re-emit the full JSON. `Â£` is never correct
+    in any field of this dossier.
