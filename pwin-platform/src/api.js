@@ -356,6 +356,14 @@ async function handleRequest(req, res) {
       }));
     }
 
+    // GET /api/intel/sector?name=xxx
+    if (method === 'GET' && url.startsWith('/api/intel/sector')) {
+      const qs = new URLSearchParams(url.split('?')[1] || '');
+      const name = qs.get('name');
+      if (!name) return badRequest(res, 'name parameter required');
+      return json(res, 200, compIntel.sectorProfile(name));
+    }
+
     // GET /api/intel/cpv?code=xxx
     if (method === 'GET' && url.startsWith('/api/intel/cpv')) {
       const qs = new URLSearchParams(url.split('?')[1] || '');
