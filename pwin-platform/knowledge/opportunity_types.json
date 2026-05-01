@@ -1,0 +1,71 @@
+{
+  "BPO": {
+    "displayName": "BPO (Business Process Outsourcing)",
+    "slug": "bpo_managed_service",
+    "platformServiceTypes": ["bpo-outsourced-services"],
+    "promptBlock": "This is a Business Process Outsourcing opportunity. Evaluation is dominated by transition risk and incumbent lock-in — challenge any Competitive Positioning claim that does not address how the team counters the incumbent's 'too risky to change' narrative. The client's internal staff are hidden stakeholders: TUPE implications affect employees whose managers sit outside the formal procurement team but carry political influence. Stakeholder maps must include HR, trade union liaisons, and operational line managers, not just the commercial team. Procurement velocity is slow (12–24 months typical) — challenge timeline claims shorter than this norm. Value Proposition claims must address total cost of transition, not just steady-state savings. Reference sites are critical — challenge any capability claim that cannot be backed by a named comparable reference client."
+  },
+
+  "IT Outsourcing": {
+    "displayName": "IT Outsourcing",
+    "slug": "digital_transformation_si",
+    "platformServiceTypes": ["it-outsourcing", "technology-services"],
+    "promptBlock": "This is an IT Outsourcing opportunity. ITO procurement governance is highly complex — multiple workstreams (infrastructure, applications, service desk, security) typically have separate evaluation owners. A stakeholder map that does not reflect workstream structure is incomplete. Procurement timelines are long (18–36 months) and subject to slippage — challenge timeline claims unless backed by specific intelligence on the client's internal milestones beyond the published timetable. Incumbent lock-in through technical dependencies is significant — a challenger must demonstrate a credible transition strategy, not just relationship superiority. Evaluation is heavily weighted towards technical solution quality and commercial model — relationship claims carry less weight than in BPO. Security accreditation (Cyber Essentials Plus, ISO 27001, IL3/IL4 for government) is often a binary pass/fail gate — confirm compliance status before accepting any capability claims."
+  },
+
+  "Managed Service": {
+    "displayName": "Managed Service",
+    "slug": "bpo_managed_service",
+    "platformServiceTypes": ["bpo-outsourced-services", "technology-services"],
+    "promptBlock": "This is a Managed Service opportunity. Evaluation prioritises operational continuity and service stability — a Value Proposition that leads with innovation rather than continuity may misread the client's primary concern, particularly where service failure is politically visible. The transition and mobilisation plan is often evaluated as a scored criterion — challenge any team that has not engaged the client on transition planning. Governance model and relationship management are frequently cited reasons for switching providers — the team's approach to retained client engagement must be explicitly addressed. For re-competed managed services, the challenger must demonstrate specific intelligence about the incumbent's weaknesses and how they will be exploited. Key person retention and TUPE considerations must be addressed in the Value Proposition for labour-intensive managed services."
+  },
+
+  "Facilities / Field / Operational Service": {
+    "displayName": "Facilities / Field / Operational Service",
+    "slug": "facilities_operational",
+    "platformServiceTypes": ["bpo-outsourced-services"],
+    "promptBlock": "For facilities, field-based, and operational service contracts, the dominant challenge is delivery credibility at the required geographic and operational scale. Buyers scrutinise mobilisation timelines, staffing capacity, and the bidder's track record of operational continuity under TUPE. Probe whether transition and staffing plans are documented and stress-tested, and whether the commercial model accounts for the full cost of mobilisation. Proposition and solution fit matter, but commercial and delivery realism typically determine whether a bid is credible. Challenge any scoring that assumes operational competence without documented evidence of comparable scale delivery."
+  },
+
+  "Hybrid Transformation + Managed Service": {
+    "displayName": "Hybrid Transformation + Managed Service",
+    "slug": "hybrid_transformation_managed",
+    "platformServiceTypes": ["digital", "bpo-outsourced-services", "software-systems-integration"],
+    "promptBlock": "Hybrid transformation and managed service opportunities require the pursuit team to demonstrate competence across two distinct horizons: the transformation programme and the steady-state operational contract. Buyers typically weight both, but the evaluation often reveals which horizon carries more risk. Probe whether the proposition is genuinely integrated or whether the team has merely added a managed service wrapper to a transformation bid. Solution fit and delivery credibility both carry significant weight. Challenge any scoring that presents the two horizons as independently strong without demonstrating coherent transition logic between them."
+  },
+
+  "Digital Outcomes": {
+    "displayName": "Digital Outcomes",
+    "slug": "digital_transformation_si",
+    "platformServiceTypes": ["digital", "p3m"],
+    "promptBlock": "This is a Digital Outcomes opportunity. Procurement typically runs through the Digital Outcomes and Specialists (DOS) framework or equivalent — the team must understand the specific lot, evaluation criteria, and call-off process that applies. Evaluation is typically centred on team capability, methodology, and cultural fit rather than price alone. Challenge Value Proposition claims that focus on outputs (deliverables) rather than outcomes (measurable benefits). Procurement velocity is faster than outsourcing — timelines of 4–8 weeks are common for call-offs. Challenge any team that has not engaged the client during requirements definition, as this is the primary window for shaping the outcome. GDS/CDDO assessment or Service Standard compliance may apply. Named individuals and their specific relevance to this client's context are critical — generic capability statements carry very little weight with experienced digital buyers."
+  },
+
+  "Consulting / Advisory": {
+    "displayName": "Consulting / Advisory",
+    "slug": "consulting_advisory",
+    "platformServiceTypes": ["professional-services", "p3m"],
+    "promptBlock": "This is a Consulting or Advisory opportunity. Personal relationships dominate over formal procurement process far more than in other types — an Internal Champion based on institutional relationship rather than individual personal trust is weaker than it appears. Differentiation is almost entirely about people and methodology — a Value Proposition that does not name the specific individuals being proposed and explain why they are uniquely qualified is not differentiated. Procurement velocity is fast (4–12 weeks typical) — challenge the team on whether they have engaged during scope definition, as this is the highest-leverage period. Co-development of approach is the most powerful signal of influence — evidence that the client has shaped the scope or methodology based on the team's input carries more weight than any other relationship indicator. Rate card competitiveness is scrutinised in public sector consulting — commercial position claims must acknowledge the wider market context."
+  },
+
+  "Infrastructure & Hardware": {
+    "displayName": "Infrastructure & Hardware",
+    "slug": "facilities_operational",
+    "platformServiceTypes": ["technology-services", "construction"],
+    "promptBlock": "This is an Infrastructure and Hardware opportunity. Evaluation is primarily specification-driven — PWIN on this type is more binary around whether the proposed solution meets mandatory technical requirements, and relationship advantages are less decisive than in service-led opportunities. Procurement Intelligence carries disproportionate weight — understanding the exact specification, any derogations from standard, and who authored the technical requirements provides decisive advantage. Apply a higher evidence bar on Procurement Intelligence claims. Value Proposition must address whole-life cost, not just capital cost — TCO modelling, maintenance regime, and end-of-life considerations are standard evaluation criteria. Supply chain and delivery risk are explicit evaluation criteria in major infrastructure programmes. For cyber or security infrastructure, NCSC guidance and DSP Toolkit requirements must be explicitly addressed."
+  },
+
+  "Software / SaaS": {
+    "displayName": "Software / SaaS",
+    "slug": "digital_product_saas",
+    "platformServiceTypes": ["software-cloud-products", "software-systems-integration"],
+    "promptBlock": "This is a Software or SaaS opportunity. Evaluation is largely product-led and relationship advantages are less decisive than in service-led bids — the evaluation process centres on product demonstration and functional fit against defined requirements. The team's engagement with requirements definition is the highest-value intelligence activity — challenge any Procurement Intelligence claim that does not demonstrate specific input to the requirements phase. Procurement route varies significantly: direct procurement, G-Cloud call-off, DOS framework, or competitive tender depending on contract value — the team must know which applies and its specific call-off rules. Total Cost of Ownership including integration, data migration, training, and ongoing support is frequently underestimated by clients. Reference sites and case studies carry disproportionate weight — named public sector references at comparable scale are near-mandatory. Data protection, GDPR compliance, and penetration testing certification are standard gateway requirements."
+  },
+
+  "Framework / Panel Appointment": {
+    "displayName": "Framework / Panel Appointment",
+    "slug": "framework_panel",
+    "platformServiceTypes": ["professional-services", "bpo-outsourced-services", "digital", "technology-services"],
+    "promptBlock": "Framework and panel appointments are evaluated on breadth of capability, compliance, and commercial construct rather than pursuit-specific relationship advantage. The competitive field is typically wide and the evaluation criteria are more formulaic. Probe whether mandatory and suitability criteria are fully met, whether the proof story covers the full scope of the framework lot, and whether the commercial model is structured correctly for call-off. Stakeholder access carries less weight than in direct awards. Challenge any scoring that assumes framework approval translates into call-off success — framework position and call-off win rate are different problems requiring different strategies."
+  }
+}

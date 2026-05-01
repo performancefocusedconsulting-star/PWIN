@@ -301,8 +301,11 @@
     "Managed Service": "bpo_managed_service",
     "Digital Outcomes": "digital_transformation_si",
     "Consulting / Advisory": "consulting_advisory",
-    "Infrastructure & Hardware": "digital_product_saas",
-    "Software / SaaS": "digital_product_saas"
+    "Infrastructure & Hardware": "facilities_operational",
+    "Software / SaaS": "digital_product_saas",
+    "Facilities / Field / Operational Service": "facilities_operational",
+    "Hybrid Transformation + Managed Service": "hybrid_transformation_managed",
+    "Framework / Panel Appointment": "framework_panel"
   },
   "questionPacks": {
     "core": {
