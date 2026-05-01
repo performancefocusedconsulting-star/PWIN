@@ -13,10 +13,14 @@ Pipeline (all incremental — safe to re-run):
      categories using procurement codes
   5. Match new buyers to the master list       (fuzzy-match-buyers.py
      using fuzzy matching at threshold 95       --threshold 95 --apply)
+  6. Daily pipeline scan (triage into BOOK /   (run-pipeline-scan.py --hours 24)
+     QUALIFY / INTEL / WATCH)
+  7. £25k spend transparency ingest            (ingest_spend.py — non-fatal)
+  8. Framework call-off mining                 (mine_framework_calloffs.py — non-fatal)
 
-Steps 4 and 5 are new (added 2026-04-25) — they keep the cleaning current
-on every night's load. Without them, the database loads new raw data but
-never tags or matches it.
+Optional (pass --with-frameworks-catalogue):
+  9. CCS framework catalogue ingest            (ingest_frameworks_catalogue.py)
+ 10. Framework consolidation / dedup           (consolidate_frameworks.py)
 
 NOT in this nightly:
   - Splink supplier matching (full wipe-and-replace, ~13 min) — run monthly
@@ -73,7 +77,7 @@ if __name__ == "__main__":
     _parser = _ap.ArgumentParser()
     _parser.add_argument("--with-frameworks-catalogue", action="store_true",
                          help="Also run the monthly CCS catalogue ingest")
-    _args, _ = _parser.parse_known_args()
+    _args = _parser.parse_args()
 
     log.info("Nightly pipeline starting")
 
