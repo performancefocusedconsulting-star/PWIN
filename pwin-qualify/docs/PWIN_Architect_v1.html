@@ -4760,14 +4760,22 @@ function getContextBlock() {
 const INTEL_API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
   ? 'http://localhost:3456'
   : 'https://pwin-competitive-intel.performancefocusedconsulting.workers.dev';
+// ── Intel fetch with timeout ─────────────────────────────────────────────────
+function fetchTimed(url, ms = 5000) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal })
+    .then(r => { clearTimeout(id); return r.ok ? r.json() : null; })
+    .catch(() => { clearTimeout(id); return null; });
+}
+
 // ── Intel cache ───────────────────────────────────────────────────────────────
 let _intelCache = { key: null, data: null, ts: 0 };
 
 // ── Buyer procurement profile ─────────────────────────────────────────────────
 async function fetchBuyerProfile(org) {
   try {
-    const resp = await fetch(`${INTEL_API}/api/intel/buyer?name=${encodeURIComponent(org)}`)
-      .then(r => r.ok ? r.json() : null).catch(() => null);
+    const resp = await fetchTimed(`${INTEL_API}/api/intel/buyer?name=${encodeURIComponent(org)}`);
     if (!resp?.buyers?.length) return '';
     const b = resp.buyers[0];
     const s = b.stats || {};
@@ -4794,8 +4802,7 @@ async function fetchBuyerProfile(org) {
 // ── PWIN competition signals ──────────────────────────────────────────────────
 async function fetchPwinSignals(org) {
   try {
-    const resp = await fetch(`${INTEL_API}/api/intel/pwin?buyer=${encodeURIComponent(org)}`)
-      .then(r => r.ok ? r.json() : null).catch(() => null);
+    const resp = await fetchTimed(`${INTEL_API}/api/intel/pwin?buyer=${encodeURIComponent(org)}`);
     if (!resp?.signals?.length) return '';
     const sig = resp.signals[0];
     const lines = [];
@@ -4814,8 +4821,7 @@ async function fetchPwinSignals(org) {
 async function fetchSectorContext(sector) {
   if (!sector) return '';
   try {
-    const resp = await fetch(`${INTEL_API}/api/intel/sector?name=${encodeURIComponent(sector)}`)
-      .then(r => r.ok ? r.json() : null).catch(() => null);
+    const resp = await fetchTimed(`${INTEL_API}/api/intel/sector?name=${encodeURIComponent(sector)}`);
     if (!resp?.summary) return '';
     const { summary, topSuppliers } = resp;
     const lines = [`SECTOR CONTEXT — ${resp.sector}:`];
@@ -4840,8 +4846,7 @@ async function fetchCompetitorProfiles(competitors, currentBuyer) {
   try {
     const responses = await Promise.all(
       names.map(name =>
-        fetch(`${INTEL_API}/api/intel/supplier?name=${encodeURIComponent(name)}`)
-          .then(r => r.ok ? r.json() : null).catch(() => null)
+        fetchTimed(`${INTEL_API}/api/intel/supplier?name=${encodeURIComponent(name)}`)
       )
     );
     const lines = [];
@@ -4868,8 +4873,7 @@ async function fetchCompetitorProfiles(competitors, currentBuyer) {
 // ── Forward pipeline ──────────────────────────────────────────────────────────
 async function fetchForwardPipeline(org) {
   try {
-    const resp = await fetch(`${INTEL_API}/api/intel/pipeline?buyer=${encodeURIComponent(org)}`)
-      .then(r => r.ok ? r.json() : null).catch(() => null);
+    const resp = await fetchTimed(`${INTEL_API}/api/intel/pipeline?buyer=${encodeURIComponent(org)}`);
     if (!resp?.notices?.length) return '';
     const lines = ['FORWARD PIPELINE — Upcoming tenders for this buyer:'];
     resp.notices.slice(0, 5).forEach(n => {
@@ -4884,8 +4888,7 @@ async function fetchForwardPipeline(org) {
 // ── Expiring contracts ────────────────────────────────────────────────────────
 async function fetchExpiringContracts(org) {
   try {
-    const resp = await fetch(`${INTEL_API}/api/intel/expiring?buyer=${encodeURIComponent(org)}&days=365`)
-      .then(r => r.ok ? r.json() : null).catch(() => null);
+    const resp = await fetchTimed(`${INTEL_API}/api/intel/expiring?buyer=${encodeURIComponent(org)}&days=365`);
     if (!resp?.contracts?.length) return '';
     const lines = ['EXPIRING CONTRACTS — Contracts ending within 12 months:'];
     resp.contracts.slice(0, 5).forEach(c => {
