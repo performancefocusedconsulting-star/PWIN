@@ -35,6 +35,9 @@ pwin-competitive-intel/canonical-buyer-aliases-review*.csv
 pwin-platform/skills/agent2-market-competitive/master/*.skill
 pwin-platform/skills/agent2-market-competitive/master/*.zip
 
+# Skill run output samples — real Claude.ai output, not hand-crafted fixtures
+pwin-platform/skills/agent2-market-competitive/master/tests/fixtures/*_skillrun_*.json
+
 # Temp download files from seed scripts (e.g. GIAS academy trust spreadsheet)
 pwin-platform/knowledge/.tmp_*.xlsx
 pwin-competitive-intel/db/.tmp.drive*/
