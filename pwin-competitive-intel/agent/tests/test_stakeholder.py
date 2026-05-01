@@ -210,5 +210,67 @@ class TestOrganogramParser(unittest.TestCase):
         self.assertEqual(records[0]['source_url'], 'http://example.com')
 
 
+class TestPACWitnessScraper(unittest.TestCase):
+    """Tests parse_witnesses_html() in isolation — no network."""
+
+    # Fixture modelled on the actual Parliament website card structure.
+    # Witness format: "Name (Role at Organisation)" comma-separated.
+    FIXTURE_HTML = """
+    <html><body>
+    <div class="card card-button card-publication">
+      <div class="primary-info">15 November 2025</div>
+      <div class="list"><div class="item">
+        <span class="label">Inquiry</span> NISTA Spending Review
+      </div></div>
+      <div class="list"><div class="item">
+        <span class="label">Witnesses</span>
+        Matthew Vickerstaff (Director General at National Infrastructure and Service Transformation Authority),
+        Tom Scholar (Permanent Secretary at HM Treasury),
+        and Beth Russell (Director General, Tax and Welfare at HM Treasury)
+      </div></div>
+    </div>
+    </body></html>
+    """
+
+    def test_parse_witnesses_returns_list(self):
+        from scrape_pac_witnesses import parse_witnesses_html
+        witnesses = parse_witnesses_html(
+            self.FIXTURE_HTML,
+            session_date='2025-11-15',
+            session_title='NISTA Spending Review',
+            session_url='https://committees.parliament.uk/work/9999/oral-evidence/',
+        )
+        self.assertIsInstance(witnesses, list)
+        self.assertEqual(len(witnesses), 3)
+
+    def test_parse_witnesses_fields(self):
+        from scrape_pac_witnesses import parse_witnesses_html
+        witnesses = parse_witnesses_html(
+            self.FIXTURE_HTML,
+            session_date='2025-11-15',
+            session_title='NISTA Spending Review',
+            session_url='https://committees.parliament.uk/work/9999/oral-evidence/',
+        )
+        w = witnesses[0]
+        self.assertIn('name_normalised', w)
+        self.assertIn('role_title', w)
+        self.assertIn('organisation', w)
+        self.assertIn('session_date', w)
+        self.assertIn('witness_id', w)
+        self.assertEqual(w['session_date'], '2025-11-15')
+
+    def test_parse_witnesses_name_normalised(self):
+        from scrape_pac_witnesses import parse_witnesses_html
+        witnesses = parse_witnesses_html(
+            self.FIXTURE_HTML,
+            session_date='2025-11-15',
+            session_title='NISTA Spending Review',
+            session_url='https://committees.parliament.uk/work/9999/oral-evidence/',
+        )
+        names = [w['name_normalised'] for w in witnesses]
+        self.assertIn('Matthew Vickerstaff', names)
+        self.assertIn('Tom Scholar', names)
+
+
 if __name__ == '__main__':
     unittest.main()
