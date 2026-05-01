@@ -3,36 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PWIN Competitive Intelligence</title>
+<title>BidEquity Pursuit Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ── DESIGN TOKENS ──────────────────────────────────────────── */
+/* ── DESIGN TOKENS — BidEquity brand ───────────────────────── */
 :root {
-  --bg-deep:    #0a1628;
-  --bg-mid:     #0f1d32;
-  --bg-card:    #162544;
-  --bg-hover:   #1c2f54;
-  --gold:       #c9a84c;
-  --gold-light: #d4b95e;
-  --gold-dim:   rgba(201,168,76,0.15);
-  --text:       #e8e0d0;
-  --text-bright:#ffffff;
-  --text-muted: #8a9ab5;
+  /* Palette */
+  --bg-deep:    #F7F4EE;   /* Soft Sand — page canvas */
+  --bg-mid:     #021744;   /* Midnight Navy — header */
+  --bg-card:    #E0F4F6;   /* Pale Aqua — card fill */
+  --bg-hover:   #CCF3F6;   /* Ice Aqua — row hover */
+  --gold:       #7ADDE2;   /* Bright Aqua — active/accent */
+  --gold-light: #5CC0C6;   /* Clear Aqua — active hover */
+  --gold-dim:   rgba(122,221,226,0.15);
+  --text:       #021744;   /* Midnight Navy — primary text */
+  --text-bright:#021744;
+  --text-muted: #576482;   /* Steel Blue — secondary text */
   --green:      #2ecc71;
-  --amber:      #f39c12;
+  --amber:      #D17A74;   /* Terracotta — CTAs */
   --red:        #e74c3c;
-  --border:     rgba(201,168,76,0.12);
-  --border-row: rgba(255,255,255,0.10);
+  --border:     #D5D9E0;   /* Pale Slate */
+  --border-row: #E8E4DC;
 
-  --font-display: 'Cormorant Garamond', serif;
-  --font-body:    'DM Sans', sans-serif;
-  --font-mono:    'DM Mono', monospace;
+  /* Typography */
+  --font-display: 'Spline Sans', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'Inter', sans-serif;
 
-  --radius:     8px;
-  --radius-lg:  12px;
-  --shadow:     0 4px 24px rgba(0,0,0,0.3);
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.2);
+  /* Shape — brand rule: zero radius everywhere */
+  --radius:     0px;
+  --radius-lg:  0px;
+  --shadow:     0 4px 24px rgba(2,23,68,0.08);
+  --shadow-sm:  0 2px 8px rgba(2,23,68,0.06);
+
+  /* BidEquity semantic extras */
+  --be-teal:        #5CA3B6;
+  --be-sand:        #F7F4EE;
+  --be-navy:        #021744;
+  --be-terracotta:  #D17A74;
+  --be-pale-aqua:   #E0F4F6;
+  --be-bright-aqua: #7ADDE2;
+  --be-cyan:        #60F5F7;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
