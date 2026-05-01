@@ -162,6 +162,7 @@ This is a producer skill, so its required prerequisites are minimal.
 | Buyer-behaviour profile via MCP | `pwin-platform` (`get_buyer_behaviour_profile`) | `procurementBehaviourSnapshot` |
 | Sector brief for the buyer's sector | `sector-intelligence` skill | `commissioningContextHypotheses`, `risksAndSensitivities` |
 | Senior leadership (organogram DB) | `pwin-platform` (`get_senior_leadership`, `find_evaluators`) | `seniorLeadership`, `decisionUnitAssumptions` |
+| Framework usage (DB) | `pwin-platform` (`get_buyer_framework_usage`) | `procurementBehaviour.frameworkUsage`, `procurementBehaviour.preferredRoutes` |
 
 ### Behaviour when prerequisites are missing
 
@@ -175,7 +176,9 @@ This is a producer skill, so its required prerequisites are minimal.
   organogram database is empty or unreachable, set
   `meta.prerequisitesPresentAt.preferred.organogramData` to `false`. When
   `find_evaluators` returns no results, set
-  `meta.prerequisitesPresentAt.preferred.evaluatorData` to `false`. Open
+  `meta.prerequisitesPresentAt.preferred.evaluatorData` to `false`. When
+  `get_buyer_framework_usage` returns no data, set
+  `meta.prerequisitesPresentAt.preferred.frameworkUsageData` to `false`. Open
   refresh actions in the action register so the gap is closed when the
   prerequisite arrives.
 
@@ -193,6 +196,10 @@ any web research:
 > **MCP data takes priority.** If `get_senior_leadership` returned results, use those as the primary source for `seniorLeadership`. Do not re-research from web if MCP data is present. Web research only supplements gaps — e.g. very recent appointees not yet in the latest organogram release.
 
 **3b.** `find_evaluators(buyerName)` — preferred. Returns Director-level SROs who have appeared as PAC witnesses — the most likely evaluators and governance owners on major procurements. Use to populate `decisionUnitAssumptions.seniorResponsibleOwner` and `decisionUnitAssumptions.likelyEvaluators`. Set `meta.prerequisitesPresentAt.preferred.evaluatorData` to `true` if successful.
+
+**3c.** `get_buyer_framework_usage(buyerName)` — preferred. Returns frameworks the buyer routes spend through, ranked by call-off value. Use to populate `procurementBehaviour.frameworkUsage` and `procurementBehaviour.preferredRoutes`. Set `meta.prerequisitesPresentAt.preferred.frameworkUsageData` to `true` if successful.
+
+> **Framework data from DB.** If `get_buyer_framework_usage` returned data, use the top frameworks (by call-off value) as the primary `frameworkUsage` list. Include framework name, lot(s) used, and spend volume where available. DB data is sourced directly from FTS contract awards and is more reliable than press inference.
 
 ---
 
