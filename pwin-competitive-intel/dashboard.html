@@ -146,9 +146,9 @@ body {
 
 /* ── CARDS & PANELS ─────────────────────────────────────────── */
 .card {
-  background: var(--bg-card);
+    background: var(--be-pale-aqua);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 24px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
@@ -157,10 +157,10 @@ body {
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-bright);
+  color: var(--be-navy);
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
 }
 .card-title span { color: var(--gold); font-weight: 700; }
 
@@ -172,23 +172,24 @@ body {
   margin-bottom: 24px;
 }
 .stat-box {
-  background: var(--bg-mid);
+  background: white;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 0;
   padding: 20px;
   text-align: center;
   transition: border-color 0.2s;
 }
-.stat-box:hover { border-color: var(--gold-dim); }
+.stat-box:hover { border-color: var(--be-bright-aqua); }
 .stat-value {
   font-family: var(--font-display);
   font-size: 32px;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--be-navy);
   line-height: 1.1;
+    font-feature-settings: "tnum" 1, "lnum" 1;
 }
 .stat-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -204,17 +205,19 @@ table {
   table-layout: fixed;
 }
 thead th {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-muted);
+  color: var(--be-sand);
   text-align: left;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
   white-space: nowrap;
+    background: var(--be-teal);
 }
 tbody td {
+    font-feature-settings: "tnum" 1, "lnum" 1;
   padding: 10px 12px;
   border-bottom: 1px solid var(--border-row);
   color: var(--text);
@@ -230,7 +233,7 @@ tr.detail-row td {
 }
 tr.detail-row .detail-inner {
   padding: 16px 20px;
-  background: var(--bg-deep);
+  background: white;
   font-size: 13px;
   line-height: 1.7;
   color: var(--text);
@@ -248,22 +251,24 @@ tr.detail-row .detail-inner .detail-label {
 }
 tr.detail-row .detail-inner .detail-label:first-child { margin-top: 0; }
 tr.detail-row .detail-inner a {
-  color: var(--gold-light);
+  color: var(--be-teal);
   text-decoration: none;
 }
 tr.detail-row .detail-inner a:hover { text-decoration: underline; }
 tr.expandable { cursor: pointer; }
-tr.expandable:hover { background: var(--bg-hover); }
+tr.expandable:hover { background: var(--be-pale-aqua); }
 tbody tr { transition: background 0.15s; }
-tbody tr:hover { background: var(--bg-hover); }
+tbody tr:hover { background: var(--be-pale-aqua); }
 td.num {
-  font-family: var(--font-display);
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  font-family: var(--font-body);
   font-weight: 600;
-  color: var(--text-bright);
+  color: var(--be-navy);
   text-align: right;
 }
 td.mono {
-  font-family: var(--font-mono);
+    font-feature-settings: "tnum" 1;
+  font-family: var(--font-body);
   font-size: 12px;
 }
 
@@ -275,33 +280,35 @@ td.mono {
 }
 .search-bar input {
   flex: 1;
-  background: var(--bg-mid);
+  background: white;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 0;
   padding: 12px 16px;
-  color: var(--text-bright);
+  color: var(--be-navy);
   font-family: var(--font-body);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
 }
 .search-bar input::placeholder { color: var(--text-muted); }
-.search-bar input:focus { border-color: var(--gold); }
+.search-bar input:focus {
+    box-shadow: 0 0 0 2px rgba(122, 221, 226, 0.2);
+ border-color: var(--be-bright-aqua); }
 .search-bar button, .btn {
-  background: var(--gold);
-  color: var(--bg-deep);
+  background: var(--be-terracotta);
+  color: var(--be-sand);
   border: none;
-  border-radius: var(--radius);
+  border-radius: 0;
   padding: 10px 24px;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: background 0.2s;
 }
-.search-bar button:hover, .btn:hover { background: var(--gold-light); }
+.search-bar button:hover, .btn:hover { background: #B8645E; }
 
 /* ── FILTERS ────────────────────────────────────────────────── */
 .filters {
@@ -311,8 +318,8 @@ td.mono {
   flex-wrap: wrap;
   margin-bottom: 20px;
   padding: 16px 20px;
-  background: var(--bg-mid);
-  border-radius: var(--radius);
+  background: white;
+  border-radius: 0;
   border: 1px solid var(--border);
 }
 .filter-group { display: flex; flex-direction: column; gap: 4px; }
@@ -324,17 +331,19 @@ td.mono {
   color: var(--text-muted);
 }
 .filter-group input, .filter-group select {
-  background: var(--bg-card);
+  background: white;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 0;
   padding: 8px 12px;
-  color: var(--text-bright);
+  color: var(--be-navy);
   font-family: var(--font-body);
   font-size: 13px;
   outline: none;
 }
-.filter-group input:focus, .filter-group select:focus { border-color: var(--gold); }
-.filter-group select option { background: var(--bg-card); }
+.filter-group input:focus, .filter-group select:focus { border-color: var(--be-bright-aqua); }
+.filter-group select option {
+    color: var(--be-navy);
+ background: white; }
 
 /* ── VISUAL BARS ────────────────────────────────────────────── */
 .proc-bar {
@@ -370,9 +379,9 @@ td.mono {
 /* ── URGENCY BADGES ─────────────────────────────────────────── */
 .badge {
   display: inline-block;
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-family: var(--font-mono);
+  padding: 2px 8px;
+  border-radius: 0;
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 500;
 }
@@ -414,7 +423,7 @@ td.mono {
 .spinner {
   width: 24px; height: 24px;
   border: 2px solid var(--border);
-  border-top-color: var(--gold);
+  border-top-color: var(--be-teal);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 12px;
@@ -466,8 +475,8 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--gold);
+  border-radius: 0;
+  background: var(--be-terracotta);
   cursor: pointer;
 }
 </style>
