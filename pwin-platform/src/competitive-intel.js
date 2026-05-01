@@ -1519,6 +1519,278 @@ function buyerBehaviourProfile(nameQuery, { years = 5 } = {}) {
   }
 }
 
+// ── Frameworks ────────────────────────────────────────────────────────────
+
+function frameworkProfile(query) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    // Try exact reference_no first, then partial name match
+    let fw = db.prepare(
+      "SELECT * FROM frameworks WHERE upper(reference_no)=upper(?)"
+    ).get(query);
+    if (!fw) {
+      fw = db.prepare(
+        "SELECT * FROM frameworks WHERE instr(lower(name), lower(?)) > 0 ORDER BY call_off_value_total DESC LIMIT 1"
+      ).get(query);
+    }
+    if (!fw) return { error: `No framework found matching '${query}'` };
+
+    const lots = db.prepare(
+      "SELECT * FROM framework_lots WHERE framework_id=? ORDER BY lot_number"
+    ).all(fw.id);
+
+    const topSuppliers = db.prepare(`
+      SELECT supplier_name_raw, supplier_canonical_id,
+             call_off_count, call_off_value
+      FROM framework_suppliers WHERE framework_id=?
+      ORDER BY call_off_value DESC LIMIT 10
+    `).all(fw.id);
+
+    return {
+      id: fw.id,
+      name: fw.name,
+      referenceNo: fw.reference_no,
+      owner: fw.owner,
+      ownerType: fw.owner_type,
+      category: fw.category,
+      description: fw.description,
+      status: fw.status,
+      expiryDate: fw.expiry_date,
+      routeType: fw.route_type,
+      maxValue: fw.max_value,
+      callOffCount: fw.call_off_count,
+      callOffValueTotal: fw.call_off_value_total,
+      source: fw.source,
+      lots: lots.map(l => ({
+        lotNumber: l.lot_number,
+        lotName: l.lot_name,
+        scope: l.scope,
+        supplierCount: l.supplier_count,
+      })),
+      topSuppliers: topSuppliers.map(s => ({
+        name: s.supplier_name_raw,
+        canonicalId: s.supplier_canonical_id,
+        callOffCount: s.call_off_count,
+        callOffValue: s.call_off_value,
+      })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
+function searchFrameworks(query, { ownerType, category, status, expiringWithinMonths } = {}) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    const conditions = [];
+    const params = [];
+
+    if (query) {
+      conditions.push("(instr(lower(name), lower(?)) > 0 OR upper(reference_no) = upper(?))");
+      params.push(query, query);
+    }
+    if (ownerType) {
+      conditions.push("owner_type = ?");
+      params.push(ownerType);
+    }
+    if (category) {
+      conditions.push("instr(lower(category), lower(?)) > 0");
+      params.push(category);
+    }
+    if (status) {
+      conditions.push("status = ?");
+      params.push(status);
+    }
+    if (expiringWithinMonths) {
+      conditions.push("expiry_date IS NOT NULL AND expiry_date <= date('now', '+' || ? || ' months')");
+      params.push(expiringWithinMonths);
+    }
+
+    const where = conditions.length ? "WHERE " + conditions.join(" AND ") : "";
+    const rows = db.prepare(`
+      SELECT id, name, reference_no, owner, owner_type, category, status,
+             expiry_date, call_off_count, call_off_value_total, source
+      FROM frameworks ${where}
+      ORDER BY call_off_value_total DESC NULLS LAST
+      LIMIT 50
+    `).all(...params);
+
+    return {
+      count: rows.length,
+      frameworks: rows.map(r => ({
+        id: r.id,
+        name: r.name,
+        referenceNo: r.reference_no,
+        owner: r.owner,
+        ownerType: r.owner_type,
+        category: r.category,
+        status: r.status,
+        expiryDate: r.expiry_date,
+        callOffCount: r.call_off_count,
+        callOffValueTotal: r.call_off_value_total,
+        source: r.source,
+      })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
+function buyerFrameworkUsage(buyerQuery) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    const resolved = _resolveBuyerCanonical(db, buyerQuery);
+    if (!resolved) return { error: `No buyer found matching '${buyerQuery}'` };
+    if (resolved.ambiguous) return { error: 'Ambiguous buyer name', candidates: resolved.candidates };
+
+    const canonicalId = resolved.canonicalId || (resolved.rawBuyerIds[0] || null);
+    if (!canonicalId) return { error: `Buyer '${buyerQuery}' has no data` };
+
+    const usage = db.prepare(`
+      SELECT f.id, f.name, f.reference_no, f.owner, f.category, f.status, f.expiry_date,
+             COUNT(co.id) AS call_off_count,
+             SUM(co.value) AS total_value,
+             MIN(co.awarded_date) AS first_date,
+             MAX(co.awarded_date) AS last_date
+      FROM framework_call_offs co
+      JOIN frameworks f ON co.framework_id = f.id
+      WHERE co.buyer_canonical_id = ?
+      GROUP BY f.id
+      ORDER BY total_value DESC NULLS LAST
+    `).all(canonicalId);
+
+    return {
+      buyer: resolved.canonicalName || buyerQuery,
+      frameworkCount: usage.length,
+      frameworks: usage.map(r => ({
+        id: r.id,
+        name: r.name,
+        referenceNo: r.reference_no,
+        owner: r.owner,
+        category: r.category,
+        status: r.status,
+        expiryDate: r.expiry_date,
+        callOffCount: r.call_off_count,
+        totalValue: r.total_value,
+        firstDate: r.first_date,
+        lastDate: r.last_date,
+      })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
+function supplierFrameworkPosition(supplierQuery) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    // Resolve to canonical supplier id via name search
+    const sup = db.prepare(`
+      SELECT COALESCE(s2c.canonical_id, 'RAW-' || s.id) AS canonical_id,
+             COALESCE(cs.canonical_name, s.name) AS canonical_name
+      FROM suppliers s
+      LEFT JOIN supplier_to_canonical s2c ON s.id = s2c.supplier_id
+      LEFT JOIN canonical_suppliers cs ON s2c.canonical_id = cs.canonical_id
+      WHERE instr(lower(s.name), lower(?)) > 0
+      LIMIT 1
+    `).get(supplierQuery);
+
+    if (!sup) return { error: `No supplier found matching '${supplierQuery}'` };
+
+    const positions = db.prepare(`
+      SELECT f.id, f.name, f.reference_no, f.owner, f.category, f.status, f.expiry_date,
+             fl.lot_number, fl.lot_name,
+             fs.status AS position_status, fs.awarded_date,
+             fs.call_off_count, fs.call_off_value
+      FROM framework_suppliers fs
+      JOIN frameworks f ON fs.framework_id = f.id
+      LEFT JOIN framework_lots fl ON fs.lot_id = fl.id
+      WHERE fs.supplier_canonical_id = ?
+      ORDER BY fs.call_off_value DESC NULLS LAST
+    `).all(sup.canonical_id);
+
+    return {
+      supplier: sup.canonical_name,
+      canonicalId: sup.canonical_id,
+      positionCount: positions.length,
+      positions: positions.map(r => ({
+        frameworkId: r.id,
+        frameworkName: r.name,
+        referenceNo: r.reference_no,
+        owner: r.owner,
+        category: r.category,
+        frameworkStatus: r.status,
+        expiryDate: r.expiry_date,
+        lotNumber: r.lot_number,
+        lotName: r.lot_name,
+        positionStatus: r.position_status,
+        awardedDate: r.awarded_date,
+        callOffCount: r.call_off_count,
+        callOffValue: r.call_off_value,
+      })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
+function frameworkCallOffs(frameworkQuery, { buyer, supplier, since, limit = 20 } = {}) {
+  const db = getDb();
+  if (!db) return { error: 'Database not found' };
+  try {
+    // Resolve framework
+    let fw = db.prepare(
+      "SELECT id, name FROM frameworks WHERE upper(reference_no)=upper(?)"
+    ).get(frameworkQuery);
+    if (!fw) {
+      fw = db.prepare(
+        "SELECT id, name FROM frameworks WHERE instr(lower(name), lower(?)) > 0 ORDER BY call_off_value_total DESC LIMIT 1"
+      ).get(frameworkQuery);
+    }
+    if (!fw) return { error: `No framework found matching '${frameworkQuery}'` };
+
+    const conditions = ["co.framework_id = ?"];
+    const params = [fw.id];
+
+    if (buyer) { conditions.push("instr(lower(co.buyer_canonical_id), lower(?)) > 0"); params.push(buyer); }
+    if (supplier) { conditions.push("instr(lower(co.supplier_canonical_id), lower(?)) > 0"); params.push(supplier); }
+    if (since) { conditions.push("co.awarded_date >= ?"); params.push(since); }
+    params.push(limit);
+
+    const callOffs = db.prepare(`
+      SELECT co.notice_ocid, co.buyer_canonical_id, co.supplier_canonical_id,
+             co.value, co.awarded_date, co.contract_title,
+             co.match_method, co.match_confidence
+      FROM framework_call_offs co
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY co.awarded_date DESC NULLS LAST
+      LIMIT ?
+    `).all(...params);
+
+    return {
+      framework: fw.name,
+      frameworkId: fw.id,
+      callOffCount: callOffs.length,
+      callOffs: callOffs.map(r => ({
+        noticeOcid: r.notice_ocid,
+        buyer: r.buyer_canonical_id,
+        supplier: r.supplier_canonical_id,
+        value: r.value,
+        awardedDate: r.awarded_date,
+        title: r.contract_title,
+        matchMethod: r.match_method,
+        matchConfidence: r.match_confidence,
+      })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
 export {
   dbSummary,
   buyerProfile,
@@ -1531,4 +1803,9 @@ export {
   pipelineRecentNotices,
   pipelineRecentAwardsForBuyers,
   buyerBehaviourProfile,
+  frameworkProfile,
+  searchFrameworks,
+  buyerFrameworkUsage,
+  supplierFrameworkPosition,
+  frameworkCallOffs,
 };
