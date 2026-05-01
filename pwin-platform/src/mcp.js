@@ -1843,6 +1843,74 @@ function createMcpServer() {
     }
   );
 
+  server.tool(
+    'get_framework_profile',
+    'Get full profile for a procurement framework — lots, top suppliers, call-off stats. Pass a reference number (e.g. RM6116) or a name.',
+    {
+      query: z.string().describe('Framework reference number (e.g. RM6116) or name (e.g. "Tech Services 3")'),
+    },
+    async ({ query }) => {
+      const result = compIntel.frameworkProfile(query);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'search_frameworks',
+    'Search the framework index by name, owner type, category, status, or expiry window. Returns ranked by call-off value.',
+    {
+      query: z.string().optional().describe('Free-text search on name or reference number'),
+      owner_type: z.string().optional().describe('central_gov | nhs | local_gov | departmental | devolved'),
+      category: z.string().optional().describe('technology | professional_services | facilities | etc.'),
+      status: z.string().optional().describe('active | expiring_soon | expired | replaced'),
+      expiring_within_months: z.number().optional().describe('Only return frameworks expiring within N months'),
+    },
+    async ({ query, owner_type, category, status, expiring_within_months }) => {
+      const result = compIntel.searchFrameworks(query, { ownerType: owner_type, category, status, expiringWithinMonths: expiring_within_months });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_buyer_framework_usage',
+    'Which procurement frameworks does a buyer route spend through? Returns frameworks ranked by call-off value.',
+    {
+      buyer: z.string().describe('Buyer name or canonical ID (e.g. "Ministry of Defence", "Home Office")'),
+    },
+    async ({ buyer }) => {
+      const result = compIntel.buyerFrameworkUsage(buyer);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_supplier_framework_position',
+    'Which frameworks is a supplier approved on, and how much are they winning through each? Returns framework positions by lot.',
+    {
+      supplier: z.string().describe('Supplier name or partial match (e.g. "Serco", "Leidos")'),
+    },
+    async ({ supplier }) => {
+      const result = compIntel.supplierFrameworkPosition(supplier);
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
+    'get_framework_call_offs',
+    'List individual contracts placed through a framework, with optional filters for buyer, supplier, and date.',
+    {
+      framework: z.string().describe('Framework name or reference number (e.g. RM6116, "Tech Services 3")'),
+      buyer: z.string().optional().describe('Filter by buyer canonical ID'),
+      supplier: z.string().optional().describe('Filter by supplier canonical ID'),
+      since: z.string().optional().describe('ISO date — only call-offs after this date (e.g. "2024-01-01")'),
+      limit: z.number().optional().describe('Max results (default 20)'),
+    },
+    async ({ framework, buyer, supplier, since, limit }) => {
+      const result = compIntel.frameworkCallOffs(framework, { buyer, supplier, since, limit });
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
   // ==========================================================================
   // CANONICAL ADJUDICATOR WRITE TOOLS
   // ==========================================================================
