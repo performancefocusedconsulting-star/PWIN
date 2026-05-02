@@ -30,14 +30,19 @@ This product turns the structural barrier from a passive lock-out into an *infor
 
 A **cube of UK government procurement** sliced by sector (9), opportunity type (10), and supplier (every canonical supplier on file). Each of the 90 sector-and-opportunity-type cells is rendered as a **displacement intelligence view** — a single page of structured information that tells the reader who currently holds the cell, how concentrated the cell is, what specific contracts are coming up, and how open the buyer behaviour in that cell looks to challenge.
 
-The same view supports two reading lenses:
+The same view supports three reading lenses:
 
-- **Challenger lens** — *"where is the wedge?"*
-- **Incumbent lens** — *"where am I exposed?"*
+- **Challenger lens** — *"where is the wedge?"* — for outsiders trying to break in.
+- **Incumbent lens** — *"where am I exposed?"* — for incumbents defending position.
+- **Portfolio-strategic lens** — *"what's my multi-year capture programme?"* — for incumbents wanting to *grow* portfolio share, not just defend, over a 3–5 year horizon. (This lens emerged from a brainstorming follow-up on 2026-05-02; the rationale, implications, and conversation script are in Section 3 and in `wiki/meta/2026-05-02-competitive-cube-brainstorm.md`.)
 
-Both lenses read off the same underlying data. The rendering inverts the framing.
+All three lenses read off the same underlying data. The rendering changes the framing copy and the sort order; the numbers are identical.
 
-The product is for bid-team decision-making at the moment of pursue / no-pursue, and as commercial evidence in BidEquity's external materials about why incumbency is sticky and where it isn't.
+The product addresses three engagement contexts:
+
+- **Bid-team decision-making** at the moment of pursue / no-pursue (challenger and incumbent lenses, single-pursuit scope).
+- **Strategic-portfolio planning** at the executive and chief-financial-officer level (portfolio-strategic lens, 3-year horizon, multi-cell supplier-level aggregation).
+- **Commercial evidence** in BidEquity's external materials about why incumbency is sticky, where it isn't, and how a strategic supplier can target portfolio share over time.
 
 **What this product is not:**
 
@@ -133,17 +138,25 @@ The forward-looking view, separate from the historical layers:
 
 **Forward pipeline.** Named items in the cell from the next 24 months of planning notices (the procurement-system feed of upcoming opportunities). For each: provisional total contract value, prospective buyer, and any indicative timeline. These are contracts that haven't yet appeared as bid opportunities but are visible in published procurement intentions.
 
-### The two lenses
+### The three lenses
 
-Same data, different framing, single switch on the dashboard view. Implementation is template-level not data-level — the cell page renders the same numbers but with different copy and emphasis depending on the lens.
+Same data, different framings, single switch on the dashboard view. Implementation is template-level not data-level — the cell page renders the same numbers but with different copy and emphasis depending on which lens is active.
 
-| Element | Challenger lens | Incumbent lens |
-|---|---|---|
-| Cell concentration | *"Hard to break in — top three hold 78%."* Concentration framed as the **barrier** the challenger faces. | *"Strong position — your peer group hold 78%."* Concentration framed as the **advantage** the incumbent enjoys, with focus on how stable that advantage is over time. |
-| Per-incumbent grip | Listed as *"incumbents to displace"* with grip-strength colour coding (deeper red = harder to dislodge). | Listed as *"you and your peers"* with grip-strength shown as defensive position relative to peers. |
-| Forward pipeline | *"Targets to attack."* Items sorted by displaceability (favouring expiring contracts where no renewal notice has appeared, and contracts held by suppliers with thinner cell tenure). | *"Defences to harden."* Items sorted by importance to maintain (favouring the largest contracts the user holds, with time-to-expiry as the urgency cue). |
+| Element | Challenger lens | Incumbent lens | Portfolio-strategic lens |
+|---|---|---|---|
+| Cell concentration | *"Hard to break in — top three hold 78%."* The **barrier** the challenger faces. | *"Strong position — your peer group hold 78%."* The **advantage** the incumbent enjoys, with focus on how stable that advantage is over time. | *"This cell behaves like a market with 3.4 active suppliers. Your current share is X%; your three-year target share implies a gap of Y named contracts to displace."* The **strategic context** for setting and pursuing a multi-year portfolio share target. |
+| Per-incumbent grip | Listed as *"incumbents to displace"* with grip-strength colour coding (deeper red = harder to dislodge). | Listed as *"you and your peers"* with grip-strength shown as defensive position relative to peers. | Listed as *"the field"* with each peer's projected three-year share trajectory based on their current contracts and historical renewal rates. |
+| Forward pipeline | *"Targets to attack."* Items sorted by displaceability (favouring expiring contracts where no renewal notice has appeared, and contracts held by suppliers with thinner cell tenure). | *"Defences to harden."* Items sorted by importance to maintain (favouring the largest contracts the user holds, with time-to-expiry as the urgency cue). | *"Three-year capture programme."* All upcoming contracts in the cell over the next 36 months — yours to defend, peers' to attack — sorted by **revenue impact on three-year portfolio share**. The user's renewal projections, displacement opportunities, and required-win count are computed and shown as a single capture plan. |
 
-The MCP tool that other PWIN products call (Qualify, Win Strategy, Verdict) is **lens-neutral** by default — it returns the structured data with both framings available, and the calling product picks the lens based on whether the consultant has identified themselves as challenger or incumbent in the pursuit context.
+The third lens — **portfolio-strategic** — emerged from a brainstorming follow-up on 2026-05-02 (captured in `wiki/meta/2026-05-02-competitive-cube-brainstorm.md`, "The portfolio-strategic reframe" section). It is a deliberate elevation of the cube from single-pursuit decision support to multi-year strategic-portfolio planning. The need: incumbent CFOs in concentrated cells will rationally dismiss the challenger and incumbent lenses as "no new news" — they live in their concentration; they understand their hit rate is structurally bounded by the small field. The portfolio-strategic lens addresses what they *don't* have — a structured forward-portfolio view across all named upcoming contracts in their cells, with renewal projections per peer and displacement-cost economics at portfolio level.
+
+**The portfolio-strategic conversation looks like:**
+
+> *"Capita, looking at the next 36 months, here are 23 central-government BPO contracts coming up for re-tender. £4.7bn of total contract value across them. You hold 11 today. Sodexo holds 7. Serco holds 5. At your historical 65% renewal rate on this kind of work, projected forward you retain 7 of your 11. If you want to grow market share, you need to take 3 from your peers — and here's the data on which 3 are most displaceable based on incumbent vulnerability and buyer openness signals. That's your three-year capture plan."*
+
+That conversation is fundamentally different from a pursuit-by-pursuit one. It engages the chief financial officer, not the bid team. It ties to revenue forecasts, capacity planning, and capital allocation, not to win/loss adjudication. It is the kind of conversation that justifies a strategic-consulting engagement, not just an annual intelligence retainer.
+
+The MCP tool that other PWIN products call (Qualify, Win Strategy, Verdict) is **lens-neutral** by default — it returns the structured data with all three framings available, and the calling product picks the lens based on the engagement context. Win Strategy in particular consumes the portfolio-strategic lens to drive the multi-year capture-programme methodology described in Section 6.
 
 ### Concrete example of one cell
 
@@ -292,6 +305,11 @@ These are mechanical adjustments to the implementation plan, applied during clou
 - **Layer 3 (per-incumbent vulnerability signals).** Public Accounts Committee mentions, Companies House financial distress flags, *"extensions running long"* anomalies, cancelled procurements as a vulnerability signal. The data sources exist (Public Accounts Committee database, Companies House enrichment, the awards table) but joining them into a coherent per-incumbent vulnerability score is its own piece of work.
 - **Layer 4 (buyer-side openness signals).** Procurement-route mix per cell, average bidder count per competition, recent challenger wins as openness evidence, stakeholder turnover at the buyer-side decision-maker. Builds on the existing buyer-behaviour module and stakeholder database — both live, but their cell-level integration is v2.
 - **Three-dimensional cube with contract value as a primary axis.** v1 uses value as a slicer on top of the 90 cells. If v1 reveals that the same suppliers don't actually compete across all value bands within a sector-and-type cell, v2 splits the cube to 270 cells. The v1 data will tell us whether that's needed.
+- **Portfolio-strategic lens — extended time horizon and projection layer.** v1 ships the framing copy for the portfolio-strategic lens (in Section 3) but holds the underlying multi-year projection math for v2. Specifically:
+    - **Extend Layer 6's forward window from 18 months to 36 months for the strategic view, and to 60 months for the strategic-programme tier.** The data is already in `awards.contract_end_date` plus `awards.contract_max_extend` plus the planning-notice feed; the v1 spec just caps the visible window at 18 months. v2 widens it.
+    - **Portfolio-projection layer.** Given a named supplier and a target three-year market share, the cube projects forward: with current renewal rates per peer, what does retention look like? What's the gap to target? Which named upcoming contracts close the gap most efficiently per pound of bid spend? This is a calculation, not new data — it sits on top of the existing Layer 1, 2, and 6 outputs. Output: a ranked capture-programme with named target contracts, projected probability of taking each, and required bid-cost commitment.
+    - **Renewal-rate-by-incumbent projection.** Layer 2 already captures per-incumbent renewal-versus-new-win mix as a backward-looking metric. v2 promotes it to a forward projection — *"at this peer's historical 62% renewal rate on contracts of this size in this cell, projected forward over 36 months they retain N of their M holdings."*
+    - **Multi-cell aggregation per supplier.** A consultancy or outsourcer typically operates across 3–8 cells. The portfolio-strategic lens needs to aggregate one supplier's portfolio across all relevant cells into a single multi-year revenue projection. This requires a `compute_supplier_portfolio(supplier_id, target_share_per_cell)` function in the engine that loops over the supplier's active cells and aggregates the projection math.
 
 ### Deferred to v3 — bigger or more situational
 
@@ -371,7 +389,8 @@ Because the polished cube build is deferred until post-cloud-migration, an inter
 - **Effective number of suppliers** — a single number derived from the standard concentration index in competition economics (1 ÷ Herfindahl-Hirschman Index). Captures *"how many suppliers does this cell behave like"* in one figure.
 - **Credible competitor list** — the named suppliers a bid team should treat as their actual field for any new bid in the cell. Computed by the 80/20 cut plus the recency overlay (Section 3, Layer 2).
 - **Displacement window** — a forward-looking opportunity to attack incumbency in a cell. Either a named contract approaching expiry or a named planning-notice item.
-- **Lens** — the framing applied to a cell view. Either *Challenger* (where is the wedge?), *Incumbent* (where am I exposed?), or *Neutral* (data only, no framing copy).
+- **Lens** — the framing applied to a cell view. Four valid values: *Challenger* (where is the wedge?), *Incumbent* (where am I exposed?), *Portfolio-strategic* (what's my multi-year capture programme?), or *Neutral* (data only, no framing copy).
+- **Portfolio-strategic lens** — the third reading mode (added 2026-05-02 pm). Re-renders cell data for incumbents who want to *grow* multi-year market share, not just defend. Adds time-horizon extension (36–60 months) and a portfolio-projection layer that computes share gap, required-win count, and capture-programme economics across all cells a named supplier operates in. Drives Win Strategy's multi-year capture-programme methodology rather than single-pursuit decision support.
 - **Sufficiency flag** — an honest signal about how reliable the concentration metrics are for a given cell. Reliable / Directional / Insufficient based on contract count.
 
 ---
