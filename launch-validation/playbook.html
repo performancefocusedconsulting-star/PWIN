@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>BidEquity — Validation Tour Playbook</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --midnight: #0F1B2D;
+    --midnight-soft: #1B2A44;
+    --gold: #C8A85B;
+    --gold-soft: #E5C97A;
+    --bone: #F4EFE6;
+    --mist: #8A93A6;
+    --rule: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--midnight); color: var(--bone); font-family: 'DM Sans', system-ui, sans-serif; line-height: 1.55; }
+  .layout { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 3rem; padding: 4vh 4vw; }
+  nav { position: sticky; top: 4vh; align-self: start; font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; }
+  nav h2 { color: var(--mist); text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.75rem; margin: 0 0 1rem; font-family: inherit; font-weight: 500; }
+  nav ol { padding-left: 1.2em; margin: 0; }
+  nav li { margin-bottom: 0.6rem; }
+  nav a { color: var(--bone); text-decoration: none; }
+  nav a:hover { color: var(--gold); }
+  main h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 2.8rem; margin: 0 0 0.5rem; }
+  main .label { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; color: var(--mist); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; }
+  main h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.8rem; color: var(--gold-soft); margin: 3rem 0 1rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
+  main h3 { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.05rem; margin: 1.5rem 0 0.5rem; color: var(--gold); }
+  main p, main li { max-width: 70ch; }
+  blockquote { margin: 1.5rem 0; padding: 1rem 1.5rem; background: var(--midnight-soft); border-left: 3px solid var(--gold); font-style: italic; color: var(--bone); }
+  blockquote p { margin: 0 0 0.6rem; }
+  blockquote p:last-child { margin-bottom: 0; }
+  .questions { display: grid; gap: 1rem; margin: 1.5rem 0; }
+  .q { padding: 1rem 1.2rem; background: var(--midnight-soft); border-left: 3px solid var(--gold); }
+  .q .num { font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 1.3rem; }
+  .q .text { display: block; margin: 0.3rem 0 0.5rem; font-size: 1.05rem; }
+  .q .listen { font-size: 0.85rem; color: var(--mist); font-family: 'DM Mono', ui-monospace, monospace; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 0.7rem 0.6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: 'DM Mono', ui-monospace, monospace; color: var(--mist); text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; font-weight: 500; }
+  a { color: var(--gold); }
+  a:hover { color: var(--gold-soft); }
+  .reminder { padding: 1.5rem; background: var(--midnight-soft); border: 1px dashed var(--gold); margin: 1.5rem 0; }
+  .reminder strong { color: var(--gold-soft); }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } nav { position: static; } }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav>
+  <h2>Sections</h2>
+  <ol>
+    <li><a href="#purpose">Purpose</a></li>
+    <li><a href="#opening">Opening &amp; consent</a></li>
+    <li><a href="#overview">Substantive overview</a></li>
+    <li><a href="#questions">The four questions</a></li>
+    <li><a href="#close">Close</a></li>
+    <li><a href="#assets">Asset shelf</a></li>
+    <li><a href="#prereads">Pre-read emails</a></li>
+    <li><a href="#capture">Capture &amp; synthesis</a></li>
+  </ol>
+</nav>
+
+<main>
+  <div class="label">BidEquity / Validation Tour Playbook</div>
+  <h1>The conversation playbook</h1>
+  <p>This document is for me, not for them. They never see it. They see the website pre-read and my face. — Paul</p>
+
+  <h2 id="purpose">Purpose</h2>
+  <p>Three things I want from every conversation, in priority order:</p>
+  <ol>
+    <li><strong>Validation</strong> — does the proposition hold up under honest scrutiny?</li>
+    <li><strong>Recruitment</strong> — does anyone get excited enough to come on board?</li>
+    <li><strong>Pivot signal</strong> — should I redirect this entirely?</li>
+  </ol>
+  <p>The frame is <em>"help me solve a problem here"</em>, not <em>"here's what I built, what do you think?"</em>.</p>
+
+  <div class="reminder"><strong>Discipline.</strong> No more than two reserve assets surfaced in any one conversation. A third means I've stopped listening.</div>
+
+  <h2 id="opening">Opening &amp; consent (0–4 min)</h2>
+
+  <h3>The framing paragraph (deliver verbatim, then a beat of silence)</h3>
+  <blockquote>
+    <p>"I'm not here to pitch you anything. I've spent a year and a half building something — a methodology and a platform for how strategic suppliers in UK public sector should pursue their bids — and I'm a few weeks away from making it public.</p>
+    <p>Before I do, I want to spend an hour with people I trust, including you, on three things I genuinely don't know the answer to. I'd value you pushing back hard rather than being kind."</p>
+  </blockquote>
+
+  <h3>The recording-consent ask</h3>
+  <blockquote>
+    <p>"Before we start — I'd like to record this so I can listen back properly afterwards rather than scribbling notes. The recording stays with me, gets transcribed for my own synthesis, and isn't published anywhere. Is that OK with you?"</p>
+  </blockquote>
+  <p><em>If yes:</em> start recording. <em>If no:</em> fall back to written notes via <a href="templates/conversation-capture.md">templates/conversation-capture.md</a>. The conversation still happens, no friction.</p>
+
+  <h2 id="overview">Substantive overview (4–16 min)</h2>
+  <p>Open <a href="deck.html" target="_blank">deck.html</a> in a second tab. Walk through the eight slides, modulating per audience.</p>
+
+  <table>
+    <tr><th>Audience</th><th>Linger on</th><th>Compress</th></tr>
+    <tr><td><strong>A</strong> Industry insiders</td><td>Slides 4, 5, 6 (methodology + platform + data layer)</td><td>Slides 2, 3 (problem + diagnosis)</td></tr>
+    <tr><td><strong>B</strong> Senior business non-industry</td><td>Slides 2, 7 (problem + honest state)</td><td>Slides 4, 5, 6 (methodology + platform + data layer)</td></tr>
+    <tr><td><strong>C</strong> Potential commercial buyers</td><td>Slides 2, 5 (problem + platform)</td><td>Slide 6 (data layer)</td></tr>
+  </table>
+
+  <p><em>Watch them while talking.</em> If a slide visibly lands or visibly bores them, compress or expand on the fly. The deck is a visual anchor, not a teleprompter.</p>
+
+  <h2 id="questions">The four questions (16–55 min)</h2>
+  <p>Pick two or three. Order organically. Silence is welcome.</p>
+
+  <div class="questions">
+    <div class="q">
+      <span class="num">Q1</span>
+      <span class="text">What founding-team / leadership configuration would make this platform survive a strategic supplier's "who else is behind this?" question?</span>
+      <span class="listen">Listen for: CTO with platform pedigree · recognisable name on the board · partner firm fronting the route to market · names mentioned spontaneously.</span>
+    </div>
+    <div class="q">
+      <span class="num">Q2</span>
+      <span class="text">What would actually trigger a top-40 strategic supplier's leadership team to change how they pursue bids?</span>
+      <span class="listen">Listen for: competitor-adopts · regulatory shift · revenue/win-rate pressure · board cost-out programme · new commercial leadership · reactions to the "challenger eats their breakfast" hypothesis.</span>
+    </div>
+    <div class="q">
+      <span class="num">Q3</span>
+      <span class="text">Who do you know — for either side of this?</span>
+      <span class="listen">Listen for: build side (co-founder, director, partner) and buy side (intro to a buyer). Even tentative names. Write them down then.</span>
+    </div>
+    <div class="q">
+      <span class="num">Q4</span>
+      <span class="text">What am I missing? If you were me, would you redirect this entirely?</span>
+      <span class="listen">Listen for: pivot signals · adjacent markets · adjacent products · adjacent business models.</span>
+    </div>
+  </div>
+
+  <div class="reminder">If they push back on the £3bn / £2bn at slide 2, <strong>Q2 has just opened naturally</strong>. Skip the rest of the overview and run with it.</div>
+
+  <h2 id="close">Close (55–60 min)</h2>
+  <ol>
+    <li><strong>The distilled prompt.</strong> <em>"What's the single thing you'd want me to think hardest about between now and when this goes public?"</em></li>
+    <li><strong>One exit ask</strong> (whichever fits — never plant more than one cold):
+      <ul>
+        <li><em>Introduction.</em> "Who could you put me in front of for this?"</li>
+        <li><em>Involvement.</em> "Is this something you'd want to be part of in some shape?" (only if the conversation has clearly gone there)</li>
+        <li><em>Pressure-test loop.</em> "Can I come back to you in three months when this is in the market and tell you what happened?"</li>
+      </ul>
+    </li>
+    <li><strong>A specific thank-you.</strong> Name the exact thing they pushed hardest on. Commit to a next step on the spot.</li>
+    <li><strong>Stop the recording before standing up.</strong></li>
+  </ol>
+
+  <h2 id="assets">Reserve asset shelf</h2>
+  <p>Surface live <em>only</em> when the conversation earns it. Never volunteer.</p>
+  <table>
+    <tr><th>Asset</th><th>Surface when they ask</th></tr>
+    <tr><td><a href="../pwin-competitive-intel/bidequity-cfo-model.html" target="_blank">CFO model</a></td><td>"Where do those numbers come from?" / "What does the client maths look like?"</td></tr>
+    <tr><td><a href="assets/pwin-five-layers.html" target="_blank">Five-layer PWIN explainer</a></td><td>"How is this different from a scorecard?"</td></tr>
+    <tr><td><a href="https://bidequity.co.uk/qualify-app.html" target="_blank">Live Qualify walkthrough</a></td><td>"Show me how it actually works"</td></tr>
+    <tr><td><a href="assets/data-confidence-catalogue.html" target="_blank">Data confidence catalogue</a></td><td>"How honest are you about what the data can and can't tell you?"</td></tr>
+    <tr><td><a href="assets/pre-gate-playbook.html" target="_blank">Pre-Gate Playbook diagram</a></td><td>"What's the methodology, exactly?"</td></tr>
+    <tr><td><a href="https://bidequity.co.uk/perspective/founder-interview" target="_blank">Founder interview</a></td><td>"Tell me about you" — point them at it as a follow-up read</td></tr>
+  </table>
+
+  <h2 id="prereads">Pre-read emails (send 48–72 hours before)</h2>
+
+  <h3>For audience A — industry insiders</h3>
+  <blockquote><p>"I've spent 18 months building a methodology and a platform for how strategic suppliers in UK public sector should pursue bids — including a five-year, 175,000-contract intelligence database. Before I take it public next month, I want to spend an hour with people who know how this market actually works. The site is at <a href="https://bidequity.co.uk">bidequity.co.uk</a> if you want a 10-minute scan beforehand — particularly the founder interview at /perspective. I'll talk you through what's behind it, and then I want to ask you three or four hard questions I genuinely don't know the answers to. No pitch."</p></blockquote>
+
+  <h3>For audience B — senior business non-industry</h3>
+  <blockquote><p>"I'm a few weeks away from launching a business — BidEquity — that I've been building quietly for the last 18 months. Before I do, I want to spend an hour with people whose judgement I trust, including yours. There are two or three questions I genuinely don't know the answer to that you might help me think through. The website is at <a href="https://bidequity.co.uk">bidequity.co.uk</a> if you want a quick look — the founder interview at /perspective is the closest thing to a manifesto. No pitch, no slides, just a conversation."</p></blockquote>
+
+  <h3>For audience C — potential commercial buyers</h3>
+  <blockquote><p>"I'm getting close to launching a business focused on how strategic suppliers like yours pursue UK public sector bids. Before I do, I'm taking an hour with a small number of senior people on the buyer side — not to sell to them, but to ask whether they think the proposition holds up, and what would have to be true for a firm like theirs to entertain it. Worth ten minutes of your time on <a href="https://bidequity.co.uk">bidequity.co.uk</a> first if you're willing. I'd value the honest read."</p></blockquote>
+
+  <h2 id="capture">Capture &amp; synthesis</h2>
+  <ol>
+    <li>Stop the recording before standing up.</li>
+    <li>Within 30 minutes: transfer the recording, transcribe (Otter / Notta / MacWhisper / equivalent).</li>
+    <li>Run the transcript through <a href="templates/synthesis-prompt.md">templates/synthesis-prompt.md</a>.</li>
+    <li>Save the synthesised Markdown to <code>conversations/YYYY-MM-DD-&lt;initials&gt;-&lt;audience-code&gt;.md</code> (gitignored by default).</li>
+    <li>Update the row in <a href="templates/synthesis-log.csv">templates/synthesis-log.csv</a> and <a href="synthesis-log.md">synthesis-log.md</a>.</li>
+    <li>Purge raw audio and transcript once the synthesis has been reviewed.</li>
+    <li>Read the synthesis log every 3–4 conversations, not after every one.</li>
+  </ol>
+</main>
+
+</div>
+</body>
+</html>
