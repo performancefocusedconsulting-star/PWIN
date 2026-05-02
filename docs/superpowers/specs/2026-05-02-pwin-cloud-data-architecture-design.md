@@ -87,7 +87,7 @@ PWIN's runtime will live in a single Google Cloud project in `europe-west2` (Lon
 
 | Service | Job | Cost shape |
 |---|---|---|
-| Cloud SQL for PostgreSQL | The single database holding all structured data | Fixed (~£70-150/month with HA) |
+| Cloud SQL for PostgreSQL | The single database holding all structured data | Fixed (~£100-150/month with HA) |
 | Cloud Run (4 services) | Stateless application code: MCP server, HTTP API, ingest pipelines, artefact uploader | Pay-per-request (~£5-20/month) |
 | Cloud Storage | Files: dossier staging, intermediate ingest files, archives | Pay per GB (~£1-5/month) |
 | Cloud Scheduler | Triggers ingest pipelines on schedules | Free tier sufficient |
@@ -172,7 +172,7 @@ The database is divided into four logical schemas with clear responsibilities.
 |---|---|
 | `artefacts` | Every AI-generated output — buyer/supplier/sector dossiers, incumbency assessments, Qualify reviews, win strategy outputs, and future Wave 2 outputs. Versioned, never overwritten, full provenance metadata, JSONB content, vector embedding column (initially NULL), outcome linkage hooks |
 
-15 tables in `intel`. The `artefacts` table is the new central addition.
+14 tables in `intel` (4 canonical entity + 4 frameworks + 3 stakeholders + 2 adjudication + 1 `artefacts`). The `artefacts` table is the new central addition.
 
 ### 5.3 `pursuits` schema — Wave 2 placeholder
 
