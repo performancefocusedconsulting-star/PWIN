@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>PWIN — the five-layer probability engine</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --midnight: #0F1B2D;
+    --midnight-soft: #1B2A44;
+    --gold: #C8A85B;
+    --gold-soft: #E5C97A;
+    --bone: #F4EFE6;
+    --mist: #8A93A6;
+    --rule: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--midnight); color: var(--bone); font-family: 'DM Sans', system-ui, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 6vh 6vw; }
+  .label { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; color: var(--mist); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 3rem; margin: 0 0 0.5rem; }
+  .subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); font-size: 1.4rem; margin: 0 0 3rem; }
+  .layers { display: flex; flex-direction: column; gap: 0; }
+  .layer { display: grid; grid-template-columns: 80px 1fr; gap: 2rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .layer:last-child { border-bottom: 1px solid var(--rule); }
+  .layer .num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--gold); line-height: 1; }
+  .layer h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.6rem; margin: 0 0 0.5rem; }
+  .layer p { margin: 0; line-height: 1.6; max-width: 60ch; }
+  .layer .source { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.8rem; color: var(--mist); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.5rem; }
+  .integrated { margin-top: 4rem; padding: 2rem; background: var(--midnight-soft); border-left: 3px solid var(--gold); }
+  .integrated h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.6rem; margin: 0 0 1rem; color: var(--gold-soft); }
+  .integrated p { margin: 0 0 0.8rem; line-height: 1.6; }
+  @media print {
+    html, body { background: white; color: black; }
+    .integrated { background: #f4efe6; color: black; }
+    .integrated h2 { color: #0F1B2D; }
+    .layer .num, .subtitle { color: #b8973f; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="label">BidEquity / Reserve asset</div>
+  <h1>The five-layer probability engine</h1>
+  <p class="subtitle">PWIN is not a score. It is a system that produces one.</p>
+
+  <section class="layers">
+    <div class="layer">
+      <div class="num">1</div>
+      <div>
+        <h2>Historical Pattern</h2>
+        <p>What does the contracts data say about how often suppliers like you, in opportunities like this, with buyers like this, with competition like this, actually win? An empirical anchor drawn from 175,000 UK public sector contracts.</p>
+        <p class="source">Source — Competitive Intel database</p>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="num">2</div>
+      <div>
+        <h2>Qualify Assessment</h2>
+        <p>The structured pursuit-team assessment across six categories — capture position, prime intent, solution strength, opportunity intelligence, value position, programme position. 24 weighted questions, opportunity-type calibration, modifier overlays.</p>
+        <p class="source">Source — Qualify product</p>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="num">3</div>
+      <div>
+        <h2>Capture Evidence</h2>
+        <p>The artefacts produced through the capture window — buyer decision thesis, stakeholder map, competitor field map, win architecture, commercial stance — linked to the categorical claims they support. Evidence under each score, not narrative around it.</p>
+        <p class="source">Source — Win Strategy product</p>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="num">4</div>
+      <div>
+        <h2>Cognitive Discount Factor</h2>
+        <p>A mathematically applied bias correction. Where the team's score is high but the supporting evidence is thin or contested, the score is discounted. Subjectivity is allowed in; over-confidence is not.</p>
+        <p class="source">Source — Platform integration layer</p>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="num">5</div>
+      <div>
+        <h2>Structural Ceiling</h2>
+        <p>The hard cap imposed by the structural reality of the market — incumbency strength, framework dynamics, SMA positioning, regulatory constraints. A pursuit cannot score above its structural ceiling no matter how well the team executes.</p>
+        <p class="source">Source — Platform integration layer + Competitive Intel</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="integrated">
+    <h2>What the system produces</h2>
+    <p>One integrated PWIN score. Confidence-graded. Each layer visible underneath. Transparent by default.</p>
+    <p>A scorecard tells you where the team thinks they are. The five-layer engine tells you whether the team is right — and if not, where the gap is and what closing it would cost.</p>
+  </section>
+</main>
+</body>
+</html>
