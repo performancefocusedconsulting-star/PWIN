@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Pre-Gate Pursuit Playbook (S1–S5)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --midnight: #0F1B2D;
+    --midnight-soft: #1B2A44;
+    --gold: #C8A85B;
+    --gold-soft: #E5C97A;
+    --bone: #F4EFE6;
+    --mist: #8A93A6;
+    --rule: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--midnight); color: var(--bone); font-family: 'DM Sans', system-ui, sans-serif; }
+  main { max-width: 1200px; margin: 0 auto; padding: 6vh 6vw; }
+  .label { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; color: var(--mist); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 3rem; margin: 0 0 0.5rem; }
+  .subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); font-size: 1.4rem; margin: 0 0 3rem; }
+  .stages { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 3rem; }
+  .stage { padding: 1.5rem; background: var(--midnight-soft); border-top: 3px solid var(--gold); }
+  .stage .code { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; color: var(--gold); letter-spacing: 1.5px; margin-bottom: 0.5rem; }
+  .stage h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.2rem; margin: 0 0 1rem; line-height: 1.2; }
+  .stage ul { padding-left: 1em; margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--bone); }
+  .stage li { margin-bottom: 0.4rem; }
+  .stage li::marker { color: var(--gold); }
+  .arrow { text-align: center; font-family: 'DM Mono', ui-monospace, monospace; color: var(--mist); margin: 1rem 0; letter-spacing: 2px; }
+  .workstreams { padding: 2rem; background: var(--midnight-soft); border-left: 3px solid var(--gold); }
+  .workstreams h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.6rem; margin: 0 0 1rem; color: var(--gold-soft); }
+  .workstreams .label-tag { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.75rem; color: var(--mist); display: block; margin-bottom: 0.8rem; letter-spacing: 1px; }
+  .workstreams ol { padding-left: 1.5em; line-height: 1.6; }
+  .workstreams li strong { color: var(--gold-soft); }
+  @media (max-width: 900px) { .stages { grid-template-columns: 1fr 1fr; } }
+  @media print {
+    html, body { background: white; color: black; }
+    .stage, .workstreams { background: #f4efe6; color: black; }
+    .stage .code, .workstreams h2, .stage li::marker, .subtitle { color: #b8973f; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="label">BidEquity / Reserve asset</div>
+  <h1>The Pre-Gate Pursuit Playbook</h1>
+  <p class="subtitle">Five stages across the 4–5 month capture window. Four workstreams running in parallel.</p>
+
+  <section class="stages">
+    <div class="stage">
+      <div class="code">S1</div>
+      <h3>Opportunity Sense-Making</h3>
+      <ul>
+        <li>Opportunity Brief</li>
+        <li>Initial Buyer Need Hypothesis</li>
+        <li>Initial Fit Assessment</li>
+      </ul>
+    </div>
+    <div class="stage">
+      <div class="code">S2</div>
+      <h3>Buyer &amp; Field Shaping</h3>
+      <ul>
+        <li>Buyer Decision Thesis</li>
+        <li>Stakeholder Map</li>
+        <li>Competitor Field Map</li>
+        <li>Incumbent Defensibility Assessment</li>
+      </ul>
+    </div>
+    <div class="stage">
+      <div class="code">S3</div>
+      <h3>Win Architecture Design</h3>
+      <ul>
+        <li>Path to Win Statement</li>
+        <li>Win Themes</li>
+        <li>Proof Map</li>
+        <li>Solution Spine</li>
+      </ul>
+    </div>
+    <div class="stage">
+      <div class="code">S4</div>
+      <h3>Commercial Risk &amp; Suitability Review</h3>
+      <ul>
+        <li>Commercial Stance</li>
+        <li>Suitability Review</li>
+        <li>Risk Redline Summary</li>
+        <li>Gap Fix Plan</li>
+      </ul>
+    </div>
+    <div class="stage">
+      <div class="code">S5</div>
+      <h3>Commitment Readiness</h3>
+      <ul>
+        <li>Gate Pack</li>
+        <li>Formal Recommendation</li>
+        <li>Full Go / Conditional / Watch / No Bid</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="arrow">→ → →  Formal Gate  → → →  Bid Execution</div>
+
+  <section class="workstreams">
+    <h2>The four workstreams</h2>
+    <span class="label-tag">Running in parallel across all five stages</span>
+    <ol>
+      <li><strong>Buyer &amp; Opportunity Shaping</strong> — building the buyer decision thesis, anticipating the procurement.</li>
+      <li><strong>Competitive &amp; Incumbent Intelligence</strong> — mapping the field, assessing the incumbent, identifying displacement leverage.</li>
+      <li><strong>Solution &amp; Proof Strategy</strong> — designing the solution spine, building the proof map, threading win themes.</li>
+      <li><strong>Commercial Risk &amp; Suitability</strong> — sizing the commercial stance, reviewing risk, closing gap-fix actions.</li>
+    </ol>
+    <p style="margin-top:1rem; color: var(--mist);"><em>Plus a fifth workstream — Pursuit Readiness &amp; Governance — running across all four to keep the gate pack on track.</em></p>
+  </section>
+</main>
+</body>
+</html>
