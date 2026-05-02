@@ -2,13 +2,15 @@
 
 **Date:** 2026-05-02
 **Project:** pwin-competitive-intel (data layer, dashboard) + pwin-platform (MCP tools)
-**Status:** Approved — ready for implementation planning, subject to cloud-platform alignment review (Section 5)
+**Status:** Approved design — **build deferred until post-cloud-migration** (decision dated 2026-05-02 pm). Implementation plan committed at `pwin-competitive-intel/docs/superpowers/plans/2026-05-02-competitive-cube-plan.md` and held until the Wave 1 cloud migration completes. A directional analysis ships in advance to inform launch positioning — see Section 7.
 **Related:**
 - `pwin-platform/knowledge/sector_opp_matrix.json` (the 9×10 intersection grid that this spec reads from)
 - `pwin-platform/knowledge/sector_knowledge.json` (the nine canonical sectors)
 - `pwin-platform/knowledge/opportunity_types.json` (the ten canonical opportunity types)
 - `wiki/meta/2026-05-02-cfo-model-margins-and-retainer.md` (the conversation that surfaced this product)
-- The cloud-platform architecture spec (in flight, must align with Section 5 of this document before either spec is finalised)
+- `docs/superpowers/specs/2026-05-02-pwin-cloud-data-architecture-design.md` (the cloud architecture spec — Wave 1 PostgreSQL migration; cube ships against PostgreSQL after migration)
+- `pwin-competitive-intel/queries/directional_concentration_analysis.py` (one-off script delivering directional findings ahead of the cube build)
+- `pwin-competitive-intel/reports/directional-concentration-analysis-2026-05-02.md` (the directional report itself)
 
 ---
 
@@ -217,7 +219,9 @@ Each stage builds on the previous. The engine is the load-bearing piece — once
 
 ## Section 5 — Cloud-Platform Alignment
 
-The cloud platform architecture is being designed in parallel with this product. Where the two intersect, this section is the alignment register — explicit about who owns which decision, what this spec sends as input to the cloud work, and what this spec defers.
+> **Update — 2026-05-02 pm.** The cloud architecture spec landed during the same brainstorming day as this spec, targeting Google Cloud UK PostgreSQL on Cloud SQL (not Cloudflare D1 as initially assumed in this section's first draft). After comparing the two, the agreed sequencing is: **the cube build does not begin until the Wave 1 cloud migration completes.** This avoids double schema work (SQLite then PostgreSQL), removes the parallel-track coordination overhead, and lets the cube ship directly against the production-grade architecture. To preserve commercial momentum, a directional concentration analysis (Section 7) ships now using existing data and coarse mappings — providing the launch and positioning material the polished cube would otherwise produce. Compare-and-contrast captured in the wiki at `wiki/meta/2026-05-02-competitive-cube-brainstorm.md`.
+
+The remainder of this section is the original alignment register, retained for traceability and to inform the post-migration cube build.
 
 ### Points of contact
 
@@ -260,13 +264,24 @@ For convenience to the cloud architect when they pick this spec up:
 
 ### What this spec defers to the cloud spec
 
-- Whether Cloudflare D1 remains the production database target.
-- Whether the dashboard tab is served from Cloudflare Pages or elsewhere.
-- Whether the MCP server runs co-located with the database or stays local-first as today.
+- The production database target — confirmed by the cloud spec as **PostgreSQL on Cloud SQL UK** (Google Cloud `europe-west2`).
+- Whether the dashboard tab is served alongside the platform or stays on a separate host (cloud spec does not yet address dashboard hosting).
+- Whether the MCP server runs co-located with the database (cloud spec confirms: containerised in Cloud Run alongside the HTTP API).
 - The full cost calculation for read budget under expected concurrent load.
-- Authentication and access control on the production API (today's local API is internal-only; the production version will need a position on this).
+- Authentication and access control on the production API (today's local API is internal-only; cloud spec specifies Google Workspace SSO via Identity Platform).
 
-This treats the cloud architecture as the senior spec on infrastructure questions and this spec as the senior on data-layer schema and consumer-surface design. Where the two intersect (the joint sign-off rows in the table above), neither spec proceeds without the other agreeing.
+This treats the cloud architecture as the senior spec on infrastructure questions and this spec as the senior on data-layer schema and consumer-surface design.
+
+### Reconciliation outcome (post-cloud-spec review)
+
+After reading the committed cloud architecture spec, the alignment is:
+
+- **Schema location.** The new `cell_summary` table belongs in the cloud spec's `intel` schema (not flat). The new `opp_type` column on notices follows the rest of `notices` into the `raw` schema. Indexes follow the underlying tables.
+- **Drivers.** Python engine code's `sqlite3` calls become PostgreSQL via `psycopg2` (or async equivalent); the `?` placeholder syntax becomes `%s`. The `ON CONFLICT ... DO UPDATE` clause is portable across SQLite and PostgreSQL — no rewrite needed. Node MCP module's `better-sqlite3` calls become `pg` (node-postgres) async — three query functions to rewrite.
+- **Refresh job.** Cron-driven `agent/scheduler.py` step becomes a Cloud Scheduler trigger to the `ingest-pipelines` Cloud Run service running the same Python entry point. The `refresh_cell_aggregates` function itself is unchanged.
+- **API surface.** Three new MCP tools and three new HTTP endpoints are additive to the cloud-spec's containerised services — no refactor required, just new registrations in the existing `mcp.js` and `api.js`.
+
+These are mechanical adjustments to the implementation plan, applied during cloud Phase 3 (containerisation) and Phase 4 (verification). The spec itself does not need rewriting — only the plan's task-level code needs the driver and connection-string changes when the cube is finally built.
 
 ---
 
@@ -307,6 +322,44 @@ The build is complete when all four hold:
 - **Report.** Peer review by someone outside the build before it ships externally.
 - **Dashboard.** Manual click-through of the three views on each of the 9 sectors as a smoke test.
 - **MCP.** One live integration call from Qualify, end to end, with the returned data inspected.
+
+---
+
+## Section 7 — Interim Directional Analysis (shipped 2026-05-02)
+
+Because the polished cube build is deferred until post-cloud-migration, an interim directional analysis ships now to provide launch and positioning material that the cube would otherwise have produced.
+
+**What it is.** A one-off Python script that runs against the existing SQLite database, substitutes coarse mappings for the polished canonical taxonomies, and produces a markdown report covering the same six insight categories the cube would surface.
+
+**Substitutions made:**
+
+- **Sector** — derived from `canonical_buyers.type` mapped to one of the nine canonical sectors. Defence, Justice & Home Affairs, and Transport cannot be cleanly isolated from Central Government using buyer type alone (Ministry of Defence is `Ministerial department`; courts are `Court` and `Tribunal` but Home Office and Ministry of Justice are `Ministerial department`). The polished cube will route by buyer name patterns to fix this.
+- **Opportunity type** — derived from CPV (procurement category code) leading two digits mapped to ~30 directional buckets. The polished cube will use the platform's 10-bucket canonical opportunity-type taxonomy with title-keyword fallback.
+- **Credible competitor list** — replaced by simple top-5 by contract value with no recency overlay. The polished cube will apply the 80/20 cut plus recency overlay defined in Section 3.
+- **Sufficiency flag** — replaced by a minimum-5-contracts cut (any cell with fewer is dropped). The polished cube will use the three-state Reliable / Directional / Insufficient flags.
+
+**What it produces.** A markdown report at `pwin-competitive-intel/reports/directional-concentration-analysis-2026-05-02.md` covering: total universe, per-sector concentration, sector × CPV-bucket directional cube (top 25 cells by value), direct-award reliance per sector, year-on-year trajectory, forward pipeline density.
+
+**Known data quality limitations of the directional version** (all corrected by the polished cube):
+
+- Total contract values are inflated because framework agreement ceiling values are summed alongside individual contract values without deduplication.
+- Some "supplier" names in the data are publisher metadata strings ("see contracts finder notice for full supplier list") rather than real suppliers. The canonical supplier layer hasn't fully cleaned these.
+- Six sectors are mappable cleanly from buyer type (Central Government, Local Government, NHS & Health, Education, Emergency Services, Devolved Government); three (Defence & Security, Justice & Home Affairs, Transport) are partially mapped or absorbed into Central Government.
+- Trend signals on short windows (recent 12 months versus prior 4 years) are noisy where contract counts are low.
+
+**What the directional analysis is sufficient for:**
+
+- Launch positioning material — proves the structural concentration claim with empirical numbers and named suppliers.
+- Founder narrative and analyst briefings.
+- Internal commercial planning around which sectors to lead with.
+
+**What the directional analysis is not sufficient for:**
+
+- Per-named-pursuit displacement intelligence in a real client engagement (the polished cube is needed for that).
+- External commercial claims requiring two-significant-figure precision (rounding to the nearest 10% works).
+- Any analyst-grade citation about Defence, Justice, or Transport sectors specifically.
+
+**Path to retire the directional analysis.** When the polished cube ships post-cloud-migration, the directional analysis script is preserved as historical context but the report it produces is superseded by the cube's marketing-grade output (Stage 2 of the implementation plan).
 
 ---
 
