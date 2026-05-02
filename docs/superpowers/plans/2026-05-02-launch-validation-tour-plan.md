@@ -106,6 +106,13 @@ The conversation playbook and supporting artefacts for Paul's pre-launch validat
 ## Privacy
 
 Raw audio, transcripts, and per-conversation synthesised files are gitignored. The synthesis log can be either local-only (`synthesis-log.local.csv`, gitignored) or committed in anonymised form (`templates/synthesis-log.csv`). Pick one as a project-level convention before the first conversation.
+
+## Editing the deck
+
+`deck-content.md` is the single source of truth for both `deck.html` and `deck.pptx`.
+
+- **`deck.html`** is hand-built HTML that reads the same content. To change a slide's wording or order, edit `deck-content.md` and update `deck.html` to match.
+- **`deck.pptx`** is generated from `deck-content.md` via Marp (a small command-line tool). Never hand-edit `deck.pptx` directly. To regenerate after a content change, install Marp once (`npm install -g @marp-team/marp-cli`) then run `marp deck-content.md --pptx --allow-local-files -o deck.pptx` from this folder.
 ```
 
 - [ ] **Step 4: Verify structure and ignore rules.**
@@ -567,19 +574,39 @@ git commit -m "feat(launch-validation): synthesis log (CSV header + markdown rol
 
 ## Task 6 — Deck content source
 
-**Authorship:** Claude end-to-end. Content lifted directly from spec Section 3, formatted as a single-source Markdown file that both `deck.html` and `deck.pptx` render from.
+**Authorship:** Claude end-to-end. Content lifted directly from spec Section 3, formatted as a Marp-compatible Markdown file. The HTML deck (Task 7) reads this content and re-renders it in the platform's hand-styled HTML; the PowerPoint deck (Task 8) is generated directly from this same file via Marp. One source, two renderings.
 
 **Files:**
 - Create: `launch-validation/deck-content.md`
 
 - [ ] **Step 1: Write the deck content file.**
 
+The frontmatter includes Marp directives (`marp: true`, palette, inline style block, Google Fonts import) so `marp deck-content.md --pptx` produces a Midnight-Executive-styled PowerPoint without further configuration. The non-Marp metadata (`title`, `date`, `audience`, `purpose`) sits alongside the Marp directives in the same frontmatter block.
+
 ```markdown
 ---
+marp: true
+theme: default
+paginate: true
+size: 16:9
+backgroundColor: '#0F1B2D'
+color: '#F4EFE6'
 title: BidEquity — substantive overview (validation tour)
 date: 2026-05-02
 audience: validation tour (A/B/C)
 purpose: visual anchor for the substantive overview phase of each conversation
+style: |
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
+  section { font-family: 'DM Sans', system-ui, sans-serif; padding: 60px 80px; background: #0F1B2D; color: #F4EFE6; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 56pt; margin: 0 0 0.3em; line-height: 1.1; letter-spacing: 0.5px; }
+  h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 28pt; color: #C8A85B; margin: 0 0 1em; }
+  p, li { font-size: 22pt; line-height: 1.5; }
+  ul, ol { padding-left: 1.2em; }
+  li { margin-bottom: 0.4em; }
+  strong { color: #E5C97A; font-weight: 700; }
+  em { color: #8A93A6; font-style: italic; font-size: 18pt; }
+  hr { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 1em 0; }
+  section::after { font-family: 'DM Mono', monospace; font-size: 11pt; color: #8A93A6; letter-spacing: 1.5px; bottom: 30px; right: 60px; }
 ---
 
 # Slide 1 — Title
@@ -911,39 +938,68 @@ git commit -m "feat(launch-validation): HTML slide deck (substantive overview, 8
 
 ---
 
-## Task 8 — PowerPoint deck
+## Task 8 — PowerPoint deck (via Marp)
 
-**Authorship:** Paul (or whoever is rebuilding this). Plan provides explicit per-slide content and design guidance. The PowerPoint is built either by hand or via Marp from `deck-content.md`; this plan does not prescribe the tool.
+**Authorship:** Claude end-to-end at execution time. The PowerPoint is generated directly from `launch-validation/deck-content.md` (the Marp-shaped source built in Task 6) using the Marp CLI. No hand-building. The Marp directives (palette, fonts, inline style) are already in the source's frontmatter; this task installs the tool, runs it, and verifies the output.
 
 **Files:**
-- Create: `launch-validation/deck.pptx`
+- Create: `launch-validation/deck.pptx` (generated, not hand-edited)
 
-- [ ] **Step 1: Choose the build path.**
+**About Marp.** Marp is a small free command-line tool that converts a Markdown file into a deck. It is not a visual editor; you do not click and drag in it. You point it at `deck-content.md`, type one command, and it produces the PowerPoint. The styling is taken from the frontmatter we wrote in Task 6.
 
-Option A — **By hand in PowerPoint or Keynote.** Open `launch-validation/deck-content.md` alongside. Build 8 slides matching the headings, body text, and speaker notes verbatim. Use:
-- Background: deep navy (`#0F1B2D`).
-- Title font: Cormorant Garamond 60pt, bone (`#F4EFE6`).
-- Subtitle / accent: same family 32pt, gold (`#C8A85B`).
-- Body: DM Sans 22pt, bone, line spacing 1.4.
-- Top-left small label: DM Mono 12pt, mist (`#8A93A6`), uppercased.
-- Speaker notes: paste the speaker note text into the PowerPoint Notes pane.
+- [ ] **Step 1: Install Marp CLI.**
 
-Option B — **Via Marp.** Convert `deck-content.md` to a Marp-formatted source by adding a Marp directive header, then run `marp deck-content.md --pptx`. Hand-tune the result.
+The platform already uses Node.js, so `npm` is available. Install Marp globally:
 
-- [ ] **Step 2: Verify the PowerPoint matches the HTML deck.**
+```bash
+npm install -g @marp-team/marp-cli
+```
 
-Open `deck.pptx`. Confirm:
-- 8 slides, in the same order as the HTML.
-- All headings, body bullets, and structural emphasis preserved.
-- Speaker notes present in the Notes pane.
-- Branding colours and fonts read as the same artefact as the HTML deck (not a different family).
+Verify:
 
-- [ ] **Step 3: Commit.**
+```bash
+marp --version
+```
+
+Expected: a version number (e.g. `@marp-team/marp-cli v3.x.x`).
+
+- [ ] **Step 2: Generate the PowerPoint.**
+
+From the repo root:
+
+```bash
+cd launch-validation
+marp deck-content.md --pptx --allow-local-files
+```
+
+This produces `deck-content.pptx` in the same folder. Rename it:
+
+```bash
+mv deck-content.pptx deck.pptx
+```
+
+(Or, in one line: `marp deck-content.md --pptx --allow-local-files -o deck.pptx`.)
+
+- [ ] **Step 3: Open the PowerPoint and verify it matches the HTML deck.**
+
+Open `launch-validation/deck.pptx` in PowerPoint, Keynote, or LibreOffice Impress. Confirm:
+- 8 slides in the same order as `deck.html`.
+- Title slide reads "BidEquity / The pre-launch conversation / May 2026".
+- Slides 2–7 carry the five overview chunks, each with the right heading and body content.
+- Slide 8 closes with the three (and a half) questions.
+- Background reads as the dark navy palette; titles in the Cormorant Garamond serif; body text in DM Sans.
+- Speaker notes from the deck source are present in the Notes pane of the relevant slides.
+
+If anything is off, adjust the Marp directives in `deck-content.md` (Task 6 frontmatter), regenerate, and re-verify. The source is authoritative; never hand-edit `deck.pptx` directly — that would create the drift problem this approach exists to avoid.
+
+- [ ] **Step 4: Commit.**
 
 ```bash
 git add launch-validation/deck.pptx
-git commit -m "feat(launch-validation): PowerPoint deck (substantive overview, mirrors HTML deck)"
+git commit -m "feat(launch-validation): PowerPoint deck generated via Marp from deck-content.md"
 ```
+
+**Regeneration note for the future.** If the deck content changes, edit `deck-content.md`, then re-run the Marp command in Step 2 to regenerate `deck.pptx`. Both `deck.html` (Task 7) and `deck.pptx` (this task) source from the same file, so they cannot drift unless one is hand-edited.
 
 ---
 
