@@ -70,11 +70,11 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--gold
 .lever-saving{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold-light)}
 
 /* Impact row */
-.impact-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);border-top:none}
+.impact-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);border-top:none}
 .impact-cell{background:var(--bg-card-2);padding:1.4rem 1.5rem}
 
 /* Company calculator */
-.profile-sel{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border-dim);margin-bottom:2rem}
+.profile-sel{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-dim);margin-bottom:2rem}
 .prof-btn{background:var(--bg-card);border:none;padding:.85rem .5rem;cursor:pointer;text-align:center;color:var(--text-dim);transition:background .15s;width:100%}
 .prof-btn:hover{background:var(--bg-card-2)}
 .prof-btn.active{background:var(--bg-card-2);color:var(--gold-light)}
@@ -88,7 +88,7 @@ input[type=number]{background:var(--bg-card);border:1px solid var(--border);colo
 input[type=number]:focus{border-color:var(--gold-dim)}
 
 /* Results */
-.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);margin-bottom:1px}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-dim);border:1px solid var(--border-dim);margin-bottom:1px}
 .res-card{background:var(--bg-card);padding:1.6rem 1.8rem}
 .res-card.highlight{background:var(--bg-card-2);border:none}
 .res-label{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.17em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:.6rem}
@@ -232,11 +232,6 @@ input[type=number]:focus{border-color:var(--gold-dim)}
       <div class="m-value" id="ind-revised" style="font-size:2.2rem">—</div>
       <div class="m-sub">after both levers</div>
     </div>
-    <div class="impact-cell">
-      <span class="m-label">Indicative Retainer ROI</span>
-      <div class="m-value" id="ind-roi" style="font-size:2.2rem">—</div>
-      <div class="m-sub">per supplier · £720k retainer</div>
-    </div>
   </div>
 
 </section>
@@ -273,12 +268,8 @@ input[type=number]:focus{border-color:var(--gold-dim)}
           <span class="sl-label inp-label">Operating Margin %</span>
           <span class="sl-val" id="gm-disp">7%</span>
         </div>
-        <input type="range" id="sl-gm" min="2" max="15" step="1" value="7" oninput="onSlider(this,'gm-disp',v=>v+'%')">
-        <div class="datasrc" style="margin-top:.4rem">Serco 6.7% · Mitie 5.2% · Babcock 7.1% · Capita 4.8% (FY2024 reported)</div>
-      </div>
-      <div class="inp-group">
-        <label class="inp-label" for="inp-ret">Annual BidEquity Retainer (£k)</label>
-        <input type="number" id="inp-ret" value="720" min="50" max="10000" oninput="calcAll()">
+        <input type="range" id="sl-gm" min="2" max="30" step="1" value="6" oninput="onSlider(this,'gm-disp',v=>v+'%')">
+        <div class="datasrc" style="margin-top:.4rem">FY2024 anchors: Construction 2–4% · Outsourcer / FM 5–7% · Defence 7–10% · Engineering consulting ~10% · IT consulting ~13% · Management consulting 15–20%</div>
       </div>
     </div>
   </div>
@@ -298,11 +289,6 @@ input[type=number]:focus{border-color:var(--gold-dim)}
       <span class="res-label">BidEquity Annual Saving</span>
       <div class="res-value green" id="r-saving">—</div>
       <div class="res-sub">A: <span id="r-sa">—</span> · B: <span id="r-sb">—</span></div>
-    </div>
-    <div class="res-card highlight">
-      <span class="res-label">Retainer ROI</span>
-      <div class="res-value green" id="r-roi">—</div>
-      <div class="res-sub" id="r-roi-sub">return per £1 invested</div>
     </div>
   </div>
 
@@ -356,7 +342,7 @@ input[type=number]:focus{border-color:var(--gold-dim)}
 
   <div class="caveat"><strong>On volume:</strong> FTS unique competition counts deduplicate consortium and multi-lot award notices. Coverage corrections account for framework call-offs at £25m+ tier (notified under PCR 2015 but inconsistently) and defence/security exemptions at the mega tier. Strategic bidder counts are estimated from observed average supplier appointments per competition (FTS total_bids field) cross-checked against market knowledge of qualified prime contractors per sector.</div>
   <div class="caveat"><strong>On unit costs:</strong> All costs are fully-loaded (staff time, overhead, management, external advisors, pricing support). Loaded rate calibrated at £3,500 per person-week from empirical framework call-off data. Major contract costs include senior partner time, red team reviews, independent pricing committees, TUPE analysis, legal, and mobilisation planning for complex service contracts.</div>
-  <div class="caveat"><strong>On the company calculator:</strong> Bid spend rates by company type are calibrated from the Serco model (£4.9bn revenue, ~£104m estimated bid spend = 2.1%) and adjusted for deal mix by profile. Win rate adjustment: companies with a lower win rate submit proportionally more bids per £m of order intake — the model scales bid spend by the ratio of baseline (33%) to the company's stated rate. Pursuit ROI = gross profit on UK gov wins ÷ total bid spend.</div>
+  <div class="caveat"><strong>On the company calculator:</strong> Bid spend rates by company type are calibrated from the Serco model (£4.9bn revenue, ~£104m estimated bid spend = 2.1%) and adjusted for deal mix by profile. The IT consulting, engineering consulting, and management consulting profiles are estimated lower than outsourcing (1.0–1.5% of revenue) on the basis that consulting bids are smaller and more numerous than mega outsourcing pursuits — these three rates are unanchored and should be re-calibrated against a real consulting client P&L when one becomes available. Operating margin defaults switch with the profile to reflect the very different P&L economics across this client list — drag the slider to model a specific firm. Win rate adjustment: companies with a lower win rate submit proportionally more bids per £m of order intake — the model scales bid spend by the ratio of baseline (33%) to the company's stated rate. Pursuit ROI = gross profit on UK gov wins ÷ total bid spend.</div>
   <div class="caveat"><strong>On Lever B:</strong> A 40–50% reduction in bid cost is achievable on large complex pursuits through AI-assisted research synthesis, first-draft proposal generation, compliance matrix automation, and real-time commercial modelling. The saving is not uniform — it is highest on research-heavy phases (S1–S3 of a competitive dialogue) and lowest on governance-intensive activities (BAFO, board sign-off, legal review). The slider allows conservative and stretch scenarios.</div>
 
 </section>
@@ -380,12 +366,19 @@ const TOT_BIDS  = TIERS.reduce((s,t)=>s+t.bids, 0);
 const N_SUPS    = 37;
 const BASE_WR   = 0.33;
 
+// margin = default operating margin (per FY2024 reports, see datasrc note under slider)
+// rate   = bid spend as % of UK gov revenue. Outsourcer/IT-services/defence/FM/construction
+//          are anchored on disclosed accounts. it_consulting / eng_consulting / consulting
+//          rates are estimates pending live calibration against a real consulting client P&L.
 const PROFILES = {
-  outsourcer:   { label:'Large Outsourcer',  eg:'Serco · Mitie · Sodexo',          rate:0.021, rev:2000 },
-  it:           { label:'IT / Digital',       eg:'Capita · Atos · CGI · Capgemini', rate:0.018, rev:1500 },
-  defence:      { label:'Defence Prime',      eg:'BAE · Babcock · Leidos',           rate:0.025, rev:3000 },
-  fm:           { label:'FM / Facilities',    eg:'Aramark · ISS · G4S',             rate:0.014, rev:800  },
-  construction: { label:'Construction',       eg:'Kier · Balfour Beatty · AECOM',   rate:0.016, rev:2500 },
+  outsourcer:     { label:'Large Outsourcer',     eg:'Serco · Mitie · Sodexo',          rate:0.021, rev:2000, margin:6  },
+  it_services:    { label:'IT Services',          eg:'Capita · Atos',                   rate:0.018, rev:1500, margin:5  },
+  it_consulting:  { label:'IT Consulting',        eg:'CGI · Capgemini',                 rate:0.015, rev:1800, margin:13 },
+  defence:        { label:'Defence Prime',        eg:'BAE · Babcock · Leidos',          rate:0.025, rev:3000, margin:8  },
+  fm:             { label:'FM / Facilities',      eg:'ISS · G4S · Aramark',             rate:0.014, rev:800,  margin:5  },
+  construction:   { label:'Construction',         eg:'Kier · Balfour Beatty · AECOM',   rate:0.016, rev:2500, margin:3  },
+  eng_consulting: { label:'Engineering Consulting', eg:'Atkins · Arup · Mott MacDonald', rate:0.012, rev:600,  margin:10 },
+  consulting:     { label:'Management Consulting', eg:'EY · Deloitte · Accenture',      rate:0.010, rev:400,  margin:20 },
 };
 
 let activeProfile = 'outsourcer';
@@ -458,7 +451,13 @@ function renderProfiles() {
 
 function setProfile(k) {
   activeProfile = k;
-  document.getElementById('inp-rev').value = PROFILES[k].rev;
+  const p = PROFILES[k];
+  document.getElementById('inp-rev').value = p.rev;
+  const gm = document.getElementById('sl-gm');
+  gm.value = p.margin;
+  const min = +gm.min, max = +gm.max;
+  gm.style.setProperty('--pct', ((p.margin-min)/(max-min)*100)+'%');
+  document.getElementById('gm-disp').textContent = p.margin + '%';
   renderProfiles();
   calcAll();
 }
@@ -478,20 +477,17 @@ function calcAll() {
   const iTotal   = iSaveA + iSaveB;
   const iRevised = TOT_SPEND - iTotal;
   const iPerSup  = iTotal / N_SUPS;
-  const iROI     = iPerSup / 720000;
 
   document.getElementById('la-ind-saving').textContent = fM(iSaveA);
   document.getElementById('lb-ind-saving').textContent = fM(iSaveB);
   document.getElementById('ind-combined').textContent  = fM(iTotal);
   document.getElementById('ind-per-sup').textContent   = fM(iPerSup);
   document.getElementById('ind-revised').textContent   = fM(iRevised);
-  document.getElementById('ind-roi').textContent       = fX(iROI);
 
   // Company
   const rev     = get('inp-rev') * 1e6;
   const wr      = sid('sl-wr') / 100;
   const gm      = sid('sl-gm') / 100;
-  const ret     = get('inp-ret') * 1000;
 
   const rate    = PROFILES[activeProfile].rate;
   const spend   = rev * rate * (BASE_WR / wr);
@@ -506,7 +502,6 @@ function calcAll() {
   const pROI    = gp / spend;
   const pROInew = gp / newSpend;
   const pDelta  = pROInew - pROI;
-  const rROI    = saving / ret;
 
   document.getElementById('r-spend').textContent    = fM(spend);
   document.getElementById('r-spend-pct').textContent= `~${(spend/rev*100).toFixed(1)}% of UK gov revenue`;
@@ -515,8 +510,6 @@ function calcAll() {
   document.getElementById('r-saving').textContent   = fM(saving);
   document.getElementById('r-sa').textContent       = fM(saveA);
   document.getElementById('r-sb').textContent       = fM(saveB);
-  document.getElementById('r-roi').textContent      = fX(rROI);
-  document.getElementById('r-roi-sub').textContent  = `${fM(saving)} saving ÷ ${fM(ret)} retainer`;
 
   document.getElementById('r-proi-cur').textContent  = fX(pROI);
   document.getElementById('r-proi-new').textContent  = fX(pROInew);
@@ -526,9 +519,8 @@ function calcAll() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 renderTiers();
-renderProfiles();
 initSliders();
-calcAll();
+setProfile(activeProfile);
 </script>
 </body>
 </html>
