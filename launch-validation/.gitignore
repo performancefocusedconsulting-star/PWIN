@@ -1,0 +1,23 @@
+# Raw recordings and transcripts — workings, not artefacts. Kept local, never committed.
+*.m4a
+*.mp3
+*.wav
+*.aac
+*.ogg
+*.opus
+*.flac
+*.webm
+*.mp4
+*-transcript.txt
+*-transcript.md
+*.transcript
+
+# Per-conversation synthesised files contain third-party names and verbatim quotes.
+# Default: gitignored. Override per-file with `git add -f` if a particular conversation has been anonymised.
+conversations/20*.md
+!conversations/.gitkeep
+!conversations/_README.md
+
+# Local-only synthesis log (the committed version, if any, is anonymised).
+synthesis-log.local.md
+synthesis-log.local.csv
