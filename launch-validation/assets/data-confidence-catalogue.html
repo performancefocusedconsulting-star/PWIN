@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>UK contracts data — what it can and cannot tell us</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --midnight: #0F1B2D;
+    --midnight-soft: #1B2A44;
+    --gold: #C8A85B;
+    --gold-soft: #E5C97A;
+    --bone: #F4EFE6;
+    --mist: #8A93A6;
+    --rule: rgba(255,255,255,0.08);
+    --conf-high: #6FBF73;
+    --conf-medium: #C8A85B;
+    --conf-low: #D9805C;
+    --conf-none: #8A93A6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--midnight); color: var(--bone); font-family: 'DM Sans', system-ui, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 6vh 6vw; }
+  .label { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; color: var(--mist); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 3rem; margin: 0 0 0.5rem; }
+  .subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); font-size: 1.3rem; margin: 0 0 3rem; max-width: 60ch; line-height: 1.4; }
+  h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.8rem; color: var(--gold-soft); margin: 3rem 0 1rem; }
+  .claim { display: grid; grid-template-columns: 110px 1fr; gap: 1.5rem; padding: 1rem 0; border-top: 1px solid var(--rule); }
+  .claim:last-child { border-bottom: 1px solid var(--rule); }
+  .conf { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 2px; height: fit-content; text-align: center; }
+  .conf.high { color: var(--conf-high); border: 1px solid var(--conf-high); }
+  .conf.medium { color: var(--conf-medium); border: 1px solid var(--conf-medium); }
+  .conf.low { color: var(--conf-low); border: 1px solid var(--conf-low); }
+  .conf.none { color: var(--conf-none); border: 1px solid var(--conf-none); }
+  .claim-body p { margin: 0 0 0.4rem; line-height: 1.5; }
+  .claim-body .why { font-size: 0.9rem; color: var(--mist); font-style: italic; }
+  @media print {
+    html, body { background: white; color: black; }
+    .conf.high { color: #2e7d32; border-color: #2e7d32; }
+    .conf.medium { color: #b8973f; border-color: #b8973f; }
+    .conf.low { color: #b35c3c; border-color: #b35c3c; }
+    .conf.none { color: #555; border-color: #555; }
+    h2, .subtitle { color: #b8973f; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="label">BidEquity / Reserve asset</div>
+  <h1>What the data can and cannot tell us</h1>
+  <p class="subtitle">A confidence catalogue for the UK contracts intelligence database. The fact that this exists matters as much as what's on it — it's the credibility-honesty signal underneath every claim PWIN makes.</p>
+
+  <h2>What we can assert with high confidence</h2>
+
+  <div class="claim">
+    <div class="conf high">High</div>
+    <div class="claim-body">
+      <p><strong>That a notice was published, on which date, by which buyer, against which CPV code.</strong></p>
+      <p class="why">Because: this is what OCDS publishes verbatim. We capture it without interpretation.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf high">High</div>
+    <div class="claim-body">
+      <p><strong>That an award decision was published, on which date, naming which supplier(s).</strong></p>
+      <p class="why">Because: same provenance, with multi-supplier awards captured via the lots and award_suppliers junctions.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf high">High</div>
+    <div class="claim-body">
+      <p><strong>That a contract is approaching expiry, with which incumbent, on which framework.</strong></p>
+      <p class="why">Because: derived directly from notice end dates, validated by the canonical layer.</p>
+    </div>
+  </div>
+
+  <h2>What we can assert with medium confidence</h2>
+
+  <div class="claim">
+    <div class="conf medium">Medium</div>
+    <div class="claim-body">
+      <p><strong>The total value of awards across a buyer or supplier.</strong></p>
+      <p class="why">Because: framework values record the maximum, not the realised draw-down. Aggregated totals reflect ceilings, not spend.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf medium">Medium</div>
+    <div class="claim-body">
+      <p><strong>That a buyer is part of a consolidated parent (e.g. an executive agency under a Whitehall department).</strong></p>
+      <p class="why">Because: the canonical buyer layer covers ~85% of notices. The remaining ~15% are eProcurement intermediaries, private contractors publishing under their own name, and a long tail of one-off entities.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf medium">Medium</div>
+    <div class="claim-body">
+      <p><strong>The directors and SIC codes of a UK-registered supplier.</strong></p>
+      <p class="why">Because: only ~27% of suppliers in the database have a Companies House number on file. The rest are name-only, GB-PPON-only, non-UK, or public-sector bodies.</p>
+    </div>
+  </div>
+
+  <h2>What we can assert with low confidence</h2>
+
+  <div class="claim">
+    <div class="conf low">Low</div>
+    <div class="claim-body">
+      <p><strong>That a sub-organisation (e.g. HMPPS, UKVI, ESFA) has a particular spend profile under its parent department.</strong></p>
+      <p class="why">Because: about 5% of contract awards (concentrated in MoJ, Home Office, DfE, MoD) are dark at sub-organisation level — the parent name is published, the agency breakout is not. The £25k spend transparency overlay is built but not yet loaded; once loaded, the confidence here improves to medium for those four families.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf low">Low</div>
+    <div class="claim-body">
+      <p><strong>The historical win rate of a named supplier against a named buyer.</strong></p>
+      <p class="why">Because: we see published awards, not non-awards. A supplier who bid and lost ten times for one win shows in the data as one win, not 1-of-11. The denominator is hidden.</p>
+    </div>
+  </div>
+
+  <h2>What we cannot assert</h2>
+
+  <div class="claim">
+    <div class="conf none">None</div>
+    <div class="claim-body">
+      <p><strong>Why a particular award decision went a particular way.</strong></p>
+      <p class="why">Because: scoring rationale is not published. We can infer pattern; we cannot read minds.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf none">None</div>
+    <div class="claim-body">
+      <p><strong>The bid teams' internal pre-decision win-probability scores.</strong></p>
+      <p class="why">Because: they are private to each supplier. Our PWIN engine produces a probability score; it does not read the supplier's own.</p>
+    </div>
+  </div>
+
+  <div class="claim">
+    <div class="conf none">None</div>
+    <div class="claim-body">
+      <p><strong>The behaviour of strategic buyers below the FTS publication threshold.</strong></p>
+      <p class="why">Because: below threshold, awards may publish on Contracts Finder (£10k threshold) or not publish at all. The Contracts Finder ingest is built and live; coverage is improving.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>
