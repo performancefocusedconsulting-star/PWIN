@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>BidEquity — substantive overview (validation tour)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --midnight: #0F1B2D;
+    --midnight-soft: #1B2A44;
+    --gold: #C8A85B;
+    --gold-soft: #E5C97A;
+    --bone: #F4EFE6;
+    --mist: #8A93A6;
+    --rule: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--midnight); color: var(--bone); font-family: 'DM Sans', system-ui, sans-serif; overflow: hidden; }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide { position: absolute; inset: 0; padding: 6vh 8vw; display: flex; flex-direction: column; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 200ms ease; }
+  .slide.active { opacity: 1; pointer-events: auto; }
+  .slide h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(2.5rem, 5vw, 4rem); margin: 0 0 0.5rem; letter-spacing: 0.5px; }
+  .slide h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: clamp(1.6rem, 2.5vw, 2.2rem); color: var(--gold); margin: 0 0 1.5rem; }
+  .slide p, .slide li { font-size: clamp(1rem, 1.5vw, 1.4rem); line-height: 1.55; max-width: 60ch; }
+  .slide ol, .slide ul { padding-left: 1.5em; }
+  .slide li { margin-bottom: 0.6rem; }
+  .slide strong { color: var(--gold-soft); font-weight: 700; }
+  .label { font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.85rem; color: var(--mist); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem; }
+  .footer { position: absolute; bottom: 3vh; left: 8vw; right: 8vw; display: flex; justify-content: space-between; font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.75rem; color: var(--mist); letter-spacing: 1px; }
+  .notes { display: none; margin-top: 2rem; padding: 1rem; border-left: 2px solid var(--gold); font-style: italic; color: var(--mist); font-size: 0.95rem; max-width: 60ch; }
+  body.show-notes .notes { display: block; }
+  .nav { position: absolute; top: 3vh; right: 8vw; font-family: 'DM Mono', ui-monospace, monospace; font-size: 0.75rem; color: var(--mist); letter-spacing: 1px; }
+  @media print {
+    html, body { overflow: visible; height: auto; }
+    .slide { opacity: 1; pointer-events: auto; position: relative; page-break-after: always; min-height: 100vh; }
+    .nav, .footer { display: none; }
+    body.show-notes .notes { display: block; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <section class="slide active" data-slide="1">
+    <div class="label">BidEquity / 01</div>
+    <h1>BidEquity</h1>
+    <h2>The pre-launch conversation</h2>
+    <p>May 2026</p>
+    <div class="notes">This slide is up while you deliver the framing paragraph. Do not read it. Look at them.</div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="label">The problem / 02</div>
+    <h1>£3bn spent. £2bn wasted.</h1>
+    <p>The top 40 strategic suppliers to UK public sector spend roughly <strong>£3bn a year</strong> on bid pursuit.</p>
+    <p>By industry estimate, around <strong>£2bn of that</strong> goes on bids they were never going to win.</p>
+    <p>The cost isn't just the bid budgets. It's the opportunity cost of capture teams chasing the wrong things. The reputational drag of repeated losses. The executive credibility lost when over-confident win-probability scores prove unfounded.</p>
+    <div class="notes">Lead here to surface — early — the possibility that the audience does not see this as a problem. If they push back, the trigger question (Q2) just opened naturally. Compress the rest.</div>
+  </section>
+
+  <section class="slide" data-slide="3">
+    <div class="label">The diagnosis / 03</div>
+    <h1>Why nobody's solved it</h1>
+    <p>Existing approaches are one of three things:</p>
+    <ul>
+      <li><strong>Too subjective</strong> — Happy Ears: sales optimism inflating scores.</li>
+      <li><strong>Too academic</strong> — impractical at the speed of decision-making.</li>
+      <li><strong>Too simplistic</strong> — single weighted scorecards dressed up as algorithms.</li>
+    </ul>
+    <p>None combine <strong>algorithmic discipline, capture evidence, structural reality, and bias correction</strong> in one system.</p>
+    <p>The US tools — Cleat.ai, pWin.ai — are scoring tools, not challenge functions. They tell you the score; they don't tell you to walk away.</p>
+  </section>
+
+  <section class="slide" data-slide="4">
+    <div class="label">The methodology / 04</div>
+    <h1>The Pre-Gate Pursuit Playbook</h1>
+    <ol>
+      <li>Opportunity Sense-Making</li>
+      <li>Buyer &amp; Field Shaping</li>
+      <li>Win Architecture Design</li>
+      <li>Commercial Risk &amp; Suitability Review</li>
+      <li>Commitment Readiness</li>
+    </ol>
+    <p>Then <strong>Bid Execution</strong>.</p>
+  </section>
+
+  <section class="slide" data-slide="5">
+    <div class="label">The platform / 05</div>
+    <h1>Six products, one system</h1>
+    <ul>
+      <li><strong>Qualify</strong> — assurance and challenge layer</li>
+      <li><strong>Win Strategy</strong> — capture playbook engine</li>
+      <li><strong>Bid Execution</strong> — production discipline</li>
+      <li><strong>Verdict</strong> — post-loss forensic review</li>
+      <li><strong>Portfolio</strong> — leadership dashboard</li>
+      <li><strong>Competitive Intel</strong> — proprietary UK contracts data layer</li>
+    </ul>
+    <div class="notes">Honest register. No "AI-powered SaaS." No "next-generation."</div>
+  </section>
+
+  <section class="slide" data-slide="6">
+    <div class="label">The proprietary asset / 06</div>
+    <h1>The data layer</h1>
+    <p>A <strong>five-year, 175,000-contract</strong> UK public sector procurement database.</p>
+    <ul>
+      <li>Master-listed buyers</li>
+      <li>Master-listed suppliers</li>
+      <li>Framework holders</li>
+      <li>Executive organograms</li>
+      <li>Confidence catalogue describing exactly what the data can and cannot tell us</li>
+    </ul>
+    <p>Built natively, not licensed. UK-specific, not adapted from a US system. Updated nightly.</p>
+    <p>This is what makes the multi-layered probability score possible. Without it, you're just running a scorecard.</p>
+    <div class="notes">Lands hardest with audience A. Lands lightest with audience B. Compress for B and C; expand for A.</div>
+  </section>
+
+  <section class="slide" data-slide="7">
+    <div class="label">The honest state / 07</div>
+    <h1>What's true today</h1>
+    <p><strong>Working today.</strong> Contracts intelligence database. Qualify (live, lead-gen ready). The methodology. The founder credibility. The website.</p>
+    <p><strong>Built but not battle-tested.</strong> Win Strategy. Bid Execution. The methodology hasn't run on a paid client end-to-end yet.</p>
+    <p><strong>Unknown.</strong> Whether strategic suppliers will move on this absent a forcing function. Whether the credibility configuration is sufficient. Whether the commercial model is the right shape.</p>
+    <div class="notes">This chunk is what creates the conditions for the four questions. By the time you've said this, the audience already understands they're being invited into a real working problem.</div>
+  </section>
+
+  <section class="slide" data-slide="8">
+    <div class="label">The conversation / 08</div>
+    <h1>Three questions</h1>
+    <ol>
+      <li>What configuration of people would make this platform credible to a buyer?</li>
+      <li>What would actually trigger a strategic supplier to change behaviour?</li>
+      <li>Who do you know — for either side of this?</li>
+    </ol>
+    <p>And:</p>
+    <ol start="4"><li>What am I missing?</li></ol>
+    <div class="notes">Do not read all four. Pick the two or three that fit who's in front of you. Sit with silence after each one.</div>
+  </section>
+
+</div>
+
+<div class="nav" id="nav">1 / 8</div>
+<div class="footer"><span>BidEquity · Validation Tour</span><span>← → to navigate · ?notes=1 to show speaker notes</span></div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('nav');
+  let i = 0;
+  function show(n) {
+    if (n < 0 || n >= slides.length) return;
+    slides[i].classList.remove('active');
+    i = n;
+    slides[i].classList.add('active');
+    nav.textContent = (i + 1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') show(i + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') show(i - 1);
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+  });
+  document.addEventListener('click', () => show(i + 1));
+  if (new URLSearchParams(window.location.search).get('notes') === '1') {
+    document.body.classList.add('show-notes');
+  }
+})();
+</script>
+</body>
+</html>
