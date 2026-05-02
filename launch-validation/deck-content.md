@@ -7,7 +7,7 @@ backgroundColor: '#0F1B2D'
 color: '#F4EFE6'
 title: BidEquity — substantive overview (validation tour)
 date: 2026-05-02
-audience: validation tour (A/B/C)
+audience: validation tour (A/B/C/D)
 purpose: visual anchor for the substantive overview phase of each conversation
 style: |
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
